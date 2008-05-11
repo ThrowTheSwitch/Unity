@@ -34,6 +34,7 @@ void CreateResults();
 
 void UnityBegin();
 void UnityEnd(void);
+int  UnityGetNumFailures(void);
 
 void UnityPrintChar(char ch);
 void UnityPrint(const char *string);

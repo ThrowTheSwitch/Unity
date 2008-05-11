@@ -334,3 +334,7 @@ void UnityEnd(void)
     }
 }
 
+int UnityGetNumFailures(void)
+{
+    return Unity.TestFailures;
+}
