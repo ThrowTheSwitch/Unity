@@ -152,7 +152,7 @@ if( Unity.CurrentTestFailed ) {\
 #define TEST_ASSERT_EQUAL_HEX32(expected, actual)	TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX_MESSAGE(expected, actual, message) TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message)
-#define TEST_ASSERT_EQUAL_HEX(expected, actual) TEST_ASSERT_EQUAL_HEX32(expected, message)
+#define TEST_ASSERT_EQUAL_HEX(expected, actual) TEST_ASSERT_EQUAL_HEX32(expected, actual)
 
 #define TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, message) \
     Unity.TestFile=__FILE__; \
