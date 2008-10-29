@@ -12,9 +12,9 @@ INC_DIRS=-Isrc
 SYMBOLS=-DTEST
 
 ifeq ($(OS),Windows_NT)
-	CLEANUP = del /F /Q bin\* && del /F /Q $(TARGET)
+	CLEANUP = del /F /Q build\* && del /F /Q $(TARGET)
 else
-	CLEANUP = rm -f bin/*.o ; rm -f $(TARGET)
+	CLEANUP = rm -f build/*.o ; rm -f $(TARGET)
 endif
 
 all: clean default

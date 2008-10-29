@@ -9,7 +9,7 @@ require 'rakefile_helper'
 
 include RakefileHelpers
 
-CLEAN.include('bin/*')
+CLEAN.include('build/*')
 
 desc "Build Unity and run tests."
 task :default => [:clobber, :all]
@@ -25,7 +25,7 @@ task :summary do
   flush_output
   summary = UnityTestSummary.new
   summary.set_root_path($here)
-  summary.set_targets(Dir["bin/*.test*"])
+  summary.set_targets(Dir["build/*.test*"])
   summary.run
 end
 
@@ -47,7 +47,7 @@ end
 
 rule /.*\.test/ => [BIN_EXTENSION] do |file|
   bin = file.name.ext BIN_EXTENSION
-  test_results = 'bin\sim.txt'
+  test_results = 'build\sim.txt'
   fail_file = file.name.ext 'testfail'
   if File.exist?(fail_file)
     rm_f fail_file
