@@ -6,15 +6,23 @@ require 'fileutils'
 require 'set'
 require '../auto/unity_test_summary'
 require '../auto/generate_test_runner'
-require 'rakefile_helper'
+
+#USE THIS ONE IF YOU WANT TO TRY THIS WITH GCC
+#require 'rakefile_helper_GCC'
+
+#USE THIS ONE IF YOU WANT TO TRY THIS WITH IAR
+require 'rakefile_helper_IAR'
 
 include RakefileHelpers
 
+#This tells us where to clean our temporary files
 CLEAN.include('build/*')
 
-desc "Build and run all tests, then output results (you can just type \"rake\" to get this."
+#This is what is run when you type rake with no params
+desc "Build and run all tests, then output results (you can just type \"rake\" to get this)."
 task :default => [:clobber, :all, :summary]
 
+#This runs our test summary
 task :summary do
   flush_output
   summary = UnityTestSummary.new
@@ -23,6 +31,7 @@ task :summary do
   summary.run
 end
 
+#This builds and runs all the unit tests
 task :all do
   puts "Starting Test Suite"
   runner_generator = UnityTestRunnerGenerator.new
