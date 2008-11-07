@@ -142,7 +142,7 @@ class UnityTestRunnerGenerator
   def create_main(output, module_name, tests)
     output.puts()
     output.puts()
-    output.puts("void main(void)")
+    output.puts("int main(void)")
     output.puts("{")
     output.puts("#{@tab}Unity.TestFile = \"#{module_name}\";")
     output.puts("#{@tab}UnityBegin();")
@@ -155,6 +155,7 @@ class UnityTestRunnerGenerator
 
     output.puts()
     output.puts("#{@tab}UnityEnd();")
+    output.puts("#{@tab}return 0;")
     output.puts("}")
   end
 

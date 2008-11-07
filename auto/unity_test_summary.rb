@@ -79,7 +79,6 @@ class UnityTestSummary
   
   def set_root_path(path)
     @root = path
-    puts "root_path = " + @root
   end
 
   protected
@@ -147,49 +146,6 @@ class UnityTestSummary
   end
 
   def here; File.expand_path(File.dirname(__FILE__)); end
-
-  def valid_file(fname)
-    raise "Can't find file #{fname}" unless File.exists?(fname)
-    fname
-  end
-
-  def valid_dir(dirname)
-    raise "Can't find dir #{dirname}" unless File.exists?(dirname)
-    dirname
-  end
-  
-  def search_file_and_replace(file_name, pattern, replacement)
-    text = File.read(valid_file(file_name))
-    text.gsub!(pattern, replacement)
-    File.open(file_name, "w") do |f| f.write text end
-  end
-
-  def create_file_from_template(dest_file, template_file)
-    raise "#{dest_file} already exists; remove it first" if File.exists?(dest_file)
-
-    template_file = valid_file("#{here}/rscript_template.rb")
-    template = ERB.new(File.read(template_file))
-
-    File.open(dest_file,"w") do |f|
-      f.write template.result(binding)
-    end
-  end
-
-  def humanize(lower_case_and_underscored_word)
-    lower_case_and_underscored_word.to_s.gsub(/_id$/, "").gsub(/_/, " ").capitalize
-  end
-
-  def camelize(lower_case_and_underscored_word)
-    lower_case_and_underscored_word.to_s.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_)(.)/) { $2.upcase }
-  end
-
-  def titleize(word)
-    humanize(underscore(word)).gsub(/\b([a-z])/) { $1.capitalize }
-  end
-  
-  def underscore(camel_cased_word)
-    camel_cased_word.to_s.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase
-  end
   
 end
 
