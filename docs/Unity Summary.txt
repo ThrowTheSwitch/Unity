@@ -1,3 +1,4 @@
+==============
 Unity Test API
 ==============
 
@@ -31,13 +32,13 @@ Ignore this test and return immediately.  Output a message stating why the test 
 Aborting Tests
 --------------
 
-There are times when a test will contain an infinite loop on error conditions, or there may be reason to escape from the test early without executing the rest of the test.  A pair of macros support this functionality in Unity.  The first (TEST_PROTECT) sets up the feature, and handles emergency abort cases.  TEST_THROW can then be used at any time within the tests to return to the last TEST_PROTECT call.
+There are times when a test will contain an infinite loop on error conditions, or there may be reason to escape from the test early without executing the rest of the test.  A pair of macros support this functionality in Unity.  The first (TEST_PROTECT) sets up the feature, and handles emergency abort cases.  TEST_ABORT can then be used at any time within the tests to return to the last TEST_PROTECT call.
 
 TEST_PROTECT()
 
 Setup and Catch macro
 
-TEST_THROW (message)
+TEST_ABORT()
 
 Abort Test macro
 
@@ -51,8 +52,12 @@ main()
     }
 }
 
-If MyTest calls TEST_THROW, a failure with the message provided will be inserted, and program control will immediately return to TEST_PROTECT with a non-zero return value.
+If MyTest calls TEST_ABORT, program control will immediately return to TEST_PROTECT with a non-zero return value.
+
+
+=======================
 Unity Assertion Summary
+=======================
 
 --------------------
 Basic Validity Tests

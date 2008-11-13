@@ -4,6 +4,7 @@
 #define UNITY
 
 #include <stdio.h>
+#include <setjmp.h>
 
 typedef void (*UnityTestFunction)(void);
 
@@ -26,6 +27,8 @@ struct _Unity
     unsigned char CurrentTestIgnored;
     const char *TestFile;
     float DefaultDelta;
+    jmp_buf* volatile pAbortFrame;
+    jmp_buf AbortFrame;
 };
 
 extern struct _Unity Unity;
@@ -64,37 +67,19 @@ void UnityFail(const char *message, int line);
 
 void UnityIgnore(const char *message, int line);
 
-#define EXIT_WRAPPED_TEST(exprString) \
-if( Unity.CurrentTestFailed ) {\
-    UnityPrint(__FILE__); \
-    UnityPrint(":"); \
-    UnityPrintNumber(__LINE__); \
-    UnityPrint(":REDIRECTED:"); \
-    UnityPrint(exprString); \
-    UnityPrintChar('\n'); \
-}
+#define TEST_PROTECT() (setjmp(*Unity.pAbortFrame) == 0)
 
-#define RETURN_IF_NECESSARY() \
-    if( Unity.CurrentTestFailed || Unity.CurrentTestIgnored ) {return;}
+#define TEST_ABORT() {longjmp(*Unity.pAbortFrame, 1);}
 
-#define TEST_WRAP_NO_RETURN(function) \
-{\
-    function; \
-    EXIT_WRAPPED_TEST(#function); \
-}
+#define ABORT_IF_NECESSARY() \
+    if( Unity.CurrentTestFailed || Unity.CurrentTestIgnored ) {TEST_ABORT();}
 
 #define RUN_TEST(func) \
     Unity.CurrentTestName = #func; \
+    Unity.pAbortFrame = &Unity.AbortFrame; \
     Unity.NumberOfTests ++; \
     runTest(func); \
     UnityConcludeTest();
-
-#define TEST_WRAP(function) \
-{\
-    TEST_WRAP_NO_RETURN(function); \
-    Unity.TestFile=__FILE__; \
-    RETURN_IF_NECESSARY(); \
-}
 
 #define TEST_ASSERT_MESSAGE(condition, message) if (condition) {} else {TEST_FAIL(message);}
 #define TEST_ASSERT(condition) TEST_ASSERT_MESSAGE(condition, NULL)
@@ -115,7 +100,7 @@ if( Unity.CurrentTestFailed ) {\
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertEqualInt((int)(expected), (int)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_INT(expected, actual)	TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_MESSAGE(expected, actual, message) TEST_ASSERT_EQUAL_INT_MESSAGE((expected), (actual), (message))
@@ -124,31 +109,31 @@ if( Unity.CurrentTestFailed ) {\
 #define TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertIntsWithin((delta), (expected), (actual), NULL, (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_INT_WITHIN(delta, expected, actual) TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertEqualInt((int)(expected), (int)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_UINT(expected, actual) TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertEqualInt((int)(expected), (int)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX8); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX8(expected, actual) TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertEqualInt((int)(expected), (int)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX16); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX16(expected, actual)	TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertEqualInt((int)(expected), (int)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX32(expected, actual)	TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX_MESSAGE(expected, actual, message) TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message)
@@ -157,51 +142,48 @@ if( Unity.CurrentTestFailed ) {\
 #define TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertBits((mask), (expected), (actual), (message), (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BITS(mask, expected, actual) TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, NULL)
 
 #define TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertBits((mask), (-1), (actual), (message), (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BITS_HIGH(mask, actual) TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, NULL)
 
 #define TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertBits((mask), (0), (actual), (message), (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BITS_LOW(mask, actual) TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, NULL)
 
 #define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertBits((1 << bit), (-1), (actual), (message), (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_HIGH(bit, actual) TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, NULL)
 
 #define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertBits((1 << bit), (0), (actual), (message), (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_LOW(bit, actual) TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, NULL)
 
 #define TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertFloatsWithin((delta), (expected), (actual), (message), (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertEqualString((expected), (actual), (message), (unsigned short)__LINE__); \
-    RETURN_IF_NECESSARY();
+    ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_STRING(expected, actual) TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, NULL)
 
-#define TEST_FAIL(message) { Unity.TestFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); return; }
-#define TEST_IGNORE_MESSAGE(message) { Unity.TestFile=__FILE__; UnityIgnore((message), (unsigned short)__LINE__); return; }
-#define TEST_IGNORE() TEST_IGNORE_MESSAGE("")
-
-#define TEST_PROTECT() (setjmp(AbortFrame) == 0)
-#define TEST_THROW(message) { Unity.TestFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); longjmp(AbortFrame, 1); }
+#define TEST_FAIL(message) { Unity.TestFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); TEST_ABORT(); }
+#define TEST_IGNORE_MESSAGE(message) { Unity.TestFile=__FILE__; UnityIgnore((message), (unsigned short)__LINE__); TEST_ABORT(); }
+#define TEST_IGNORE() TEST_IGNORE_MESSAGE(NULL)
 
 #endif
 

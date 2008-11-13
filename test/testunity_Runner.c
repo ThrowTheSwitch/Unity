@@ -14,18 +14,14 @@ void testNotTrue(void);
 void testNotFalse(void);
 void testNotUnless(void);
 void testFail(void);
-void testIgnoreInWrapper(void);
 void testIgnore(void);
 void testIgnoreMessage(void);
-void testIgnoreMessageInWrapper(void);
-void testWrap(void);
 void testNotEqualInts(void);
 void testNotEqualBits(void);
 void testNotEqualUInts(void);
 void testNotEqualHex8s(void);
 void testNotEqualHex16s(void);
 void testNotEqualHex32s(void);
-void testMultipleUnwrappedAssertionsHandledAppropriately(void);
 void testEqualInts(void);
 void testEqualUints(void);
 void testEqualHex8s(void);
@@ -52,9 +48,12 @@ void testProtection(void);
 
 static void runTest(UnityTestFunction test)
 {
+  if (TEST_PROTECT())
+  {
     setUp();
     test();
-    tearDown();
+  }
+  tearDown();
 }
 
 int main(void)
@@ -65,24 +64,20 @@ int main(void)
     // RUN_TEST calls runTest
     RUN_TEST(testTrue);
     RUN_TEST(testFalse);
+    RUN_TEST(testPreviousPass);
     RUN_TEST(testNotVanilla);
     RUN_TEST(testNotTrue);
     RUN_TEST(testNotFalse);
     RUN_TEST(testNotUnless);
-    RUN_TEST(testPreviousPass);
     RUN_TEST(testFail);
-    RUN_TEST(testWrap);
-    RUN_TEST(testIgnoreInWrapper);
     RUN_TEST(testIgnore);
     RUN_TEST(testIgnoreMessage);
-    RUN_TEST(testIgnoreMessageInWrapper);
     RUN_TEST(testNotEqualBits);
     RUN_TEST(testNotEqualInts);
     RUN_TEST(testNotEqualUInts);
     RUN_TEST(testNotEqualHex8s);
     RUN_TEST(testNotEqualHex16s);
     RUN_TEST(testNotEqualHex32s);
-    RUN_TEST(testMultipleUnwrappedAssertionsHandledAppropriately);
     RUN_TEST(testEqualBits);
     RUN_TEST(testEqualInts);
     RUN_TEST(testEqualUints);

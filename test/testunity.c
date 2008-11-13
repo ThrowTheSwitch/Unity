@@ -3,6 +3,18 @@
 #include <setjmp.h>
 #include "unity.h"
 
+#define EXPECT_ABORT_BEGIN \
+  { \
+    jmp_buf NewFrame, *PrevFrame = Unity.pAbortFrame; \
+    Unity.pAbortFrame = &NewFrame; \
+    if (TEST_PROTECT()) \
+    {
+
+#define EXPECT_ABORT_END \
+    } \
+    Unity.pAbortFrame = PrevFrame; \
+  }
+
 void setUp(void)
 {
 }
@@ -30,83 +42,73 @@ void testPreviousPass(void)
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
 }
 
-void vanilla_asserter(int val)
-{
-    TEST_ASSERT(val);
-}
-
 void testNotVanilla(void)
 {
     int failed;
-    vanilla_asserter(0);
-
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT(0);
+    EXPECT_ABORT_END
+    
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_EQUAL_INT(1U, failed);
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
-}
-
-void true_asserter(int val)
-{
-    TEST_ASSERT_TRUE(val);
 }
 
 void testNotTrue(void)
 {
     int failed;
-    true_asserter(0);
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_TRUE(0);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_EQUAL_INT(1U, failed);
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
-}
-
-void false_asserter(int val)
-{
-    TEST_ASSERT_FALSE(val);
 }
 
 void testNotFalse(void)
 {
     int failed;
-    false_asserter(1);
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FALSE(1);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_EQUAL_INT(1U, failed);
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
-}
-
-void unless_asserter(int val)
-{
-    TEST_ASSERT_UNLESS(val);
 }
 
 void testNotUnless(void)
 {
     int failed;
-    unless_asserter(1);
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_UNLESS(1);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_EQUAL_INT(1U, failed);
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
-}
-
-void failer(void)
-{
-    TEST_FAIL("Expected for testing");
 }
 
 void testFail(void)
 {
     int failed;
-    failer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_FAIL("Expected for testing");
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -115,48 +117,29 @@ void testFail(void)
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
 }
 
-void ignorer(void)
-{
-    TEST_IGNORE();
-    TEST_FAIL("This should not be reached");
-}
-
-void assertIgnoreInWrapper(void)
-{
-    TEST_WRAP(ignorer());
-    TEST_FAIL("This should not be reached");
-}
-
-void testIgnoreInWrapper(void)
-{
-    unsigned char ignored;
-    assertIgnoreInWrapper();
-    ignored = Unity.CurrentTestIgnored;
-    Unity.CurrentTestIgnored = 0;
-    TEST_ASSERT_EQUAL_INT(1, ignored);
-}
-
 void testIgnore(void)
 {
     int ignored;
-    ignorer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_IGNORE();
+    TEST_FAIL("This should not be reached");
+    EXPECT_ABORT_END
 
     ignored = Unity.CurrentTestIgnored;
     Unity.CurrentTestIgnored = 0;
 
     TEST_ASSERT(ignored);
-}
-
-void ignorerWithMessage(void)
-{
-    TEST_IGNORE_MESSAGE("This is an expected TEST_IGNORE_MESSAGE string!");
-    TEST_FAIL("This should not be reached");
 }
 
 void testIgnoreMessage(void)
 {
     int ignored;
-    ignorerWithMessage();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_IGNORE_MESSAGE("This is an expected TEST_IGNORE_MESSAGE string!");
+    TEST_FAIL("This should not be reached");
+    EXPECT_ABORT_END
 
     ignored = Unity.CurrentTestIgnored;
     Unity.CurrentTestIgnored = 0;
@@ -164,62 +147,27 @@ void testIgnoreMessage(void)
     TEST_ASSERT(ignored);
 }
 
-void assertIgnoreWithMessageInWrapper(void)
-{
-    TEST_WRAP(ignorerWithMessage());
-    TEST_FAIL("This should not be reached");
-}
-
-void testIgnoreMessageInWrapper(void)
-{
-    unsigned char ignored;
-    assertIgnoreWithMessageInWrapper();
-    ignored = Unity.CurrentTestIgnored;
-    Unity.CurrentTestIgnored = 0;
-    TEST_ASSERT_EQUAL_INT(1, ignored);
-}
-
-void wrapper(void)
-{
-    TEST_WRAP(failer()); // if this doesn't force a return, then the failures will be incorrectly reset
-    Unity.CurrentTestFailed = 0;
-}
-
-void testWrap(void)
-{
-    int failed;
-    wrapper();
-    failed = Unity.CurrentTestFailed;
-    Unity.CurrentTestFailed = 0U;
-
-    TEST_ASSERT_EQUAL_INT(1U, failed);
-}
-
-void intFailer(void)
-{
-    TEST_ASSERT_EQUAL_INT(3982, 3983);
-}
-
 void testNotEqualInts(void)
 {
     int failed;
-    intFailer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT(3982, 3983);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
-}
-
-void bitFailer(void)
-{
-    TEST_ASSERT_BITS(0xFF00, 0x5555, 0x5A55);
 }
 
 void testNotEqualBits(void)
 {
     int failed;
-    bitFailer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_BITS(0xFF00, 0x5555, 0x5A55);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -227,83 +175,57 @@ void testNotEqualBits(void)
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
 }
 
-void uintFailer(void)
-{
-    TEST_ASSERT_EQUAL_UINT(900000, 900001);
-}
 
 void testNotEqualUInts(void)
 {
     int failed;
-    uintFailer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT(900000, 900001);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
-}
-
-void hex8Failer(void)
-{
-    TEST_ASSERT_EQUAL_HEX8(0x23,0x22);
 }
 
 void testNotEqualHex8s(void)
 {
     int failed;
-    hex8Failer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX8(0x23,0x22);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
-}
-
-void hex16Failer(void)
-{
-    TEST_ASSERT_EQUAL_HEX16(0x1234, 0x1235);
 }
 
 void testNotEqualHex16s(void)
 {
     int failed;
-    hex16Failer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX16(0x1234, 0x1235);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
-}
-
-void hex32Failer(void)
-{
-    TEST_ASSERT_EQUAL_HEX32(900000, 900001);
 }
 
 void testNotEqualHex32s(void)
 {
     int failed;
-    hex32Failer();
-
-    failed = Unity.CurrentTestFailed;
-    Unity.CurrentTestFailed = 0;
-
-    TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
-}
-
-void UnwrappedAssertion(int expected, int actual)
-{
-    TEST_ASSERT_EQUAL(expected,actual);
-}
-
-void testMultipleUnwrappedAssertionsHandledAppropriately(void)
-{
-    int failed;
-
-    UnwrappedAssertion(4,5);
-    UnwrappedAssertion(6,6);
-    UnwrappedAssertion(19,19);
     
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX32(900000, 900001);
+    EXPECT_ABORT_END
+
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
@@ -516,15 +438,13 @@ void testFloatsWithinDelta(void)
     TEST_ASSERT_FLOAT_WITHIN(0.007f, -726.93724f, -726.94424f);
 }
 
-void floatWithinFailer(void)
-{
-    TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
-}
-
 void testFloatsNotWithinDelta(void)
 {
     int failed;
-    floatWithinFailer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -540,15 +460,13 @@ void testIntsWithinDelta(void)
     TEST_ASSERT_INT_WITHIN(500, 50, -440);
 }
 
-void intWithinFailer(void)
-{
-    TEST_ASSERT_INT_WITHIN(5, 5000, 5006);
-}
-
 void testIntsNotWithinDelta(void)
 {
     int failed;
-    intWithinFailer();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_INT_WITHIN(5, 5000, 5006);
+    EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -568,25 +486,13 @@ void testEqualStrings(void)
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
 }
 
-void stringFailer1(void)
-{
-    TEST_ASSERT_EQUAL_STRING("foo", "bar");
-}
-
-void stringFailer2(void)
-{
-    TEST_ASSERT_EQUAL_STRING("foo", "");
-}
-
-void stringFailer3(void)
-{
-    TEST_ASSERT_EQUAL_STRING("", "bar");
-}
-
 void testNotEqualString1(void)
 {
     int failed;
-    stringFailer1();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING("foo", "bar");
+    EXPECT_ABORT_END
     
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -597,7 +503,10 @@ void testNotEqualString1(void)
 void testNotEqualString2(void)
 {
     int failed;
-    stringFailer2();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING("foo", "");
+    EXPECT_ABORT_END
     
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -608,23 +517,24 @@ void testNotEqualString2(void)
 void testNotEqualString3(void)
 {
     int failed;
-    stringFailer3();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING("", "bar");
+    EXPECT_ABORT_END
     
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
     TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
-}
-
-void stringFailer_ExpectedStringIsNull(void)
-{
-    TEST_ASSERT_EQUAL_STRING(NULL, "bar");
 }
 
 void testNotEqualString_ExpectedStringIsNull(void)
 {
     int failed;
-    stringFailer_ExpectedStringIsNull();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING(NULL, "bar");
+    EXPECT_ABORT_END
     
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -632,15 +542,13 @@ void testNotEqualString_ExpectedStringIsNull(void)
     TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
 }
 
-void stringFailer_ActualStringIsNull(void)
-{
-    TEST_ASSERT_EQUAL_STRING("foo", NULL);
-}
-
 void testNotEqualString_ActualStringIsNull(void)
 {
     int failed;
-    stringFailer_ActualStringIsNull();
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING("foo", NULL);
+    EXPECT_ABORT_END
     
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
@@ -651,12 +559,11 @@ void testNotEqualString_ActualStringIsNull(void)
 void testProtection(void)
 {
     volatile int mask = 0;
-    jmp_buf AbortFrame;
     
     if (TEST_PROTECT())
     {
         mask |= 1;
-        TEST_THROW("This throw was expected");
+        TEST_ABORT();
     }
     else
     {

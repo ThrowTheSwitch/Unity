@@ -8,10 +8,10 @@ require '../auto/unity_test_summary'
 require '../auto/generate_test_runner'
 
 #USE THIS ONE IF YOU WANT TO TRY THIS WITH GCC
-#require 'rakefile_helper_GCC'
+require 'rakefile_helper_GCC'
 
 #USE THIS ONE IF YOU WANT TO TRY THIS WITH IAR
-require 'rakefile_helper_IAR'
+#require 'rakefile_helper_IAR'
 
 include RakefileHelpers
 
