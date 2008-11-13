@@ -2,19 +2,30 @@
 module RakefileConstants
   
   C_EXTENSION = '.c'
-  OBJ_EXTENSION = '.obj'
-  BIN_EXTENSION = '.exe'
+
+  def Kernel.is_windows?
+    processor, platform, *rest = RUBY_PLATFORM.split("-")
+    platform == 'mswin32'
+  end
+
+  if Kernel.is_windows?
+    OBJ_EXTENSION = '.obj'
+    BIN_EXTENSION = '.exe'
+  else
+    OBJ_EXTENSION = '.o'
+    BIN_EXTENSION = '.out'
+  end
   
   UNIT_TEST_PATH = 'test'
   UNITY_PATH = '../src'
   SOURCE_PATH = 'src'
   BUILD_PATH = 'build'
   
-  UNITY_SRC = UNITY_PATH + '\unity.c'
-  UNITY_HDR = UNITY_PATH + '\unity.h'
+  UNITY_SRC = UNITY_PATH + '/unity.c'
+  UNITY_HDR = UNITY_PATH + '/unity.h'
   
-  COMPILER = 'gcc.exe'
-  LINKER   = 'gcc.exe'
+  COMPILER = 'gcc'
+  LINKER   = 'gcc'
   
 end
 
@@ -32,11 +43,11 @@ module RakefileHelpers
   end
 
   def compile src, obj
-    execute "#{COMPILER} -c -I#{SOURCE_PATH} -I#{UNITY_PATH} -DTEST #{src} -o#{obj}"
+    execute "#{COMPILER} -c -I#{SOURCE_PATH} -I#{UNITY_PATH} -DTEST #{src} -o #{obj}"
   end
 
   def link prerequisites, executable
-    execute "#{LINKER} -DTEST #{prerequisites.join(' ')} -o#{executable}"
+    execute "#{LINKER} -DTEST #{prerequisites.join(' ')} -o #{executable}"
   end
 
   def run_test executable      
