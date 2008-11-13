@@ -132,7 +132,7 @@ class UnityTestRunnerGenerator
     output.puts("#{@tab}#{@tab}setUp();")
     output.puts("#{@tab}#{@tab}test();")
     output.puts("#{@tab}}")
-    output.puts("#{@tab}TEST_WRAP(CMock_Verify());") unless (used_mocks.empty?)
+    output.puts("#{@tab}CMock_Verify();") unless (used_mocks.empty?)
     output.puts("#{@tab}CMock_Destroy();") unless (used_mocks.empty?)
     output.puts("#{@tab}tearDown();")
     output.puts("}")
