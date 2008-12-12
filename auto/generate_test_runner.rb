@@ -172,6 +172,8 @@ if ($0 == __FILE__)
   
   ARGV[1] = ARGV[0].gsub(".c","_sRunner.c") if (!ARGV[1])
   
-  UnityTestRunnerGenerator.new
-  UnityTestRunnerGenerator.run(ARGV[0], ARGV[1])
+  includes = []
+  includes = ARGV.slice(2..-1) if (ARGV.size > 2)
+  
+  UnityTestRunnerGenerator.new.run(ARGV[0], ARGV[1], includes)
 end
