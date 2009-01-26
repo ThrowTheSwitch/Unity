@@ -5,14 +5,11 @@
 
 #define EXPECT_ABORT_BEGIN \
   { \
-    jmp_buf NewFrame, *PrevFrame = Unity.pAbortFrame; \
-    Unity.pAbortFrame = &NewFrame; \
     if (TEST_PROTECT()) \
     {
 
 #define EXPECT_ABORT_END \
     } \
-    Unity.pAbortFrame = PrevFrame; \
   }
 
 void setUp(void)

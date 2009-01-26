@@ -1,8 +1,9 @@
 
 class UnityTestRunnerGenerator
 
-  def run(input_file, output_file, additional_includes=[], tab='  ')
+  def run(input_file, output_file, additional_includes=[], tab='  ', options={})
     @tab = tab
+    @options = options
     tests = []
     includes = []
     used_mocks = []
@@ -74,8 +75,8 @@ class UnityTestRunnerGenerator
     end
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
-    output.puts('')
-    output.puts('jmp_buf AbortFrame;')
+    output.puts('#include "Exception.h"') if @options.include?(:cexception)
+    output.puts('#include "BullseyeCoverage.h"') if @options.include?(:coverage)
     output.puts('')    
     output.puts('char MessageBuffer[50];')
   end
@@ -128,13 +129,19 @@ class UnityTestRunnerGenerator
     output.puts("{")
     output.puts("#{@tab}if (TEST_PROTECT())")
     output.puts("#{@tab}{")
-    output.puts("#{@tab}#{@tab}CMock_Init();") unless (used_mocks.empty?) 
-    output.puts("#{@tab}#{@tab}setUp();")
-    output.puts("#{@tab}#{@tab}test();")
-    output.puts("#{@tab}#{@tab}CMock_Verify();") unless (used_mocks.empty?)
+    output.puts("#{@tab}#{@tab}EXCEPTION_T e;") if @options.include?(:cexception)
+    output.puts("#{@tab}#{@tab}Try {") if @options.include?(:cexception)
+    output.puts("#{@tab}#{@tab}#{@tab}CMock_Init();") unless (used_mocks.empty?) 
+    output.puts("#{@tab}#{@tab}#{@tab}setUp();")
+    output.puts("#{@tab}#{@tab}#{@tab}test();")
+    output.puts("#{@tab}#{@tab}#{@tab}CMock_Verify();") unless (used_mocks.empty?)
+    output.puts("#{@tab}#{@tab}} Catch(e) { TEST_FAIL(\"Unhandled Exception!\"); }") if @options.include?(:cexception)
     output.puts("#{@tab}}")
     output.puts("#{@tab}CMock_Destroy();") unless (used_mocks.empty?)
-    output.puts("#{@tab}tearDown();")
+    output.puts("#{@tab}if (TEST_PROTECT())")
+    output.puts("#{@tab}{")
+    output.puts("#{@tab}#{@tab}tearDown();")
+    output.puts("#{@tab}}")
     output.puts("}")
   end
   
@@ -155,6 +162,7 @@ class UnityTestRunnerGenerator
 
     output.puts()
     output.puts("#{@tab}UnityEnd();")
+    output.puts("#{@tab}cov_write();") if @options.include?(:coverage)
     output.puts("#{@tab}return 0;")
     output.puts("}")
   end
@@ -170,7 +178,7 @@ if ($0 == __FILE__)
     exit 1
   end
   
-  ARGV[1] = ARGV[0].gsub(".c","_sRunner.c") if (!ARGV[1])
+  ARGV[1] = ARGV[0].gsub(".c","_Runner.c") if (!ARGV[1])
   
   includes = []
   includes = ARGV.slice(2..-1) if (ARGV.size > 2)

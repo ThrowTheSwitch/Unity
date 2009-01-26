@@ -53,7 +53,11 @@ static void runTest(UnityTestFunction test)
     setUp();
     test();
   }
-  tearDown();
+  
+  if (TEST_PROTECT())
+  {
+    tearDown();
+  }
 }
 
 int main(void)

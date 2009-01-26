@@ -27,7 +27,6 @@ struct _Unity
     unsigned char CurrentTestIgnored;
     const char *TestFile;
     float DefaultDelta;
-    jmp_buf* volatile pAbortFrame;
     jmp_buf AbortFrame;
 };
 
@@ -67,16 +66,15 @@ void UnityFail(const char *message, int line);
 
 void UnityIgnore(const char *message, int line);
 
-#define TEST_PROTECT() (setjmp(*Unity.pAbortFrame) == 0)
+#define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
 
-#define TEST_ABORT() {longjmp(*Unity.pAbortFrame, 1);}
+#define TEST_ABORT() {longjmp(Unity.AbortFrame, 1);}
 
 #define ABORT_IF_NECESSARY() \
     if( Unity.CurrentTestFailed || Unity.CurrentTestIgnored ) {TEST_ABORT();}
 
 #define RUN_TEST(func) \
     Unity.CurrentTestName = #func; \
-    Unity.pAbortFrame = &Unity.AbortFrame; \
     Unity.NumberOfTests ++; \
     runTest(func); \
     UnityConcludeTest();
