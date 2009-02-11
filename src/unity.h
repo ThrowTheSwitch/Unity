@@ -8,7 +8,7 @@
 
 typedef void (*UnityTestFunction)(void);
 
-typedef enum 
+typedef enum
 {
     UNITY_DISPLAY_STYLE_INT,
     UNITY_DISPLAY_STYLE_UINT,
@@ -38,33 +38,47 @@ void UnityBegin();
 void UnityEnd(void);
 int  UnityGetNumFailures(void);
 
-void UnityPrintChar(char ch);
+void UnityPrintChar(const char ch);
 void UnityPrint(const char *string);
-void UnityPrintMask(unsigned long mask, unsigned long number);
-void UnityPrintNumberByStyle(long number, UNITY_DISPLAY_STYLE_T style);
-void UnityPrintNumber(long number);
-void UnityPrintNumberUnsigned(unsigned long number);
-void UnityPrintNumberHex(unsigned long number, char nibbles);
+void UnityPrintMask(const unsigned long mask, const unsigned long number);
+void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T style);
+void UnityPrintNumber(const long number);
+void UnityPrintNumberUnsigned(const unsigned long number);
+void UnityPrintNumberHex(const unsigned long number, const char nibbles);
 void UnityConcludeTest();
 
-void UnityAssertEqualInt(int expected, int actual,
-const char *msg, unsigned short lineNumber, UNITY_DISPLAY_STYLE_T style);
+void UnityAssertEqualInt(const int expected,
+                         const int actual,
+                         const char *msg,
+                         const unsigned short lineNumber,
+                         const UNITY_DISPLAY_STYLE_T style);
 
-void UnityAssertBits(int mask, int expected, int actual,
-const char *msg, unsigned short lineNumber);
+void UnityAssertBits(const int mask,
+                     const int expected,
+                     const int actual,
+                     const char *msg,
+                     const unsigned short lineNumber);
 
-void UnityAssertEqualString(const char *expected, const char *actual,
-const char *msg, unsigned short lineNumber );
+void UnityAssertEqualString(const char *expected,
+                            const char *actual,
+                            const char *msg,
+                            const unsigned short lineNumber );
 
-void UnityAssertFloatsWithin(float delta, float expected, float actual,
-const char *msg, unsigned short lineNumber);
+void UnityAssertFloatsWithin(const float delta,
+                             const float expected,
+                             const float actual,
+                             const char *msg,
+                             const unsigned short lineNumber);
 
-void UnityAssertIntsWithin(int delta, int expected, int actual,
-const char *msg, unsigned short lineNumber);
+void UnityAssertIntsWithin(const int delta,
+                           const int expected,
+                           const int actual,
+                           const char *msg,
+                           const unsigned short lineNumber);
 
-void UnityFail(const char *message, int line);
+void UnityFail(const char *message, const int line);
 
-void UnityIgnore(const char *message, int line);
+void UnityIgnore(const char *message, const int line);
 
 #define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
 

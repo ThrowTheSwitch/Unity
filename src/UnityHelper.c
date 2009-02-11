@@ -5,7 +5,7 @@
 
 static char message[1024];
 
-void AssertEqualArrayUint(unsigned int* expected, unsigned int* actual, unsigned int length)
+void AssertEqualUintArray(const unsigned int* expected, const unsigned int* actual, const unsigned int length)
 {
     unsigned int i;
 
@@ -16,7 +16,7 @@ void AssertEqualArrayUint(unsigned int* expected, unsigned int* actual, unsigned
     }
 }
 
-void AssertEqualArrayInt(int* expected, int* actual, unsigned int length)
+void AssertEqualIntArray(const int* expected, const int* actual, const unsigned int length)
 {
     unsigned int i;
 
@@ -27,7 +27,7 @@ void AssertEqualArrayInt(int* expected, int* actual, unsigned int length)
     }
 }
 
-void AssertEqualArrayFloatWithin(float tolerance, float* expected, float* actual, unsigned int length)
+void AssertFloatArrayWithin(const float tolerance, const float* expected, const float* actual, const unsigned int length)
 {
     unsigned int i;
 
@@ -36,4 +36,12 @@ void AssertEqualArrayFloatWithin(float tolerance, float* expected, float* actual
         sprintf(message, "Array mismatch at index %u, Expected %f, Actual %f, Tolerance %f, Delta %f", i, expected[i], actual[i], tolerance, (expected[i]-actual[i]));
         TEST_ASSERT_FLOAT_WITHIN_MESSAGE(tolerance, expected[i], actual[i], message);
     }
+}
+
+void AssertEqualExampleStruct(EXAMPLE_STRUCT_T expected, EXAMPLE_STRUCT_T actual)
+{
+    sprintf(message, "Example Struct Failed For Field x", i);
+    TEST_ASSERT_EQUAL_INT_MESSAGE(expected.x, actual.x, message);
+    sprintf(message, "Example Struct Failed For Field y", i);
+    TEST_ASSERT_EQUAL_INT_MESSAGE(expected.y, actual.y, message);
 }

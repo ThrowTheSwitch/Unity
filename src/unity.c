@@ -14,7 +14,7 @@ struct _Unity  Unity =
     1e-4f,
 };
 
-void UnityPrintChar(char ch)
+void UnityPrintChar(const char ch)
 {
     putchar(ch);
 }
@@ -33,7 +33,7 @@ void UnityPrint(const char *string)
     }
 }
 
-void UnityPrintNumberByStyle(long number, UNITY_DISPLAY_STYLE_T style)
+void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T style)
 {
     switch (style)
     {
@@ -46,9 +46,10 @@ void UnityPrintNumberByStyle(long number, UNITY_DISPLAY_STYLE_T style)
 }
 
 /// basically do an itoa using as little ram as possible
-void UnityPrintNumber(long number)
+void UnityPrintNumber(const long number_to_print)
 {
     unsigned long divisor = 10;
+    long number = number_to_print;
 
     if (number < 0)
     {
@@ -72,7 +73,7 @@ void UnityPrintNumber(long number)
 }
 
 /// basically do an itoa using as little ram as possible
-void UnityPrintNumberUnsigned(unsigned long number)
+void UnityPrintNumberUnsigned(const unsigned long number)
 {
     unsigned long divisor = 10;
 
@@ -91,9 +92,10 @@ void UnityPrintNumberUnsigned(unsigned long number)
     while (divisor > 1U);
 }
 
-void UnityPrintNumberHex(unsigned long number, char nibbles)
+void UnityPrintNumberHex(const unsigned long number, const char nibbles_to_print)
 {
     unsigned long nibble;
+    char nibbles;
     UnityPrint("0x");
 
     while (nibbles > 0)
@@ -110,7 +112,7 @@ void UnityPrintNumberHex(unsigned long number, char nibbles)
     }
 }
 
-void UnityPrintMask(unsigned long mask, unsigned long number)
+void UnityPrintMask(const unsigned long mask, const unsigned long number)
 {
     unsigned long bit = 0x00000001;
     int i;
@@ -136,7 +138,7 @@ void UnityPrintMask(unsigned long mask, unsigned long number)
     }
 }
 
-void UnityTestResultsBegin(int line)
+void UnityTestResultsBegin(const int line)
 {
     UnityPrint(Unity.TestFile);
     UnityPrintChar(':');
@@ -166,7 +168,11 @@ void UnityConcludeTest()
     Unity.CurrentTestIgnored = 0;
 }
 
-void UnityAssertBits(int mask, int expected, int actual, const char *msg, unsigned short lineNumber)
+void UnityAssertBits(const int mask,
+                     const int expected,
+                     const int actual,
+                     const char *msg,
+                     const unsigned short lineNumber)
 {
     if ((mask & expected) != (mask & actual))
     {
@@ -187,7 +193,11 @@ void UnityAssertBits(int mask, int expected, int actual, const char *msg, unsign
     }
 }
 
-void UnityAssertEqualInt(int expected, int actual, const char *msg, unsigned short lineNumber, UNITY_DISPLAY_STYLE_T style)
+void UnityAssertEqualInt(const int expected,
+                         const int actual,
+                         const char *msg,
+                         const unsigned short lineNumber,
+                         const UNITY_DISPLAY_STYLE_T style)
 {
     if (expected != actual)
     {
@@ -208,7 +218,11 @@ void UnityAssertEqualInt(int expected, int actual, const char *msg, unsigned sho
     }
 }
 
-void UnityAssertFloatsWithin(float delta, float expected, float actual, const char *msg, unsigned short lineNumber)
+void UnityAssertFloatsWithin(const float delta,
+                             const float expected,
+                             const float actual,
+                             const char *msg,
+                             const unsigned short lineNumber)
 {
     float diff = actual - expected;
 
@@ -231,7 +245,11 @@ void UnityAssertFloatsWithin(float delta, float expected, float actual, const ch
     }
 }
 
-void UnityAssertIntsWithin(int delta, int expected, int actual, const char *msg, unsigned short lineNumber)
+void UnityAssertIntsWithin(const int delta,
+                           const int expected,
+                           const int actual,
+                           const char *msg,
+                           const unsigned short lineNumber)
 {
     int diff = actual - expected;
 
@@ -254,7 +272,10 @@ void UnityAssertIntsWithin(int delta, int expected, int actual, const char *msg,
     }
 }
 
-void UnityAssertEqualString(const char *expected, const char *actual, const char *msg, unsigned short lineNumber)
+void UnityAssertEqualString(const char *expected,
+                            const char *actual,
+                            const char *msg,
+                            unsigned short lineNumber)
 {
     unsigned int i;
 
@@ -295,7 +316,7 @@ void UnityAssertEqualString(const char *expected, const char *actual, const char
     }
 }
 
-void UnityFail(const char *message, int line)
+void UnityFail(const char *message, const int line)
 {
     Unity.CurrentTestFailed = 1;
     UnityTestResultsBegin(line);
@@ -303,7 +324,7 @@ void UnityFail(const char *message, int line)
     UnityPrintChar('\n');
 }
 
-void UnityIgnore(const char *message, int line)
+void UnityIgnore(const char *message, const int line)
 {
     Unity.CurrentTestIgnored = 1;
     UnityTestResultsBegin(line);
