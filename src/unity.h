@@ -19,13 +19,13 @@ typedef enum
 
 struct _Unity
 {
-    char* CurrentTestName;
+    const char* TestFile;
+    const char* CurrentTestName;
     unsigned char NumberOfTests;
     unsigned char TestFailures;
     unsigned char TestIgnores;
     unsigned char CurrentTestFailed;
     unsigned char CurrentTestIgnored;
-    const char *TestFile;
     float DefaultDelta;
     jmp_buf AbortFrame;
 };
@@ -39,7 +39,7 @@ void UnityEnd(void);
 int  UnityGetNumFailures(void);
 
 void UnityPrintChar(const char ch);
-void UnityPrint(const char *string);
+void UnityPrint(const char* string);
 void UnityPrintMask(const unsigned long mask, const unsigned long number);
 void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T style);
 void UnityPrintNumber(const long number);
@@ -49,42 +49,42 @@ void UnityConcludeTest();
 
 void UnityAssertEqualInt(const int expected,
                          const int actual,
-                         const char *msg,
+                         const char* msg,
                          const unsigned short lineNumber,
                          const UNITY_DISPLAY_STYLE_T style);
 
 void UnityAssertBits(const int mask,
                      const int expected,
                      const int actual,
-                     const char *msg,
+                     const char* msg,
                      const unsigned short lineNumber);
 
-void UnityAssertEqualString(const char *expected,
-                            const char *actual,
-                            const char *msg,
+void UnityAssertEqualString(const char* expected,
+                            const char* actual,
+                            const char* msg,
                             const unsigned short lineNumber );
 
-void UnityAssertEqualMemory(void *expected,
-                            void *actual,
+void UnityAssertEqualMemory(void* expected,
+                            void* actual,
                             unsigned int length,
-                            const char *msg,
+                            const char* msg,
                             const unsigned short lineNumber );
 
 void UnityAssertFloatsWithin(const float delta,
                              const float expected,
                              const float actual,
-                             const char *msg,
+                             const char* msg,
                              const unsigned short lineNumber);
 
 void UnityAssertIntsWithin(const int delta,
                            const int expected,
                            const int actual,
-                           const char *msg,
+                           const char* msg,
                            const unsigned short lineNumber);
 
-void UnityFail(const char *message, const int line);
+void UnityFail(const char* message, const int line);
 
-void UnityIgnore(const char *message, const int line);
+void UnityIgnore(const char* message, const int line);
 
 #define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
 

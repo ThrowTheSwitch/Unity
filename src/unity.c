@@ -2,16 +2,17 @@
 #include <stdio.h>
 
 
-struct _Unity  Unity =
+struct _Unity Unity =
 {
     NULL,
-    0,
-    0,
-    0,
-    0,
-    0,
     NULL,
+    0,
+    0,
+    0,
+    0,
+    0,
     1e-4f,
+    0,
 };
 
 void UnityPrintChar(const char ch)
@@ -19,9 +20,9 @@ void UnityPrintChar(const char ch)
     putchar(ch);
 }
 
-void UnityPrint(const char *string)
+void UnityPrint(const char* string)
 {
-    unsigned char * pch = (unsigned char *)string;
+    unsigned char* pch = (unsigned char*)string;
 
     if (pch != NULL)
     {
@@ -171,7 +172,7 @@ void UnityConcludeTest()
 void UnityAssertBits(const int mask,
                      const int expected,
                      const int actual,
-                     const char *msg,
+                     const char* msg,
                      const unsigned short lineNumber)
 {
     if ((mask & expected) != (mask & actual))
@@ -195,7 +196,7 @@ void UnityAssertBits(const int mask,
 
 void UnityAssertEqualInt(const int expected,
                          const int actual,
-                         const char *msg,
+                         const char* msg,
                          const unsigned short lineNumber,
                          const UNITY_DISPLAY_STYLE_T style)
 {
@@ -221,7 +222,7 @@ void UnityAssertEqualInt(const int expected,
 void UnityAssertFloatsWithin(const float delta,
                              const float expected,
                              const float actual,
-                             const char *msg,
+                             const char* msg,
                              const unsigned short lineNumber)
 {
     float diff = actual - expected;
@@ -248,7 +249,7 @@ void UnityAssertFloatsWithin(const float delta,
 void UnityAssertIntsWithin(const int delta,
                            const int expected,
                            const int actual,
-                           const char *msg,
+                           const char* msg,
                            const unsigned short lineNumber)
 {
     int diff = actual - expected;
@@ -272,9 +273,9 @@ void UnityAssertIntsWithin(const int delta,
     }
 }
 
-void UnityAssertEqualString(const char *expected,
-                            const char *actual,
-                            const char *msg,
+void UnityAssertEqualString(const char* expected,
+                            const char* actual,
+                            const char* msg,
                             unsigned short lineNumber)
 {
     unsigned int i;
@@ -317,10 +318,10 @@ void UnityAssertEqualString(const char *expected,
 }
 
 
-void UnityAssertEqualMemory(void *expected,
-                            void *actual,
+void UnityAssertEqualMemory(void* expected,
+                            void* actual,
                             unsigned int length,
-                            const char *msg,
+                            const char* msg,
                             unsigned short lineNumber)
 {
     unsigned int i;
@@ -361,7 +362,7 @@ void UnityAssertEqualMemory(void *expected,
     }
 }
 
-void UnityFail(const char *message, const int line)
+void UnityFail(const char* message, const int line)
 {
     Unity.CurrentTestFailed = 1;
     UnityTestResultsBegin(line);
@@ -369,7 +370,7 @@ void UnityFail(const char *message, const int line)
     UnityPrintChar('\n');
 }
 
-void UnityIgnore(const char *message, const int line)
+void UnityIgnore(const char* message, const int line)
 {
     Unity.CurrentTestIgnored = 1;
     UnityTestResultsBegin(line);
