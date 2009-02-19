@@ -64,6 +64,12 @@ void UnityAssertEqualString(const char *expected,
                             const char *msg,
                             const unsigned short lineNumber );
 
+void UnityAssertEqualMemory(void *expected,
+                            void *actual,
+                            unsigned int length,
+                            const char *msg,
+                            const unsigned short lineNumber );
+
 void UnityAssertFloatsWithin(const float delta,
                              const float expected,
                              const float actual,
@@ -192,6 +198,12 @@ void UnityIgnore(const char *message, const int line);
     UnityAssertEqualString((expected), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_STRING(expected, actual) TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, NULL)
+
+#define TEST_ASSERT_EQUAL_MEMORY_MESSAGE(expected, actual, len, message) \
+    Unity.TestFile=__FILE__; \
+    UnityAssertEqualMemory((expected), (actual), (len), (message), (unsigned short)__LINE__); \
+    ABORT_IF_NECESSARY();
+#define TEST_ASSERT_EQUAL_MEMORY(expected, actual, len) TEST_ASSERT_EQUAL_MEMORY_MESSAGE(expected, actual, len, NULL)
 
 #define TEST_FAIL(message) { Unity.TestFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); TEST_ABORT(); }
 #define TEST_IGNORE_MESSAGE(message) { Unity.TestFile=__FILE__; UnityIgnore((message), (unsigned short)__LINE__); TEST_ABORT(); }

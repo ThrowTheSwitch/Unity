@@ -43,6 +43,11 @@ void testNotEqualString2(void);
 void testNotEqualString3(void);
 void testNotEqualString_ExpectedStringIsNull(void);
 void testNotEqualString_ActualStringIsNull(void);
+void testEqualMemory(void);
+void testNotEqualMemory1(void);
+void testNotEqualMemory2(void);
+void testNotEqualMemory3(void);
+void testNotEqualMemory4(void);
 void testProtection(void);
 
 
@@ -53,7 +58,7 @@ static void runTest(UnityTestFunction test)
     setUp();
     test();
   }
-  
+
   if (TEST_PROTECT())
   {
     tearDown();
@@ -103,6 +108,11 @@ int main(void)
     RUN_TEST(testNotEqualString3);
     RUN_TEST(testNotEqualString_ExpectedStringIsNull);
     RUN_TEST(testNotEqualString_ActualStringIsNull);
+    RUN_TEST(testEqualMemory);
+    RUN_TEST(testNotEqualMemory1);
+    RUN_TEST(testNotEqualMemory2);
+    RUN_TEST(testNotEqualMemory3);
+    RUN_TEST(testNotEqualMemory4);
     RUN_TEST(testProtection);
 
     UnityEnd();

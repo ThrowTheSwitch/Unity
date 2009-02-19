@@ -59,7 +59,7 @@ class UnityTestRunnerGenerator
   def find_mocks(includes)
     mock_headers = []
     includes.each do |include_file|
-      mock_headers << include_file if include_file.include? "Mock"
+      mock_headers << include_file if (include_file =~ /^mock/i)
     end
     return mock_headers  
   end

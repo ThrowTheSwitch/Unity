@@ -40,8 +40,6 @@ void AssertFloatArrayWithin(const float tolerance, const float* expected, const 
 
 void AssertEqualExampleStruct(EXAMPLE_STRUCT_T expected, EXAMPLE_STRUCT_T actual)
 {
-    sprintf(message, "Example Struct Failed For Field x", i);
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected.x, actual.x, message);
-    sprintf(message, "Example Struct Failed For Field y", i);
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected.y, actual.y, message);
+    TEST_ASSERT_EQUAL_INT_MESSAGE(expected.x, actual.x, "Example Struct Failed For Field x");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(expected.y, actual.y, "Example Struct Failed For Field y");
 }

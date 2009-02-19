@@ -316,6 +316,51 @@ void UnityAssertEqualString(const char *expected,
     }
 }
 
+
+void UnityAssertEqualMemory(void *expected,
+                            void *actual,
+                            unsigned int length,
+                            const char *msg,
+                            unsigned short lineNumber)
+{
+    unsigned int i;
+    if (length == 0)
+        return;
+
+    // if both pointers not null compare the memory
+    if (expected && actual)
+    {
+        if (memcmp(expected, actual, length) != 0)
+        {
+            Unity.CurrentTestFailed = 1;
+        }
+    }
+    else
+    { // handle case of one pointers being null (if both null, test should pass)
+        if (expected != actual)
+        {
+            Unity.CurrentTestFailed = 1;
+        }
+    }
+
+    if (Unity.CurrentTestFailed)
+    {
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("Expected '");
+        UnityPrint(expected);
+        UnityPrint("' was '");
+        UnityPrint(actual);
+        UnityPrintChar('\'');
+        UnityPrintChar('.');
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
+    }
+}
+
 void UnityFail(const char *message, const int line)
 {
     Unity.CurrentTestFailed = 1;
