@@ -96,7 +96,7 @@ void UnityPrintNumberUnsigned(const unsigned long number)
 void UnityPrintNumberHex(const unsigned long number, const char nibbles_to_print)
 {
     unsigned long nibble;
-    char nibbles;
+	char nibbles = nibbles_to_print;
     UnityPrint("0x");
 
     while (nibbles > 0)
@@ -324,7 +324,6 @@ void UnityAssertEqualMemory(void* expected,
                             const char* msg,
                             unsigned short lineNumber)
 {
-    unsigned int i;
     if (length == 0)
         return;
 
