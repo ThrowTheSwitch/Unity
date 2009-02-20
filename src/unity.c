@@ -346,12 +346,7 @@ void UnityAssertEqualMemory(void* expected,
     if (Unity.CurrentTestFailed)
     {
         UnityTestResultsBegin(lineNumber);
-        UnityPrint("Expected '");
-        UnityPrint(expected);
-        UnityPrint("' was '");
-        UnityPrint(actual);
-        UnityPrintChar('\'');
-        UnityPrintChar('.');
+        UnityPrint("Memory Mismatch.");
         if (msg)
         {
             UnityPrintChar(' ');
