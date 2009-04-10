@@ -12,6 +12,11 @@
     } \
   }
 
+#define VERIFY_FAILURE_WAS_CAUGHT \
+    EXPECT_ABORT_BEGIN \
+      TEST_ASSERT_MESSAGE((1u == failed), "<---- [ This Test Should Have Failed But Did Not ]"); \
+    EXPECT_ABORT_END
+
 void setUp(void)
 {
 }
@@ -264,6 +269,7 @@ void testEqualUints(void)
     TEST_ASSERT_EQUAL_UINT(*p0, v1);
     TEST_ASSERT_EQUAL_UINT(*p0, *p1);
     TEST_ASSERT_EQUAL_UINT(*p0, 19467);
+    TEST_ASSERT_EQUAL_UINT(4294967295ul, 4294967295ul);
 }
 
 void testEqualHex8s(void)
@@ -446,7 +452,7 @@ void testFloatsNotWithinDelta(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testIntsWithinDelta(void)
@@ -468,7 +474,7 @@ void testIntsNotWithinDelta(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testEqualStrings(void)
@@ -494,7 +500,7 @@ void testNotEqualString1(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testNotEqualString2(void)
@@ -508,7 +514,7 @@ void testNotEqualString2(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testNotEqualString3(void)
@@ -522,7 +528,7 @@ void testNotEqualString3(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testNotEqualString_ExpectedStringIsNull(void)
@@ -536,7 +542,7 @@ void testNotEqualString_ExpectedStringIsNull(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testNotEqualString_ActualStringIsNull(void)
@@ -550,7 +556,7 @@ void testNotEqualString_ActualStringIsNull(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testEqualMemory(void)
@@ -577,7 +583,7 @@ void testNotEqualMemory1(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testNotEqualMemory2(void)
@@ -591,7 +597,7 @@ void testNotEqualMemory2(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testNotEqualMemory3(void)
@@ -605,7 +611,7 @@ void testNotEqualMemory3(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testNotEqualMemory4(void)
@@ -619,7 +625,137 @@ void testNotEqualMemory4(void)
     failed = Unity.CurrentTestFailed;
     Unity.CurrentTestFailed = 0;
 
-    TEST_ASSERT_MESSAGE(1U == failed, "This is also expected");
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testEqualIntArrays(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2};
+    int p2[] = {1, 8, 987, 2};
+    int p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualIntArrays1(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, 2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualIntArrays2(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {2, 8, 987, -2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualIntArrays3(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 986, -2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testEqualUIntArrays(void)
+{
+    unsigned int p0[] = {1, 8, 987, 4294967295ul};
+    unsigned int p1[] = {1, 8, 987, 4294967295ul};
+    unsigned int p2[] = {1, 8, 987, 2};
+    unsigned int p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualUIntArrays1(void)
+{
+    unsigned int p0[] = {1, 8, 987, 4294967295ul};
+    unsigned int p1[] = {1, 8, 987, 4294967294ul};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualUIntArrays2(void)
+{
+    unsigned int p0[] = {1, 8, 987, 4294967295ul};
+    unsigned int p1[] = {2, 8, 987, 4294967295ul};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualUIntArrays3(void)
+{
+    unsigned int p0[] = {1, 8, 987, 4294967295ul};
+    unsigned int p1[] = {1, 8, 986, 4294967295ul};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
 }
 
 void testProtection(void)

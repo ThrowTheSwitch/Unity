@@ -38,18 +38,19 @@ void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T styl
 {
     switch (style)
     {
-    case UNITY_DISPLAY_STYLE_HEX8:    UnityPrintNumberHex(number,2);            break;
-    case UNITY_DISPLAY_STYLE_HEX16:   UnityPrintNumberHex(number,4);            break;
-    case UNITY_DISPLAY_STYLE_HEX32:   UnityPrintNumberHex(number,8);            break;
-    case UNITY_DISPLAY_STYLE_UINT:    UnityPrintNumberUnsigned(number);         break;
-    default:                          UnityPrintNumber(number);                 break;
+    case UNITY_DISPLAY_STYLE_HEX8:    UnityPrintNumberHex((unsigned long)number, 2);           break;
+    case UNITY_DISPLAY_STYLE_HEX16:   UnityPrintNumberHex((unsigned long)number, 4);           break;
+    case UNITY_DISPLAY_STYLE_HEX32:   UnityPrintNumberHex((unsigned long)number, 8);           break;
+    case UNITY_DISPLAY_STYLE_UINT:    UnityPrintNumberUnsigned((unsigned long)number);         break;
+    default:                          UnityPrintNumber(number);                                break;
     }
 }
 
 /// basically do an itoa using as little ram as possible
 void UnityPrintNumber(const long number_to_print)
 {
-    unsigned long divisor = 10;
+    long divisor = 1;
+    long next_divisor;
     long number = number_to_print;
 
     if (number < 0)
@@ -59,38 +60,47 @@ void UnityPrintNumber(const long number_to_print)
     }
 
     // figure out initial divisor
-    while (number / divisor)
+    while (number / divisor > 9)
     {
-        divisor *= 10;
+        next_divisor = divisor * 10;
+        if (next_divisor > divisor)
+            divisor = next_divisor;
+        else
+            break;
     }
 
-    // now divide number by divisor, mod and print, then divide divisor
+    // now mod and print, then divide divisor
     do
     {
-        divisor /= 10;
         UnityPrintChar((char)('0' + (number / divisor % 10)));
+        divisor /= 10;
     }
-    while (divisor > 1U);
+    while (divisor > 0);
 }
 
 /// basically do an itoa using as little ram as possible
 void UnityPrintNumberUnsigned(const unsigned long number)
 {
-    unsigned long divisor = 10;
+    unsigned long divisor = 1;
+    unsigned long next_divisor;
 
     // figure out initial divisor
-    while (number / divisor)
+    while (number / divisor > 9)
     {
-        divisor *= 10;
+        next_divisor = divisor * 10;
+        if (next_divisor > divisor)
+            divisor = next_divisor;
+        else
+            break;
     }
 
-    // now divide number by divisor, mod and print, then divide divisor
+    // now mod and print, then divide divisor
     do
     {
-        divisor /= 10;
         UnityPrintChar((char)('0' + (number / divisor % 10)));
+        divisor /= 10;
     }
-    while (divisor > 1U);
+    while (divisor > 0);
 }
 
 void UnityPrintNumberHex(const unsigned long number, const char nibbles_to_print)
@@ -116,7 +126,7 @@ void UnityPrintNumberHex(const unsigned long number, const char nibbles_to_print
 void UnityPrintMask(const unsigned long mask, const unsigned long number)
 {
     unsigned long bit = 0x00000001;
-    int i;
+    long i;
 
     for (i = 0; i < 32; i++)
     {
@@ -139,7 +149,7 @@ void UnityPrintMask(const unsigned long mask, const unsigned long number)
     }
 }
 
-void UnityTestResultsBegin(const int line)
+void UnityTestResultsBegin(const long line)
 {
     UnityPrint(Unity.TestFile);
     UnityPrintChar(':');
@@ -169,9 +179,9 @@ void UnityConcludeTest()
     Unity.CurrentTestIgnored = 0;
 }
 
-void UnityAssertBits(const int mask,
-                     const int expected,
-                     const int actual,
+void UnityAssertBits(const long mask,
+                     const long expected,
+                     const long actual,
                      const char* msg,
                      const unsigned short lineNumber)
 {
@@ -194,8 +204,8 @@ void UnityAssertBits(const int mask,
     }
 }
 
-void UnityAssertEqualInt(const int expected,
-                         const int actual,
+void UnityAssertEqualInt(const long expected,
+                         const long actual,
                          const char* msg,
                          const unsigned short lineNumber,
                          const UNITY_DISPLAY_STYLE_T style)
@@ -216,6 +226,57 @@ void UnityAssertEqualInt(const int expected,
             UnityPrint(msg);
         }
         UnityPrintChar('\n');
+    }
+}
+
+void UnityAssertEqualIntArray(const long* expected,
+                              const long* actual,
+                              const unsigned long num_elements,
+                              const char* msg,
+                              const unsigned short lineNumber,
+                              const UNITY_DISPLAY_STYLE_T style)
+{
+    unsigned long elements = num_elements;
+    const long* ptr_expected = expected;
+    const long* ptr_actual = actual;
+
+    if (elements == 0)
+    {
+        Unity.CurrentTestFailed = 1;
+
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("You asked me to compare 0 elements of an array, which was pointless.");
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
+        return;
+    }
+
+    while (elements--)
+    {
+        if (*ptr_expected++ != *ptr_actual++)
+        {
+            Unity.CurrentTestFailed = 1;
+
+            UnityTestResultsBegin(lineNumber);
+            UnityPrint("Element ");
+            UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+            UnityPrint(" Expected ");
+            UnityPrintNumberByStyle(*--ptr_expected, style);
+            UnityPrint(" was ");
+            UnityPrintNumberByStyle(*--ptr_actual, style);
+            UnityPrintChar('.');
+            if (msg)
+            {
+                UnityPrintChar(' ');
+                UnityPrint(msg);
+            }
+            UnityPrintChar('\n');
+            return;
+        }
     }
 }
 
@@ -246,13 +307,13 @@ void UnityAssertFloatsWithin(const float delta,
     }
 }
 
-void UnityAssertIntsWithin(const int delta,
-                           const int expected,
-                           const int actual,
+void UnityAssertIntsWithin(const long delta,
+                           const long expected,
+                           const long actual,
                            const char* msg,
                            const unsigned short lineNumber)
 {
-    int diff = actual - expected;
+    long diff = actual - expected;
 
     if (diff < 0)
     {
@@ -278,7 +339,7 @@ void UnityAssertEqualString(const char* expected,
                             const char* msg,
                             unsigned short lineNumber)
 {
-    unsigned int i;
+    unsigned long i;
 
     // if both pointers not null compare the strings
     if (expected && actual)
@@ -318,9 +379,9 @@ void UnityAssertEqualString(const char* expected,
 }
 
 
-void UnityAssertEqualMemory(void* expected,
-                            void* actual,
-                            unsigned int length,
+void UnityAssertEqualMemory(const void* expected,
+                            const void* actual,
+                            unsigned long length,
                             const char* msg,
                             unsigned short lineNumber)
 {
@@ -356,7 +417,7 @@ void UnityAssertEqualMemory(void* expected,
     }
 }
 
-void UnityFail(const char* message, const int line)
+void UnityFail(const char* message, const long line)
 {
     Unity.CurrentTestFailed = 1;
     UnityTestResultsBegin(line);
@@ -364,7 +425,7 @@ void UnityFail(const char* message, const int line)
     UnityPrintChar('\n');
 }
 
-void UnityIgnore(const char* message, const int line)
+void UnityIgnore(const char* message, const long line)
 {
     Unity.CurrentTestIgnored = 1;
     UnityTestResultsBegin(line);
@@ -395,7 +456,7 @@ void UnityEnd(void)
     }
 }
 
-int UnityGetNumFailures(void)
+long UnityGetNumFailures(void)
 {
     return Unity.TestFailures;
 }

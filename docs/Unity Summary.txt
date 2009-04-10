@@ -147,6 +147,26 @@ TEST_ASSERT_EQUAL_HEX_MESSAGE(expected, actual, message)
 	
 Another way of calling TEST_ASSERT_EQUAL_HEX32_MESSAGE
 
+------------------------------------
+Numerical Assertions: Integer Arrays
+------------------------------------
+
+TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements)
+
+Compare two arrays for equality and display errors as signed integers.
+
+TEST_ASSERT_EQUAL_UINT_ARRAY(expected, actual, num_elements)
+
+Compare two arrays for equality and display errors as unsigned integers.
+
+TEST_ASSERT_EQUAL_HEX32_ARRAY(expected, actual, num_elements)
+
+Compare two arrays for equality and display errors as 32-bit hex values.
+
+TEST_ASSERT_EQUAL_HEX_ARRAY(expected, actual, num_elements)
+
+Another way of calling TEST_ASSERT_EQUAL_HEX32_ARRAY.
+
 -----------------------------
 Numerical Assertions: Bitwise
 -----------------------------
