@@ -75,10 +75,12 @@ class UnityTestRunnerGenerator
     end
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
-    output.puts('#include "Exception.h"') if @options.include?(:cexception)
-    output.puts('#include "BullseyeCoverage.h"') if @options.include?(:coverage)
+    output.puts('#include "Exception.h"') if @options[:cexception]
+    output.puts('#include "BullseyeCoverage.h"') if @options[:coverage]
     output.puts('')    
     output.puts('char MessageBuffer[50];')
+    output.puts('int GlobalExpectOrder;') if @options[:order]
+    output.puts('int GlobalVerifyOrder;') if @options[:order]
   end
   
   
@@ -102,6 +104,8 @@ class UnityTestRunnerGenerator
     unless (mocks.empty?)
       output.puts("static void CMock_Init(void)")
       output.puts("{")
+      output.puts("#{@tab}GlobalExpectOrder = 0;") if @options[:order]
+      output.puts("#{@tab}GlobalVerifyOrder = 0;") if @options[:order]
       mocks.each do |mock|
         output.puts("#{@tab}#{mock}_Init();")
       end
@@ -129,13 +133,13 @@ class UnityTestRunnerGenerator
     output.puts("{")
     output.puts("#{@tab}if (TEST_PROTECT())")
     output.puts("#{@tab}{")
-    output.puts("#{@tab}#{@tab}EXCEPTION_T e;") if @options.include?(:cexception)
-    output.puts("#{@tab}#{@tab}Try {") if @options.include?(:cexception)
+    output.puts("#{@tab}#{@tab}EXCEPTION_T e;") if @options[:cexception]
+    output.puts("#{@tab}#{@tab}Try {") if @options[:cexception]
     output.puts("#{@tab}#{@tab}#{@tab}CMock_Init();") unless (used_mocks.empty?) 
     output.puts("#{@tab}#{@tab}#{@tab}setUp();")
     output.puts("#{@tab}#{@tab}#{@tab}test();")
     output.puts("#{@tab}#{@tab}#{@tab}CMock_Verify();") unless (used_mocks.empty?)
-    output.puts("#{@tab}#{@tab}} Catch(e) { TEST_FAIL(\"Unhandled Exception!\"); }") if @options.include?(:cexception)
+    output.puts("#{@tab}#{@tab}} Catch(e) { TEST_FAIL(\"Unhandled Exception!\"); }") if @options[:cexception]
     output.puts("#{@tab}}")
     output.puts("#{@tab}CMock_Destroy();") unless (used_mocks.empty?)
     output.puts("#{@tab}if (TEST_PROTECT())")
@@ -162,7 +166,7 @@ class UnityTestRunnerGenerator
 
     output.puts()
     output.puts("#{@tab}UnityEnd();")
-    output.puts("#{@tab}cov_write();") if @options.include?(:coverage)
+    output.puts("#{@tab}cov_write();") if @options[:coverage]
     output.puts("#{@tab}return 0;")
     output.puts("}")
   end
@@ -171,17 +175,44 @@ end
 
 
 if ($0 == __FILE__)
-  usage = "usage: ruby #{__FILE__} input_test_file output_test_runner"
+  usage = ["usage: ruby #{__FILE__} ( options ) input_test_file output_test_runner (includes)",
+           "  -cexception - include cexception support",
+           "  -coverage   - include bullseye coverage support",
+           "  -order      - include cmock order-enforcement support",
+           "  blah.yml    - will use config options in the yml file (see CMock docs)" ]
+
+  includes = []
+  options = {}
   
+  #parse out all the options first
+  ARGV.reject! do |arg| 
+    if (arg =~ /\-(\w+)/) 
+      options[$1.to_sym] = 1
+      true
+    elsif (arg =~ /(\w+\.yml)/)
+      require 'yaml'
+      yaml_goodness = YAML.load_file($1)[:cmock]
+      options[:cexception] = 1 if (yaml_goodness[:plugins].include? 'cexception')
+      options[:coverage  ] = 1 if (yaml_goodness[:coverage])
+      options[:order]      = 1 if (yaml_goodness[:enforce_strict_ordering])
+      includes << yaml_goodness[:includes]
+      true
+    else
+      false
+    end
+  end     
+           
+  #make sure there is at least one parameter left (the input file)
   if !ARGV[0]
     puts usage
     exit 1
   end
   
+  #create the default test runner name if not specified
   ARGV[1] = ARGV[0].gsub(".c","_Runner.c") if (!ARGV[1])
   
-  includes = []
-  includes = ARGV.slice(2..-1) if (ARGV.size > 2)
+  #everything else is an include file
+  includes << ARGV.slice(2..-1) if (ARGV.size > 2)
   
-  UnityTestRunnerGenerator.new.run(ARGV[0], ARGV[1], includes)
+  UnityTestRunnerGenerator.new.run(ARGV[0], ARGV[1], includes.flatten.compact)
 end
