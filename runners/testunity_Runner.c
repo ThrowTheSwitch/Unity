@@ -43,19 +43,6 @@ void testNotEqualString2(void);
 void testNotEqualString3(void);
 void testNotEqualString_ExpectedStringIsNull(void);
 void testNotEqualString_ActualStringIsNull(void);
-void testEqualMemory(void);
-void testNotEqualMemory1(void);
-void testNotEqualMemory2(void);
-void testNotEqualMemory3(void);
-void testNotEqualMemory4(void);
-void testEqualIntArrays(void);
-void testNotEqualIntArrays1(void);
-void testNotEqualIntArrays2(void);
-void testNotEqualIntArrays3(void);
-void testEqualUIntArrays(void);
-void testNotEqualUIntArrays1(void);
-void testNotEqualUIntArrays2(void);
-void testNotEqualUIntArrays3(void);
 void testProtection(void);
 
 
@@ -66,7 +53,7 @@ static void runTest(UnityTestFunction test)
     setUp();
     test();
   }
-
+  
   if (TEST_PROTECT())
   {
     tearDown();
@@ -116,19 +103,6 @@ int main(void)
     RUN_TEST(testNotEqualString3);
     RUN_TEST(testNotEqualString_ExpectedStringIsNull);
     RUN_TEST(testNotEqualString_ActualStringIsNull);
-    RUN_TEST(testEqualMemory);
-    RUN_TEST(testNotEqualMemory1);
-    RUN_TEST(testNotEqualMemory2);
-    RUN_TEST(testNotEqualMemory3);
-    RUN_TEST(testNotEqualMemory4);
-    RUN_TEST(testEqualIntArrays);
-    RUN_TEST(testNotEqualIntArrays1);
-    RUN_TEST(testNotEqualIntArrays2);
-    RUN_TEST(testNotEqualIntArrays3);
-    RUN_TEST(testEqualUIntArrays);
-    RUN_TEST(testNotEqualUIntArrays1);
-    RUN_TEST(testNotEqualUIntArrays2);
-    RUN_TEST(testNotEqualUIntArrays3);
     RUN_TEST(testProtection);
 
     UnityEnd();
