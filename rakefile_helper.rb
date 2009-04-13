@@ -165,7 +165,7 @@ module RakefileHelpers
   
   def run_tests(test_files)
     
-    report 'Running system tests...'
+    report 'Running Unity system tests...'
     
     # Tack on TEST define for compiling unit tests
     load_configuration($cfg_file)
@@ -194,6 +194,7 @@ module RakefileHelpers
       
       runner_name = test_base + '_Runner.c'
       if $cfg['compiler']['runner_path'].nil?
+        require 'auto/generate_test_runner'
         runner_path = $cfg['compiler']['build_path'] + runner_name
         test_gen = UnityTestRunnerGenerator.new
         test_gen.run(test, runner_path)
