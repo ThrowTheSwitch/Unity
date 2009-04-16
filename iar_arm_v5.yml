@@ -3,7 +3,6 @@ compiler:
   path:             [*tools_root, 'arm\bin\iccarm.exe']
   source_path:      'src\'
   unit_tests_path:  &unit_tests_path 'test\'
-  runner_path:     'runners\'
   build_path:       &build_path 'build\'
   options:
     - --dlib_config

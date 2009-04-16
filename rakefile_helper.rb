@@ -1,6 +1,7 @@
 require 'yaml'
 require 'fileutils'
 require 'auto/unity_test_summary'
+require 'auto/generate_test_runner'
 
 module RakefileHelpers
 
@@ -28,7 +29,7 @@ module RakefileHelpers
   end
   
   def get_unit_test_files
-    path = $cfg['compiler']['unit_tests_path'] + 'Test*' + C_EXTENSION
+    path = $cfg['compiler']['unit_tests_path'] + 'test*' + C_EXTENSION
     path.gsub!(/\\/, '/')
     FileList.new(path)
   end
@@ -164,7 +165,6 @@ module RakefileHelpers
   end
   
   def run_tests(test_files)
-    
     report 'Running Unity system tests...'
     
     # Tack on TEST define for compiling unit tests
@@ -179,7 +179,7 @@ module RakefileHelpers
     test_files.each do |test|
       obj_list = []
       
-      # Detect dependencies and build required required modules
+      # Detect dependencies and build required modules
       extract_headers(test).each do |header|
         # Compile corresponding source file if it exists
         src_file = find_source_file(header, include_dirs)
@@ -193,14 +193,15 @@ module RakefileHelpers
       test_base = File.basename(test, C_EXTENSION)
       
       runner_name = test_base + '_Runner.c'
+      runner_path = ''
+      
       if $cfg['compiler']['runner_path'].nil?
-        require 'auto/generate_test_runner'
         runner_path = $cfg['compiler']['build_path'] + runner_name
-        test_gen = UnityTestRunnerGenerator.new
-        test_gen.run(test, runner_path)
       else
         runner_path = $cfg['compiler']['runner_path'] + runner_name
       end
+      
+      UnityTestRunnerGenerator.new.run(test, runner_path)
 
       compile(runner_path, test_defines)
       obj_list << runner_name.ext($cfg['compiler']['object_files']['extension'])
@@ -230,33 +231,6 @@ module RakefileHelpers
       File.open(test_results, 'w') { |f| f.print output }
       
     end
-  end
-  
-  def build_application(main)
-  
-    report "Building application..."
-    
-    obj_list = []
-    load_configuration($cfg_file)
-    main_path = $cfg['compiler']['source_path'] + main + C_EXTENSION
-
-    # Detect dependencies and build required required modules
-    include_dirs = get_local_include_dirs
-    extract_headers(main_path).each do |header|
-      src_file = find_source_file(header, include_dirs)
-      if !src_file.nil?
-        compile(src_file)
-        obj_list << header.ext($cfg['compiler']['object_files']['extension'])
-      end
-    end
-    
-    # Build the main source file
-    main_base = File.basename(main_path, C_EXTENSION)
-    compile(main_path)
-    obj_list << main_base.ext($cfg['compiler']['object_files']['extension'])
-    
-    # Create the executable
-    link(main_base, obj_list)
   end
   
 end

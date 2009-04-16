@@ -2,13 +2,12 @@ compiler:
   path: gcc
   source_path:     'src/'
   unit_tests_path: &unit_tests_path 'test/'
-  runner_path:     'runners/'
   build_path:      &build_path 'build/'
   options:
     - '-c'
     - '-Wall'
-    - -std=c99
-    - -pedantic
+    - '-std=c99'
+    - '-pedantic'
   includes:
     prefix: '-I'
     items:
