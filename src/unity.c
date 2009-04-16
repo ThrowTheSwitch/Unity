@@ -12,7 +12,7 @@ struct _Unity Unity =
     0,
     0,
     1e-4f,
-    0,
+    {0},
 };
 
 void UnityPrintChar(const char ch)

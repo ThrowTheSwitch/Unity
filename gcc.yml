@@ -5,7 +5,10 @@ compiler:
   runner_path:     'runners/'
   build_path:      &build_path 'build/'
   options:
-    - -c
+    - '-c'
+    - '-Wall'
+    - -std=c99
+    - -pedantic
   includes:
     prefix: '-I'
     items:
