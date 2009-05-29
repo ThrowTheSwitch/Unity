@@ -6,73 +6,65 @@ require 'fileutils'
 require 'set'
 
 class UnityTestSummary
-
   include FileUtils::Verbose
 
+  attr_reader :report, :total_tests, :failures, :ignored
+  
+  def initialize
+    @report = ''
+    @total_tests = 0
+    @failures = 0
+    @ignored = 0
+  end
+  
   def run
-
-    $stderr.flush
-    $stdout.flush
-
     # Clean up result file names
     results = @targets.map {|target| target.gsub(/\\/,'/')}
 
-    # Dig through each result file, looking for details on pass/fail:
-    total_tests = 0
-    total_failures = 0
-    total_ignored = 0
-    
+    # Dig through each result file, looking for details on pass/fail:   
     failure_output = ""
     ignore_output = ""
     
     results.each do |result_file|
       lines = File.readlines(result_file).map { |line| line.chomp }
       if lines.length == 0
-        puts "Empty test result file: #{result_file}"
+        raise "Empty test result file: #{result_file}"
       else
         summary_line = -2
         output = get_details(result_file, lines)
         failure_output += output[:failures] if !output[:failures].empty?
         ignore_output += output[:ignores] if !output[:ignores].empty?
         tests,failures,ignored = parse_test_summary(lines[summary_line])
-        total_tests += tests
-        total_failures += failures
-        total_ignored += ignored
+        @total_tests += tests
+        @failures += failures
+        @ignored += ignored
       end
     end
     
-    if total_ignored > 0
-      puts "\n"
-      puts "--------------------------\n"
-      puts "UNITY IGNORED TEST SUMMARY\n"
-      puts "--------------------------\n"
-      puts ignore_output
+    if @ignored > 0
+      @report += "\n"
+      @report += "--------------------------\n"
+      @report += "UNITY IGNORED TEST SUMMARY\n"
+      @report += "--------------------------\n"
+      @report += ignore_output
     end
     
-    if total_failures > 0
-      puts "\n"
-      puts "--------------------------\n"
-      puts "UNITY FAILED TEST SUMMARY\n"
-      puts "--------------------------\n"
-      puts failure_output
+    if @failures > 0
+      @report += "\n"
+      @report += "--------------------------\n"
+      @report += "UNITY FAILED TEST SUMMARY\n"
+      @report += "--------------------------\n"
+      @report += failure_output
     end
   
-    puts "\n"
-    puts "--------------------------\n"
-    puts "OVERALL UNITY TEST SUMMARY\n"
-    puts "--------------------------\n"
-    puts "TOTAL TESTS: #{total_tests} TOTAL FAILURES: #{total_failures} IGNORED: #{total_ignored}\n"
-    puts "\n"
-    
-    return total_failures
+    @report += "\n"
+    @report += "--------------------------\n"
+    @report += "OVERALL UNITY TEST SUMMARY\n"
+    @report += "--------------------------\n"
+    @report += "TOTAL TESTS: #{@total_tests} TOTAL FAILURES: #{@failures} IGNORED: #{@ignored}\n"
+    @report += "\n"
   end
-
-  def usage(err_msg=nil)
-    puts err_msg if err_msg
-    puts "Usage: unity_test_summary.rb"
-    exit 1
-  end
-   
+  
   def set_targets(target_array)
     @targets = target_array
   end
@@ -81,6 +73,12 @@ class UnityTestSummary
     @root = path
   end
 
+  def usage(err_msg=nil)
+    puts err_msg if err_msg
+    puts "Usage: unity_test_summary.rb"
+    exit 1
+  end
+  
   protected
   
   @@targets=nil
