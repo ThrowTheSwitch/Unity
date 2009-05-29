@@ -1,7 +1,7 @@
 
 class UnityTestRunnerGenerator
 
-  def grab_config(config_file)
+  def self.grab_config(config_file)
     includes = []
     options = {}
     unless (config_file.nil? or config_file.empty?)
@@ -203,7 +203,7 @@ if ($0 == __FILE__)
       options[$1.to_sym] = 1
       true
     elsif (arg =~ /(\w+\.yml)/)
-      includes, options = grab_config($1)
+      includes, options = UnityTestRunnerGenerator::grab_config($1)
       true
     else
       false
