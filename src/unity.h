@@ -41,11 +41,11 @@ struct _Unity
 
 extern struct _Unity Unity;
 
-void CreateResults();
+void CreateResults(void);
 
-void UnityBegin();
+void UnityBegin(void);
 void UnityEnd(void);
-long  UnityGetNumFailures(void);
+long UnityGetNumFailures(void);
 
 void UnityPrintChar(const char ch);
 void UnityPrint(const char* string);
@@ -54,7 +54,7 @@ void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T styl
 void UnityPrintNumber(const long number);
 void UnityPrintNumberUnsigned(const unsigned long number);
 void UnityPrintNumberHex(const unsigned long number, const char nibbles);
-void UnityConcludeTest();
+void UnityConcludeTest(void);
 
 void UnityAssertEqualInt(const long expected,
                          const long actual,
