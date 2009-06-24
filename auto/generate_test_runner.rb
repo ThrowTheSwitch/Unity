@@ -93,8 +93,11 @@ class UnityTestRunnerGenerator
     output.puts('#include "BullseyeCoverage.h"') if @options[:coverage]
     output.puts('')    
     output.puts('char MessageBuffer[50];')
-    output.puts('int GlobalExpectCount;') if @options[:order]
-    output.puts('int GlobalVerifyOrder;') if @options[:order]
+    if @options[:order]
+      output.puts('int GlobalExpectCount;') 
+      output.puts('int GlobalVerifyOrder;') 
+      output.puts('char* GlobalOrderError;') 
+    end
   end
   
   
@@ -118,8 +121,11 @@ class UnityTestRunnerGenerator
     unless (mocks.empty?)
       output.puts("static void CMock_Init(void)")
       output.puts("{")
-      output.puts("#{@tab}GlobalExpectCount = 0;") if @options[:order]
-      output.puts("#{@tab}GlobalVerifyOrder = 0;") if @options[:order]
+      if @options[:order]
+        output.puts("#{@tab}GlobalExpectCount = 0;")
+        output.puts("#{@tab}GlobalVerifyOrder = 0;") 
+        output.puts("#{@tab}GlobalOrderError = NULL;") 
+      end
       mocks.each do |mock|
         output.puts("#{@tab}#{mock}_Init();")
       end
