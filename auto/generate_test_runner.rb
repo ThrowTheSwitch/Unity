@@ -15,8 +15,7 @@ class UnityTestRunnerGenerator
     return([includes, options])
   end
 
-  def run(input_file, output_file, additional_includes=[], tab='  ', options={})
-    @tab = tab
+  def run(input_file, output_file, additional_includes=[], options={})
     @options = options
     tests = []
     includes = []
@@ -122,26 +121,26 @@ class UnityTestRunnerGenerator
       output.puts("static void CMock_Init(void)")
       output.puts("{")
       if @options[:order]
-        output.puts("#{@tab}GlobalExpectCount = 0;")
-        output.puts("#{@tab}GlobalVerifyOrder = 0;") 
-        output.puts("#{@tab}GlobalOrderError = NULL;") 
+        output.puts("  GlobalExpectCount = 0;")
+        output.puts("  GlobalVerifyOrder = 0;") 
+        output.puts("  GlobalOrderError = NULL;") 
       end
       mocks.each do |mock|
-        output.puts("#{@tab}#{mock}_Init();")
+        output.puts("  #{mock}_Init();")
       end
       output.puts("}\n")
 
       output.puts("static void CMock_Verify(void)")
       output.puts("{")
       mocks.each do |mock|
-        output.puts("#{@tab}#{mock}_Verify();")
+        output.puts("  #{mock}_Verify();")
       end
       output.puts("}\n")
 
       output.puts("static void CMock_Destroy(void)")
       output.puts("{")
       mocks.each do |mock|
-        output.puts("#{@tab}#{mock}_Destroy();")
+        output.puts("  #{mock}_Destroy();")
       end
       output.puts("}\n")
     end
@@ -151,21 +150,21 @@ class UnityTestRunnerGenerator
   def create_runtest(output, used_mocks)
     output.puts("static void runTest(UnityTestFunction test)")
     output.puts("{")
-    output.puts("#{@tab}if (TEST_PROTECT())")
-    output.puts("#{@tab}{")
-    output.puts("#{@tab}#{@tab}EXCEPTION_T e;") if @options[:cexception]
-    output.puts("#{@tab}#{@tab}Try {") if @options[:cexception]
-    output.puts("#{@tab}#{@tab}#{@tab}CMock_Init();") unless (used_mocks.empty?) 
-    output.puts("#{@tab}#{@tab}#{@tab}setUp();")
-    output.puts("#{@tab}#{@tab}#{@tab}test();")
-    output.puts("#{@tab}#{@tab}#{@tab}CMock_Verify();") unless (used_mocks.empty?)
-    output.puts("#{@tab}#{@tab}} Catch(e) { TEST_FAIL(\"Unhandled Exception!\"); }") if @options[:cexception]
-    output.puts("#{@tab}}")
-    output.puts("#{@tab}CMock_Destroy();") unless (used_mocks.empty?)
-    output.puts("#{@tab}if (TEST_PROTECT())")
-    output.puts("#{@tab}{")
-    output.puts("#{@tab}#{@tab}tearDown();")
-    output.puts("#{@tab}}")
+    output.puts("  if (TEST_PROTECT())")
+    output.puts("  {")
+    output.puts("    EXCEPTION_T e;") if @options[:cexception]
+    output.puts("    Try {") if @options[:cexception]
+    output.puts("      CMock_Init();") unless (used_mocks.empty?) 
+    output.puts("      setUp();")
+    output.puts("      test();")
+    output.puts("      CMock_Verify();") unless (used_mocks.empty?)
+    output.puts("    } Catch(e) { TEST_FAIL(\"Unhandled Exception!\"); }") if @options[:cexception]
+    output.puts("  }")
+    output.puts("  CMock_Destroy();") unless (used_mocks.empty?)
+    output.puts("  if (TEST_PROTECT())")
+    output.puts("  {")
+    output.puts("    tearDown();")
+    output.puts("  }")
     output.puts("}")
   end
   
@@ -175,19 +174,19 @@ class UnityTestRunnerGenerator
     output.puts()
     output.puts("int main(void)")
     output.puts("{")
-    output.puts("#{@tab}Unity.TestFile = \"#{module_name}\";")
-    output.puts("#{@tab}UnityBegin();")
+    output.puts("  Unity.TestFile = \"#{module_name}\";")
+    output.puts("  UnityBegin();")
     output.puts()
 
-    output.puts("#{@tab}// RUN_TEST calls runTest")  	
+    output.puts("  // RUN_TEST calls runTest")  	
     tests.each do |test|
-      output.puts("#{@tab}RUN_TEST(#{test});")
+      output.puts("  RUN_TEST(#{test});")
     end
 
     output.puts()
-    output.puts("#{@tab}UnityEnd();")
-    output.puts("#{@tab}cov_write();") if @options[:coverage]
-    output.puts("#{@tab}return 0;")
+    output.puts("  UnityEnd();")
+    output.puts("  cov_write();") if @options[:coverage]
+    output.puts("  return 0;")
     output.puts("}")
   end
 end
@@ -228,5 +227,5 @@ if ($0 == __FILE__)
   #everything else is an include file
   includes << ARGV.slice(2..-1) if (ARGV.size > 2)
   
-  UnityTestRunnerGenerator.new.run(ARGV[0], ARGV[1], includes.flatten.compact, '  ', options)
+  UnityTestRunnerGenerator.new.run(ARGV[0], ARGV[1], includes.flatten.compact, options)
 end
