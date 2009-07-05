@@ -34,6 +34,7 @@ class UnityTestRunnerGenerator
       create_externs(output, tests, used_mocks)
       create_mock_management(output, used_mocks)
       create_runtest(output, used_mocks)
+	  create_reset(output, used_mocks)
       create_main(output, module_name, tests)
     end
     
@@ -168,6 +169,16 @@ class UnityTestRunnerGenerator
     output.puts("}")
   end
   
+  def create_reset(output, used_mocks)
+    output.puts("void resetTest()")
+    output.puts("{")
+    output.puts("  CMock_Verify();") unless (used_mocks.empty?)
+    output.puts("  CMock_Destroy();") unless (used_mocks.empty?)
+    output.puts("  tearDown();")
+    output.puts("  CMock_Init();") unless (used_mocks.empty?) 
+    output.puts("  setUp();")
+    output.puts("}")
+  end
   
   def create_main(output, module_name, tests)
     output.puts()
