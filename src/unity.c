@@ -2,18 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-struct _Unity Unity =
-{
-    NULL,
-    NULL,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1e-4f,
-    {0},
-};
+//rely on how C will fill the rest of the structure with 0's
+struct _Unity Unity = { 0 };
 
 void UnityPrintChar(const char ch)
 {
