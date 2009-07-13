@@ -28,13 +28,15 @@ class UnityTestRunnerGenerator
       includes = find_includes(input)
       used_mocks = find_mocks(includes)
     end
+    
+    puts "Creating test runner for #{File.basename(input_file)}..."
 
     File.open(output_file, 'w') do |output|
       create_header(output, used_mocks, additional_includes)
       create_externs(output, tests, used_mocks)
       create_mock_management(output, used_mocks)
       create_runtest(output, used_mocks)
-	  create_reset(output, used_mocks)
+	    create_reset(output, used_mocks)
       create_main(output, module_name, tests)
     end
     
