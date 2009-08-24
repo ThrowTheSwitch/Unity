@@ -2,8 +2,18 @@
 #include <stdio.h>
 #include <string.h>
 
-//rely on how C will fill the rest of the structure with 0's
-struct _Unity Unity = { 0 };
+struct _Unity Unity =
+{
+    NULL,
+    NULL,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1e-4f,
+    {0},
+};
 
 void UnityPrintChar(const char ch)
 {
@@ -327,7 +337,7 @@ void UnityAssertIntsWithin(const long delta,
 void UnityAssertEqualString(const char* expected,
                             const char* actual,
                             const char* msg,
-                            unsigned short lineNumber)
+                            const unsigned short lineNumber)
 {
     unsigned long i;
 
@@ -373,7 +383,7 @@ void UnityAssertEqualMemory(const void* expected,
                             const void* actual,
                             unsigned long length,
                             const char* msg,
-                            unsigned short lineNumber)
+                            const unsigned short lineNumber)
 {
     if (length == 0)
         return;
