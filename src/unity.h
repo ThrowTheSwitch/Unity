@@ -11,22 +11,27 @@
 // Bus Width Management
 //-------------------------------------------------------
 
-#if defined(BUS_WIDTH) && (BUS_WIDTH != 32)
-  #if (BUS_WIDTH == 16)
-    typedef unsigned char   _UU8;
-    typedef unsigned int    _UU16;
-    typedef unsigned long   _UU32;
-    typedef signed char     _US8;
-    typedef signed int      _US16;
-    typedef signed long     _US32;
-  #endif                  
-#else
+#ifndef INT_WIDTH
+#define INT_WIDTH (32)
+#endif
+
+#if (INT_WIDTH == 32)
     typedef unsigned char   _UU8;
     typedef unsigned short  _UU16;
     typedef unsigned int    _UU32;
     typedef signed char     _US8;
     typedef signed short    _US16;
     typedef signed int      _US32;
+#elif (INT_WIDTH == 16)
+    typedef unsigned char   _UU8;
+    typedef unsigned int    _UU16;
+    typedef unsigned long   _UU32;
+    typedef signed char     _US8;
+    typedef signed int      _US16;
+    typedef signed long     _US32;               
+#else
+    #error Invalid INT_WIDTH specified! (32 or 16 only are currently supported)
+    #error Defaults to INT_WIDTH=32 if unspecified
 #endif
 
 
