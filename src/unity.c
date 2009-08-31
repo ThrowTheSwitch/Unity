@@ -204,7 +204,7 @@ void UnityAssertBits(const long mask,
     }
 }
 
-void UnityAssertEqualInt(const long expected,
+void UnityAssertEqualNumber(const long expected,
                          const long actual,
                          const char* msg,
                          const unsigned short lineNumber,
@@ -229,16 +229,92 @@ void UnityAssertEqualInt(const long expected,
     }
 }
 
-void UnityAssertEqualIntArray(const long* expected,
-                              const long* actual,
+void UnityAssertEqualNumberUnsigned(const unsigned long expected,
+                         const unsigned long actual,
+                         const char* msg,
+                         const unsigned short lineNumber,
+                         const UNITY_DISPLAY_STYLE_T style)
+{
+    if (expected != actual)
+    {
+        Unity.CurrentTestFailed = 1;
+
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("Expected ");
+        UnityPrintNumberByStyle(expected, style);
+        UnityPrint(" was ");
+        UnityPrintNumberByStyle(actual, style);
+        UnityPrintChar('.');
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
+    }
+}
+
+void UnityAssertEqualIntArray(const int* expected,
+                              const int* actual,
                               const unsigned long num_elements,
                               const char* msg,
                               const unsigned short lineNumber,
                               const UNITY_DISPLAY_STYLE_T style)
 {
     unsigned long elements = num_elements;
-    const long* ptr_expected = expected;
-    const long* ptr_actual = actual;
+    const int* ptr_expected = expected;
+    const int* ptr_actual = actual;
+
+    if (elements == 0)
+    {
+        Unity.CurrentTestFailed = 1;
+
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("You asked me to compare 0 elements of an array, which was pointless.");
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
+        return;
+    }
+
+    while (elements--)
+    {
+        if (*ptr_expected++ != *ptr_actual++)
+        {
+            Unity.CurrentTestFailed = 1;
+
+            UnityTestResultsBegin(lineNumber);
+            UnityPrint("Element ");
+            UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+            UnityPrint(" Expected ");
+            UnityPrintNumberByStyle(*--ptr_expected, style);
+            UnityPrint(" was ");
+            UnityPrintNumberByStyle(*--ptr_actual, style);
+            UnityPrintChar('.');
+            if (msg)
+            {
+                UnityPrintChar(' ');
+                UnityPrint(msg);
+            }
+            UnityPrintChar('\n');
+            return;
+        }
+    }
+}
+
+void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
+                              const unsigned int* actual,
+                              const unsigned long num_elements,
+                              const char* msg,
+                              const unsigned short lineNumber,
+                              const UNITY_DISPLAY_STYLE_T style)
+{
+    unsigned long elements = num_elements;
+    const unsigned int* ptr_expected = expected;
+    const unsigned int* ptr_actual = actual;
 
     if (elements == 0)
     {
@@ -307,13 +383,13 @@ void UnityAssertFloatsWithin(const float delta,
     }
 }
 
-void UnityAssertIntsWithin(const long delta,
+void UnityAssertNumbersWithin(const long delta,
                            const long expected,
                            const long actual,
                            const char* msg,
                            const unsigned short lineNumber)
 {
-    long diff = actual - expected;
+    int diff = actual - expected;
 
     if (diff < 0)
     {
@@ -324,7 +400,29 @@ void UnityAssertIntsWithin(const long delta,
     {
         Unity.CurrentTestFailed = 1;
         UnityTestResultsBegin(lineNumber);
-        UnityPrint("Ints not within delta.");
+        UnityPrint("Values not within delta.");
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
+    }
+}
+
+void UnityAssertNumbersUnsignedWithin(const unsigned long delta,
+                           const unsigned long expected,
+                           const unsigned long actual,
+                           const char* msg,
+                           const unsigned short lineNumber)
+{
+    unsigned int diff = actual - expected;
+
+    if (delta < diff)
+    {
+        Unity.CurrentTestFailed = 1;
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("Values not within delta.");
         if (msg)
         {
             UnityPrintChar(' ');
@@ -454,9 +552,4 @@ void UnityEnd(void)
     {
         UnityPrint("FAIL\n");
     }
-}
-
-long UnityGetNumFailures(void)
-{
-    return Unity.TestFailures;
 }

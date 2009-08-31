@@ -1,4 +1,4 @@
-tools_root:  &tools_root 'C:\Program Files\IAR Systems\Embedded Workbench 5.3 Evaluation\'
+tools_root:  &tools_root 'C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\'
 core_root:   &core_root [*tools_root, '430\']
 core_bin:    &core_bin [*core_root, 'bin\']
 core_config: &core_config [*core_root, 'config\']
@@ -21,6 +21,7 @@ compiler:
     - --no_tbaa
     - --debug
     - -D__MSP430F149__
+    - -DBUS_WIDTH=16
     - -DUNITY_FLOAT_SUPPORT_DISABLED
     - -e
     - -Ol

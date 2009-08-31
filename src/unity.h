@@ -6,6 +6,30 @@
 #include <stdio.h>
 #include <setjmp.h>
 
+
+//-------------------------------------------------------
+// Bus Width Management
+//-------------------------------------------------------
+
+#if defined(BUS_WIDTH) && (BUS_WIDTH != 32)
+  #if (BUS_WIDTH == 16)
+    typedef unsigned char   U8;
+    typedef unsigned int    U16;
+    typedef unsigned long   U32;
+    typedef signed char     S8;
+    typedef signed int      S16;
+    typedef signed long     S32;
+  #endif                  
+#else
+    typedef unsigned char   U8;
+    typedef unsigned short  U16;
+    typedef unsigned int    U32;
+    typedef signed char     S8;
+    typedef signed short    S16;
+    typedef signed int      S32;
+#endif
+
+
 //-------------------------------------------------------
 // Internal Functions and Structs Needed For Unity To Run
 //
@@ -41,11 +65,19 @@ struct _Unity
 
 extern struct _Unity Unity;
 
-void CreateResults(void);
+
+//-------------------------------------------------------
+// Test Suite Management
+//-------------------------------------------------------
 
 void UnityBegin(void);
 void UnityEnd(void);
-long UnityGetNumFailures(void);
+void UnityConcludeTest(void);
+
+
+//-------------------------------------------------------
+// Test Output
+//-------------------------------------------------------
 
 void UnityPrintChar(const char ch);
 void UnityPrint(const char* string);
@@ -54,16 +86,33 @@ void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T styl
 void UnityPrintNumber(const long number);
 void UnityPrintNumberUnsigned(const unsigned long number);
 void UnityPrintNumberHex(const unsigned long number, const char nibbles);
-void UnityConcludeTest(void);
 
-void UnityAssertEqualInt(const long expected,
-                         const long actual,
-                         const char* msg,
-                         const unsigned short lineNumber,
-                         const UNITY_DISPLAY_STYLE_T style);
 
-void UnityAssertEqualIntArray(const long* expected,
-                              const long* actual,
+//-------------------------------------------------------
+// Test Assertion Fuctions
+//-------------------------------------------------------
+
+void UnityAssertEqualNumber(const long expected,
+                            const long actual,
+                            const char* msg,
+                            const unsigned short lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style);
+                         
+void UnityAssertEqualNumberUnsigned(const unsigned long expected,
+                                    const unsigned long actual,
+                                    const char* msg,
+                                    const unsigned short lineNumber,
+                                    const UNITY_DISPLAY_STYLE_T style);
+
+void UnityAssertEqualIntArray(const int* expected,
+                              const int* actual,
+                              const unsigned long num_elements,
+                              const char* msg,
+                              const unsigned short lineNumber,
+                              const UNITY_DISPLAY_STYLE_T style);
+
+void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
+                              const unsigned int* actual,
                               const unsigned long num_elements,
                               const char* msg,
                               const unsigned short lineNumber,
@@ -92,15 +141,22 @@ void UnityAssertFloatsWithin(const float delta,
                              const char* msg,
                              const unsigned short lineNumber);
 
-void UnityAssertIntsWithin(const long delta,
-                           const long expected,
-                           const long actual,
-                           const char* msg,
-                           const unsigned short lineNumber);
+void UnityAssertNumbersWithin(const long delta,
+                              const long expected,
+                              const long actual,
+                              const char* msg,
+                              const unsigned short lineNumber);
+
+void UnityAssertNumbersUnsignedWithin(const unsigned long delta,
+                                      const unsigned long expected,
+                                      const unsigned long actual,
+                                      const char* msg,
+                                      const unsigned short lineNumber);
 
 void UnityFail(const char* message, const long line);
 
 void UnityIgnore(const char* message, const long line);
+
 
 //-------------------------------------------------------
 // Test Running Macros
@@ -119,6 +175,7 @@ void UnityIgnore(const char* message, const long line);
     runTest(func); \
     UnityConcludeTest();
 
+    
 //-------------------------------------------------------
 // Test Asserts
 //
@@ -142,13 +199,13 @@ void UnityIgnore(const char* message, const long line);
 
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualInt((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
+    UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_INT(expected, actual)	TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_INT_ARRAY_MESSAGE(expected, actual, num_elements, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualIntArray((long*)(expected), (long*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
+    UnityAssertEqualIntArray((int*)(expected), (int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_INT_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
@@ -157,37 +214,37 @@ void UnityIgnore(const char* message, const long line);
 
 #define TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertIntsWithin((delta), (expected), (actual), NULL, (unsigned short)__LINE__); \
+    UnityAssertNumbersWithin((long)(delta), (long)(expected), (long)(actual), NULL, (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_INT_WITHIN(delta, expected, actual) TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualInt((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
+    UnityAssertEqualNumberUnsigned((unsigned long)(expected), (unsigned long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_UINT(expected, actual) TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_UINT_ARRAY_MESSAGE(expected, actual, num_elements, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualIntArray((long*)(expected), (long*)(actual), (unsigned long)(num_elements),  (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
+    UnityAssertEqualUnsignedIntArray((unsigned int*)(expected), (unsigned int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_UINT_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_UINT_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualInt((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX8); \
+    UnityAssertEqualNumberUnsigned((unsigned long)(expected), (unsigned long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX8); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX8(expected, actual) TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualInt((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX16); \
+    UnityAssertEqualNumberUnsigned((unsigned long)(expected), (unsigned long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX16); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX16(expected, actual)	TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualInt((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
+    UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX32(expected, actual)	TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, NULL)
 
@@ -202,7 +259,7 @@ void UnityIgnore(const char* message, const long line);
 
 #define TEST_ASSERT_EQUAL_HEX_ARRAY_MESSAGE(expected, actual, num_elements, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualIntArray((long*)(expected), (long*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
+    UnityAssertEqualIntArray((int*)(expected), (int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_HEX32_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
@@ -226,13 +283,13 @@ void UnityIgnore(const char* message, const long line);
 
 #define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertBits((1 << bit), (-1), (actual), (message), (unsigned short)__LINE__); \
+    UnityAssertBits(((U32)1 << bit), (-1), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_HIGH(bit, actual) TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, NULL)
 
 #define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertBits((1 << bit), (0), (actual), (message), (unsigned short)__LINE__); \
+    UnityAssertBits(((U32)1 << bit), (0), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_LOW(bit, actual) TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, NULL)
 
@@ -259,4 +316,3 @@ void UnityIgnore(const char* message, const long line);
 #define TEST_IGNORE() TEST_IGNORE_MESSAGE(NULL)
 
 #endif
-
