@@ -13,20 +13,20 @@
 
 #if defined(BUS_WIDTH) && (BUS_WIDTH != 32)
   #if (BUS_WIDTH == 16)
-    typedef unsigned char   U8;
-    typedef unsigned int    U16;
-    typedef unsigned long   U32;
-    typedef signed char     S8;
-    typedef signed int      S16;
-    typedef signed long     S32;
+    typedef unsigned char   _UU8;
+    typedef unsigned int    _UU16;
+    typedef unsigned long   _UU32;
+    typedef signed char     _US8;
+    typedef signed int      _US16;
+    typedef signed long     _US32;
   #endif                  
 #else
-    typedef unsigned char   U8;
-    typedef unsigned short  U16;
-    typedef unsigned int    U32;
-    typedef signed char     S8;
-    typedef signed short    S16;
-    typedef signed int      S32;
+    typedef unsigned char   _UU8;
+    typedef unsigned short  _UU16;
+    typedef unsigned int    _UU32;
+    typedef signed char     _US8;
+    typedef signed short    _US16;
+    typedef signed int      _US32;
 #endif
 
 
@@ -283,13 +283,13 @@ void UnityIgnore(const char* message, const long line);
 
 #define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertBits(((U32)1 << bit), (-1), (actual), (message), (unsigned short)__LINE__); \
+    UnityAssertBits(((_UU32)1 << bit), (-1), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_HIGH(bit, actual) TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, NULL)
 
 #define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertBits(((U32)1 << bit), (0), (actual), (message), (unsigned short)__LINE__); \
+    UnityAssertBits(((_UU32)1 << bit), (0), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_LOW(bit, actual) TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, NULL)
 

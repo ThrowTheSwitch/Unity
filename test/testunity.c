@@ -181,7 +181,7 @@ void testNotEqualBits(void)
 void testNotEqualUInts(void)
 {
     int failed;
-    U16 v0, v1;
+    _UU16 v0, v1;
     
     v0 = 9000;
     v1 = 9001;
@@ -199,7 +199,7 @@ void testNotEqualUInts(void)
 void testNotEqualHex8s(void)
 {
     int failed;
-    U8 v0, v1;
+    _UU8 v0, v1;
     
     v0 = 0x23;
     v1 = 0x22;
@@ -217,7 +217,7 @@ void testNotEqualHex8s(void)
 void testNotEqualHex16s(void)
 {
     int failed;
-    U16 v0, v1;
+    _UU16 v0, v1;
     
     v0 = 0x1234;
     v1 = 0x1235;
@@ -235,7 +235,7 @@ void testNotEqualHex16s(void)
 void testNotEqualHex32s(void)
 {
     int failed;
-    U32 v0, v1;
+    _UU32 v0, v1;
     
     v0 = 900000;
     v1 = 900001;
@@ -292,8 +292,8 @@ void testEqualUints(void)
 
 void testEqualHex8s(void)
 {
-    U8 v0, v1;
-    U8 *p0, *p1;
+    _UU8 v0, v1;
+    _UU8 *p0, *p1;
     
     v0 = 0x22;
     v1 = 0x22;
@@ -311,8 +311,8 @@ void testEqualHex8s(void)
 
 void testEqualHex16s(void)
 {
-    U16 v0, v1;
-    U16 *p0, *p1;
+    _UU16 v0, v1;
+    _UU16 *p0, *p1;
     
     v0 = 0x9876;
     v1 = 0x9876;
@@ -330,8 +330,8 @@ void testEqualHex16s(void)
 
 void testEqualHex32s(void)
 {
-    U32 v0, v1;
-    U32 *p0, *p1;
+    _UU32 v0, v1;
+    _UU32 *p0, *p1;
     
     v0 = 0x98765432ul;
     v1 = 0x98765432ul;
@@ -349,8 +349,8 @@ void testEqualHex32s(void)
 
 void testEqualBits(void)
 {
-    U32 v0 = 0xFF55AA00;
-    U32 v1 = 0x55550000;
+    _UU32 v0 = 0xFF55AA00;
+    _UU32 v1 = 0x55550000;
 
     TEST_ASSERT_BITS(v1, v0, 0x55550000);
     TEST_ASSERT_BITS(v1, v0, 0xFF55CC00);
