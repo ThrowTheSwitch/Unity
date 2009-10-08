@@ -190,13 +190,13 @@ void UnityIgnore(const char* message, const long line);
 #define TEST_ASSERT_MESSAGE(condition, message) if (condition) {} else {TEST_FAIL(message);}
 #define TEST_ASSERT(condition) TEST_ASSERT_MESSAGE(condition, NULL)
 
-#define TEST_ASSERT_TRUE_MESSAGE(condition) TEST_ASSERT_MESSAGE(condition, message)
+#define TEST_ASSERT_TRUE_MESSAGE(condition, message) TEST_ASSERT_MESSAGE(condition, message)
 #define TEST_ASSERT_TRUE(condition) TEST_ASSERT(condition)
 
-#define TEST_ASSERT_UNLESS_MESSAGE(condition) TEST_ASSERT_MESSAGE(!(condition), message)
+#define TEST_ASSERT_UNLESS_MESSAGE(condition, message) TEST_ASSERT_MESSAGE(!(condition), message)
 #define TEST_ASSERT_UNLESS(condition) TEST_ASSERT(!(condition))
 
-#define TEST_ASSERT_FALSE_MESSAGE(condition) TEST_ASSERT_MESSAGE(!(condition), message)
+#define TEST_ASSERT_FALSE_MESSAGE(condition, message) TEST_ASSERT_MESSAGE(!(condition), message)
 #define TEST_ASSERT_FALSE(condition) TEST_ASSERT(!(condition))
 
 #define TEST_ASSERT_NULL(pointer) TEST_ASSERT_MESSAGE(pointer == NULL, #pointer " was not null.")
@@ -216,6 +216,9 @@ void UnityIgnore(const char* message, const long line);
 
 #define TEST_ASSERT_EQUAL_MESSAGE(expected, actual, message) TEST_ASSERT_EQUAL_INT_MESSAGE((expected), (actual), (message))
 #define TEST_ASSERT_EQUAL(expected, actual) TEST_ASSERT_EQUAL_INT(expected, actual)
+
+#define TEST_ASSERT_NOT_EQUAL_MESSAGE(expected, actual, message) TEST_ASSERT_FALSE_MESSAGE(((expected) == (actual)), (message))
+#define TEST_ASSERT_NOT_EQUAL(expected, actual) TEST_ASSERT_FALSE((expected) == (actual))
 
 #define TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, message) \
     Unity.TestFile=__FILE__; \

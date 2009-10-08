@@ -104,6 +104,21 @@ void testNotUnless(void)
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
 }
 
+void testNotNotEqual(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL(10, 10);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    TEST_ASSERT_EQUAL_INT(1U, failed);
+    TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
+}
+
 void testFail(void)
 {
     int failed;
@@ -288,6 +303,17 @@ void testEqualUints(void)
     TEST_ASSERT_EQUAL_UINT(*p0, *p1);
     TEST_ASSERT_EQUAL_UINT(*p0, 19467);
     TEST_ASSERT_EQUAL_UINT(60872u, 60872u);
+}
+
+void testNotEqual(void)
+{
+    TEST_ASSERT_NOT_EQUAL(0, 1);
+    TEST_ASSERT_NOT_EQUAL(1, 0);
+    TEST_ASSERT_NOT_EQUAL(100, 101);
+    TEST_ASSERT_NOT_EQUAL(0, -1);
+    TEST_ASSERT_NOT_EQUAL(65535, -65535);
+    TEST_ASSERT_NOT_EQUAL(75, 900);
+    TEST_ASSERT_NOT_EQUAL(-100, -101);
 }
 
 void testEqualHex8s(void)
