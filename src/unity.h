@@ -191,13 +191,13 @@ void UnityIgnore(const char* message, const long line);
 #define TEST_ASSERT(condition) TEST_ASSERT_MESSAGE(condition, NULL)
 
 #define TEST_ASSERT_TRUE_MESSAGE(condition, message) TEST_ASSERT_MESSAGE(condition, message)
-#define TEST_ASSERT_TRUE(condition) TEST_ASSERT(condition)
+#define TEST_ASSERT_TRUE(condition) TEST_ASSERT_MESSAGE(condition, "Expected TRUE was FALSE.")
 
 #define TEST_ASSERT_UNLESS_MESSAGE(condition, message) TEST_ASSERT_MESSAGE(!(condition), message)
 #define TEST_ASSERT_UNLESS(condition) TEST_ASSERT(!(condition))
 
 #define TEST_ASSERT_FALSE_MESSAGE(condition, message) TEST_ASSERT_MESSAGE(!(condition), message)
-#define TEST_ASSERT_FALSE(condition) TEST_ASSERT(!(condition))
+#define TEST_ASSERT_FALSE(condition) TEST_ASSERT_MESSAGE(!(condition), "Expected FALSE was TRUE.")
 
 #define TEST_ASSERT_NULL(pointer) TEST_ASSERT_MESSAGE(pointer == NULL, #pointer " was not null.")
 #define TEST_ASSERT_NOT_NULL(pointer) TEST_ASSERT_MESSAGE(pointer != NULL, #pointer " was null.")
