@@ -141,11 +141,11 @@ void UnityAssertEqualMemory(const void* expected,
                             const unsigned short lineNumber );
 
 void UnityAssertEqualMemoryArray(const void* expected,
-                            const void* actual,
-                            unsigned long length,
-                            unsigned long num_elements,
-                            const char* msg,
-                            const unsigned short lineNumber );
+                                 const void* actual,
+                                 unsigned long length,
+                                 unsigned long num_elements,
+                                 const char* msg,
+                                 const unsigned short lineNumber );
 
 void UnityAssertFloatsWithin(const float delta,
                              const float expected,

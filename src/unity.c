@@ -539,6 +539,8 @@ void UnityAssertEqualMemoryArray(const void* expected,
                                  const char* msg,
                                  const unsigned short lineNumber)
 {
+	  unsigned char* expected_ptr = (unsigned char*)expected;
+	  unsigned char* actual_ptr = (unsigned char*)actual;	
     unsigned long elements = num_elements;
     if ((elements == 0) || (length == 0))
     {
@@ -556,22 +558,22 @@ void UnityAssertEqualMemoryArray(const void* expected,
     }
     
     // if both pointers not null compare the memory
-    if (expected && actual)
+    if (expected_ptr && actual_ptr)
     {
         while (elements--)
         {
-            if (memcmp(expected, actual, length) != 0)
+            if (memcmp((const void*)expected_ptr, (const void*)actual_ptr, length) != 0)
             {
                 Unity.CurrentTestFailed = 1;
                 break;
             }
-            expected += length;
-            actual += length;
+            expected_ptr += length;
+            actual_ptr += length;
         }
     }
     else
     { // handle case of one pointers being null (if both null, test should pass) 
-        if (expected != actual)
+        if (expected_ptr != actual_ptr)
         {
             Unity.CurrentTestFailed = 1;
         }
