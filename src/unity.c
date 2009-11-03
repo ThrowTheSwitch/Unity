@@ -321,7 +321,7 @@ void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
         Unity.CurrentTestFailed = 1;
 
         UnityTestResultsBegin(lineNumber);
-        UnityPrint("You asked me to compare 0 elements of an array, which was pointless.");
+        UnityPrint("You asked me to compare nothing, which was pointless.");
         if (msg)
         {
             UnityPrintChar(' ');
@@ -363,13 +363,18 @@ void UnityAssertFloatsWithin(const float delta,
                              const unsigned short lineNumber)
 {
     float diff = actual - expected;
-
+    float pos_delta = delta;
+    
     if (diff < 0)
     {
-        diff = -diff;
+        diff = 0.0f - diff;
     }
-
-    if (delta < diff)
+    if (pos_delta < 0)
+    {
+        pos_delta = 0.0f - pos_delta;
+    }
+    
+    if (pos_delta < diff)
     {
         Unity.CurrentTestFailed = 1;
         UnityTestResultsBegin(lineNumber);
@@ -484,7 +489,19 @@ void UnityAssertEqualMemory(const void* expected,
                             const unsigned short lineNumber)
 {
     if (length == 0)
+    {
+        Unity.CurrentTestFailed = 1;
+
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("You asked me to compare nothing, which was pointless.");
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
         return;
+    }
 
     // if both pointers not null compare the memory
     if (expected && actual)
@@ -506,6 +523,66 @@ void UnityAssertEqualMemory(const void* expected,
     {
         UnityTestResultsBegin(lineNumber);
         UnityPrint("Memory Mismatch.");
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
+    }
+}
+
+void UnityAssertEqualMemoryArray(const void* expected,
+                                 const void* actual,
+                                 unsigned long length,
+                                 unsigned long num_elements,
+                                 const char* msg,
+                                 const unsigned short lineNumber)
+{
+    unsigned long elements = num_elements;
+    if ((elements == 0) || (length == 0))
+    {
+        Unity.CurrentTestFailed = 1;
+
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("You asked me to compare nothing, which was pointless.");
+        if (msg)
+        {
+            UnityPrintChar(' ');
+            UnityPrint(msg);
+        }
+        UnityPrintChar('\n');
+        return;
+    }
+    
+    // if both pointers not null compare the memory
+    if (expected && actual)
+    {
+        while (elements--)
+        {
+            if (memcmp(expected, actual, length) != 0)
+            {
+                Unity.CurrentTestFailed = 1;
+                break;
+            }
+            expected += length;
+            actual += length;
+        }
+    }
+    else
+    { // handle case of one pointers being null (if both null, test should pass) 
+        if (expected != actual)
+        {
+            Unity.CurrentTestFailed = 1;
+        }
+    }
+
+    if (Unity.CurrentTestFailed)
+    {
+        UnityTestResultsBegin(lineNumber);
+        UnityPrint("Element ");
+        UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+        UnityPrint(" Memory Mismatch.");
         if (msg)
         {
             UnityPrintChar(' ');

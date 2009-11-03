@@ -140,6 +140,13 @@ void UnityAssertEqualMemory(const void* expected,
                             const char* msg,
                             const unsigned short lineNumber );
 
+void UnityAssertEqualMemoryArray(const void* expected,
+                            const void* actual,
+                            unsigned long length,
+                            unsigned long num_elements,
+                            const char* msg,
+                            const unsigned short lineNumber );
+
 void UnityAssertFloatsWithin(const float delta,
                              const float expected,
                              const float actual,
@@ -306,6 +313,8 @@ void UnityIgnore(const char* message, const long line);
     UnityAssertFloatsWithin((delta), (expected), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, NULL)
+#define TEST_ASSERT_EQUAL_FLOAT_MESSAGE(expected, actual, message) TEST_ASSERT_FLOAT_WITHIN_MESSAGE(expected / 10000.0f, expected, actual, message)
+#define TEST_ASSERT_EQUAL_FLOAT(expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE((expected) / 10000.0f, expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
@@ -318,6 +327,12 @@ void UnityIgnore(const char* message, const long line);
     UnityAssertEqualMemory((expected), (actual), (len), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_MEMORY(expected, actual, len) TEST_ASSERT_EQUAL_MEMORY_MESSAGE(expected, actual, len, NULL)
+
+#define TEST_ASSERT_EQUAL_MEMORY_ARRAY_MESSAGE(expected, actual, len, num_elements, message) \
+    Unity.TestFile=__FILE__; \
+    UnityAssertEqualMemoryArray((expected), (actual), (len), (num_elements), (message), (unsigned short)__LINE__); \
+    ABORT_IF_NECESSARY();
+#define TEST_ASSERT_EQUAL_MEMORY_ARRAY(expected, actual, len, num_elements) TEST_ASSERT_EQUAL_MEMORY_ARRAY_MESSAGE(expected, actual, len, num_elements, NULL)
 
 #define TEST_FAIL(message) { Unity.TestFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); TEST_ABORT(); }
 #define TEST_IGNORE_MESSAGE(message) { Unity.TestFile=__FILE__; UnityIgnore((message), (unsigned short)__LINE__); TEST_ABORT(); }

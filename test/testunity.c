@@ -507,6 +507,28 @@ void testFloatsNotWithinDelta(void)
     VERIFY_FAILURE_WAS_CAUGHT
 }
 
+void testFloatsEqual(void)
+{
+    TEST_ASSERT_EQUAL_FLOAT(187245.0f, 187246.0f);
+    TEST_ASSERT_EQUAL_FLOAT(18724.5f, 18724.6f);
+    TEST_ASSERT_EQUAL_FLOAT(9273.2549f, 9273.2599f);
+    TEST_ASSERT_EQUAL_FLOAT(-726.93724f, -726.9374f);
+}
+
+void testFloatsNotEqual(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(9273.9649f, 9273.0049f);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
 void testIntsWithinDelta(void)
 {
     TEST_ASSERT_INT_WITHIN(1, 5000, 5001);
@@ -614,14 +636,13 @@ void testNotEqualString_ActualStringIsNull(void)
 void testEqualMemory(void)
 {
     const char *testString = "whatever";
-
+    
     TEST_ASSERT_EQUAL_MEMORY(testString, testString, 8);
     TEST_ASSERT_EQUAL_MEMORY("whatever", "whatever", 8);
     TEST_ASSERT_EQUAL_MEMORY("whatever", testString, 8);
     TEST_ASSERT_EQUAL_MEMORY(testString, "whatever", 8);
-    TEST_ASSERT_EQUAL_MEMORY(testString, "whatever", 0);
-    TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 0);
-    TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
+    TEST_ASSERT_EQUAL_MEMORY(testString, "whatever", 2);
+    TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 1);
 }
 
 void testNotEqualMemory1(void)
@@ -802,6 +823,71 @@ void testNotEqualUIntArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testEqualMemoryArrays(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2};
+    int p2[] = {1, 8, 987, 2};
+    int p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 1);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p2, 4, 3);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p3, 4, 1);
+}
+
+void testNotEqualMemoryArrays1(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, 2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualMemoryArrays2(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {2, 8, 987, -2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualMemoryArrays3(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 986, -2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
     EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
