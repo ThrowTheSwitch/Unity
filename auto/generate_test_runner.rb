@@ -100,7 +100,7 @@ class UnityTestRunnerGenerator
     end
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
-    output.puts('#include "Exception.h"') if @options[:cexception]
+    output.puts('#include "CException.h"') if @options[:cexception]
     output.puts('#include "BullseyeCoverage.h"') if @options[:coverage]
     mocks.each do |mock|
       output.puts("#include \"#{mock.gsub('.h','')}.h\"")
@@ -163,7 +163,7 @@ class UnityTestRunnerGenerator
     output.puts("{")
     output.puts("  if (TEST_PROTECT())")
     output.puts("  {")
-    output.puts("    EXCEPTION_T e;") if @options[:cexception]
+    output.puts("    CEXCEPTION_T e;") if @options[:cexception]
     output.puts("    Try {") if @options[:cexception]
     output.puts("      CMock_Init();") unless (used_mocks.empty?) 
     output.puts("      setUp();")
