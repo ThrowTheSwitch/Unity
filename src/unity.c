@@ -2,23 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-struct _Unity Unity =
-{
-    NULL,
-    NULL,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1e-4f,
-    {0},
-};
-
-void UnityPrintChar(const char ch)
-{
-    putchar(ch);
-}
+struct _Unity Unity = { 0 };
 
 void UnityPrint(const char* string)
 {
@@ -28,7 +12,7 @@ void UnityPrint(const char* string)
     {
         while (*pch)
         {
-            UnityPrintChar(*pch);
+            UNITY_OUTPUT_CHAR(*pch);
             pch++;
         }
     }
@@ -55,7 +39,7 @@ void UnityPrintNumber(const long number_to_print)
 
     if (number < 0)
     {
-        UnityPrintChar('-');
+        UNITY_OUTPUT_CHAR('-');
         number = -number;
     }
 
@@ -72,7 +56,7 @@ void UnityPrintNumber(const long number_to_print)
     // now mod and print, then divide divisor
     do
     {
-        UnityPrintChar((char)('0' + (number / divisor % 10)));
+        UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));
         divisor /= 10;
     }
     while (divisor > 0);
@@ -97,7 +81,7 @@ void UnityPrintNumberUnsigned(const unsigned long number)
     // now mod and print, then divide divisor
     do
     {
-        UnityPrintChar((char)('0' + (number / divisor % 10)));
+        UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));
         divisor /= 10;
     }
     while (divisor > 0);
@@ -114,11 +98,11 @@ void UnityPrintNumberHex(const unsigned long number, const char nibbles_to_print
         nibble = (number >> (--nibbles << 2)) & 0x0000000F;
         if (nibble <= 9)
         {
-            UnityPrintChar((char)('0' + nibble));
+            UNITY_OUTPUT_CHAR((char)('0' + nibble));
         }
         else
         {
-            UnityPrintChar((char)('A' - 10 + nibble));
+            UNITY_OUTPUT_CHAR((char)('A' - 10 + nibble));
         }
     }
 }
@@ -134,16 +118,16 @@ void UnityPrintMask(const unsigned long mask, const unsigned long number)
         {
             if (bit & number)
             {
-                UnityPrintChar('1');
+                UNITY_OUTPUT_CHAR('1');
             }
             else
             {
-                UnityPrintChar('0');
+                UNITY_OUTPUT_CHAR('0');
             }
         }
         else
         {
-            UnityPrintChar('X');
+            UNITY_OUTPUT_CHAR('X');
         }
         bit = bit << 1;
     }
@@ -152,11 +136,11 @@ void UnityPrintMask(const unsigned long mask, const unsigned long number)
 void UnityTestResultsBegin(const long line)
 {
     UnityPrint(Unity.TestFile);
-    UnityPrintChar(':');
+    UNITY_OUTPUT_CHAR(':');
     UnityPrintNumber(line);
-    UnityPrintChar(':');
+    UNITY_OUTPUT_CHAR(':');
     UnityPrint(Unity.CurrentTestName);
-    UnityPrintChar(':');
+    UNITY_OUTPUT_CHAR(':');
 }
 
 void UnityConcludeTest()
@@ -194,13 +178,13 @@ void UnityAssertBits(const long mask,
         UnityPrintMask(mask, expected);
         UnityPrint(" was ");
         UnityPrintMask(mask, actual);
-        UnityPrintChar('.');
+        UNITY_OUTPUT_CHAR('.');
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -219,13 +203,13 @@ void UnityAssertEqualNumber(const long expected,
         UnityPrintNumberByStyle(expected, style);
         UnityPrint(" was ");
         UnityPrintNumberByStyle(actual, style);
-        UnityPrintChar('.');
+        UNITY_OUTPUT_CHAR('.');
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -244,13 +228,13 @@ void UnityAssertEqualNumberUnsigned(const unsigned long expected,
         UnityPrintNumberByStyle(expected, style);
         UnityPrint(" was ");
         UnityPrintNumberByStyle(actual, style);
-        UnityPrintChar('.');
+        UNITY_OUTPUT_CHAR('.');
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -273,10 +257,10 @@ void UnityAssertEqualIntArray(const int* expected,
         UnityPrint("You asked me to compare 0 elements of an array, which was pointless.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
         return;
     }
 
@@ -293,13 +277,13 @@ void UnityAssertEqualIntArray(const int* expected,
             UnityPrintNumberByStyle(*--ptr_expected, style);
             UnityPrint(" was ");
             UnityPrintNumberByStyle(*--ptr_actual, style);
-            UnityPrintChar('.');
+            UNITY_OUTPUT_CHAR('.');
             if (msg)
             {
-                UnityPrintChar(' ');
+                UNITY_OUTPUT_CHAR(' ');
                 UnityPrint(msg);
             }
-            UnityPrintChar('\n');
+            UNITY_OUTPUT_CHAR('\n');
             return;
         }
     }
@@ -324,10 +308,10 @@ void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
         UnityPrint("You asked me to compare nothing, which was pointless.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
         return;
     }
 
@@ -344,26 +328,27 @@ void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
             UnityPrintNumberByStyle(*--ptr_expected, style);
             UnityPrint(" was ");
             UnityPrintNumberByStyle(*--ptr_actual, style);
-            UnityPrintChar('.');
+            UNITY_OUTPUT_CHAR('.');
             if (msg)
             {
-                UnityPrintChar(' ');
+                UNITY_OUTPUT_CHAR(' ');
                 UnityPrint(msg);
             }
-            UnityPrintChar('\n');
+            UNITY_OUTPUT_CHAR('\n');
             return;
         }
     }
 }
 
-void UnityAssertFloatsWithin(const float delta,
-                             const float expected,
-                             const float actual,
+#ifndef UNITY_EXCLUDE_UFOAT
+void UnityAssertFloatsWithin(const _UF delta,
+                             const _UF expected,
+                             const _UF actual,
                              const char* msg,
                              const unsigned short lineNumber)
 {
-    float diff = actual - expected;
-    float pos_delta = delta;
+    _UF diff = actual - expected;
+    _UF pos_delta = delta;
     
     if (diff < 0)
     {
@@ -381,12 +366,13 @@ void UnityAssertFloatsWithin(const float delta,
         UnityPrint("Floats not within delta.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
+#endif
 
 void UnityAssertNumbersWithin(const long delta,
                            const long expected,
@@ -408,10 +394,10 @@ void UnityAssertNumbersWithin(const long delta,
         UnityPrint("Values not within delta.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -430,10 +416,10 @@ void UnityAssertNumbersUnsignedWithin(const unsigned long delta,
         UnityPrint("Values not within delta.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -470,14 +456,14 @@ void UnityAssertEqualString(const char* expected,
         UnityPrint(expected);
         UnityPrint("' was '");
         UnityPrint(actual);
-        UnityPrintChar('\'');
-        UnityPrintChar('.');
+        UNITY_OUTPUT_CHAR('\'');
+        UNITY_OUTPUT_CHAR('.');
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -496,10 +482,10 @@ void UnityAssertEqualMemory(const void* expected,
         UnityPrint("You asked me to compare nothing, which was pointless.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
         return;
     }
 
@@ -525,10 +511,10 @@ void UnityAssertEqualMemory(const void* expected,
         UnityPrint("Memory Mismatch.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -550,10 +536,10 @@ void UnityAssertEqualMemoryArray(const void* expected,
         UnityPrint("You asked me to compare nothing, which was pointless.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
         return;
     }
     
@@ -587,10 +573,10 @@ void UnityAssertEqualMemoryArray(const void* expected,
         UnityPrint(" Memory Mismatch.");
         if (msg)
         {
-            UnityPrintChar(' ');
+            UNITY_OUTPUT_CHAR(' ');
             UnityPrint(msg);
         }
-        UnityPrintChar('\n');
+        UNITY_OUTPUT_CHAR('\n');
     }
 }
 
@@ -599,7 +585,7 @@ void UnityFail(const char* message, const long line)
     Unity.CurrentTestFailed = 1;
     UnityTestResultsBegin(line);
     UnityPrint(message);
-    UnityPrintChar('\n');
+    UNITY_OUTPUT_CHAR('\n');
 }
 
 void UnityIgnore(const char* message, const long line)

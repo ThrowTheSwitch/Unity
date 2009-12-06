@@ -6,23 +6,40 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-
 //-------------------------------------------------------
-// Bus Width Management
+// Float Support
 //-------------------------------------------------------
+// define UNITY_EXCLUDE_FLOAT to disallow floating point comparisons
+// define UNITY_FLOAT_DELTA to specify the precision to use when doing TEST_ASSERT_EQUAL_FLOAT
+// define UNITY_FLOAT_TYPE to specify doubles instead of single precision floats
 
-#ifndef INT_WIDTH
-#define INT_WIDTH (32)
+#ifndef UNITY_EXCLUDE_FLOAT
+#ifndef UNITY_FLOAT_PRECISION
+#define UNITY_FLOAT_PRECISION (0.00001f)
+#endif
+#ifndef UNITY_FLOAT_TYPE
+#define UNITY_FLOAT_TYPE float
+#endif
+    typedef UNITY_FLOAT_TYPE _UF;
 #endif
 
-#if (INT_WIDTH == 32)
+//-------------------------------------------------------
+// Int Support
+//-------------------------------------------------------
+// Unity assumes 32 bit integers by default
+// If your compiler treats ints of a different size, define UNITY_INT_WIDTH
+
+#ifndef UNITY_INT_WIDTH
+#define UNITY_INT_WIDTH (32)
+#endif
+#if (UNITY_INT_WIDTH == 32)
     typedef unsigned char   _UU8;
     typedef unsigned short  _UU16;
     typedef unsigned int    _UU32;
     typedef signed char     _US8;
     typedef signed short    _US16;
     typedef signed int      _US32;
-#elif (INT_WIDTH == 16)
+#elif (UNITY_INT_WIDTH == 16)
     typedef unsigned char   _UU8;
     typedef unsigned int    _UU16;
     typedef unsigned long   _UU32;
@@ -30,18 +47,19 @@
     typedef signed int      _US16;
     typedef signed long     _US32;               
 #else
-    #error Invalid INT_WIDTH specified! (32 or 16 only are currently supported)
-    #error Defaults to INT_WIDTH=32 if unspecified
+    #error Invalid UNITY_INT_WIDTH specified! (32 or 16 only are currently supported)
 #endif
 
+//-------------------------------------------------------
+// Output Method
+//-------------------------------------------------------
+
+#ifndef UNITY_OUTPUT_CHAR
+#define UNITY_OUTPUT_CHAR(a) putchar(a)
+#endif
 
 //-------------------------------------------------------
-// Internal Functions and Structs Needed For Unity To Run
-//
-// (use the macros below this section instead of calling
-//  these directly. The macros have a consistent naming
-//  convention and will pull in file and line information
-//  for you.)
+// Internal Structs Needed
 //-------------------------------------------------------
 
 typedef void (*UnityTestFunction)(void);
@@ -64,12 +82,10 @@ struct _Unity
     unsigned char TestIgnores;
     unsigned char CurrentTestFailed;
     unsigned char CurrentTestIgnored;
-    float DefaultDelta;
     jmp_buf AbortFrame;
 };
 
 extern struct _Unity Unity;
-
 
 //-------------------------------------------------------
 // Test Suite Management
@@ -79,12 +95,10 @@ void UnityBegin(void);
 void UnityEnd(void);
 void UnityConcludeTest(void);
 
-
 //-------------------------------------------------------
 // Test Output
 //-------------------------------------------------------
 
-void UnityPrintChar(const char ch);
 void UnityPrint(const char* string);
 void UnityPrintMask(const unsigned long mask, const unsigned long number);
 void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T style);
@@ -92,10 +106,13 @@ void UnityPrintNumber(const long number);
 void UnityPrintNumberUnsigned(const unsigned long number);
 void UnityPrintNumberHex(const unsigned long number, const char nibbles);
 
-
 //-------------------------------------------------------
 // Test Assertion Fuctions
 //-------------------------------------------------------
+//  Use the macros below this section instead of calling
+//  these directly. The macros have a consistent naming
+//  convention and will pull in file and line information
+//  for you.
 
 void UnityAssertEqualNumber(const long expected,
                             const long actual,
@@ -147,12 +164,6 @@ void UnityAssertEqualMemoryArray(const void* expected,
                                  const char* msg,
                                  const unsigned short lineNumber );
 
-void UnityAssertFloatsWithin(const float delta,
-                             const float expected,
-                             const float actual,
-                             const char* msg,
-                             const unsigned short lineNumber);
-
 void UnityAssertNumbersWithin(const long delta,
                               const long expected,
                               const long actual,
@@ -169,6 +180,13 @@ void UnityFail(const char* message, const long line);
 
 void UnityIgnore(const char* message, const long line);
 
+#ifndef UNITY_EXCLUDE_FLOAT
+void UnityAssertFloatsWithin(const _UF delta,
+                             const _UF expected,
+                             const _UF actual,
+                             const char* msg,
+                             const unsigned short lineNumber);
+#endif
 
 //-------------------------------------------------------
 // Test Running Macros
@@ -186,13 +204,11 @@ void UnityIgnore(const char* message, const long line);
     Unity.NumberOfTests ++; \
     runTest(func); \
     UnityConcludeTest();
-
     
 //-------------------------------------------------------
 // Test Asserts
-//
-// (these are the macros you are looking for)
 //-------------------------------------------------------
+// these are the macros you are looking for
 
 #define TEST_ASSERT_MESSAGE(condition, message) if (condition) {} else {TEST_FAIL(message);}
 #define TEST_ASSERT(condition) TEST_ASSERT_MESSAGE(condition, NULL)
@@ -308,14 +324,6 @@ void UnityIgnore(const char* message, const long line);
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_LOW(bit, actual) TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, NULL)
 
-#define TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, message) \
-    Unity.TestFile=__FILE__; \
-    UnityAssertFloatsWithin((delta), (expected), (actual), (message), (unsigned short)__LINE__); \
-    ABORT_IF_NECESSARY();
-#define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, NULL)
-#define TEST_ASSERT_EQUAL_FLOAT_MESSAGE(expected, actual, message) TEST_ASSERT_FLOAT_WITHIN_MESSAGE(expected / 10000.0f, expected, actual, message)
-#define TEST_ASSERT_EQUAL_FLOAT(expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE((expected) / 10000.0f, expected, actual, NULL)
-
 #define TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
     UnityAssertEqualString((expected), (actual), (message), (unsigned short)__LINE__); \
@@ -337,5 +345,20 @@ void UnityIgnore(const char* message, const long line);
 #define TEST_FAIL(message) { Unity.TestFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); TEST_ABORT(); }
 #define TEST_IGNORE_MESSAGE(message) { Unity.TestFile=__FILE__; UnityIgnore((message), (unsigned short)__LINE__); TEST_ABORT(); }
 #define TEST_IGNORE() TEST_IGNORE_MESSAGE(NULL)
+
+#ifdef UNITY_EXCLUDE_FLOAT
+#define TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, message)  TEST_FAIL("Unity Floating Point Disabled");
+#define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual)                   TEST_FAIL("Unity Floating Point Disabled");
+#define TEST_ASSERT_EQUAL_FLOAT_MESSAGE(expected, actual, message)          TEST_FAIL("Unity Floating Point Disabled");
+#define TEST_ASSERT_EQUAL_FLOAT(expected, actual)                           TEST_FAIL("Unity Floating Point Disabled");
+#else
+#define TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, message) \
+    Unity.TestFile=__FILE__; \
+    UnityAssertFloatsWithin((delta), (expected), (actual), (message), (unsigned short)__LINE__); \
+    ABORT_IF_NECESSARY();
+#define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, NULL)
+#define TEST_ASSERT_EQUAL_FLOAT_MESSAGE(expected, actual, message) TEST_ASSERT_FLOAT_WITHIN_MESSAGE((expected) * UNITY_FLOAT_PRECISION, expected, actual, message)
+#define TEST_ASSERT_EQUAL_FLOAT(expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE((expected) * UNITY_FLOAT_PRECISION, expected, actual, NULL)
+#endif
 
 #endif
