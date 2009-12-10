@@ -340,7 +340,7 @@ void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
     }
 }
 
-#ifndef UNITY_EXCLUDE_UFOAT
+#ifndef UNITY_EXCLUDE_FLOAT
 void UnityAssertFloatsWithin(const _UF delta,
                              const _UF expected,
                              const _UF actual,
