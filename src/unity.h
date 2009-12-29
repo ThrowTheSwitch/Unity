@@ -233,7 +233,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 
 #define TEST_ASSERT_EQUAL_INT_ARRAY_MESSAGE(expected, actual, num_elements, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualIntArray((int*)(expected), (int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
+    UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_INT_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
@@ -257,7 +257,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 
 #define TEST_ASSERT_EQUAL_UINT_ARRAY_MESSAGE(expected, actual, num_elements, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualUnsignedIntArray((unsigned int*)(expected), (unsigned int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
+    UnityAssertEqualUnsignedIntArray((const unsigned int*)(expected), (const unsigned int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_UINT_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_UINT_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
@@ -281,7 +281,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 
 #define TEST_ASSERT_EQUAL_HEX32_ARRAY_MESSAGE(expected, actual, num_elements, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualIntArray((long*)(expected), (long*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
+    UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX32_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_HEX32_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
@@ -290,7 +290,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 
 #define TEST_ASSERT_EQUAL_HEX_ARRAY_MESSAGE(expected, actual, num_elements, message) \
     Unity.TestFile=__FILE__; \
-    UnityAssertEqualIntArray((int*)(expected), (int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
+    UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_HEX32_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
