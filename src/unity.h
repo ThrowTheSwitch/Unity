@@ -211,7 +211,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 // these are the macros you are looking for
 
 #define TEST_ASSERT_MESSAGE(condition, message) if (condition) {} else {TEST_FAIL(message);}
-#define TEST_ASSERT(condition) TEST_ASSERT_MESSAGE(condition, NULL)
+#define TEST_ASSERT(condition) TEST_ASSERT_MESSAGE(condition, "Expectation Failed.")
 
 #define TEST_ASSERT_TRUE_MESSAGE(condition, message) TEST_ASSERT_MESSAGE(condition, message)
 #define TEST_ASSERT_TRUE(condition) TEST_ASSERT_MESSAGE(condition, "Expected TRUE was FALSE.")
@@ -223,7 +223,9 @@ void UnityAssertFloatsWithin(const _UF delta,
 #define TEST_ASSERT_FALSE(condition) TEST_ASSERT_MESSAGE(!(condition), "Expected FALSE was TRUE.")
 
 #define TEST_ASSERT_NULL(pointer) TEST_ASSERT_MESSAGE(pointer == NULL, #pointer " was not null.")
+#define TEST_ASSERT_NULL_MESSAGE(pointer, message) TEST_ASSERT_MESSAGE(pointer == NULL, message)
 #define TEST_ASSERT_NOT_NULL(pointer) TEST_ASSERT_MESSAGE(pointer != NULL, #pointer " was null.")
+#define TEST_ASSERT_NOT_NULL_MESSAGE(pointer, message) TEST_ASSERT_MESSAGE(pointer != NULL, message)
 
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, message) \
     Unity.TestFile=__FILE__; \
