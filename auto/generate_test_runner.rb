@@ -1,3 +1,4 @@
+File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 
 class UnityTestRunnerGenerator
 
@@ -17,10 +18,10 @@ class UnityTestRunnerGenerator
       require 'yaml'
       yaml_guts = YAML.load_file(config_file)
       yaml_goodness = yaml_guts[:unity] ? yaml_guts[:unity] : yaml_guts[:cmock]
-      options[:cexception] = 1 if (yaml_goodness[:plugins].include? :cexception)
-      options[:coverage  ] = 1 if (yaml_goodness[:coverage])
-      options[:order]      = 1 if (yaml_goodness[:enforce_strict_ordering])
-      options[:includes]   <<     (yaml_goodness[:includes])
+      options[:cexception] = 1 unless (yaml_goodness[:plugins] & ['cexception', :cexception]).empty?
+      options[:coverage  ] = 1 if     (yaml_goodness[:coverage])
+      options[:order]      = 1 if     (yaml_goodness[:enforce_strict_ordering])
+      options[:includes]   <<         (yaml_goodness[:includes])
     end
     return(options)
   end
@@ -59,19 +60,35 @@ class UnityTestRunnerGenerator
   end
   
   def find_tests(input_file)
+    tests_raw = []
+    tests_and_line_numbers = []
+    
     input_file.rewind
-    tests = []
-    source = input_file.read()
-    source = source.gsub(/\/\/.*$/, '') #remove line comments
-    source = source.gsub(/\/\*.*?\*\//m, '') #remove block comments
-    lines = source.split(/(^\s*\#.*$)  # Treat preprocessor directives as a logical line
+    source_raw = input_file.read
+    source_scrubbed = source_raw.gsub(/\/\/.*$/, '') #remove line comments
+    source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '') #remove block comments
+    lines = source_scrubbed.split(/(^\s*\#.*$)  # Treat preprocessor directives as a logical line
                               | (;|\{|\}) /x) # Match ;, {, and } as end of lines
-    lines.each do |line|
+
+    lines.each_with_index do |line, index|
       if line =~ /^\s*void\s+test(.*?)\s*\(\s*void\s*\)/
-        tests << "test" + $1
+        tests_raw << ("test" + $1)
       end
     end
-    return tests
+
+    source_lines = source_raw.split("\n")
+    source_index = 0;
+
+    tests_raw.each do |test|
+      source_lines[source_index..-1].each_with_index do |line, index|
+        if (line =~ /#{test}/)
+          source_index += index
+          tests_and_line_numbers << {:name => test, :line_number => (source_index+1)}
+          break
+        end
+      end
+    end
+    return tests_and_line_numbers
   end
 
   def find_includes(input_file)
@@ -122,7 +139,7 @@ class UnityTestRunnerGenerator
     output.puts("extern void tearDown(void);")
     output.puts('')
     tests.each do |test|
-      output.puts("extern void #{test}(void);")
+      output.puts("extern void #{test[:name]}(void);")
     end
     output.puts('')
   end
@@ -202,7 +219,7 @@ class UnityTestRunnerGenerator
 
     output.puts("  // RUN_TEST calls runTest")  	
     tests.each do |test|
-      output.puts("  RUN_TEST(#{test});")
+      output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]});")
     end
 
     output.puts()

@@ -133,14 +133,20 @@ void UnityPrintMask(const unsigned long mask, const unsigned long number)
     }
 }
 
-void UnityTestResultsBegin(const long line)
+void UnityTestResultsBegin(const char* file, const long line)
 {
-    UnityPrint(Unity.TestFile);
+    UnityPrint(file);
     UNITY_OUTPUT_CHAR(':');
     UnityPrintNumber(line);
     UNITY_OUTPUT_CHAR(':');
     UnityPrint(Unity.CurrentTestName);
     UNITY_OUTPUT_CHAR(':');
+}
+
+void UnityTestResultsFailBegin(const long line)
+{
+    UnityTestResultsBegin(Unity.AssertContainerFile, line);
+    UnityPrint("FAIL:");
 }
 
 void UnityConcludeTest()
@@ -151,8 +157,8 @@ void UnityConcludeTest()
     }
     else if (!Unity.CurrentTestFailed)
     {
-        UnityPrint(Unity.CurrentTestName);
-        UnityPrint("::: PASS\n");
+        UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
+        UnityPrint("PASS\n");
     }
     else
     {
@@ -173,7 +179,7 @@ void UnityAssertBits(const long mask,
     {
         Unity.CurrentTestFailed = 1;
 
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Expected ");
         UnityPrintMask(mask, expected);
         UnityPrint(" was ");
@@ -198,7 +204,7 @@ void UnityAssertEqualNumber(const long expected,
     {
         Unity.CurrentTestFailed = 1;
 
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Expected ");
         UnityPrintNumberByStyle(expected, style);
         UnityPrint(" was ");
@@ -223,7 +229,7 @@ void UnityAssertEqualNumberUnsigned(const unsigned long expected,
     {
         Unity.CurrentTestFailed = 1;
 
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Expected ");
         UnityPrintNumberByStyle(expected, style);
         UnityPrint(" was ");
@@ -253,7 +259,7 @@ void UnityAssertEqualIntArray(const int* expected,
     {
         Unity.CurrentTestFailed = 1;
 
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("You asked me to compare 0 elements of an array, which was pointless.");
         if (msg)
         {
@@ -270,7 +276,7 @@ void UnityAssertEqualIntArray(const int* expected,
         {
             Unity.CurrentTestFailed = 1;
 
-            UnityTestResultsBegin(lineNumber);
+            UnityTestResultsFailBegin(lineNumber);
             UnityPrint("Element ");
             UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
             UnityPrint(" Expected ");
@@ -304,7 +310,7 @@ void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
     {
         Unity.CurrentTestFailed = 1;
 
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("You asked me to compare nothing, which was pointless.");
         if (msg)
         {
@@ -321,7 +327,7 @@ void UnityAssertEqualUnsignedIntArray(const unsigned int* expected,
         {
             Unity.CurrentTestFailed = 1;
 
-            UnityTestResultsBegin(lineNumber);
+            UnityTestResultsFailBegin(lineNumber);
             UnityPrint("Element ");
             UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
             UnityPrint(" Expected ");
@@ -362,7 +368,7 @@ void UnityAssertFloatsWithin(const _UF delta,
     if (pos_delta < diff)
     {
         Unity.CurrentTestFailed = 1;
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Floats not within delta.");
         if (msg)
         {
@@ -390,7 +396,7 @@ void UnityAssertNumbersWithin(const long delta,
     if (delta < diff)
     {
         Unity.CurrentTestFailed = 1;
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Values not within delta.");
         if (msg)
         {
@@ -412,7 +418,7 @@ void UnityAssertNumbersUnsignedWithin(const unsigned long delta,
     if (delta < diff)
     {
         Unity.CurrentTestFailed = 1;
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Values not within delta.");
         if (msg)
         {
@@ -451,7 +457,7 @@ void UnityAssertEqualString(const char* expected,
 
     if (Unity.CurrentTestFailed)
     {
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Expected '");
         UnityPrint(expected);
         UnityPrint("' was '");
@@ -478,7 +484,7 @@ void UnityAssertEqualMemory(const void* expected,
     {
         Unity.CurrentTestFailed = 1;
 
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("You asked me to compare nothing, which was pointless.");
         if (msg)
         {
@@ -507,7 +513,7 @@ void UnityAssertEqualMemory(const void* expected,
 
     if (Unity.CurrentTestFailed)
     {
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Memory Mismatch.");
         if (msg)
         {
@@ -532,7 +538,7 @@ void UnityAssertEqualMemoryArray(const void* expected,
     {
         Unity.CurrentTestFailed = 1;
 
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("You asked me to compare nothing, which was pointless.");
         if (msg)
         {
@@ -567,7 +573,7 @@ void UnityAssertEqualMemoryArray(const void* expected,
 
     if (Unity.CurrentTestFailed)
     {
-        UnityTestResultsBegin(lineNumber);
+        UnityTestResultsFailBegin(lineNumber);
         UnityPrint("Element ");
         UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
         UnityPrint(" Memory Mismatch.");
@@ -583,17 +589,27 @@ void UnityAssertEqualMemoryArray(const void* expected,
 void UnityFail(const char* message, const long line)
 {
     Unity.CurrentTestFailed = 1;
-    UnityTestResultsBegin(line);
-    UnityPrint(message);
+    UnityTestResultsBegin(Unity.AssertContainerFile, line);
+    UnityPrint("FAIL");
+    if (message != NULL)
+    {
+      UNITY_OUTPUT_CHAR(':');
+      UnityPrint(message);
+    }
     UNITY_OUTPUT_CHAR('\n');
 }
 
 void UnityIgnore(const char* message, const long line)
 {
     Unity.CurrentTestIgnored = 1;
-    UnityTestResultsBegin(line);
-    UnityPrint(message);
-    UnityPrint(" IGNORED\n");
+    UnityTestResultsBegin(Unity.AssertContainerFile, line);
+    UnityPrint("IGNORE");
+    if (message != NULL)
+    {
+      UNITY_OUTPUT_CHAR(':');
+      UnityPrint(message);
+    }
+    UNITY_OUTPUT_CHAR('\n');
 }
 
 void UnityBegin()

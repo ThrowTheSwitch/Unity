@@ -76,7 +76,9 @@ typedef enum
 struct _Unity
 {
     const char* TestFile;
+		const char* AssertContainerFile;
     const char* CurrentTestName;
+		unsigned long CurrentTestLineNumber;
     unsigned char NumberOfTests;
     unsigned char TestFailures;
     unsigned char TestIgnores;
@@ -199,8 +201,9 @@ void UnityAssertFloatsWithin(const _UF delta,
 #define ABORT_IF_NECESSARY() \
     if( Unity.CurrentTestFailed || Unity.CurrentTestIgnored ) {TEST_ABORT();}
 
-#define RUN_TEST(func) \
+#define RUN_TEST(func, line_num) \
     Unity.CurrentTestName = #func; \
+		Unity.CurrentTestLineNumber = line_num; \
     Unity.NumberOfTests ++; \
     runTest(func); \
     UnityConcludeTest();
@@ -228,13 +231,13 @@ void UnityAssertFloatsWithin(const _UF delta,
 #define TEST_ASSERT_NOT_NULL_MESSAGE(pointer, message) TEST_ASSERT_MESSAGE(pointer != NULL, message)
 
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_INT(expected, actual)	TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_INT_ARRAY_MESSAGE(expected, actual, num_elements, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_INT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_INT_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
@@ -246,43 +249,43 @@ void UnityAssertFloatsWithin(const _UF delta,
 #define TEST_ASSERT_NOT_EQUAL(expected, actual) TEST_ASSERT_FALSE((expected) == (actual))
 
 #define TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertNumbersWithin((long)(delta), (long)(expected), (long)(actual), NULL, (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_INT_WITHIN(delta, expected, actual) TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualNumberUnsigned((unsigned long)(expected), (unsigned long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_UINT(expected, actual) TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_UINT_ARRAY_MESSAGE(expected, actual, num_elements, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualUnsignedIntArray((const unsigned int*)(expected), (const unsigned int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_UINT); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_UINT_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_UINT_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualNumberUnsigned((unsigned long)(expected), (unsigned long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX8); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX8(expected, actual) TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualNumberUnsigned((unsigned long)(expected), (unsigned long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX16); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX16(expected, actual)	TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX32(expected, actual)	TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_HEX32_ARRAY_MESSAGE(expected, actual, num_elements, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX32_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_HEX32_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
@@ -291,62 +294,63 @@ void UnityAssertFloatsWithin(const _UF delta,
 #define TEST_ASSERT_EQUAL_HEX(expected, actual) TEST_ASSERT_EQUAL_HEX32(expected, actual)
 
 #define TEST_ASSERT_EQUAL_HEX_ARRAY_MESSAGE(expected, actual, num_elements, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (unsigned short)__LINE__, UNITY_DISPLAY_STYLE_HEX32); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_HEX_ARRAY(expected, actual, num_elements) TEST_ASSERT_EQUAL_HEX32_ARRAY_MESSAGE(expected, actual, num_elements, NULL)
 
 #define TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertBits((mask), (expected), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BITS(mask, expected, actual) TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, NULL)
 
 #define TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertBits((mask), (-1), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BITS_HIGH(mask, actual) TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, NULL)
 
 #define TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertBits((mask), (0), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BITS_LOW(mask, actual) TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, NULL)
 
 #define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertBits(((_UU32)1 << bit), (-1), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_HIGH(bit, actual) TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, NULL)
 
 #define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertBits(((_UU32)1 << bit), (0), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_BIT_LOW(bit, actual) TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualString((expected), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_STRING(expected, actual) TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, NULL)
 
 #define TEST_ASSERT_EQUAL_MEMORY_MESSAGE(expected, actual, len, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualMemory((expected), (actual), (len), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_MEMORY(expected, actual, len) TEST_ASSERT_EQUAL_MEMORY_MESSAGE(expected, actual, len, NULL)
 
 #define TEST_ASSERT_EQUAL_MEMORY_ARRAY_MESSAGE(expected, actual, len, num_elements, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertEqualMemoryArray((expected), (actual), (len), (num_elements), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_EQUAL_MEMORY_ARRAY(expected, actual, len, num_elements) TEST_ASSERT_EQUAL_MEMORY_ARRAY_MESSAGE(expected, actual, len, num_elements, NULL)
 
-#define TEST_FAIL(message) { Unity.TestFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); TEST_ABORT(); }
-#define TEST_IGNORE_MESSAGE(message) { Unity.TestFile=__FILE__; UnityIgnore((message), (unsigned short)__LINE__); TEST_ABORT(); }
+#define TEST_FAIL(message) { Unity.AssertContainerFile=__FILE__; UnityFail((message), (unsigned short)__LINE__); TEST_ABORT(); }
+#define TEST_IGNORE_MESSAGE(message) { Unity.AssertContainerFile=__FILE__; UnityIgnore((message), (unsigned short)__LINE__); TEST_ABORT(); }
 #define TEST_IGNORE() TEST_IGNORE_MESSAGE(NULL)
+#define TEST_ONLY() 
 
 #ifdef UNITY_EXCLUDE_FLOAT
 #define TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, message)  TEST_FAIL("Unity Floating Point Disabled");
@@ -355,7 +359,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 #define TEST_ASSERT_EQUAL_FLOAT(expected, actual)                           TEST_FAIL("Unity Floating Point Disabled");
 #else
 #define TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, message) \
-    Unity.TestFile=__FILE__; \
+    Unity.AssertContainerFile=__FILE__; \
     UnityAssertFloatsWithin((delta), (expected), (actual), (message), (unsigned short)__LINE__); \
     ABORT_IF_NECESSARY();
 #define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual) TEST_ASSERT_FLOAT_WITHIN_MESSAGE(delta, expected, actual, NULL)

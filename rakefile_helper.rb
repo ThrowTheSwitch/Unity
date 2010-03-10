@@ -2,13 +2,46 @@ require 'yaml'
 require 'fileutils'
 require 'auto/unity_test_summary'
 require 'auto/generate_test_runner'
+require 'auto/colour_prompt'
+require 'auto/test_file_filter'
 
 module RakefileHelpers
 
   C_EXTENSION = '.c'
+  COLOUR = true
   
   def report(message)
-    puts message
+    if not COLOUR
+      puts($stdout.puts(message))
+    else
+      message.each_line do |line|
+        line.chomp!
+        if line.include?('Tests') &&
+           line.include?('Failures') &&
+           line.include?('Ignored')
+          if line.include?('0 Failures')
+            colour = :green
+          else
+            colour = :red
+          end
+        elsif line.include?('PASS') ||
+					line == 'OK'
+          colour = :green
+        elsif line.include? "Running Unity system tests..."
+          colour = :blue
+        elsif line.include?('FAIL') ||
+          line.include?('Expected') ||
+          line.include?('Memory Mismatch') ||
+          line.include?('not within delta')
+          colour  = :red
+        elsif line.include?(' IGNORED')
+          colour = :yellow
+        else
+          colour = :blue
+        end
+      colour_puts colour, line
+      end
+    end
     $stdout.flush
     $stderr.flush
   end
