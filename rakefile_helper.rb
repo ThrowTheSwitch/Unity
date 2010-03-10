@@ -3,7 +3,7 @@ require 'fileutils'
 require 'auto/unity_test_summary'
 require 'auto/generate_test_runner'
 require 'auto/colour_prompt'
-require 'auto/test_file_filter'
+#require 'auto/test_file_filter'
 
 module RakefileHelpers
 
