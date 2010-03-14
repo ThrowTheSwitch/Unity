@@ -109,7 +109,7 @@ void UnityPrintNumberHex(const unsigned long number, const char nibbles_to_print
 
 void UnityPrintMask(const unsigned long mask, const unsigned long number)
 {
-    unsigned long bit = 0x00000001;
+    unsigned long bit = 0x80000000;
     long i;
 
     for (i = 0; i < 32; i++)
@@ -129,7 +129,7 @@ void UnityPrintMask(const unsigned long mask, const unsigned long number)
         {
             UNITY_OUTPUT_CHAR('X');
         }
-        bit = bit << 1;
+        bit = bit >> 1;
     }
 }
 
