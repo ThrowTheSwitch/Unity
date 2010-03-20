@@ -229,6 +229,24 @@ void testNotEqualHex8s(void)
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
 }
 
+void testNotEqualHex8sIfSigned(void)
+{
+    int failed;
+    _US8 v0, v1;
+    
+    v0 = -2;
+    v1 = 2;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX8(v0, v1);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
+}
+
 void testNotEqualHex16s(void)
 {
     int failed;
@@ -247,12 +265,48 @@ void testNotEqualHex16s(void)
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
 }
 
+void testNotEqualHex16sIfSigned(void)
+{
+    int failed;
+    _US16 v0, v1;
+    
+    v0 = -1024;
+    v1 = -1028;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX16(v0, v1);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
+}
+
 void testNotEqualHex32s(void)
 {
     int failed;
     _UU32 v0, v1;
     
     v0 = 900000;
+    v1 = 900001;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX32(v0, v1);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
+}
+
+void testNotEqualHex32sIfSigned(void)
+{
+    int failed;
+    _US32 v0, v1;
+    
+    v0 = -900000;
     v1 = 900001;
 
     EXPECT_ABORT_BEGIN
@@ -535,6 +589,10 @@ void testIntsWithinDelta(void)
     TEST_ASSERT_INT_WITHIN(5, 5000, 4996);
     TEST_ASSERT_INT_WITHIN(5, 5000, 5005);
     TEST_ASSERT_INT_WITHIN(500, 50, -440);
+    
+    TEST_ASSERT_INT_WITHIN(2, 2147483647, -1);
+    TEST_ASSERT_INT_WITHIN(5, 1, -1);
+    TEST_ASSERT_INT_WITHIN(5, -1, 1);
 }
 
 void testIntsNotWithinDelta(void)
@@ -543,6 +601,132 @@ void testIntsNotWithinDelta(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT_WITHIN(5, 5000, 5006);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testUIntsWithinDelta(void)
+{
+    TEST_ASSERT_UINT_WITHIN(1, 5000, 5001);
+    TEST_ASSERT_UINT_WITHIN(5, 5000, 4996);
+    TEST_ASSERT_UINT_WITHIN(5, 5000, 5005);
+}
+
+void testUIntsNotWithinDelta(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_UINT_WITHIN(1, 2147483647, 2147483649);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassSmallFirst(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_UINT_WITHIN(5, 1, -1);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassBigFirst(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_UINT_WITHIN(5, -1, 1);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testHEX32sWithinDelta(void)
+{
+    TEST_ASSERT_HEX32_WITHIN(1, 5000, 5001);
+    TEST_ASSERT_HEX32_WITHIN(5, 5000, 4996);
+    TEST_ASSERT_HEX32_WITHIN(5, 5000, 5005);
+}
+
+void testHEX32sNotWithinDelta(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX32_WITHIN(1, 2147483647, 2147483649);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testHEX32sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX32_WITHIN(5, 1, -1);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testHEX16sWithinDelta(void)
+{
+    TEST_ASSERT_HEX16_WITHIN(1, 5000, 5001);
+    TEST_ASSERT_HEX16_WITHIN(5, 5000, 4996);
+    TEST_ASSERT_HEX16_WITHIN(5, 5000, 5005);
+}
+
+void testHEX16sNotWithinDelta(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX16_WITHIN(2, 65535, 0);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testHEX8sWithinDelta(void)
+{
+    TEST_ASSERT_HEX8_WITHIN(1, 254, 255);
+    TEST_ASSERT_HEX8_WITHIN(5, 251, 255);
+    TEST_ASSERT_HEX8_WITHIN(5, 1, 4);
+}
+
+void testHEX8sNotWithinDelta(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX8_WITHIN(2, 255, 0);
     EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
@@ -823,6 +1007,72 @@ void testNotEqualUIntArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+
+void testEqualHEXArrays(void)
+{
+    unsigned int p0[] = {1, 8, 987, 65132u};
+    unsigned int p1[] = {1, 8, 987, 65132u};
+    unsigned int p2[] = {1, 8, 987, 2};
+    unsigned int p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualHEXArrays1(void)
+{
+    unsigned int p0[] = {1, 8, 987, 65132u};
+    unsigned int p1[] = {1, 8, 987, 65131u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualHEXArrays2(void)
+{
+    unsigned int p0[] = {1, 8, 987, 65132u};
+    unsigned int p1[] = {2, 8, 987, 65132u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualHEXArrays3(void)
+{
+    unsigned int p0[] = {1, 8, 987, 65132u};
+    unsigned int p1[] = {1, 8, 986, 65132u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p1, 4);
     EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
