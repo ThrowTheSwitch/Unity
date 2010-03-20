@@ -134,6 +134,47 @@ void testFail(void)
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
 }
 
+void testIsNull(void)
+{
+    char* ptr1 = NULL;
+    char* ptr2 = "hello";
+    
+    TEST_ASSERT_NULL(ptr1);
+    TEST_ASSERT_NOT_NULL(ptr2);
+}
+
+void testIsNullShouldFailIfNot(void)
+{
+    int failed;
+    char* ptr1 = "hello";
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NULL(ptr1);
+    EXPECT_ABORT_END
+    
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    TEST_ASSERT_EQUAL_INT(1U, failed);
+    TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
+}
+
+void testNotNullShouldFailIfNULL(void)
+{
+    int failed;
+    char* ptr1 = NULL;
+    
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_NULL(ptr1);
+    EXPECT_ABORT_END
+    
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    TEST_ASSERT_EQUAL_INT(1U, failed);
+    TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
+}
+
 void testIgnore(void)
 {
     int ignored;
@@ -191,7 +232,6 @@ void testNotEqualBits(void)
 
     TEST_ASSERT_MESSAGE(1U == failed, "This is expected");
 }
-
 
 void testNotEqualUInts(void)
 {
