@@ -8,10 +8,10 @@ require 'auto/colour_prompt'
 module RakefileHelpers
 
   C_EXTENSION = '.c'
-  COLOUR = true
+  $color_output = true
   
   def report(message)
-    if not COLOUR
+    if not $color_output
       puts($stdout.puts(message))
     else
       message.each_line do |line|

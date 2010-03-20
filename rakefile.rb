@@ -24,10 +24,14 @@ end
 desc "Build and test Unity"
 task :all => [:clean, :unit, :summary]
 task :default => [:clobber, :all]
-task :ci => [:default]
-task :cruise => [:default]
+task :ci => [:no_color, :default]
+task :cruise => [:no_color, :default]
 
 desc "Load configuration"
 task :config, :config_file do |t, args|
   configure_toolchain(args[:config_file])
+end
+
+task :no_color do
+  $color_output = false
 end
