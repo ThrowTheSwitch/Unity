@@ -81,3 +81,4 @@ simulator:
     - [*tools_root, 'arm\config\ioat91sam7X256.ddf']
     - -d
     - sim
+colour: true

@@ -87,3 +87,4 @@ simulator:
     - -p
     - [*core_config, 'MSP430F5438.ddf']
     - -d sim
+colour: true

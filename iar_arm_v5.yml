@@ -71,3 +71,4 @@ simulator:
     - [*tools_root, 'arm\config\debugger\atmel\ioat91sam7X256.ddf']
     - -d
     - sim
+colour: true

@@ -33,5 +33,5 @@ task :config, :config_file do |t, args|
 end
 
 task :no_color do
-  $color_output = false
+  $colour_output = false
 end

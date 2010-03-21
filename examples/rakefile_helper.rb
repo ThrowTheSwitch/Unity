@@ -2,16 +2,11 @@ require 'yaml'
 require 'fileutils'
 require '../auto/unity_test_summary'
 require '../auto/generate_test_runner'
+require '../auto/colour_reporter'
 
 module RakefileHelpers
 
   C_EXTENSION = '.c'
-  
-  def report(message)
-    puts message
-    $stdout.flush
-    $stderr.flush
-  end
   
   def load_configuration(config_file)
     $cfg_file = config_file
