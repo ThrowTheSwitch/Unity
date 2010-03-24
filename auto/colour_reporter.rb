@@ -16,11 +16,11 @@ def report(message)
           :green
         when /^OK$/
           :green
-        when /FAIL/
+        when /(?:FAIL|ERROR)/
           :red
         when /IGNORE/
           :yellow
-        when /^(Creating|Compiling|Linking)/
+        when /^(?:Creating|Compiling|Linking)/
           :white
         else
           :blue

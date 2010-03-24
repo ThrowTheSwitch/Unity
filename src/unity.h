@@ -39,6 +39,8 @@
     runTest(func); \
     UnityConcludeTest();
 
+#define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
+
 //-------------------------------------------------------
 // Basic Fail and Ignore
 //-------------------------------------------------------
