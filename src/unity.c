@@ -11,9 +11,9 @@ const char* UnityStrExpected = " Expected ";
 const char* UnityStrWas      = " Was ";
 const char* UnityStrTo       = " To ";
 const char* UnityStrElement  = " Element ";
-const char* UnityStrMemory   = " Memory Mismatch ";
+const char* UnityStrMemory   = " Memory Mismatch.";
 const char* UnityStrDelta    = " Values Not Within Delta ";
-const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Pointless";
+const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Pointless.";
 const char* UnityStrSpacer   = ". ";
 
 void UnityAddMsgIfSpecified(const char* msg);
@@ -244,8 +244,86 @@ void UnityAssertEqualIntArray(const int* expected,
                               const UNITY_DISPLAY_STYLE_T style)
 {
     unsigned long elements = num_elements;
-    const int* ptr_expected = expected;
-    const int* ptr_actual = actual;
+    const _US32* ptr_exp32 = (_US32*)expected;
+    const _US16* ptr_exp16 = (_US16*)expected;
+    const _US8*  ptr_exp8  = (_US8*)expected;
+    const _US32* ptr_act32 = (_US32*)actual;
+    const _US16* ptr_act16 = (_US16*)actual;
+    const _US8*  ptr_act8  = (_US8*)actual;
+
+    if (elements == 0)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrPointless);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+
+    switch(style)
+    {
+        case UNITY_DISPLAY_STYLE_HEX8:
+            while (elements--)
+            {
+                if (*ptr_exp8++ != *ptr_act8++)
+                {
+                    UnityTestResultsFailBegin(lineNumber);
+                    UnityPrint(UnityStrElement);
+                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrint(UnityStrExpected);
+                    UnityPrintNumberByStyle(*--ptr_exp8, style);
+                    UnityPrint(UnityStrWas);
+                    UnityPrintNumberByStyle(*--ptr_act8, style);
+                    UnityAddMsgIfSpecified(msg);
+                    UNITY_FAIL_AND_BAIL;
+                }
+            }
+            break;
+        case UNITY_DISPLAY_STYLE_HEX16:
+            while (elements--)
+            {
+                if (*ptr_exp16++ != *ptr_act16++)
+                {
+                    UnityTestResultsFailBegin(lineNumber);
+                    UnityPrint(UnityStrElement);
+                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrint(UnityStrExpected);
+                    UnityPrintNumberByStyle(*--ptr_exp16, style);
+                    UnityPrint(UnityStrWas);
+                    UnityPrintNumberByStyle(*--ptr_act16, style);
+                    UnityAddMsgIfSpecified(msg);
+                    UNITY_FAIL_AND_BAIL;
+                }
+            }
+            break;
+        default:
+            while (elements--)
+            {
+                if (*ptr_exp32++ != *ptr_act32++)
+                {
+                    UnityTestResultsFailBegin(lineNumber);
+                    UnityPrint(UnityStrElement);
+                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrint(UnityStrExpected);
+                    UnityPrintNumberByStyle(*--ptr_exp32, style);
+                    UnityPrint(UnityStrWas);
+                    UnityPrintNumberByStyle(*--ptr_act32, style);
+                    UnityAddMsgIfSpecified(msg);
+                    UNITY_FAIL_AND_BAIL;
+                }
+            }
+            break;
+    }
+}
+
+void UnityAssertEqualFloatArray(const _UF* expected,
+                                const _UF* actual,
+                                const unsigned long num_elements,
+                                const char* msg,
+                                const UNITY_LINE_TYPE lineNumber)
+{
+    unsigned long elements = num_elements;
+    const _UF* ptr_expected = expected;
+    const _UF* ptr_actual = actual;
 
     if (elements == 0)
     {
@@ -257,18 +335,17 @@ void UnityAssertEqualIntArray(const int* expected,
 
     while (elements--)
     {
-        if (*ptr_expected++ != *ptr_actual++)
+        if ((*ptr_expected - *ptr_actual) > (UNITY_FLOAT_PRECISION * *ptr_expected))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
-            UnityPrint(UnityStrExpected);
-            UnityPrintNumberByStyle(*--ptr_expected, style);
-            UnityPrint(UnityStrWas);
-            UnityPrintNumberByStyle(*--ptr_actual, style);
+            UnityPrint(UnityStrDelta);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
+        ptr_expected++;
+        ptr_actual++;
     }
 }
 

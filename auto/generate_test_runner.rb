@@ -41,7 +41,7 @@ class UnityTestRunnerGenerator
       used_mocks = find_mocks(includes)
     end
     
-    puts "Creating test runner for #{File.basename(input_file)}..."
+    puts "Creating test runner for #{module_name}..."
 
     #build runner file
     File.open(output_file, 'w') do |output|
@@ -50,7 +50,7 @@ class UnityTestRunnerGenerator
       create_mock_management(output, used_mocks)
       create_runtest(output, used_mocks)
 	    create_reset(output, used_mocks)
-      create_main(output, module_name, tests)
+      create_main(output, input_file, tests)
     end
     
     all_files_used = [input_file, output_file]
@@ -208,12 +208,12 @@ class UnityTestRunnerGenerator
     output.puts("}")
   end
   
-  def create_main(output, module_name, tests)
+  def create_main(output, filename, tests)
     output.puts()
     output.puts()
     output.puts("int main(void)")
     output.puts("{")
-    output.puts("  Unity.TestFile = \"#{module_name}\";")
+    output.puts("  Unity.TestFile = \"#{filename}\";")
     output.puts("  UnityBegin();")
     output.puts()
 

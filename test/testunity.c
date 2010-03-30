@@ -1055,7 +1055,6 @@ void testNotEqualUIntArrays3(void)
     VERIFY_FAILURE_WAS_CAUGHT
 }
 
-
 void testEqualHEXArrays(void)
 {
     unsigned int p0[] = {1, 8, 987, 65132u};
@@ -1113,6 +1112,136 @@ void testNotEqualHEXArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testEqualHEX16Arrays(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {1, 8, 987, 65132u};
+    unsigned short p2[] = {1, 8, 987, 2};
+    unsigned short p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualHEX16Arrays1(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {1, 8, 987, 65131u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualHEX16Arrays2(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {2, 8, 987, 65132u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualHEX16Arrays3(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {1, 8, 986, 65132u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testEqualHEX8Arrays(void)
+{
+    unsigned short p0[] = {1, 8, 254u, 123};
+    unsigned short p1[] = {1, 8, 254u, 123};
+    unsigned short p2[] = {1, 8, 254u, 2};
+    unsigned short p3[] = {1, 23, 25, 26};
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualHEX8Arrays1(void)
+{
+    unsigned char p0[] = {1, 8, 254u, 253u};
+    unsigned char p1[] = {1, 8, 254u, 252u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualHEX8Arrays2(void)
+{
+    unsigned char p0[] = {1, 8, 254u, 253u};
+    unsigned char p1[] = {2, 8, 254u, 253u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualHEX8Arrays3(void)
+{
+    unsigned char p0[] = {1, 8, 254u, 253u};
+    unsigned char p1[] = {1, 8, 255u, 253u};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
     EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;

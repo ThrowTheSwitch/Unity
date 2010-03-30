@@ -88,8 +88,8 @@ class UnityTestSummary
   def get_details(result_file, lines)
     results = { :failures => [], :ignores => [], :successes => [] }
     lines.each do |line|
-      line_out = line.gsub(/\//, "\\")
       src_file,src_line,test_name,status,msg = line.split(/:/)
+      line_out = ((@root and (@root != 0)) ? "#{@root}#{line}" : line ).gsub(/\//, "\\")
       case(status)
         when 'IGNORE' then results[:ignores]   << line_out
         when 'FAIL'   then results[:failures]  << line_out
