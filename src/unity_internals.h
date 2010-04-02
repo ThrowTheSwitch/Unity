@@ -34,14 +34,24 @@
 // Float Support
 //-------------------------------------------------------
 
-#ifndef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT 
+
+//No Floating Point Support
+#undef UNITY_FLOAT_PRECISION
+#undef UNITY_FLOAT_TYPE
+#undef UNITY_FLOAT_VERBOSE
+
+#else
+
+//Floating Point Support
 #ifndef UNITY_FLOAT_PRECISION
 #define UNITY_FLOAT_PRECISION (0.00001f)
 #endif
 #ifndef UNITY_FLOAT_TYPE
 #define UNITY_FLOAT_TYPE float
 #endif
-    typedef UNITY_FLOAT_TYPE _UF;
+typedef UNITY_FLOAT_TYPE _UF;
+    
 #endif
 
 //-------------------------------------------------------
@@ -79,7 +89,7 @@ struct _Unity
 {
     const char* TestFile;
     const char* CurrentTestName;
-    unsigned long CurrentTestLineNumber;
+    _UU32 CurrentTestLineNumber;
     unsigned char NumberOfTests;
     unsigned char TestFailures;
     unsigned char TestIgnores;
@@ -103,11 +113,15 @@ void UnityConcludeTest(void);
 //-------------------------------------------------------
 
 void UnityPrint(const char* string);
-void UnityPrintMask(const unsigned long mask, const unsigned long number);
-void UnityPrintNumberByStyle(const long number, const UNITY_DISPLAY_STYLE_T style);
-void UnityPrintNumber(const long number);
-void UnityPrintNumberUnsigned(const unsigned long number);
-void UnityPrintNumberHex(const unsigned long number, const char nibbles);
+void UnityPrintMask(const _UU32 mask, const _UU32 number);
+void UnityPrintNumberByStyle(const _US32 number, const UNITY_DISPLAY_STYLE_T style);
+void UnityPrintNumber(const _US32 number);
+void UnityPrintNumberUnsigned(const _UU32 number);
+void UnityPrintNumberHex(const _UU32 number, const char nibbles);
+
+#ifdef UNITY_FLOAT_VERBOSE
+void UnityPrintFloat(const _UF number);
+#endif
 
 //-------------------------------------------------------
 // Test Assertion Fuctions
@@ -117,22 +131,22 @@ void UnityPrintNumberHex(const unsigned long number, const char nibbles);
 //  convention and will pull in file and line information
 //  for you.
 
-void UnityAssertEqualNumber(const long expected,
-                            const long actual,
+void UnityAssertEqualNumber(const _US32 expected,
+                            const _US32 actual,
                             const char* msg,
                             const UNITY_LINE_TYPE lineNumber,
                             const UNITY_DISPLAY_STYLE_T style);
 
 void UnityAssertEqualIntArray(const int* expected,
                               const int* actual,
-                              const unsigned long num_elements,
+                              const _UU32 num_elements,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_DISPLAY_STYLE_T style);
 
-void UnityAssertBits(const long mask,
-                     const long expected,
-                     const long actual,
+void UnityAssertBits(const _US32 mask,
+                     const _US32 expected,
+                     const _US32 actual,
                      const char* msg,
                      const UNITY_LINE_TYPE lineNumber);
 
@@ -144,14 +158,14 @@ void UnityAssertEqualString(const char* expected,
 
 void UnityAssertEqualMemory( const void* expected,
                              const void* actual,
-                             const unsigned long length,
-                             const unsigned long num_elements,
+                             const _UU32 length,
+                             const _UU32 num_elements,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber);
 
-void UnityAssertNumbersWithin(const long delta,
-                              const long expected,
-                              const long actual,
+void UnityAssertNumbersWithin(const _US32 delta,
+                              const _US32 expected,
+                              const _US32 actual,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_DISPLAY_STYLE_T style);
@@ -169,7 +183,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 
 void UnityAssertEqualFloatArray(const _UF* expected,
                                 const _UF* actual,
-                                const unsigned long num_elements,
+                                const _UU32 num_elements,
                                 const char* msg,
                                 const UNITY_LINE_TYPE lineNumber);
 #endif
@@ -189,28 +203,28 @@ void UnityAssertEqualFloatArray(const _UF* expected,
 #define UNITY_TEST_ASSERT_NULL(pointer, line, message)                                           UNITY_TEST_ASSERT(((pointer) == NULL),  (UNITY_LINE_TYPE)line, message)
 #define UNITY_TEST_ASSERT_NOT_NULL(pointer, line, message)                                       UNITY_TEST_ASSERT(((pointer) != NULL),  (UNITY_LINE_TYPE)line, message)
 
-#define UNITY_TEST_ASSERT_EQUAL_INT(expected, actual, line, message)                             UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
-#define UNITY_TEST_ASSERT_EQUAL_UINT(expected, actual, line, message)                            UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_UINT)
-#define UNITY_TEST_ASSERT_EQUAL_HEX8(expected, actual, line, message)                            UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX8)
-#define UNITY_TEST_ASSERT_EQUAL_HEX16(expected, actual, line, message)                           UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX16)
-#define UNITY_TEST_ASSERT_EQUAL_HEX32(expected, actual, line, message)                           UnityAssertEqualNumber((long)(expected), (long)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX32)
-#define UNITY_TEST_ASSERT_BITS(mask, expected, actual, line, message)                            UnityAssertBits((long)(mask), (long)(expected), (long)(actual), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_EQUAL_INT(expected, actual, line, message)                             UnityAssertEqualNumber((_US32)(expected), (_US32)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
+#define UNITY_TEST_ASSERT_EQUAL_UINT(expected, actual, line, message)                            UnityAssertEqualNumber((_US32)(expected), (_US32)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_UINT)
+#define UNITY_TEST_ASSERT_EQUAL_HEX8(expected, actual, line, message)                            UnityAssertEqualNumber((_US32)(expected), (_US32)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX8)
+#define UNITY_TEST_ASSERT_EQUAL_HEX16(expected, actual, line, message)                           UnityAssertEqualNumber((_US32)(expected), (_US32)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX16)
+#define UNITY_TEST_ASSERT_EQUAL_HEX32(expected, actual, line, message)                           UnityAssertEqualNumber((_US32)(expected), (_US32)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX32)
+#define UNITY_TEST_ASSERT_BITS(mask, expected, actual, line, message)                            UnityAssertBits((_US32)(mask), (_US32)(expected), (_US32)(actual), (message), (UNITY_LINE_TYPE)line)
 
-#define UNITY_TEST_ASSERT_INT_WITHIN(delta, expected, actual, line, message)                     UnityAssertNumbersWithin((long)(delta), (long)(expected), (long)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
-#define UNITY_TEST_ASSERT_UINT_WITHIN(delta, expected, actual, line, message)                    UnityAssertNumbersWithin((long)(delta), (long)(expected), (long)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_UINT)
-#define UNITY_TEST_ASSERT_HEX8_WITHIN(delta, expected, actual, line, message)                    UnityAssertNumbersWithin((long)(delta), (long)(expected), (long)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX8)
-#define UNITY_TEST_ASSERT_HEX16_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((long)(delta), (long)(expected), (long)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX16)
-#define UNITY_TEST_ASSERT_HEX32_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((long)(delta), (long)(expected), (long)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX32)
+#define UNITY_TEST_ASSERT_INT_WITHIN(delta, expected, actual, line, message)                     UnityAssertNumbersWithin((_US32)(delta), (_US32)(expected), (_US32)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
+#define UNITY_TEST_ASSERT_UINT_WITHIN(delta, expected, actual, line, message)                    UnityAssertNumbersWithin((_US32)(delta), (_US32)(expected), (_US32)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_UINT)
+#define UNITY_TEST_ASSERT_HEX8_WITHIN(delta, expected, actual, line, message)                    UnityAssertNumbersWithin((_US32)(delta), (_US32)(expected), (_US32)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX8)
+#define UNITY_TEST_ASSERT_HEX16_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((_US32)(delta), (_US32)(expected), (_US32)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX16)
+#define UNITY_TEST_ASSERT_HEX32_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((_US32)(delta), (_US32)(expected), (_US32)(actual), NULL, (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX32)
 
 #define UNITY_TEST_ASSERT_EQUAL_STRING(expected, actual, line, message)                          UnityAssertEqualString((const char*)(expected), (const char*)(actual), (message), (UNITY_LINE_TYPE)line)
-#define UNITY_TEST_ASSERT_EQUAL_MEMORY(expected, actual, len, line, message)                     UnityAssertEqualMemory((void*)(expected), (void*)(actual), (unsigned long)(len), 1, (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_EQUAL_MEMORY(expected, actual, len, line, message)                     UnityAssertEqualMemory((void*)(expected), (void*)(actual), (_UU32)(len), 1, (message), (UNITY_LINE_TYPE)line)
 
-#define UNITY_TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements, line, message)         UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
-#define UNITY_TEST_ASSERT_EQUAL_UINT_ARRAY(expected, actual, num_elements, line, message)        UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_UINT)
-#define UNITY_TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, actual, num_elements, line, message)        UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX8)
-#define UNITY_TEST_ASSERT_EQUAL_HEX16_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX16)
-#define UNITY_TEST_ASSERT_EQUAL_HEX32_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualIntArray((const int*)(expected), (const int*)(actual), (unsigned long)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX32)
-#define UNITY_TEST_ASSERT_EQUAL_MEMORY_ARRAY(expected, actual, len, num_elements, line, message) UnityAssertEqualMemory((void*)(expected), (void*)(actual), (unsigned long)(len), (unsigned long)(num_elements), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements, line, message)         UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
+#define UNITY_TEST_ASSERT_EQUAL_UINT_ARRAY(expected, actual, num_elements, line, message)        UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_UINT)
+#define UNITY_TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, actual, num_elements, line, message)        UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX8)
+#define UNITY_TEST_ASSERT_EQUAL_HEX16_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX16)
+#define UNITY_TEST_ASSERT_EQUAL_HEX32_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX32)
+#define UNITY_TEST_ASSERT_EQUAL_MEMORY_ARRAY(expected, actual, len, num_elements, line, message) UnityAssertEqualMemory((void*)(expected), (void*)(actual), (_UU32)(len), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
 
 #ifdef UNITY_EXCLUDE_FLOAT
 #define UNITY_TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual, line, message)                   UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Floating Point Disabled")
@@ -219,7 +233,7 @@ void UnityAssertEqualFloatArray(const _UF* expected,
 #else
 #define UNITY_TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual, line, message)                   UnityAssertFloatsWithin((_UF)(delta), (_UF)(expected), (_UF)(actual), (message), (UNITY_LINE_TYPE)line)
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT(expected, actual, line, message)                           UNITY_TEST_ASSERT_FLOAT_WITHIN((_UF)(expected) * (_UF)UNITY_FLOAT_PRECISION, (_UF)expected, (_UF)actual, (UNITY_LINE_TYPE)line, message)
-#define UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualFloatArray((_UF*)(expected), (_UF*)(actual), (unsigned long)(num_elements), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualFloatArray((_UF*)(expected), (_UF*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
 #endif
 
 #endif

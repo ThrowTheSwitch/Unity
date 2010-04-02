@@ -61,7 +61,7 @@ class UnityTestSummary
     @report += "--------------------------\n"
     @report += "OVERALL UNITY TEST SUMMARY\n"
     @report += "--------------------------\n"
-    @report += "TOTAL TESTS: #{@total_tests} TOTAL FAILURES: #{@failures} IGNORED: #{@ignored}\n"
+    @report += "#{@total_tests} TOTAL TESTS #{@failures} TOTAL FAILURES #{@ignored} IGNORED\n"
     @report += "\n"
   end
   

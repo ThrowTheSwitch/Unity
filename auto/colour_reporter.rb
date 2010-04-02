@@ -7,10 +7,11 @@ def report(message)
   if not $colour_output
     $stdout.puts(message)
   else
+    message = message.join('\n') if (message.class == Array)
     message.each_line do |line|
       line.chomp!
       colour = case(line)
-        when /Tests\s+(\d+)\s+Failures\s+\d+\s+Ignored/
+        when /(?:total\s+)?tests:?\s+(\d+)\s+(?:total\s+)?failures:?\s+\d+\s+Ignored:?/i
           ($1.to_i == 0) ? :green : :red
         when /PASS/
           :green
@@ -23,7 +24,7 @@ def report(message)
         when /^(?:Creating|Compiling|Linking)/
           :white
         else
-          :blue
+          :silver
       end
       colour_puts(colour, line)
     end
