@@ -334,7 +334,7 @@ void UnityAssertEqualFloatArray(const _UF* expected,
     _UU32 elements = num_elements;
     const _UF* ptr_expected = expected;
     const _UF* ptr_actual = actual;
-    _UF diff;
+    _UF diff, tol;
 
     if (elements == 0)
     {
@@ -349,7 +349,10 @@ void UnityAssertEqualFloatArray(const _UF* expected,
         diff = *ptr_expected - *ptr_actual;
         if (diff < 0.0)
           diff = 0.0 - diff;
-        if (diff > (UNITY_FLOAT_PRECISION * *ptr_expected))
+        tol = UNITY_FLOAT_PRECISION * *ptr_expected;
+        if (tol < 0.0)
+            tol = 0.0 - tol;
+        if (diff > tol)
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);

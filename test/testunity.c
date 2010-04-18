@@ -623,6 +623,34 @@ void testFloatsNotEqual(void)
     VERIFY_FAILURE_WAS_CAUGHT
 }
 
+void testFloatsNotEqualNegative1(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(-9273.9649f, -9273.0049f);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testFloatsNotEqualNegative2(void)
+{
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(-9273.0049f, -9273.9649f);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
 void testIntsWithinDelta(void)
 {
     TEST_ASSERT_INT_WITHIN(1, 5000, 5001);
@@ -1252,10 +1280,10 @@ void testNotEqualHEX8Arrays3(void)
 
 void testEqualFloatArrays(void)
 {
-    float p0[] = {1.0, 8.0,  25.4, 0.123};
-    float p1[] = {1.0, 8.0,  25.4, 0.123};
-    float p2[] = {1.0, 8.0,  25.4, 0.2};
-    float p3[] = {1.0, 23.0, 25.0, 0.26};
+    float p0[] = {1.0, -8.0,  25.4, -0.123};
+    float p1[] = {1.0, -8.0,  25.4, -0.123};
+    float p2[] = {1.0, -8.0,  25.4, -0.2};
+    float p3[] = {1.0, -23.0, 25.0, -0.26};
 
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p0, 4);
@@ -1302,6 +1330,57 @@ void testNotEqualFloatArrays3(void)
 {
     float p0[] = {1.0, 8.0, 25.4, 0.253};
     float p1[] = {1.0, 8.0, 25.5, 0.253};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualFloatArraysNegative1(void)
+{
+    float p0[] = {-1.0, -8.0, -25.4, -0.253};
+    float p1[] = {-1.0, -8.0, -25.4, -0.252};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualFloatArraysNegative2(void)
+{
+    float p0[] = {-1.0, -8.0, -25.4, -0.253};
+    float p1[] = {-2.0, -8.0, -25.4, -0.253};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualFloatArraysNegative3(void)
+{
+    float p0[] = {-1.0, -8.0, -25.4, -0.253};
+    float p1[] = {-1.0, -8.0, -25.5, -0.253};
 
     int failed;
 
