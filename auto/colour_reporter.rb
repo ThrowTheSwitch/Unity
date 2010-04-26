@@ -1,3 +1,8 @@
+# ==========================================
+#   Unity Project - A Test Framework for C
+#   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+#   [Released under MIT License. Please refer to license.txt for details]
+# ========================================== 
 
 require "#{File.expand_path(File.dirname(__FILE__))}/colour_prompt"
 

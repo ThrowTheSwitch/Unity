@@ -1,3 +1,9 @@
+# ==========================================
+#   Unity Project - A Test Framework for C
+#   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+#   [Released under MIT License. Please refer to license.txt for details]
+# ========================================== 
+
 File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 
 class UnityTestRunnerGenerator
@@ -187,10 +193,10 @@ class UnityTestRunnerGenerator
     output.puts("      setUp();")
     output.puts("      test();")
     output.puts("      CMock_Verify();") unless (used_mocks.empty?)
-    output.puts("    } Catch(e) { TEST_FAIL(\"Unhandled Exception!\"); }") if @options[:cexception]
+    output.puts("    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\"); }") if @options[:cexception]
     output.puts("  }")
     output.puts("  CMock_Destroy();") unless (used_mocks.empty?)
-    output.puts("  if (TEST_PROTECT())")
+    output.puts("  if (TEST_PROTECT() && !TEST_IS_IGNORED)")
     output.puts("  {")
     output.puts("    tearDown();")
     output.puts("  }")

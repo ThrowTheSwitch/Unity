@@ -1,3 +1,9 @@
+# ==========================================
+#   Unity Project - A Test Framework for C
+#   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+#   [Released under MIT License. Please refer to license.txt for details]
+# ========================================== 
+
 C_COMPILER=gcc
 TARGET_BASE = testunity
 ifeq ($(OS),Windows_NT)
@@ -7,7 +13,7 @@ else
 endif
 TARGET = $(TARGET_BASE)$(TARGET_EXTENSION)
 OUT_FILE=-o $(TARGET)
-SRC_FILES=src/unity.c test/testunity.c test/testunity_Runner.c
+SRC_FILES=src/unity.c test/testunity.c build/testunity_Runner.c
 INC_DIRS=-Isrc
 SYMBOLS=-DTEST
 
@@ -20,7 +26,8 @@ endif
 all: clean default
 
 default:
-	$(C_COMPILER) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES) $(OUT_FILE)$(OUT_EXTENSION)
+	ruby auto/generate_test_runner.rb test/testunity.c build/testunity_Runner.c
+	$(C_COMPILER) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES) $(OUT_FILE)
 	$(TARGET)
 
 clean:

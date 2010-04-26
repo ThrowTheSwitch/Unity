@@ -1,4 +1,8 @@
-#define UNITY_ENABLE_EXTERNAL_ASSERTIONS
+/* ==========================================
+    Unity Project - A Test Framework for C
+    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+    [Released under MIT License. Please refer to license.txt for details]
+========================================== */
 
 #include <setjmp.h>
 #include "unity.h"
@@ -17,12 +21,17 @@
       TEST_ASSERT_MESSAGE((1u == failed), "<---- [ This Test Should Have Failed But Did Not ]"); \
     EXPECT_ABORT_END
 
+int SetToOneToFailInTearDown;
+
 void setUp(void)
 {
+  SetToOneToFailInTearDown = 0;
 }
 
 void tearDown(void)
 {
+  if (SetToOneToFailInTearDown == 1)
+    TEST_FAIL("Failed in tearDown");
 }
 
 void testTrue(void)
@@ -429,6 +438,25 @@ void testEqualHex8s(void)
     TEST_ASSERT_EQUAL_HEX8(*p0, 0x22);
 }
 
+void testEqualHex8sNegatives(void)
+{
+    _UU8 v0, v1;
+    _UU8 *p0, *p1;
+    
+    v0 = 0xDD;
+    v1 = 0xDD;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_HEX8(0xDD, 0xDD);
+    TEST_ASSERT_EQUAL_HEX8(v0, v1);
+    TEST_ASSERT_EQUAL_HEX8(0xDD, v1);
+    TEST_ASSERT_EQUAL_HEX8(v0, 0xDD);
+    TEST_ASSERT_EQUAL_HEX8(*p0, v1);
+    TEST_ASSERT_EQUAL_HEX8(*p0, *p1);
+    TEST_ASSERT_EQUAL_HEX8(*p0, 0xDD);
+}
+
 void testEqualHex16s(void)
 {
     _UU16 v0, v1;
@@ -689,7 +717,7 @@ void testUIntsNotWithinDelta(void)
     int failed;
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT_WITHIN(1, 2147483647, 2147483649);
+    TEST_ASSERT_UINT_WITHIN(1, 2147483647u, 2147483649u);
     EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
@@ -738,7 +766,7 @@ void testHEX32sNotWithinDelta(void)
     int failed;
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX32_WITHIN(1, 2147483647, 2147483649);
+    TEST_ASSERT_HEX32_WITHIN(1, 2147483647u, 2147483649u);
     EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
@@ -1477,3 +1505,8 @@ void testProtection(void)
     TEST_ASSERT_EQUAL(3, mask);
 }
 
+void testIgnoredAndThenFailInTearDown(void)
+{
+    SetToOneToFailInTearDown = 1;
+    TEST_IGNORE();
+}

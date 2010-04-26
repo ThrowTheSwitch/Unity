@@ -1,3 +1,9 @@
+# ==========================================
+#   Unity Project - A Test Framework for C
+#   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+#   [Released under MIT License. Please refer to license.txt for details]
+# ========================================== 
+
 # This script creates all the files with start code necessary for a new module.
 # A simple module only requires a source file, header file, and test file.
 # Triad modules require a source, header, and test file for each triad type (like model, conductor, and hardware).

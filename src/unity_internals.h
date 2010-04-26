@@ -1,3 +1,9 @@
+/* ==========================================
+    Unity Project - A Test Framework for C
+    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+    [Released under MIT License. Please refer to license.txt for details]
+========================================== */
+
 #ifndef UNITY_INTERNALS_H
 #define UNITY_INTERNALS_H
 
@@ -70,6 +76,10 @@ typedef UNITY_FLOAT_TYPE _UF;
 #define UNITY_LINE_TYPE unsigned short
 #endif
 
+#ifndef UNITY_COUNTER_TYPE
+#define UNITY_COUNTER_TYPE unsigned short
+#endif
+
 //-------------------------------------------------------
 // Internal Structs Needed
 //-------------------------------------------------------
@@ -90,11 +100,11 @@ struct _Unity
     const char* TestFile;
     const char* CurrentTestName;
     _UU32 CurrentTestLineNumber;
-    unsigned char NumberOfTests;
-    unsigned char TestFailures;
-    unsigned char TestIgnores;
-    unsigned char CurrentTestFailed;
-    unsigned char CurrentTestIgnored;
+    UNITY_COUNTER_TYPE NumberOfTests;
+    UNITY_COUNTER_TYPE TestFailures;
+    UNITY_COUNTER_TYPE TestIgnores;
+    UNITY_COUNTER_TYPE CurrentTestFailed;
+    UNITY_COUNTER_TYPE CurrentTestIgnored;
     jmp_buf AbortFrame;
 };
 

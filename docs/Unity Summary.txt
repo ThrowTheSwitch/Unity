@@ -2,6 +2,8 @@
 Unity Test API
 ==============
 
+[Copyright (c) 2007 - Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams]
+
 -------------
 Running Tests 
 ------------- 

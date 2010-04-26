@@ -1,3 +1,9 @@
+/* ==========================================
+    Unity Project - A Test Framework for C
+    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+    [Released under MIT License. Please refer to license.txt for details]
+========================================== */
+
 #ifndef UNITY_FRAMEWORK_H
 #define UNITY_FRAMEWORK_H
 
@@ -41,6 +47,7 @@
     UnityConcludeTest();
 
 #define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
+#define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
 
 //-------------------------------------------------------
 // Basic Fail and Ignore
