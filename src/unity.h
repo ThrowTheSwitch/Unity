@@ -21,7 +21,7 @@
 
 // Floats
 //     - define UNITY_EXCLUDE_FLOAT to disallow floating point comparisons
-//     - define UNITY_FLOAT_DELTA to specify the precision to use when doing TEST_ASSERT_EQUAL_FLOAT
+//     - define UNITY_FLOAT_PRECISION to specify the precision to use when doing TEST_ASSERT_EQUAL_FLOAT
 //     - define UNITY_FLOAT_TYPE to specify doubles instead of single precision floats
 //     - define UNITY_FLOAT_VERBOSE to print floating point values in errors (uses sprintf)
 
@@ -30,6 +30,7 @@
 
 // Optimization
 //     - by default, line numbers are stored in unsigned shorts.  Define UNITY_LINE_TYPE with a different type if your files are huge
+//     - by default, test and failure counters are unsigned shorts.  Define UNITY_COUNTER_TYPE with a different type if you want to save space or have more than 65535 Tests.
 
 //-------------------------------------------------------
 // Test Running Macros
