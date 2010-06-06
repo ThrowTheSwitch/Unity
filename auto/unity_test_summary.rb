@@ -26,7 +26,7 @@ class UnityTestSummary
   def run
     # Clean up result file names
     results = @targets.map {|target| target.gsub(/\\/,'/')}
-
+    
     # Dig through each result file, looking for details on pass/fail:   
     failure_output = []
     ignore_output = []

@@ -157,6 +157,7 @@ module RakefileHelpers
     results = Dir[results_glob]
     summary.set_targets(results)
     summary.run
+    raise "There were failures" if (summary.failures > 0)
   end
   
   def run_tests(test_files)
@@ -222,7 +223,6 @@ module RakefileHelpers
         test_results += '.testpass'
       end
       File.open(test_results, 'w') { |f| f.print output }
-      
     end
   end
   
