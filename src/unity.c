@@ -42,6 +42,7 @@ void UnityPrint(const char* string)
     }
 }
 
+//-----------------------------------------------
 void UnityPrintNumberByStyle(const _US32 number, const UNITY_DISPLAY_STYLE_T style)
 {
     switch (style)
@@ -54,6 +55,7 @@ void UnityPrintNumberByStyle(const _US32 number, const UNITY_DISPLAY_STYLE_T sty
     }
 }
 
+//-----------------------------------------------
 /// basically do an itoa using as little ram as possible
 void UnityPrintNumber(const _US32 number_to_print)
 {
@@ -86,6 +88,7 @@ void UnityPrintNumber(const _US32 number_to_print)
     while (divisor > 0);
 }
 
+//-----------------------------------------------
 /// basically do an itoa using as little ram as possible
 void UnityPrintNumberUnsigned(const _UU32 number)
 {
@@ -111,6 +114,7 @@ void UnityPrintNumberUnsigned(const _UU32 number)
     while (divisor > 0);
 }
 
+//-----------------------------------------------
 void UnityPrintNumberHex(const _UU32 number, const char nibbles_to_print)
 {
     _UU32 nibble;
@@ -131,6 +135,7 @@ void UnityPrintNumberHex(const _UU32 number, const char nibbles_to_print)
     }
 }
 
+//-----------------------------------------------
 void UnityPrintMask(const _UU32 mask, const _UU32 number)
 {
     _UU32 bit = 0x80000000;
@@ -157,6 +162,7 @@ void UnityPrintMask(const _UU32 mask, const _UU32 number)
     }
 }
 
+//-----------------------------------------------
 #ifdef UNITY_FLOAT_VERBOSE
 void UnityPrintFloat(_UF number)
 {
@@ -166,6 +172,7 @@ void UnityPrintFloat(_UF number)
 }
 #endif
 
+//-----------------------------------------------
 void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
     UnityPrint(file);
@@ -176,12 +183,14 @@ void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
     UNITY_OUTPUT_CHAR(':');
 }
 
+//-----------------------------------------------
 void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint("FAIL:");
 }
 
+//-----------------------------------------------
 void UnityConcludeTest()
 {
     if (Unity.CurrentTestIgnored)
@@ -202,6 +211,7 @@ void UnityConcludeTest()
     Unity.CurrentTestIgnored = 0;
 }
 
+//-----------------------------------------------
 void UnityAddMsgIfSpecified(const char* msg)
 {
     if (msg)
@@ -233,6 +243,7 @@ void UnityAssertBits(const _US32 mask,
     }
 }
 
+//-----------------------------------------------
 void UnityAssertEqualNumber(const _US32 expected,
                             const _US32 actual,
                             const char* msg,
@@ -251,6 +262,7 @@ void UnityAssertEqualNumber(const _US32 expected,
     }
 }
 
+//-----------------------------------------------
 void UnityAssertEqualIntArray(const int* expected,
                               const int* actual,
                               const _UU32 num_elements,
@@ -277,6 +289,8 @@ void UnityAssertEqualIntArray(const int* expected,
     switch(style)
     {
         case UNITY_DISPLAY_STYLE_HEX8:
+        case UNITY_DISPLAY_STYLE_INT8:
+        case UNITY_DISPLAY_STYLE_UINT8:
             while (elements--)
             {
                 if (*ptr_exp8++ != *ptr_act8++)
@@ -294,6 +308,8 @@ void UnityAssertEqualIntArray(const int* expected,
             }
             break;
         case UNITY_DISPLAY_STYLE_HEX16:
+        case UNITY_DISPLAY_STYLE_INT16:
+        case UNITY_DISPLAY_STYLE_UINT16:
             while (elements--)
             {
                 if (*ptr_exp16++ != *ptr_act16++)
@@ -330,6 +346,7 @@ void UnityAssertEqualIntArray(const int* expected,
     }
 }
 
+//-----------------------------------------------
 #ifndef UNITY_EXCLUDE_FLOAT
 void UnityAssertEqualFloatArray(const _UF* expected,
                                 const _UF* actual,
@@ -379,6 +396,7 @@ void UnityAssertEqualFloatArray(const _UF* expected,
     }
 }
 
+//-----------------------------------------------
 void UnityAssertFloatsWithin(const _UF delta,
                              const _UF expected,
                              const _UF actual,
@@ -414,6 +432,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 }
 #endif
 
+//-----------------------------------------------
 void UnityAssertNumbersWithin( const _US32 delta,
                                const _US32 expected,
                                const _US32 actual,
@@ -450,6 +469,7 @@ void UnityAssertNumbersWithin( const _US32 delta,
     }
 }
 
+//-----------------------------------------------
 void UnityAssertEqualString(const char* expected,
                             const char* actual,
                             const char* msg,
@@ -493,6 +513,83 @@ void UnityAssertEqualString(const char* expected,
     }
 }
 
+//-----------------------------------------------
+void UnityAssertEqualStringArray( const char** expected,
+                                  const char** actual,
+                                  const _UU32 num_elements,
+                                  const char* msg,
+                                  const UNITY_LINE_TYPE lineNumber)
+{
+    _UU32 i, j = 0;
+    
+    // if no elements, it's an error
+    if (num_elements == 0)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrPointless);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+
+    // if both are null, it passes. if one is null, it fails
+    if ((expected == NULL) || (actual == NULL))
+    {
+        if (expected == actual)
+        {
+            return;
+        }
+        else
+        {
+            Unity.CurrentTestFailed = 1;
+            UNITY_FAIL_AND_BAIL;
+        }
+    }
+    
+    do
+    {
+        // if both pointers not null compare the strings
+        if (expected[j] && actual[j])
+        {
+            for (i = 0; expected[j][i] || actual[j][i]; i++)
+            {
+                if (expected[j][i] != actual[j][i])
+                {
+                    Unity.CurrentTestFailed = 1;
+                    break;
+                }
+            }
+        }
+        else
+        { // handle case of one pointers being null (if both null, test should pass)
+            if (expected[j] != actual[j])
+            {
+                Unity.CurrentTestFailed = 1;
+            }
+        }
+
+        if (Unity.CurrentTestFailed)
+        {
+            UnityTestResultsFailBegin(lineNumber);
+            if (num_elements > 1)
+            {
+                UnityPrint(UnityStrElement);
+                UnityPrintNumberByStyle((num_elements - j - 1), UNITY_DISPLAY_STYLE_UINT);
+            }
+            UnityPrint(UnityStrExpected);
+            UNITY_OUTPUT_CHAR('\'');
+            UnityPrint(expected[j]);
+            UNITY_OUTPUT_CHAR('\'');
+            UnityPrint(UnityStrWas);
+            UNITY_OUTPUT_CHAR('\'');
+            UnityPrint(actual[j]);
+            UNITY_OUTPUT_CHAR('\'');
+            UnityAddMsgIfSpecified(msg);
+            UNITY_FAIL_AND_BAIL;
+        } 
+    } while (++j < num_elements);
+}
+
+//-----------------------------------------------
 void UnityAssertEqualMemory( const void* expected,
                              const void* actual,
                              _UU32 length,
@@ -563,6 +660,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     UNITY_FAIL_AND_BAIL;
 }
 
+//-----------------------------------------------
 void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
@@ -575,11 +673,13 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     UNITY_IGNORE_AND_BAIL;
 }
 
+//-----------------------------------------------
 void UnityBegin()
 {
     Unity.NumberOfTests = 0;
 }
 
+//-----------------------------------------------
 void UnityEnd(void)
 {
     UnityPrint("-----------------------\n");

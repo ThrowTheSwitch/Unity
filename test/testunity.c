@@ -913,6 +913,110 @@ void testNotEqualString_ActualStringIsNull(void)
     VERIFY_FAILURE_WAS_CAUGHT
 }
 
+void testEqualStringArrays(void)
+{
+    const char *testStrings[] = { "foo", "boo", "woo", "moo" };
+    const char *expStrings[] = { "foo", "boo", "woo", "zoo" };
+
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, expStrings, 3);
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 3);
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 2);
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 1);
+}
+
+void testNotEqualStringArray1(void)
+{
+    int failed;
+    
+    const char *testStrings[] = { "foo", "boo", "woo", "moo" };
+    const char *expStrings[] = { "foo", "boo", "woo", "zoo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualStringArray2(void)
+{
+    int failed;
+    
+    const char *testStrings[] = { "zoo", "boo", "woo", "moo" };
+    const char *expStrings[] = { "foo", "boo", "woo", "moo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualStringArray3(void)
+{
+    int failed;
+    
+    const char *testStrings[] = { "foo", "boo", "woo", NULL };
+    const char *expStrings[] = { "foo", "boo", "woo", "zoo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualStringArray4(void)
+{
+    int failed;
+    
+    const char *testStrings[] = { "foo", "boo", "woo", "moo" };
+    const char *expStrings[] = { "foo", NULL, "woo", "moo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testNotEqualStringArray5(void)
+{
+    int failed;
+    
+    const char **testStrings = NULL;
+    const char *expStrings[] = { "foo", "boo", "woo", "zoo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testEqualStringArrayIfBothNulls(void)
+{
+    const char **testStrings = NULL;
+    const char **expStrings = NULL;
+
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
+}
+
 void testEqualMemory(void)
 {
     const char *testString = "whatever";

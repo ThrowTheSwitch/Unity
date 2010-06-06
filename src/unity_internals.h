@@ -89,7 +89,13 @@ typedef void (*UnityTestFunction)(void);
 typedef enum
 {
     UNITY_DISPLAY_STYLE_INT,
+    UNITY_DISPLAY_STYLE_INT8,
+    UNITY_DISPLAY_STYLE_INT16,
+    UNITY_DISPLAY_STYLE_INT32,
     UNITY_DISPLAY_STYLE_UINT,
+    UNITY_DISPLAY_STYLE_UINT8,
+    UNITY_DISPLAY_STYLE_UINT16,
+    UNITY_DISPLAY_STYLE_UINT32,
     UNITY_DISPLAY_STYLE_HEX8,
     UNITY_DISPLAY_STYLE_HEX16,
     UNITY_DISPLAY_STYLE_HEX32
@@ -165,6 +171,11 @@ void UnityAssertEqualString(const char* expected,
                             const char* msg,
                             const UNITY_LINE_TYPE lineNumber);
 
+void UnityAssertEqualStringArray( const char** expected,
+                                  const char** actual,
+                                  const _UU32 num_elements,
+                                  const char* msg,
+                                  const UNITY_LINE_TYPE lineNumber);
 
 void UnityAssertEqualMemory( const void* expected,
                              const void* actual,
@@ -234,6 +245,7 @@ void UnityAssertEqualFloatArray(const _UF* expected,
 #define UNITY_TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, actual, num_elements, line, message)        UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX8)
 #define UNITY_TEST_ASSERT_EQUAL_HEX16_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX16)
 #define UNITY_TEST_ASSERT_EQUAL_HEX32_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualIntArray((const _US32*)(expected), (const _US32*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_HEX32)
+#define UNITY_TEST_ASSERT_EQUAL_STRING_ARRAY(expected, actual, num_elements, line, message)      UnityAssertEqualStringArray((const char**)(expected), (const char**)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
 #define UNITY_TEST_ASSERT_EQUAL_MEMORY_ARRAY(expected, actual, len, num_elements, line, message) UnityAssertEqualMemory((void*)(expected), (void*)(actual), (_UU32)(len), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
 
 #ifdef UNITY_EXCLUDE_FLOAT
