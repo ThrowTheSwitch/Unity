@@ -1150,6 +1150,37 @@ void testNotEqualIntArrays3(void)
     VERIFY_FAILURE_WAS_CAUGHT
 }
 
+void testEqualInt8Arrays(void)
+{
+    _US8 p0[] = {1, 8, 117, -2};
+    _US8 p1[] = {1, 8, 117, -2};
+    _US8 p2[] = {1, 8, 117, 2};
+    _US8 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualInt8Arrays(void)
+{
+    _US8 p0[] = {1, 8, 127, -2};
+    _US8 p1[] = {1, 8, 127, 2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
 void testEqualUIntArrays(void)
 {
     unsigned int p0[] = {1, 8, 987, 65132u};
@@ -1207,6 +1238,37 @@ void testNotEqualUIntArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
+    EXPECT_ABORT_END
+
+    failed = Unity.CurrentTestFailed;
+    Unity.CurrentTestFailed = 0;
+
+    VERIFY_FAILURE_WAS_CAUGHT
+}
+
+void testEqualInt16Arrays(void)
+{
+    _UU16 p0[] = {1, 8, 117, 3};
+    _UU16 p1[] = {1, 8, 117, 3};
+    _UU16 p2[] = {1, 8, 117, 2};
+    _UU16 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualInt16Arrays(void)
+{
+    _UU16 p0[] = {1, 8, 127, 3};
+    _UU16 p1[] = {1, 8, 127, 2};
+
+    int failed;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p1, 4);
     EXPECT_ABORT_END
 
     failed = Unity.CurrentTestFailed;
