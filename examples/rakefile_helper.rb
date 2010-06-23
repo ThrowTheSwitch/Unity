@@ -39,7 +39,7 @@ module RakefileHelpers
     includes = []
     lines = File.readlines(filename)
     lines.each do |line|
-      m = line.match(/#include \"(.*)\"/)
+      m = line.match(/^\s*#include\s+\"\s*(.+\.[hH])\s*\"/)
       if not m.nil?
         includes << m[1]
       end
