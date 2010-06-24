@@ -13,16 +13,15 @@
 
 struct _Unity Unity = { 0 };
 
+const char* UnityStrNull     = "NULL";
 const char* UnityStrExpected = " Expected ";
 const char* UnityStrWas      = " Was ";
 const char* UnityStrTo       = " To ";
 const char* UnityStrElement  = " Element ";
-const char* UnityStrMemory   = " Memory Mismatch.";
+const char* UnityStrMemory   = " Memory Mismatch";
 const char* UnityStrDelta    = " Values Not Within Delta ";
 const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Pointless.";
 const char* UnityStrSpacer   = ". ";
-
-void UnityAddMsgIfSpecified(const char* msg);
 
 //-----------------------------------------------
 // Pretty Printers
@@ -36,7 +35,19 @@ void UnityPrint(const char* string)
     {
         while (*pch)
         {
-            UNITY_OUTPUT_CHAR(*pch);
+	          // printable characters plus CR & LF are printed
+						if ( (*pch <= 126) && (*pch >= 32) || (*pch == 13) || (*pch == 10) )
+						{
+            		UNITY_OUTPUT_CHAR(*pch);
+						}
+						// unprintable characters are shown as codes
+						else
+						{
+						    UNITY_OUTPUT_CHAR('{');
+							  UNITY_OUTPUT_CHAR('\\');
+								UnityPrintNumber((const _US32)*pch);
+							  UNITY_OUTPUT_CHAR('}');
+						}
             pch++;
         }
     }
@@ -51,7 +62,7 @@ void UnityPrintNumberByStyle(const _US32 number, const UNITY_DISPLAY_STYLE_T sty
         case UNITY_DISPLAY_STYLE_HEX16:   UnityPrintNumberHex((_UU32)number, 4);           break;
         case UNITY_DISPLAY_STYLE_HEX32:   UnityPrintNumberHex((_UU32)number, 8);           break;
         case UNITY_DISPLAY_STYLE_UINT:    UnityPrintNumberUnsigned((_UU32)number);         break;
-        default:                          UnityPrintNumber(number);                                break;
+        default:                          UnityPrintNumber(number);                        break;
     }
 }
 
@@ -220,6 +231,34 @@ void UnityAddMsgIfSpecified(const char* msg)
         UnityPrint(msg);
     }
 }
+
+//-----------------------------------------------
+void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual)
+{
+		UnityPrint(UnityStrExpected);
+		if (expected != NULL)
+		{
+		    UNITY_OUTPUT_CHAR('\'');
+				UnityPrint(expected);
+		    UNITY_OUTPUT_CHAR('\'');
+		}
+		else
+		{
+		  UnityPrint(UnityStrNull);					
+		}
+		UnityPrint(UnityStrWas);
+		if (actual != NULL)
+		{
+		    UNITY_OUTPUT_CHAR('\'');
+				UnityPrint(actual);
+		    UNITY_OUTPUT_CHAR('\'');
+		}
+		else
+		{
+		  UnityPrint(UnityStrNull);					
+		}
+}
+
 
 //-----------------------------------------------
 // Assertion Functions
@@ -499,17 +538,10 @@ void UnityAssertEqualString(const char* expected,
 
     if (Unity.CurrentTestFailed)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrExpected);
-        UNITY_OUTPUT_CHAR('\'');
-        UnityPrint(expected);
-        UNITY_OUTPUT_CHAR('\'');
-        UnityPrint(UnityStrWas);
-        UNITY_OUTPUT_CHAR('\'');
-        UnityPrint(actual);
-        UNITY_OUTPUT_CHAR('\'');
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+      UnityTestResultsFailBegin(lineNumber);
+			UnityPrintExpectedAndActualStrings(expected, actual);
+      UnityAddMsgIfSpecified(msg);
+      UNITY_FAIL_AND_BAIL;
     }
 }
 
@@ -575,14 +607,7 @@ void UnityAssertEqualStringArray( const char** expected,
                 UnityPrint(UnityStrElement);
                 UnityPrintNumberByStyle((num_elements - j - 1), UNITY_DISPLAY_STYLE_UINT);
             }
-            UnityPrint(UnityStrExpected);
-            UNITY_OUTPUT_CHAR('\'');
-            UnityPrint(expected[j]);
-            UNITY_OUTPUT_CHAR('\'');
-            UnityPrint(UnityStrWas);
-            UNITY_OUTPUT_CHAR('\'');
-            UnityPrint(actual[j]);
-            UNITY_OUTPUT_CHAR('\'');
+						UnityPrintExpectedAndActualStrings(expected[j], actual[j]);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         } 
