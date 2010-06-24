@@ -22,8 +22,8 @@ const char* UnityStrElement  = " Element ";
 const char* UnityStrMemory   = " Memory Mismatch";
 const char* UnityStrDelta    = " Values Not Within Delta ";
 const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Pointless.";
-const char* UnityStrNullPointerForExpected= " Expected value pointer dereferenced NULL";
-const char* UnityStrNullPointerForActual  = " Actual value pointer dereferenced NULL";
+const char* UnityStrNullPointerForExpected= " Expected pointer to be NULL";
+const char* UnityStrNullPointerForActual  = " Actual pointer was NULL";
 
 //-----------------------------------------------
 // Pretty Printers
@@ -47,7 +47,7 @@ void UnityPrint(const char* string)
 						{
 						    UNITY_OUTPUT_CHAR('{');
 							  UNITY_OUTPUT_CHAR('\\');
-								UnityPrintNumber((const _US32)*pch);
+								UnityPrintNumber((_US32)*pch);
 							  UNITY_OUTPUT_CHAR('}');
 						}
             pch++;
@@ -261,6 +261,34 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
 		}
 }
 
+//-----------------------------------------------
+int UnityCheckArraysForNull(const void* expected, const void* actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
+{
+    //return true if they are both NULL
+    if ((expected == NULL) && (actual == NULL))
+        return 1;
+        
+    //throw error if just expected is NULL
+    if (expected == NULL)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrNullPointerForExpected);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+
+    //throw error if just actual is NULL
+    if (actual == NULL)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrNullPointerForActual);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+    
+    //return false if neither is NULL
+    return 0;
+}
 
 //-----------------------------------------------
 // Assertion Functions
@@ -326,6 +354,9 @@ void UnityAssertEqualIntArray(const int* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
+    
+    if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
+        return;
 
     switch(style)
     {
@@ -334,22 +365,6 @@ void UnityAssertEqualIntArray(const int* expected,
         case UNITY_DISPLAY_STYLE_UINT8:
             while (elements--)
             {
-								if (ptr_exp8 == NULL)
-								{
-								    UnityTestResultsFailBegin(lineNumber);
-								    UnityPrint(UnityStrNullPointerForExpected);
-								    UnityAddMsgIfSpecified(msg);
-								    UNITY_FAIL_AND_BAIL;
-								}
-
-						    if (ptr_act8 == NULL)
-						    {
-						        UnityTestResultsFailBegin(lineNumber);
-								    UnityPrint(UnityStrNullPointerForActual);
-						        UnityAddMsgIfSpecified(msg);
-						        UNITY_FAIL_AND_BAIL;
-						    }
-
                 if (*ptr_exp8++ != *ptr_act8++)
                 {
                     UnityTestResultsFailBegin(lineNumber);
@@ -369,22 +384,6 @@ void UnityAssertEqualIntArray(const int* expected,
         case UNITY_DISPLAY_STYLE_UINT16:
             while (elements--)
             {
-								if (ptr_exp16 == NULL)
-								{
-										UnityTestResultsFailBegin(lineNumber);
-										UnityPrint(UnityStrNullPointerForExpected);
-										UnityAddMsgIfSpecified(msg);
-										UNITY_FAIL_AND_BAIL;
-								}
-
-								if (ptr_act16 == NULL)
-								{
-										UnityTestResultsFailBegin(lineNumber);
-										UnityPrint(UnityStrNullPointerForActual);
-										UnityAddMsgIfSpecified(msg);
-										UNITY_FAIL_AND_BAIL;
-								}
-
                 if (*ptr_exp16++ != *ptr_act16++)
                 {
                     UnityTestResultsFailBegin(lineNumber);
@@ -402,22 +401,6 @@ void UnityAssertEqualIntArray(const int* expected,
         default:
             while (elements--)
             {
-								if (ptr_exp32 == NULL)
-								{
-										UnityTestResultsFailBegin(lineNumber);
-										UnityPrint(UnityStrNullPointerForExpected);
-										UnityAddMsgIfSpecified(msg);
-										UNITY_FAIL_AND_BAIL;
-								}
-
-								if (ptr_act32 == NULL)
-								{
-										UnityTestResultsFailBegin(lineNumber);
-										UnityPrint(UnityStrNullPointerForActual);
-										UnityAddMsgIfSpecified(msg);
-										UNITY_FAIL_AND_BAIL;
-								}
-								
                 if (*ptr_exp32++ != *ptr_act32++)
                 {
                     UnityTestResultsFailBegin(lineNumber);
@@ -455,25 +438,12 @@ void UnityAssertEqualFloatArray(const _UF* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
+    
+    if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
+        return;
 
     while (elements--)
     {
-				if (ptr_expected == NULL)
-				{
-						UnityTestResultsFailBegin(lineNumber);
-						UnityPrint(UnityStrNullPointerForExpected);
-						UnityAddMsgIfSpecified(msg);
-						UNITY_FAIL_AND_BAIL;
-				}
-
-				if (ptr_actual == NULL)
-				{
-						UnityTestResultsFailBegin(lineNumber);
-						UnityPrint(UnityStrNullPointerForActual);
-						UnityAddMsgIfSpecified(msg);
-						UNITY_FAIL_AND_BAIL;
-				}
-
         diff = *ptr_expected - *ptr_actual;
         if (diff < 0.0)
           diff = 0.0 - diff;
@@ -629,19 +599,8 @@ void UnityAssertEqualStringArray( const char** expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    // if both are null, it passes. if one is null, it fails
-    if ((expected == NULL) || (actual == NULL))
-    {
-        if (expected == actual)
-        {
-            return;
-        }
-        else
-        {
-            Unity.CurrentTestFailed = 1;
-            UNITY_FAIL_AND_BAIL;
-        }
-    }
+    if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
+        return;
     
     do
     {
@@ -699,26 +658,18 @@ void UnityAssertEqualMemory( const void* expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    // if both pointers not null compare the memory
-    if (expected_ptr && actual_ptr)
+    if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
+        return;
+        
+    while (elements--)
     {
-        while (elements--)
-        {
-            if (memcmp((const void*)expected_ptr, (const void*)actual_ptr, length) != 0)
-            {
-                Unity.CurrentTestFailed = 1;
-                break;
-            }
-            expected_ptr += length;
-            actual_ptr += length;
-        }
-    }
-    else
-    { // handle case of one pointers being null (if both null, test should pass)
-        if (expected_ptr != actual_ptr)
+        if (memcmp((const void*)expected_ptr, (const void*)actual_ptr, length) != 0)
         {
             Unity.CurrentTestFailed = 1;
+            break;
         }
+        expected_ptr += length;
+        actual_ptr += length;
     }
 
     if (Unity.CurrentTestFailed)
