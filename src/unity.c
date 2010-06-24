@@ -14,6 +14,7 @@
 struct _Unity Unity = { 0 };
 
 const char* UnityStrNull     = "NULL";
+const char* UnityStrSpacer   = ". ";
 const char* UnityStrExpected = " Expected ";
 const char* UnityStrWas      = " Was ";
 const char* UnityStrTo       = " To ";
@@ -21,7 +22,8 @@ const char* UnityStrElement  = " Element ";
 const char* UnityStrMemory   = " Memory Mismatch";
 const char* UnityStrDelta    = " Values Not Within Delta ";
 const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Pointless.";
-const char* UnityStrSpacer   = ". ";
+const char* UnityStrNullPointerForExpected= " Expected value pointer dereferenced NULL";
+const char* UnityStrNullPointerForActual  = " Actual value pointer dereferenced NULL";
 
 //-----------------------------------------------
 // Pretty Printers
@@ -36,7 +38,7 @@ void UnityPrint(const char* string)
         while (*pch)
         {
 	          // printable characters plus CR & LF are printed
-						if ( (*pch <= 126) && (*pch >= 32) || (*pch == 13) || (*pch == 10) )
+						if ( ((*pch <= 126) && (*pch >= 32)) || (*pch == 13) || (*pch == 10) )
 						{
             		UNITY_OUTPUT_CHAR(*pch);
 						}
@@ -332,6 +334,22 @@ void UnityAssertEqualIntArray(const int* expected,
         case UNITY_DISPLAY_STYLE_UINT8:
             while (elements--)
             {
+								if (ptr_exp8 == NULL)
+								{
+								    UnityTestResultsFailBegin(lineNumber);
+								    UnityPrint(UnityStrNullPointerForExpected);
+								    UnityAddMsgIfSpecified(msg);
+								    UNITY_FAIL_AND_BAIL;
+								}
+
+						    if (ptr_act8 == NULL)
+						    {
+						        UnityTestResultsFailBegin(lineNumber);
+								    UnityPrint(UnityStrNullPointerForActual);
+						        UnityAddMsgIfSpecified(msg);
+						        UNITY_FAIL_AND_BAIL;
+						    }
+
                 if (*ptr_exp8++ != *ptr_act8++)
                 {
                     UnityTestResultsFailBegin(lineNumber);
@@ -351,6 +369,22 @@ void UnityAssertEqualIntArray(const int* expected,
         case UNITY_DISPLAY_STYLE_UINT16:
             while (elements--)
             {
+								if (ptr_exp16 == NULL)
+								{
+										UnityTestResultsFailBegin(lineNumber);
+										UnityPrint(UnityStrNullPointerForExpected);
+										UnityAddMsgIfSpecified(msg);
+										UNITY_FAIL_AND_BAIL;
+								}
+
+								if (ptr_act16 == NULL)
+								{
+										UnityTestResultsFailBegin(lineNumber);
+										UnityPrint(UnityStrNullPointerForActual);
+										UnityAddMsgIfSpecified(msg);
+										UNITY_FAIL_AND_BAIL;
+								}
+
                 if (*ptr_exp16++ != *ptr_act16++)
                 {
                     UnityTestResultsFailBegin(lineNumber);
@@ -368,6 +402,22 @@ void UnityAssertEqualIntArray(const int* expected,
         default:
             while (elements--)
             {
+								if (ptr_exp32 == NULL)
+								{
+										UnityTestResultsFailBegin(lineNumber);
+										UnityPrint(UnityStrNullPointerForExpected);
+										UnityAddMsgIfSpecified(msg);
+										UNITY_FAIL_AND_BAIL;
+								}
+
+								if (ptr_act32 == NULL)
+								{
+										UnityTestResultsFailBegin(lineNumber);
+										UnityPrint(UnityStrNullPointerForActual);
+										UnityAddMsgIfSpecified(msg);
+										UNITY_FAIL_AND_BAIL;
+								}
+								
                 if (*ptr_exp32++ != *ptr_act32++)
                 {
                     UnityTestResultsFailBegin(lineNumber);
@@ -408,6 +458,22 @@ void UnityAssertEqualFloatArray(const _UF* expected,
 
     while (elements--)
     {
+				if (ptr_expected == NULL)
+				{
+						UnityTestResultsFailBegin(lineNumber);
+						UnityPrint(UnityStrNullPointerForExpected);
+						UnityAddMsgIfSpecified(msg);
+						UNITY_FAIL_AND_BAIL;
+				}
+
+				if (ptr_actual == NULL)
+				{
+						UnityTestResultsFailBegin(lineNumber);
+						UnityPrint(UnityStrNullPointerForActual);
+						UnityAddMsgIfSpecified(msg);
+						UNITY_FAIL_AND_BAIL;
+				}
+
         diff = *ptr_expected - *ptr_actual;
         if (diff < 0.0)
           diff = 0.0 - diff;
@@ -680,6 +746,10 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     if (msg != NULL)
     {
       UNITY_OUTPUT_CHAR(':');
+      if (msg[0] != ' ')
+      {
+	      UNITY_OUTPUT_CHAR(' ');	
+	    }
       UnityPrint(msg);
     }
     UNITY_FAIL_AND_BAIL;
@@ -693,6 +763,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     if (msg != NULL)
     {
       UNITY_OUTPUT_CHAR(':');
+      UNITY_OUTPUT_CHAR(' ');
       UnityPrint(msg);
     }
     UNITY_IGNORE_AND_BAIL;
