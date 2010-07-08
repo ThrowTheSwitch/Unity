@@ -10,7 +10,8 @@
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
-#define UNITY_SKIP_EXECUTION  { if (UnityCheckSkipConditions()) {return;} }
+/// return prematurely if we are already in failure or ignore state
+#define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
 
 struct _Unity Unity = { 0 };
 
@@ -266,16 +267,6 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
 // Assertion & Control Helpers
 //-----------------------------------------------
 
-int UnityCheckSkipConditions(void)
-{
-    // are we already in failure or ignore state?
-    if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0))
-        return 1;
-
-    return 0;
-}
-
-//-----------------------------------------------
 int UnityCheckArraysForNull(const void* expected, const void* actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
 {
     //return true if they are both NULL
