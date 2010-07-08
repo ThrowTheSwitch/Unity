@@ -10,6 +10,7 @@
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
+#define UNITY_SKIP_EXECUTION  { if (UnityCheckSkipConditions()) {return;} }
 
 struct _Unity Unity = { 0 };
 
@@ -26,7 +27,7 @@ const char* UnityStrNullPointerForExpected= " Expected pointer to be NULL";
 const char* UnityStrNullPointerForActual  = " Actual pointer was NULL";
 
 //-----------------------------------------------
-// Pretty Printers
+// Pretty Printers & Test Result Output Handlers
 //-----------------------------------------------
 
 void UnityPrint(const char* string)
@@ -204,7 +205,7 @@ void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 }
 
 //-----------------------------------------------
-void UnityConcludeTest()
+void UnityConcludeTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
@@ -262,6 +263,19 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
 }
 
 //-----------------------------------------------
+// Assertion & Control Helpers
+//-----------------------------------------------
+
+int UnityCheckSkipConditions(void)
+{
+    // are we already in failure or ignore state?
+    if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0))
+        return 1;
+
+    return 0;
+}
+
+//-----------------------------------------------
 int UnityCheckArraysForNull(const void* expected, const void* actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
 {
     //return true if they are both NULL
@@ -300,6 +314,8 @@ void UnityAssertBits(const _US32 mask,
                      const char* msg,
                      const UNITY_LINE_TYPE lineNumber)
 {
+    UNITY_SKIP_EXECUTION;
+  
     if ((mask & expected) != (mask & actual))
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -319,6 +335,8 @@ void UnityAssertEqualNumber(const _US32 expected,
                             const UNITY_LINE_TYPE lineNumber,
                             const UNITY_DISPLAY_STYLE_T style)
 {
+    UNITY_SKIP_EXECUTION;
+
     if (expected != actual)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -347,6 +365,8 @@ void UnityAssertEqualIntArray(const int* expected,
     const _US16* ptr_act16 = (_US16*)actual;
     const _US8*  ptr_act8  = (_US8*)actual;
 
+    UNITY_SKIP_EXECUTION;
+  
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -431,6 +451,8 @@ void UnityAssertEqualFloatArray(const _UF* expected,
     const _UF* ptr_actual = actual;
     _UF diff, tol;
 
+    UNITY_SKIP_EXECUTION;
+  
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -481,6 +503,8 @@ void UnityAssertFloatsWithin(const _UF delta,
     _UF diff = actual - expected;
     _UF pos_delta = delta;
 
+    UNITY_SKIP_EXECUTION;
+  
     if (diff < 0)
     {
         diff = 0.0f - diff;
@@ -515,6 +539,8 @@ void UnityAssertNumbersWithin( const _US32 delta,
                                const UNITY_LINE_TYPE lineNumber,
                                const UNITY_DISPLAY_STYLE_T style)
 {
+    UNITY_SKIP_EXECUTION;
+
     if (style == UNITY_DISPLAY_STYLE_INT)
     {
         if (actual > expected)
@@ -552,6 +578,8 @@ void UnityAssertEqualString(const char* expected,
 {
     _UU32 i;
 
+    UNITY_SKIP_EXECUTION;
+  
     // if both pointers not null compare the strings
     if (expected && actual)
     {
@@ -590,6 +618,8 @@ void UnityAssertEqualStringArray( const char** expected,
 {
     _UU32 i, j = 0;
     
+    UNITY_SKIP_EXECUTION;
+  
     // if no elements, it's an error
     if (num_elements == 0)
     {
@@ -650,6 +680,9 @@ void UnityAssertEqualMemory( const void* expected,
     unsigned char* expected_ptr = (unsigned char*)expected;
     unsigned char* actual_ptr = (unsigned char*)actual;
     _UU32 elements = num_elements;
+
+    UNITY_SKIP_EXECUTION;
+  
     if ((elements == 0) || (length == 0))
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -692,6 +725,8 @@ void UnityAssertEqualMemory( const void* expected,
 
 void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
+    UNITY_SKIP_EXECUTION;
+
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint("FAIL");
     if (msg != NULL)
@@ -709,6 +744,8 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 //-----------------------------------------------
 void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 {
+    UNITY_SKIP_EXECUTION;
+
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint("IGNORE");
     if (msg != NULL)
@@ -721,7 +758,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 }
 
 //-----------------------------------------------
-void UnityBegin()
+void UnityBegin(void)
 {
     Unity.NumberOfTests = 0;
 }
