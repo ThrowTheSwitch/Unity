@@ -1,4 +1,4 @@
-tools_root: &tools_root 'C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\'
+tools_root: &tools_root 'C:\Program Files\IAR Systems\Embedded Workbench 5.3\'
 compiler:
   path:             [*tools_root, 'arm\bin\iccarm.exe']
   source_path:      'src\'
@@ -6,8 +6,7 @@ compiler:
   build_path:       &build_path 'build\'
   options:
     - --dlib_config
-    - [*tools_root, 'arm\lib\dl4tptinl8n.h']
-    - -z3
+    - [*tools_root, 'arm\inc\DLib_Config_Normal.h']
     - --no_cse
     - --no_unroll
     - --no_inline
@@ -17,15 +16,15 @@ compiler:
     - --no_scheduling 
     - --debug
     - --cpu_mode thumb
-    - --endian little
-    - --cpu ARM7TDMI
-    - --stack_align 4
+    - --endian=little
+    - --cpu=ARM7TDMI
     - --interwork
-    - -e
-    - --silent
     - --warnings_are_errors
-    - --fpu None
-    - --diag_suppress Pa050
+    - --fpu=None
+    - --diag_suppress=Pa050
+    - --diag_suppress=Pe111
+    - -e
+    - -On
   includes:
     prefix: '-I'
     items:
@@ -33,38 +32,30 @@ compiler:
       - 'src\'
       - *unit_tests_path
       - 'vendor\unity\src\'
+      - 'iar\iar_v5\incIAR\'
   defines:
     prefix: '-D'
     items:
+      - UNITY_SUPPORT_64
   object_files:
     prefix: '-o'
     extension: '.r79'
     destination: *build_path
 linker:
-  path: [*tools_root, 'common\bin\xlink.exe']
+  path: [*tools_root, 'arm\bin\ilinkarm.exe']
   options:
-    - -rt
-    - [*tools_root, 'arm\lib\dl4tptinl8n.r79']
-    - -D_L_EXTMEM_START=0
-    - -D_L_EXTMEM_SIZE=0
-    - -D_L_HEAP_SIZE=120
-    - -D_L_STACK_SIZE=32
-    - -e_small_write=_formatted_write
-    - -s
-    - __program_start
-    - -f
-    - [*tools_root, '\arm\config\lnkarm.xcl']
-  includes:
-    prefix: '-I'
-    items:
-      - [*tools_root, 'arm\config\']
-      - [*tools_root, 'arm\lib\']
+    - --redirect _Printf=_PrintfLarge
+    - --redirect _Scanf=_ScanfSmall
+    - --semihosting
+    - --entry __iar_program_start
+    - --config
+    - [*tools_root, 'arm\config\generic.icf']
   object_files:
     path: *build_path
-    extension: '.r79'
+    extension: '.o'
   bin_files:
     prefix: '-o'
-    extension: '.d79'
+    extension: '.out'
     destination: *build_path
 simulator:
   path: [*tools_root, 'common\bin\CSpyBat.exe']
@@ -78,7 +69,7 @@ simulator:
     - --backend
     - -B
     - -p
-    - [*tools_root, 'arm\config\ioat91sam7X256.ddf']
+    - [*tools_root, 'arm\config\debugger\atmel\ioat91sam7X256.ddf']
     - -d
     - sim
 colour: true

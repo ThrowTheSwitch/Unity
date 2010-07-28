@@ -1,0 +1,37 @@
+compiler:
+  path: gcc
+  source_path:     'src/'
+  unit_tests_path: &unit_tests_path 'test/'
+  build_path:      &build_path 'build/'
+  options:
+    - '-c'
+    - '-Wall'
+    - '-std=c99'
+    - '-pedantic'
+  includes:
+    prefix: '-I'
+    items:
+      - 'src/'
+      - *unit_tests_path
+  defines:
+    prefix: '-D'
+    items:
+      - UNITY_SUPPORT_64
+  object_files:
+    prefix: '-o'
+    extension: '.o'
+    destination: *build_path
+linker:
+  path: gcc
+  options:
+    - -lm
+  includes:
+    prefix: '-I'
+  object_files:
+    path: *build_path
+    extension: '.o'
+  bin_files:
+    prefix: '-o'
+    extension: '.exe'
+    destination: *build_path
+colour: true

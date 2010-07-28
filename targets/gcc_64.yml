@@ -16,6 +16,8 @@ compiler:
   defines:
     prefix: '-D'
     items:
+      - UNITY_SUPPORT_64
+      - 'UNITY_POINTER_WIDTH=64'
   object_files:
     prefix: '-o'
     extension: '.o'

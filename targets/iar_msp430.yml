@@ -20,9 +20,6 @@ compiler:
     - --no_code_motion
     - --no_tbaa
     - --debug
-    - -D__MSP430F149__
-    - -DINT_WIDTH=16
-    - -DUNITY_FLOAT_SUPPORT_DISABLED
     - -e
     - -Ol
     - --multiplier=16
@@ -41,6 +38,9 @@ compiler:
   defines:
     prefix: '-D'
     items:
+      - '__MSP430F149__'
+      - 'INT_WIDTH=16'
+      - 'UNITY_EXCLUDE_FLOAT'
   object_files:
     prefix: '-o'
     extension: '.r43'

@@ -15,7 +15,9 @@
     }                                                                          \
     Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
     if (Unity.CurrentTestFailed == 1) {                                        \
-      UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]\n");  \
+      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
+      UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
+      UNITY_OUTPUT_CHAR('\n');                                                 \
     }
     
 #define VERIFY_IGNORES_END                                                     \
@@ -23,20 +25,29 @@
     Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
     Unity.CurrentTestIgnored = 0;                                              \
     if (Unity.CurrentTestFailed == 1) {                                        \
-      UnityPrint("[[[[ Previous Test Should Have Ignored But Did Not ]]]]\n"); \
+      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
+      UnityPrint("[[[[ Previous Test Should Have Ignored But Did Not ]]]]");   \
+      UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
 int SetToOneToFailInTearDown;
+int SetToOneMeanWeAlreadyCheckedThisGuy;
 
 void setUp(void)
 {
   SetToOneToFailInTearDown = 0;
+  SetToOneMeanWeAlreadyCheckedThisGuy = 0;
 }
 
 void tearDown(void)
 {
   if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL("Failed in tearDown");
+    TEST_FAIL("<= Failed in tearDown");
+  if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
+  {
+    UnityPrint("[[[[ Previous Test Should Have Passed But Did Not ]]]]");
+    UNITY_OUTPUT_CHAR('\n');
+  }
 }
 
 void testTrue(void)
@@ -474,53 +485,16 @@ void testEqualPointers(void)
     p1 = &v1;
     p2 = &v1;
 
-    TEST_ASSERT_EQUAL_INT(p0, &v0);
-    TEST_ASSERT_EQUAL_INT(&v1, p1);
-    TEST_ASSERT_EQUAL_INT(p2, p1);
-    TEST_ASSERT_EQUAL_INT(&v0, &v0);
+    TEST_ASSERT_EQUAL_PTR(p0, &v0);
+    TEST_ASSERT_EQUAL_PTR(&v1, p1);
+    TEST_ASSERT_EQUAL_PTR(p2, p1);
+    TEST_ASSERT_EQUAL_PTR(&v0, &v0);
 }
 
-void testFloatsWithinDelta(void)
-{
-    TEST_ASSERT_FLOAT_WITHIN(0.00003f, 187245.03485f, 187245.03488f);
-    TEST_ASSERT_FLOAT_WITHIN(1.0f, 187245.0f, 187246.0f);
-    TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2549f, 9273.2049f);
-    TEST_ASSERT_FLOAT_WITHIN(0.007f, -726.93724f, -726.94424f);
-}
-
-void testFloatsNotWithinDelta(void)
+void testNotEqualPointers(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
-    VERIFY_FAILS_END
-}
-
-void testFloatsEqual(void)
-{
-    TEST_ASSERT_EQUAL_FLOAT(187245.0f, 187246.0f);
-    TEST_ASSERT_EQUAL_FLOAT(18724.5f, 18724.6f);
-    TEST_ASSERT_EQUAL_FLOAT(9273.2549f, 9273.2599f);
-    TEST_ASSERT_EQUAL_FLOAT(-726.93724f, -726.9374f);
-}
-
-void testFloatsNotEqual(void)
-{
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_FLOAT(9273.9649f, 9273.0049f);
-    VERIFY_FAILS_END
-}
-
-void testFloatsNotEqualNegative1(void)
-{
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_FLOAT(-9273.9649f, -9273.0049f);
-    VERIFY_FAILS_END
-}
-
-void testFloatsNotEqualNegative2(void)
-{
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_FLOAT(-9273.0049f, -9273.9649f);
+    TEST_ASSERT_EQUAL_PTR(0x12345678, 0x12345677);
     VERIFY_FAILS_END
 }
 
@@ -531,7 +505,7 @@ void testIntsWithinDelta(void)
     TEST_ASSERT_INT_WITHIN(5, 5000, 5005);
     TEST_ASSERT_INT_WITHIN(500, 50, -440);
     
-    TEST_ASSERT_INT_WITHIN(2, 2147483647, -1);
+    TEST_ASSERT_INT_WITHIN(2, -1, -1);
     TEST_ASSERT_INT_WITHIN(5, 1, -1);
     TEST_ASSERT_INT_WITHIN(5, -1, 1);
 }
@@ -615,8 +589,6 @@ void testHEX8sWithinDelta(void)
 
 void testHEX8sNotWithinDelta(void)
 {
-
-
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX8_WITHIN(2, 255, 0);
     VERIFY_FAILS_END
@@ -631,7 +603,17 @@ void testEqualStrings(void)
     TEST_ASSERT_EQUAL_STRING("foo", testString);
     TEST_ASSERT_EQUAL_STRING(testString, "foo");
     TEST_ASSERT_EQUAL_STRING("", "");
-    TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
+}
+
+void testEqualStringsWithCarriageReturnsAndLineFeeds(void)
+{
+    const char *testString = "foo\r\nbar";
+
+    TEST_ASSERT_EQUAL_STRING(testString, testString);
+    TEST_ASSERT_EQUAL_STRING("foo\r\nbar", "foo\r\nbar");
+    TEST_ASSERT_EQUAL_STRING("foo\r\nbar", testString);
+    TEST_ASSERT_EQUAL_STRING(testString, "foo\r\nbar");
+    TEST_ASSERT_EQUAL_STRING("", "");
 }
 
 void testNotEqualString1(void)
@@ -652,6 +634,22 @@ void testNotEqualString3(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("", "bar");
+    VERIFY_FAILS_END
+}
+
+void testNotEqualString4(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING("bar\r", "bar\n");
+    VERIFY_FAILS_END
+}
+
+void testNotEqualString5(void)
+{
+    const char str1[] = { 0x41, 0x42, 0x03, 0x00 };
+    const char str2[] = { 0x41, 0x42, 0x04, 0x00 };
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING(str1, str2);
     VERIFY_FAILS_END
 }
 
@@ -1076,6 +1074,244 @@ void testNotEqualHEX8Arrays3(void)
     VERIFY_FAILS_END
 }
 
+void testEqualMemoryArrays(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2};
+    int p2[] = {1, 8, 987, 2};
+    int p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 1);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p2, 4, 3);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p3, 4, 1);
+}
+
+void testNotEqualMemoryArraysExpectedNull(void)
+{
+    int* p0 = NULL;
+    int p1[] = {1, 8, 987, 2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryArraysActualNull(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int* p1 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryArrays1(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, 2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryArrays2(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {2, 8, 987, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryArrays3(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 986, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    VERIFY_FAILS_END
+}
+
+void testProtection(void)
+{
+    volatile int mask = 0;
+
+    if (TEST_PROTECT())
+    {
+        mask |= 1;
+        TEST_ABORT();
+    }
+    else
+    {
+        Unity.CurrentTestFailed = 0;
+        mask |= 2;
+    }
+
+    TEST_ASSERT_EQUAL(3, mask);
+}
+
+void testIgnoredAndThenFailInTearDown(void)
+{
+    SetToOneToFailInTearDown = 1;
+    TEST_IGNORE();
+}
+
+// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ==================
+#ifdef UNITY_SUPPORT_64
+
+void testEqualHex64s(void)
+{
+    _UU64 v0, v1;
+    _UU64 *p0, *p1;
+    
+    v0 = 0x9876543201234567;
+    v1 = 0x9876543201234567;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_HEX64(0x9876543201234567, 0x9876543201234567);
+    TEST_ASSERT_EQUAL_HEX64(v0, v1);
+    TEST_ASSERT_EQUAL_HEX64(0x9876543201234567, v1);
+    TEST_ASSERT_EQUAL_HEX64(v0, 0x9876543201234567);
+    TEST_ASSERT_EQUAL_HEX64(*p0, v1);
+    TEST_ASSERT_EQUAL_HEX64(*p0, *p1);
+    TEST_ASSERT_EQUAL_HEX64(*p0, 0x9876543201234567);
+}
+
+void testNotEqualHex64s(void)
+{
+    _UU64 v0, v1;
+    
+    v0 = 9000000000;
+    v1 = 9100000000;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX64(v0, v1);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHex64sIfSigned(void)
+{
+    _US64 v0, v1;
+    
+    v0 = -9000000000;
+    v1 = 9000000000;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX64(v0, v1);
+    VERIFY_FAILS_END
+}
+
+void testHEX64sWithinDelta(void)
+{
+    TEST_ASSERT_HEX64_WITHIN(1, 0x7FFFFFFFFFFFFFFF,0x7FFFFFFFFFFFFFFE);
+    TEST_ASSERT_HEX64_WITHIN(5, 5000, 4996);
+    TEST_ASSERT_HEX64_WITHIN(5, 5000, 5005);
+}
+
+void testHEX64sNotWithinDelta(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
+    VERIFY_FAILS_END
+}
+
+void testHEX64sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX64_WITHIN(5, 1, -1);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEX64Arrays(void)
+{
+    _UU64 p0[] = {1, 8, 987, 65132u};
+    _UU64 p1[] = {1, 8, 987, 65132u};
+    _UU64 p2[] = {1, 8, 987, 2};
+    _UU64 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualHEX64Arrays1(void)
+{
+    _UU64 p0[] = {1, 8, 987, 65132u};
+    _UU64 p1[] = {1, 8, 987, 65131u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX64Arrays2(void)
+{
+    _UU64 p0[] = {1, 8, 987, 65132u};
+    _UU64 p1[] = {2, 8, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+#endif //64-bit SUPPORT
+
+// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES FLOAT SUPPORT ==================
+#ifndef UNITY_EXCLUDE_FLOAT
+
+void testFloatsWithinDelta(void)
+{
+    TEST_ASSERT_FLOAT_WITHIN(0.00003f, 187245.03485f, 187245.03488f);
+    TEST_ASSERT_FLOAT_WITHIN(1.0f, 187245.0f, 187246.0f);
+    TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2549f, 9273.2049f);
+    TEST_ASSERT_FLOAT_WITHIN(0.007f, -726.93724f, -726.94424f);
+}
+
+void testFloatsNotWithinDelta(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
+    VERIFY_FAILS_END
+}
+
+void testFloatsEqual(void)
+{
+    TEST_ASSERT_EQUAL_FLOAT(187245.0f, 187246.0f);
+    TEST_ASSERT_EQUAL_FLOAT(18724.5f, 18724.6f);
+    TEST_ASSERT_EQUAL_FLOAT(9273.2549f, 9273.2599f);
+    TEST_ASSERT_EQUAL_FLOAT(-726.93724f, -726.9374f);
+}
+
+void testFloatsNotEqual(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(9273.9649f, 9273.0049f);
+    VERIFY_FAILS_END
+}
+
+void testFloatsNotEqualNegative1(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(-9273.9649f, -9273.0049f);
+    VERIFY_FAILS_END
+}
+
+void testFloatsNotEqualNegative2(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(-9273.0049f, -9273.9649f);
+    VERIFY_FAILS_END
+}
+
 void testEqualFloatArrays(void)
 {
     float p0[] = {1.0, -8.0,  25.4, -0.123};
@@ -1170,90 +1406,4 @@ void testNotEqualFloatArraysNegative3(void)
     VERIFY_FAILS_END
 }
 
-void testEqualMemoryArrays(void)
-{
-    int p0[] = {1, 8, 987, -2};
-    int p1[] = {1, 8, 987, -2};
-    int p2[] = {1, 8, 987, 2};
-    int p3[] = {1, 500, 600, 700};
-
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 1);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 4);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p2, 4, 3);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p3, 4, 1);
-}
-
-void testNotEqualMemoryArraysExpectedNull(void)
-{
-    int* p0 = NULL;
-    int p1[] = {1, 8, 987, 2};
-
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
-    VERIFY_FAILS_END
-}
-
-void testNotEqualMemoryArraysActualNull(void)
-{
-    int p0[] = {1, 8, 987, -2};
-    int* p1 = NULL;
-
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
-    VERIFY_FAILS_END
-}
-
-void testNotEqualMemoryArrays1(void)
-{
-    int p0[] = {1, 8, 987, -2};
-    int p1[] = {1, 8, 987, 2};
-
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
-    VERIFY_FAILS_END
-}
-
-void testNotEqualMemoryArrays2(void)
-{
-    int p0[] = {1, 8, 987, -2};
-    int p1[] = {2, 8, 987, -2};
-
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
-    VERIFY_FAILS_END
-}
-
-void testNotEqualMemoryArrays3(void)
-{
-    int p0[] = {1, 8, 987, -2};
-    int p1[] = {1, 8, 986, -2};
-
-    EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
-    VERIFY_FAILS_END
-}
-
-void testProtection(void)
-{
-    volatile int mask = 0;
-
-    if (TEST_PROTECT())
-    {
-        mask |= 1;
-        TEST_ABORT();
-    }
-    else
-    {
-        Unity.CurrentTestFailed = 0;
-        mask |= 2;
-    }
-
-    TEST_ASSERT_EQUAL(3, mask);
-}
-
-void testIgnoredAndThenFailInTearDown(void)
-{
-    SetToOneToFailInTearDown = 1;
-    TEST_IGNORE();
-}
+#endif //FLOAT SUPPORT

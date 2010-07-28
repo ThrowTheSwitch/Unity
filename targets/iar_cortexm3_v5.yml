@@ -39,6 +39,7 @@ compiler:
    prefix: '-D'
    items:
      - 'IAR'
+     - 'UNITY_SUPPORT_64'
  object_files:
    prefix: '-o'
    extension: '.r79'
