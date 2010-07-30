@@ -54,7 +54,8 @@
 // Basic Fail and Ignore
 //-------------------------------------------------------
 
-#define TEST_FAIL(message)                                                                         UNITY_TEST_FAIL(__LINE__, message)
+#define TEST_FAIL_MESSAGE(message)                                                                 UNITY_TEST_FAIL(__LINE__, message)
+#define TEST_FAIL()                                                                                UNITY_TEST_FAIL(__LINE__, NULL)
 #define TEST_IGNORE_MESSAGE(message)                                                               UNITY_TEST_IGNORE(__LINE__, message)
 #define TEST_IGNORE()                                                                              UNITY_TEST_IGNORE(__LINE__, NULL)
 #define TEST_ONLY()

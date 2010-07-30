@@ -42,7 +42,7 @@ void setUp(void)
 void tearDown(void)
 {
   if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL("<= Failed in tearDown");
+    TEST_FAIL_MESSAGE("<= Failed in tearDown");
   if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
   {
     UnityPrint("[[[[ Previous Test Should Have Passed But Did Not ]]]]");
@@ -107,7 +107,7 @@ void testNotNotEqual(void)
 void testFail(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_FAIL("Expected for testing");
+    TEST_FAIL_MESSAGE("Expected for testing");
     VERIFY_FAILS_END
 }
 
@@ -142,7 +142,7 @@ void testIgnore(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_IGNORE();
-    TEST_FAIL("This should not be reached");
+    TEST_FAIL_MESSAGE("This should not be reached");
     VERIFY_IGNORES_END
 }
 
@@ -150,7 +150,7 @@ void testIgnoreMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_IGNORE_MESSAGE("This is an expected TEST_IGNORE_MESSAGE string!");
-    TEST_FAIL("This should not be reached");
+    TEST_FAIL_MESSAGE("This should not be reached");
     VERIFY_IGNORES_END
 }
 
