@@ -81,7 +81,8 @@ TEST_ASSERT_UNLESS(condition)
 
 Another way of calling TEST_ASSERT_FALSE
 
-TEST_FAIL(message)
+TEST_FAIL()
+TEST_FAIL_MESSAGE(message)
 
 This test is automatically marked as a failure.  The message is output stating why.
 
