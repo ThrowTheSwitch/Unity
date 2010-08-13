@@ -34,7 +34,7 @@ const char* UnityStrNullPointerForActual  = " Actual pointer was NULL";
 
 void UnityPrint(const char* string)
 {
-    unsigned char* pch = (unsigned char*)string;
+    const char* pch = string;
 
     if (pch != NULL)
     {
@@ -796,7 +796,7 @@ void UnityBegin(void)
 }
 
 //-----------------------------------------------
-void UnityEnd(void)
+int UnityEnd(void)
 {
     UnityPrint("-----------------------");
     UNITY_PRINT_CR_LF;
@@ -816,4 +816,5 @@ void UnityEnd(void)
         UnityPrint("FAIL");
     }
     UNITY_PRINT_CR_LF;
+    return Unity.TestFailures;
 }

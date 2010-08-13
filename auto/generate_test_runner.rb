@@ -25,7 +25,6 @@ class UnityTestRunnerGenerator
       yaml_guts = YAML.load_file(config_file)
       yaml_goodness = yaml_guts[:unity] ? yaml_guts[:unity] : yaml_guts[:cmock]
       options[:cexception] = 1 unless (yaml_goodness[:plugins] & ['cexception', :cexception]).empty?
-      options[:coverage  ] = 1 if     (yaml_goodness[:coverage])
       options[:order]      = 1 if     (yaml_goodness[:enforce_strict_ordering])
       options[:framework]  =          (yaml_goodness[:framework] || :unity)
       options[:includes]   <<         (yaml_goodness[:includes])
@@ -126,7 +125,6 @@ class UnityTestRunnerGenerator
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
     output.puts('#include "CException.h"') if @options[:cexception]
-    output.puts('#include "BullseyeCoverage.h"') if @options[:coverage]
     mocks.each do |mock|
       output.puts("#include \"#{mock.gsub('.h','')}.h\"")
     end
@@ -230,9 +228,7 @@ class UnityTestRunnerGenerator
     end
 
     output.puts()
-    output.puts("  UnityEnd();")
-    output.puts("  cov_write();") if @options[:coverage]
-    output.puts("  return 0;")
+    output.puts("  return UnityEnd();")
     output.puts("}")
   end
 end
@@ -242,7 +238,6 @@ if ($0 == __FILE__)
   usage = ["usage: ruby #{__FILE__} (yaml) (options) input_test_file output_test_runner (includes)",
            "  blah.yml    - will use config options in the yml file (see CMock docs)",
            "  -cexception - include cexception support",
-           "  -coverage   - include bullseye coverage support",
            "  -order      - include cmock order-enforcement support" ]
 
   options = { :includes => [] }

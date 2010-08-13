@@ -90,85 +90,51 @@ This test is automatically marked as a failure.  The message is output stating w
 Numerical Assertions: Integers
 ------------------------------
 
+TEST_ASSERT_EQUAL_INT(expected, actual)
+TEST_ASSERT_EQUAL_INT8(expected, actual)
+TEST_ASSERT_EQUAL_INT16(expected, actual)
+TEST_ASSERT_EQUAL_INT32(expected, actual)
+TEST_ASSERT_EQUAL_INT64(expected, actual)
+
+Compare two integers for equality and display errors as signed integers. A cast will be performed
+to your natural integer size so often this can just be used.  When you need to specify the exact size,
+like when comparing arrays, you can use a specific version:
+
+
+
+TEST_ASSERT_EQUAL_UINT(expected, actual)	
+
+Compare two integers for equality and display errors as unsigned integers.  Like INT, there are 
+variants for different sizes also.
+
+
+
+TEST_ASSERT_EQUAL_HEX(expected, actual)
+
+Compares two integers for equality and display errors as hexadecimal.  Like the other integer comparisons,
+you can specify the size... here the size will also effect how many nibbles are shown (for example, HEX16 
+will show 4 nibbles).
+
+_ARRAY
+
+You can append _ARRAY to any of these macros to make an array comparison of that type.  Here you will
+need to care a bit more about the actual size of the value being checked.  You will also specify an
+additional argument which is the number of elements to compare.  For example:
+
+TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, actual, elements)
+
+
 TEST_ASSERT_EQUAL(expected, actual)
 
 Another way of calling TEST_ASSERT_EQUAL_INT
 
-TEST_ASSERT_EQUAL_INT(expected, actual)
 
-Compare two integers for equality and display errors as signed integers.
-
-TEST_ASSERT_EQUAL_UINT(expected, actual)	
-
-Compare two integers for equality and display errors as unsigned integers.
-
-TEST_ASSERT_EQUAL_HEX8(expected, actual)	
-
-Compare two integers for equality and display errors as an 8-bit hex value
-
-TEST_ASSERT_EQUAL_HEX16(expected, actual)	
-
-Compare two integers for equality and display errors as an 16-bit hex value
-
-TEST_ASSERT_EQUAL_HEX32(expected, actual)	
-
-Compare two integers for equality and display errors as an 32-bit hex value
-
-TEST_ASSERT_EQUAL_HEX(expected, actual)	
-
-Another way of calling TEST_ASSERT_EQUAL_HEX32
 
 TEST_ASSERT_INT_WITHIN(delta, expected, actual)
 
-Asserts that the actual value is within plus or minus delta of the expected value.
+Asserts that the actual value is within plus or minus delta of the expected value.  This also comes in 
+size specific variants.
 
-TEST_ASSERT_EQUAL_MESSAGE(expected, actual, message)
-
-Another way of calling TEST_ASSERT_EQUAL_INT_MESSAGE
-
-TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, message)
-
-Compare two integers for equality and display errors as signed integers.  Outputs a custom message on failure.
-
-TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, message)	
-
-Compare two integers for equality and display errors as unsigned integers. Outputs a custom message on failure.
-
-TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, message)
-	
-Compare two integers for equality and display errors as an 8-bit hex value. Outputs a custom message on failure.
-
-TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, message)
-	
-Compare two integers for equality and display errors as an 16-bit hex value. Outputs a custom message on failure.
-
-TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message)	
-
-Compare two integers for equality and display errors as an 32-bit hex value. Outputs a custom message on failure.
-
-TEST_ASSERT_EQUAL_HEX_MESSAGE(expected, actual, message)
-	
-Another way of calling TEST_ASSERT_EQUAL_HEX32_MESSAGE
-
-------------------------------------
-Numerical Assertions: Integer Arrays
-------------------------------------
-
-TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements)
-
-Compare two arrays for equality and display errors as signed integers.
-
-TEST_ASSERT_EQUAL_UINT_ARRAY(expected, actual, num_elements)
-
-Compare two arrays for equality and display errors as unsigned integers.
-
-TEST_ASSERT_EQUAL_HEX32_ARRAY(expected, actual, num_elements)
-
-Compare two arrays for equality and display errors as 32-bit hex values.
-
-TEST_ASSERT_EQUAL_HEX_ARRAY(expected, actual, num_elements)
-
-Another way of calling TEST_ASSERT_EQUAL_HEX32_ARRAY.
 
 -----------------------------
 Numerical Assertions: Bitwise
@@ -202,6 +168,10 @@ TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual)
 
 Asserts that the actual value is within plus or minus delta of the expected value.
 
+TEST_ASSERT_EQUAL_FLOAT(expected, actual)
+
+Asserts that two floating point values are "equal" within a small % delta of the expected value.
+
 -----------------
 String Assertions
 -----------------
@@ -227,4 +197,25 @@ Fails if the pointer is not equal to NULL
 TEST_ASSERT_NOT_NULL(pointer)
 
 Fails if the pointer is equal to NULL
+
+
+-----------------
+Memory Assertions
+-----------------
+
+TEST_ASSERT_EQUAL_MEMORY(expected, actual, len)
+
+Compare two blocks of memory.  This is a good generic assertion for types that can't be coerced into acting like
+standard types... but since it's a memory compare, you have to be careful that your data types are packed.
+
+--------
+_MESSAGE
+--------
+
+you can append _MESSAGE to any of the macros to make them take an additional argument.  This argument
+is a string that will be printed at the end of the failure strings.  This is useful for specifying more
+information about the problem.
+
+
+
 

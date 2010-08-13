@@ -139,11 +139,11 @@ module RakefileHelpers
     return {:command => command, :pre_support => pre_support, :post_support => post_support}
   end
   
-  def execute(command_string, verbose=true)
+  def execute(command_string, verbose=true, raise_on_fail=true)
     report command_string
     output = `#{command_string}`.chomp
     report(output) if (verbose && !output.nil? && (output.length > 0))
-    if $?.exitstatus != 0
+    if (($?.exitstatus != 0) and (raise_on_fail))
       raise "Command failed. (Returned #{$?.exitstatus})"
     end
     return output
@@ -215,7 +215,7 @@ module RakefileHelpers
       else
         cmd_str = "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
       end
-      output = execute(cmd_str)
+      output = execute(cmd_str, true, false)
       test_results = $cfg['compiler']['build_path'] + test_base
       if output.match(/OK$/m).nil?
         test_results += '.testfail'

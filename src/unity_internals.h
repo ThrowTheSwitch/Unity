@@ -187,7 +187,7 @@ extern struct _Unity Unity;
 //-------------------------------------------------------
 
 void UnityBegin(void);
-void UnityEnd(void);
+int  UnityEnd(void);
 void UnityConcludeTest(void);
 
 //-------------------------------------------------------
