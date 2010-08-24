@@ -36,11 +36,10 @@ class UnityTestSummary
       if lines.length == 0
         raise "Empty test result file: #{result_file}"
       else
-        summary_line = -2
         output = get_details(result_file, lines)
         failure_output << output[:failures] unless output[:failures].empty?
         ignore_output  << output[:ignores]  unless output[:ignores].empty?
-        tests,failures,ignored = parse_test_summary(lines[summary_line])
+        tests,failures,ignored = parse_test_summary(lines)
         @total_tests += tests
         @failures += failures
         @ignored += ignored
@@ -106,7 +105,7 @@ class UnityTestSummary
   end
   
   def parse_test_summary(summary)
-    if summary =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/
+    if summary[-3..-1].join("\n") =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/
       [$1.to_i,$2.to_i,$3.to_i]
     else
       raise "Couldn't parse test results: #{summary}"
