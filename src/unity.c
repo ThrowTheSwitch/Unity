@@ -168,14 +168,14 @@ void UnityPrintNumberHex(const _U_UINT number, const char nibbles_to_print)
 //-----------------------------------------------
 void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 {
-    _U_UINT bit = (_U_UINT)1 << (UNITY_INT_WIDTH - 1);
+    _U_UINT current_bit = (_U_UINT)1 << (UNITY_INT_WIDTH - 1);
     _US32 i;
 
     for (i = 0; i < UNITY_INT_WIDTH; i++)
     {
-        if (bit & mask)
+        if (current_bit & mask)
         {
-            if (bit & number)
+            if (current_bit & number)
             {
                 UNITY_OUTPUT_CHAR('1');
             }
@@ -188,7 +188,7 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
         {
             UNITY_OUTPUT_CHAR('X');
         }
-        bit = bit >> 1;
+        current_bit = current_bit >> 1;
     }
 }
 
