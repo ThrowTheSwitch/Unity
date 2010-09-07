@@ -149,7 +149,8 @@ void UnityPrintNumberHex(const _U_UINT number, const char nibbles_to_print)
 {
     _U_UINT nibble;
     char nibbles = nibbles_to_print;
-    UnityPrint("0x");
+    UNITY_OUTPUT_CHAR('0');
+    UNITY_OUTPUT_CHAR('x');
 
     while (nibbles > 0)
     {
