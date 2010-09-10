@@ -205,6 +205,7 @@ module RakefileHelpers
         runner_path = $cfg['compiler']['runner_path'] + runner_name
       end
       
+      #UnityTestRunnerGenerator.new(:suite_setup => 'puts("\nStarting Test Suite!\n");', :suite_teardown => 'return num_failures;').run(test, runner_path)
       UnityTestRunnerGenerator.new.run(test, runner_path)
 
       compile(runner_path, test_defines)

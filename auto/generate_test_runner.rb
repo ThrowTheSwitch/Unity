@@ -12,8 +12,8 @@ class UnityTestRunnerGenerator
     @options = { :includes => [], :framework => :unity }
     case(options)
       when NilClass then @options
-      when String   then @options = UnityTestRunnerGenerator.grab_config(options)
-      when Hash     then @options = options
+      when String   then @options.merge!(UnityTestRunnerGenerator.grab_config(options))
+      when Hash     then @options.merge!(options)
       else          raise "If you specify arguments, it should be a filename or a hash of options"
     end
   end
@@ -54,6 +54,7 @@ class UnityTestRunnerGenerator
       create_header(output, used_mocks)
       create_externs(output, tests, used_mocks)
       create_mock_management(output, used_mocks)
+      create_suite_setup_and_teardown(output)
       create_runtest(output, used_mocks)
 	    create_reset(output, used_mocks)
       create_main(output, input_file, tests)
@@ -180,6 +181,20 @@ class UnityTestRunnerGenerator
     end
   end
   
+  def create_suite_setup_and_teardown(output)
+    unless (@options[:suite_setup].nil?)
+      output.puts("static int suite_setup(void)")
+      output.puts("{")
+      output.puts(@options[:suite_setup])
+      output.puts("}")
+    end
+    unless (@options[:suite_teardown].nil?)
+      output.puts("static int suite_teardown(int num_failures)")
+      output.puts("{")
+      output.puts(@options[:suite_teardown])
+      output.puts("}")
+    end
+  end
   
   def create_runtest(output, used_mocks)
     output.puts("static void runTest(UnityTestFunction test)")
@@ -218,17 +233,16 @@ class UnityTestRunnerGenerator
     output.puts()
     output.puts("int main(void)")
     output.puts("{")
+    output.puts("  suite_setup();") unless @options[:suite_setup].nil?
     output.puts("  Unity.TestFile = \"#{filename}\";")
     output.puts("  UnityBegin();")
     output.puts()
-
-    output.puts("  // RUN_TEST calls runTest")  	
+    output.puts("  // RUN_TEST calls runTest")
     tests.each do |test|
       output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]});")
     end
-
     output.puts()
-    output.puts("  return UnityEnd();")
+    output.puts("  return #{@options[:suite_teardown].nil? ? "" : "suite_teardown"}(UnityEnd());")
     output.puts("}")
   end
 end
