@@ -12,6 +12,7 @@ compiler:
     prefix: '-I'
     items:
       - 'src/'
+      - '../src/'
       - *unit_tests_path
   defines:
     prefix: '-D'

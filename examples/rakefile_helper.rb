@@ -19,7 +19,7 @@ module RakefileHelpers
   
   def configure_toolchain(config_file=DEFAULT_CONFIG_FILE)
     config_file += '.yml' unless config_file =~ /\.yml$/
-    load_configuration(config_file)
+    load_configuration('../targets/'+config_file)
     configure_clean
   end
   

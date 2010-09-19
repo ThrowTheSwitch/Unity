@@ -33,6 +33,7 @@ compiler:
       - [*core_inc, 'dlib']
       - [*core_lib, 'dlib']
       - 'src\'
+      - '../src/'
       - *unit_tests_path
       - 'vendor\unity\src'
   defines:

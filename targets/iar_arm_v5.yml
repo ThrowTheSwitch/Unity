@@ -30,6 +30,7 @@ compiler:
     items:
       - [*tools_root, 'arm\inc\']
       - 'src\'
+      - '../src/'
       - *unit_tests_path
       - 'vendor\unity\src\'
       - 'iar\iar_v5\incIAR\'

@@ -15,7 +15,7 @@ TARGET = $(TARGET_BASE)$(TARGET_EXTENSION)
 OUT_FILE=-o $(TARGET)
 SRC_FILES=src/unity.c test/testunity.c build/testunity_Runner.c
 INC_DIRS=-Isrc
-SYMBOLS=-DTEST
+SYMBOLS=-DTEST -DUNITY_SUPPORT_64
 
 ifeq ($(OS),Windows_NT)
 	CLEANUP = del /F /Q build\* && del /F /Q $(TARGET)
