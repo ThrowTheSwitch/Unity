@@ -16,7 +16,7 @@ module RakefileHelpers
   C_EXTENSION = '.c'
   
   def load_configuration(config_file)
-    $cfg_file = config_file
+    $cfg_file = "targets/#{config_file}" unless $cfg_file =~ /[\\|\/]/
     $cfg = YAML.load(File.read($cfg_file))
     $colour_output = false unless $cfg['colour']
   end
@@ -27,7 +27,7 @@ module RakefileHelpers
   
   def configure_toolchain(config_file=DEFAULT_CONFIG_FILE)
     config_file += '.yml' unless config_file =~ /\.yml$/
-    config_file = "targets/#{config_file}" unless config_file =~ /[\\|\/]/
+    config_file = config_file unless config_file =~ /[\\|\/]/
     load_configuration(config_file)
     configure_clean
   end
@@ -205,8 +205,7 @@ module RakefileHelpers
         runner_path = $cfg['compiler']['runner_path'] + runner_name
       end
       
-      #UnityTestRunnerGenerator.new(:suite_setup => 'puts("\nStarting Test Suite!\n");', :suite_teardown => 'return num_failures;').run(test, runner_path)
-      UnityTestRunnerGenerator.new.run(test, runner_path)
+      UnityTestRunnerGenerator.new($cfg_file).run(test, runner_path)
 
       compile(runner_path, test_defines)
       obj_list << runner_name.ext($cfg['compiler']['object_files']['extension'])

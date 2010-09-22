@@ -36,3 +36,5 @@ linker:
     extension: '.exe'
     destination: *build_path
 colour: true
+:unity:
+  :plugins: []
