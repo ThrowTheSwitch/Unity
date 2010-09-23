@@ -1,0 +1,8 @@
+:unity:
+  :includes
+    - two.h
+    - three.h
+  :plugins:
+    - :cexception
+  :suite_setup: |
+    a_yaml_setup();

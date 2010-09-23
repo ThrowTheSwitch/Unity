@@ -9,7 +9,7 @@ File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 class UnityTestRunnerGenerator
 
   def initialize(options = nil)
-    @options = { :includes => [], :framework => :unity }
+    @options = { :includes => [], :plugins => [], :framework => :unity }
     case(options)
       when NilClass then @options
       when String   then @options.merge!(UnityTestRunnerGenerator.grab_config(options))
@@ -19,16 +19,12 @@ class UnityTestRunnerGenerator
   end
   
   def self.grab_config(config_file)
-    options = { :includes => [], :framework => :unity }
+    options = { :includes => [], :plugins => [], :framework => :unity }
     unless (config_file.nil? or config_file.empty?)
       require 'yaml'
       yaml_guts = YAML.load_file(config_file)
-      yaml_goodness = yaml_guts[:unity] ? yaml_guts[:unity] : yaml_guts[:cmock]
-      raise "No :unity or :cmock section found in #{config_file}" unless yaml_goodness
-      options[:cexception] = 1 unless (yaml_goodness[:plugins] & ['cexception', :cexception]).empty?
-      options[:order]      = 1 if     (yaml_goodness[:enforce_strict_ordering])
-      options[:framework]  =          (yaml_goodness[:framework] || :unity)
-      options[:includes]   <<         (yaml_goodness[:includes])
+      options.merge!(yaml_guts[:unity] ? yaml_guts[:unity] : yaml_guts[:cmock])
+      raise "No :unity or :cmock section found in #{config_file}" unless options
     end
     return(options)
   end
@@ -38,7 +34,7 @@ class UnityTestRunnerGenerator
     includes = []
     used_mocks = []
     
-    @options = options unless options.nil?
+    @options.merge!(options) unless options.nil?
     module_name = File.basename(input_file)
     
     #pull required data from source file
@@ -47,8 +43,6 @@ class UnityTestRunnerGenerator
       includes   = find_includes(input)
       used_mocks = find_mocks(includes)
     end
-    
-    puts "Creating test runner for #{module_name}..."
 
     #build runner file
     File.open(output_file, 'w') do |output|
@@ -126,13 +120,13 @@ class UnityTestRunnerGenerator
     end
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
-    output.puts('#include "CException.h"') if @options[:cexception]
+    output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
     mocks.each do |mock|
       output.puts("#include \"#{mock.gsub('.h','')}.h\"")
     end
     output.puts('')    
     output.puts('char MessageBuffer[50];')
-    if @options[:order]
+    if @options[:enforce_strict_ordering]
       output.puts('int GlobalExpectCount;') 
       output.puts('int GlobalVerifyOrder;') 
       output.puts('char* GlobalOrderError;') 
@@ -156,7 +150,7 @@ class UnityTestRunnerGenerator
     unless (mocks.empty?)
       output.puts("static void CMock_Init(void)")
       output.puts("{")
-      if @options[:order]
+      if @options[:enforce_strict_ordering]
         output.puts("  GlobalExpectCount = 0;")
         output.puts("  GlobalVerifyOrder = 0;") 
         output.puts("  GlobalOrderError = NULL;") 
@@ -198,17 +192,18 @@ class UnityTestRunnerGenerator
   end
   
   def create_runtest(output, used_mocks)
+    cexception = @options[:plugins].include? :cexception
     output.puts("static void runTest(UnityTestFunction test)")
     output.puts("{")
     output.puts("  if (TEST_PROTECT())")
     output.puts("  {")
-    output.puts("    CEXCEPTION_T e;") if @options[:cexception]
-    output.puts("    Try {") if @options[:cexception]
+    output.puts("    CEXCEPTION_T e;") if cexception
+    output.puts("    Try {") if cexception
     output.puts("      CMock_Init();") unless (used_mocks.empty?) 
     output.puts("      setUp();")
     output.puts("      test();")
     output.puts("      CMock_Verify();") unless (used_mocks.empty?)
-    output.puts("    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\"); }") if @options[:cexception]
+    output.puts("    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\"); }") if cexception
     output.puts("  }")
     output.puts("  CMock_Destroy();") unless (used_mocks.empty?)
     output.puts("  if (TEST_PROTECT() && !TEST_IS_IGNORED)")
@@ -250,30 +245,23 @@ end
 
 
 if ($0 == __FILE__)
-  usage = ["usage: ruby #{__FILE__} (yaml) (options) input_test_file output_test_runner (includes)",
-           "  blah.yml    - will use config options in the yml file (see CMock docs)",
-           "  -cexception - include cexception support",
-           "  -order      - include cmock order-enforcement support" ]
-
   options = { :includes => [] }
   yaml_file = nil
   
   #parse out all the options first
   ARGV.reject! do |arg| 
-    if (arg =~ /\-(\w+)/) 
-      options[$1.to_sym] = 1
-      true
-    elsif (arg =~ /(\w+\.yml)/)
-      options = UnityTestRunnerGenerator.grab_config(arg)
-      true
-    else
-      false
+    case(arg)
+      when '-cexception': options[:plugins] = [:cexception]; true
+      when /\w+\.yml/:    options = UnityTestRunnerGenerator.grab_config(arg); true
+      else false
     end
   end     
            
   #make sure there is at least one parameter left (the input file)
   if !ARGV[0]
-    puts usage
+    puts ["usage: ruby #{__FILE__} (yaml) (options) input_test_file output_test_runner (includes)",
+           "  blah.yml    - will use config options in the yml file (see CMock docs)",
+           "  -cexception - include cexception support"].join("\n")
     exit 1
   end
   

@@ -22,6 +22,11 @@ task :unit do
   run_tests get_unit_test_files
 end
 
+Rake::TestTask.new(:scripts) do |t|
+  t.pattern = 'test/test_*.rb'
+  t.verbose = true
+end
+
 desc "Generate test summary"
 task :summary do
   report_summary
