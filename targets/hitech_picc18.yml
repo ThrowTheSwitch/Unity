@@ -1,3 +1,6 @@
+# rumor has it that this yaml file works for the standard edition of the 
+# hitech PICC18 compiler, but not the pro version.
+#
 compiler:
   path: cd build && picc18
   source_path: 'c:\Projects\NexGen\Prototypes\CMockTest\src\'
@@ -6,7 +9,7 @@ compiler:
   options:
     - --chip=18F87J10
     - --ide=hitide
-    - --please
+    - --q #quiet please
     - --asmlist
     - --codeoffset=0
     - --emi=wordwrite # External memory interface protocol
@@ -15,11 +18,12 @@ compiler:
     - --char=unsigned
     - -Bl # Large memory model
     - -G # generate symbol file
-    - --cp=24 # 24-bit pointers
+    - --cp=16 # 16-bit pointers
     - --double=24 
     - -N255 # 255-char symbol names
     - --opt=none # Do not use any compiler optimziations
     - -c # compile only
+    - -M
   includes:
     prefix: '-I'
     items:
@@ -34,10 +38,10 @@ compiler:
     prefix: '-D' 
     items: 
       - UNITY_INT_WIDTH=16 
-      - UNITY_POINTER_WIDTH=32 
+      - UNITY_POINTER_WIDTH=16
       - CMOCK_MEM_STATIC 
       - CMOCK_MEM_SIZE=3000 
-      - __PICC18__ 
+      - _PICC18
   object_files: 
     # prefix: '-O' # Hi-Tech doesn't want a prefix. They key off of filename .extensions, instead 
     extension: '.obj' 
