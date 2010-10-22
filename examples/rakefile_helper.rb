@@ -1,8 +1,8 @@
 require 'yaml'
 require 'fileutils'
-require '../auto/unity_test_summary'
-require '../auto/generate_test_runner'
-require '../auto/colour_reporter'
+require HERE+'../auto/unity_test_summary'
+require HERE+'../auto/generate_test_runner'
+require HERE+'../auto/colour_reporter'
 
 module RakefileHelpers
 
@@ -157,7 +157,7 @@ module RakefileHelpers
     results = Dir[results_glob]
     summary.set_targets(results)
     summary.run
-    raise "There were failures" if (summary.failures > 0)
+    fail_out "FAIL: There were failures" if (summary.failures > 0)
   end
   
   def run_tests(test_files)
@@ -253,4 +253,8 @@ module RakefileHelpers
     link(main_base, obj_list)
   end
   
+  def fail_out(msg)
+    puts msg
+    exit(-1)
+  end
 end

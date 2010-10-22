@@ -6,10 +6,9 @@
 
 require 'yaml'
 require 'fileutils'
-require 'auto/unity_test_summary'
-require 'auto/generate_test_runner'
-require 'auto/colour_reporter'
-#require 'auto/test_file_filter'
+require HERE+'auto/unity_test_summary'
+require HERE+'auto/generate_test_runner'
+require HERE+'auto/colour_reporter'
 
 module RakefileHelpers
 

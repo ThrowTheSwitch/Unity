@@ -251,8 +251,10 @@ if ($0 == __FILE__)
   #parse out all the options first
   ARGV.reject! do |arg| 
     case(arg)
-      when '-cexception': options[:plugins] = [:cexception]; true
-      when /\w+\.yml/:    options = UnityTestRunnerGenerator.grab_config(arg); true
+      when '-cexception' 
+        options[:plugins] = [:cexception]; true
+      when /\w+\.yml/
+        options = UnityTestRunnerGenerator.grab_config(arg); true
       else false
     end
   end     

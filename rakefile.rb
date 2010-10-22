@@ -6,11 +6,10 @@
 
 HERE = File.expand_path(File.dirname(__FILE__)) + '/'
 
-#require HERE + 'config/environment'
 require 'rake'
 require 'rake/clean'
 require 'rake/testtask'
-require 'rakefile_helper'
+require HERE + 'rakefile_helper'
 
 include RakefileHelpers
 
