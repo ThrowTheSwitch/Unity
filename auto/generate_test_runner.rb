@@ -67,10 +67,10 @@ class UnityTestRunnerGenerator
     
     input_file.rewind
     source_raw = input_file.read
-    source_scrubbed = source_raw.gsub(/\/\/.*$/, '') #remove line comments
-    source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '') #remove block comments
-    lines = source_scrubbed.split(/(^\s*\#.*$)  # Treat preprocessor directives as a logical line
-                              | (;|\{|\}) /x) # Match ;, {, and } as end of lines
+    source_scrubbed = source_raw.gsub(/\/\/.*$/, '')           # remove line comments
+    source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '') # remove block comments
+    lines = source_scrubbed.split(/(^\s*\#.*$)                 # Treat preprocessor directives as a logical line
+                              | (;|\{|\}) /x)                  # Match ;, {, and } as end of lines
 
     lines.each_with_index do |line, index|
       if line =~ /^\s*void\s+test(.*?)\s*\(\s*void\s*\)/
@@ -193,23 +193,28 @@ class UnityTestRunnerGenerator
   
   def create_runtest(output, used_mocks)
     cexception = @options[:plugins].include? :cexception
-    output.puts("static void runTest(UnityTestFunction test)")
-    output.puts("{")
-    output.puts("  if (TEST_PROTECT())")
-    output.puts("  {")
-    output.puts("    CEXCEPTION_T e;") if cexception
-    output.puts("    Try {") if cexception
-    output.puts("      CMock_Init();") unless (used_mocks.empty?) 
-    output.puts("      setUp();")
-    output.puts("      test();")
-    output.puts("      CMock_Verify();") unless (used_mocks.empty?)
-    output.puts("    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\"); }") if cexception
-    output.puts("  }")
-    output.puts("  CMock_Destroy();") unless (used_mocks.empty?)
-    output.puts("  if (TEST_PROTECT() && !TEST_IS_IGNORED)")
-    output.puts("  {")
-    output.puts("    tearDown();")
-    output.puts("  }")
+    va_args1   = @options[:use_param_tests] ? ', ...' : ''
+    va_args2   = @options[:use_param_tests] ? '__VA_ARGS__' : ''
+    output.puts("#define TEST_RUN(TestFunc, TestLineNum#{va_args1}) \\")
+    output.puts("{ \\")
+    output.puts("  Unity.CurrentTestName = #TestFunc; \\")
+    output.puts("  Unity.CurrentTestLineNumber = TestLineNum; \\")
+    output.puts("  Unity.NumberOfTests++; \\")
+    output.puts("  if (TEST_PROTECT()) \\")
+    output.puts("  { \\")
+    output.puts("    CEXCEPTION_T e; \\") if cexception
+    output.puts("    Try { \\") if cexception
+    output.puts("      CMock_Init(); \\") unless (used_mocks.empty?) 
+    output.puts("      setUp(); \\")
+    output.puts("      TestFunc(#{va_args2}); \\")
+    output.puts("      CMock_Verify(); \\") unless (used_mocks.empty?)
+    output.puts("    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\"); } \\") if cexception
+    output.puts("  } \\")
+    output.puts("  CMock_Destroy(); \\") unless (used_mocks.empty?)
+    output.puts("  if (TEST_PROTECT() && !TEST_IS_IGNORED) \\")
+    output.puts("  { \\")
+    output.puts("    tearDown(); \\")
+    output.puts("  } \\")
     output.puts("}")
   end
   

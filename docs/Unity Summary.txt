@@ -8,13 +8,9 @@ Unity Test API
 Running Tests 
 ------------- 
 
-RUN_TEST(func)
+RUN_TEST(func, linenum)
 
 Each Test is run within the macro RUN_TEST.  This macro performs necessary setup before the test is called and handles cleanup and result tabulation afterwards.
-
-TEST_WRAP(function) 
-
-If the test functions call helper functions and those helper functions have the ability to make assertions, calls to those helpers should be wrapped in a TEST_WRAP macro.  This macro aborts the test if the helper triggered a failure.
 
 --------------
 Ignoring Tests
