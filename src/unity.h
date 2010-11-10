@@ -40,12 +40,9 @@
 
 #define TEST_ABORT() {longjmp(Unity.AbortFrame, 1);}
 
-#define RUN_TEST(func, line_num) \
-    Unity.CurrentTestName = #func; \
-    Unity.CurrentTestLineNumber = line_num; \
-    Unity.NumberOfTests++; \
-    runTest(func); \
-    UnityConcludeTest();
+#ifndef RUN_TEST
+#define RUN_TEST(func, line_num) UnityDefaultTestRun(func, #func, line_num)
+#endif
 
 #define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
 #define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
