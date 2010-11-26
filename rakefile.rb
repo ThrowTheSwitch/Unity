@@ -32,7 +32,7 @@ task :summary do
 end
 
 desc "Build and test Unity"
-task :all => [:clean, :unit, :summary]
+task :all => [:clean, :scripts, :unit, :summary]
 task :default => [:clobber, :all]
 task :ci => [:no_color, :default]
 task :cruise => [:no_color, :default]

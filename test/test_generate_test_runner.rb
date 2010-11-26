@@ -6,11 +6,11 @@
 
 ruby_version = RUBY_VERSION.split('.')
 if (ruby_version[1].to_i == 9) and (ruby_version[2].to_i > 1)
-  require 'gems'
+  require 'rubygems'
   gem 'test-unit'
 end
 require 'test/unit'
-require 'auto/generate_test_runner.rb'
+require './auto/generate_test_runner.rb'
 
 TEST_FILE = 'test/testdata/testsample.c'
 TEST_MOCK = 'test/testdata/mocksample.c'
@@ -77,6 +77,18 @@ class TestGenerateTestRunner < Test::Unit::TestCase
     cmdstr = "ruby auto/generate_test_runner.rb -cexception \"#{TEST_MOCK}\" \"#{OUT_FILE + 'mock_' + subtest + '.c'}\""
     `#{cmdstr}`
     verify_output_equal('mock_' + subtest)
+  end
+  
+  def test_ShouldGenerateARunnerThatUsesParameterizedTests
+    sets = { 'param'  => { :plugins => [:ignore], :use_param_tests => true }   
+    }
+    
+    sets.each_pair do |subtest, options|
+      UnityTestRunnerGenerator.new(options).run(TEST_FILE, OUT_FILE + subtest + '.c')
+      verify_output_equal(subtest)
+      UnityTestRunnerGenerator.new(options).run(TEST_MOCK, OUT_FILE + 'mock_' + subtest + '.c')
+      verify_output_equal('mock_' + subtest)
+    end
   end
   
 end
