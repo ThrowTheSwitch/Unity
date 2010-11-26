@@ -47,6 +47,8 @@
 #define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
 #define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
 
+#define TEST_CASE(...)
+
 //-------------------------------------------------------
 // Basic Fail and Ignore
 //-------------------------------------------------------

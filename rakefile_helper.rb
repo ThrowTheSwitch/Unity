@@ -204,7 +204,9 @@ module RakefileHelpers
         runner_path = $cfg['compiler']['runner_path'] + runner_name
       end
       
-      UnityTestRunnerGenerator.new($cfg_file).run(test, runner_path)
+      options = $cfg[:unity]
+      options[:use_param_tests] = (test =~ /parameterized/) ? true : false
+      UnityTestRunnerGenerator.new(options).run(test, runner_path)
 
       compile(runner_path, test_defines)
       obj_list << runner_name.ext($cfg['compiler']['object_files']['extension'])

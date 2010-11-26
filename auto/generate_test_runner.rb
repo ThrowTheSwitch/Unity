@@ -50,7 +50,7 @@ class UnityTestRunnerGenerator
       create_externs(output, tests, used_mocks)
       create_mock_management(output, used_mocks)
       create_suite_setup_and_teardown(output)
-	    create_reset(output, used_mocks)
+      create_reset(output, used_mocks)
       create_main(output, input_file, tests)
     end
     
@@ -62,6 +62,7 @@ class UnityTestRunnerGenerator
   
   def find_tests(input_file)
     tests_raw = []
+    tests_args = []
     tests_and_line_numbers = []
     
     input_file.rewind
@@ -72,23 +73,29 @@ class UnityTestRunnerGenerator
                               | (;|\{|\}) /x)                  # Match ;, {, and } as end of lines
 
     lines.each_with_index do |line, index|
-      if line =~ /^\s*void\s+test(.*?)\s*\(\s*void\s*\)/
-        tests_raw << ("test" + $1)
+      #find tests
+      if line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+(test.*?)\s*\(\s*(.*)\s*\)/
+        name = $2
+        call = $3
+        args = (@options[:use_param_tests] and $1) ? ($1.gsub(/\s*TEST_CASE\s*\(\s*/,'').strip.split(/\s*\)/).compact) : nil
+        tests_and_line_numbers << { :name => name, :args => args, :call => call, :line_number => 0 }
+        tests_args = []
       end
     end
 
+    #determine line numbers and create tests to run
     source_lines = source_raw.split("\n")
     source_index = 0;
-
-    tests_raw.each do |test|
+    tests_and_line_numbers.size.times do |i|
       source_lines[source_index..-1].each_with_index do |line, index|
-        if (line =~ /#{test}/)
+        if (line =~ /#{tests_and_line_numbers[i][:name]}/)
           source_index += index
-          tests_and_line_numbers << {:name => test, :line_number => (source_index+1)}
+          tests_and_line_numbers[i][:line_number] = source_index + 1
           break
         end
       end
     end
+    
     return tests_and_line_numbers
   end
 
@@ -138,7 +145,7 @@ class UnityTestRunnerGenerator
     output.puts("extern void setUp(void);")
     output.puts("extern void tearDown(void);")
     tests.each do |test|
-      output.puts("extern void #{test[:name]}(void);")
+      output.puts("extern void #{test[:name]}(#{test[:call]});")
     end
     output.puts('')
   end
@@ -240,7 +247,11 @@ class UnityTestRunnerGenerator
     output.puts("  Unity.TestFile = \"#{filename}\";")
     output.puts("  UnityBegin();")
     tests.each do |test|
-      output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]});")
+      if ((test[:args].nil?) or (test[:args].empty?))
+        output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]});")
+      else
+        test[:args].each {|args| output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]}, #{args});")}
+      end
     end
     output.puts()
     output.puts("  return #{@options[:suite_teardown].nil? ? "" : "suite_teardown"}(UnityEnd());")
@@ -267,7 +278,7 @@ if ($0 == __FILE__)
   #make sure there is at least one parameter left (the input file)
   if !ARGV[0]
     puts ["usage: ruby #{__FILE__} (yaml) (options) input_test_file output_test_runner (includes)",
-           "  blah.yml    - will use config options in the yml file (see CMock docs)",
+           "  blah.yml    - will use config options in the yml file (see docs)",
            "  -cexception - include cexception support"].join("\n")
     exit 1
   end
