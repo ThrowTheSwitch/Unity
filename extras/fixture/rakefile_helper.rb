@@ -15,9 +15,12 @@ module RakefileHelpers
   C_EXTENSION = '.c'
   
   def load_configuration(config_file)
-    $cfg_file = HERE+"../../targets/#{config_file}" unless $cfg_file =~ /[\\|\/]/
-    $cfg = YAML.load(File.read($cfg_file))
-    $colour_output = false unless $cfg['colour']
+    unless ($configured)
+      $cfg_file = HERE+"../../targets/#{config_file}" unless (config_file =~ /[\\|\/]/)
+      $cfg = YAML.load(File.read($cfg_file))
+      $colour_output = false unless $cfg['colour']
+      $configured = true if (config_file != DEFAULT_CONFIG_FILE)
+    end
   end
   
   def configure_clean
@@ -159,7 +162,7 @@ module RakefileHelpers
     simulator = build_simulator_fields
     executable = $cfg['linker']['bin_files']['destination'] + test_base + $cfg['linker']['bin_files']['extension']
     if simulator.nil?
-      cmd_str = executable + " -v -r 8"
+      cmd_str = executable + " -v -r"
     else
       cmd_str = "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
     end
@@ -171,6 +174,5 @@ module RakefileHelpers
       test_results += '.testpass'
     end
     File.open(test_results, 'w') { |f| f.print output }
-    puts output
   end
 end

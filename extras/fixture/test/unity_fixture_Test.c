@@ -297,7 +297,7 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
 {
     void* m = malloc(10);
     char* s = (char*)m;
-    s[10] = -1;
+    s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     free(m);
@@ -312,7 +312,7 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
 {
     void* m = malloc(10);
     char* s = (char*)m;
-    s[10] = -1;
+    s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     m = realloc(m, 100);

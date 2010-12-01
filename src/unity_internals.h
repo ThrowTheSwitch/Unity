@@ -120,6 +120,8 @@ typedef UNITY_FLOAT_TYPE _UF;
 #define UNITY_OUTPUT_CHAR(a) putchar(a)
 #endif
 
+extern int UNITY_OUTPUT_CHAR(int);
+
 //-------------------------------------------------------
 // Footprint
 //-------------------------------------------------------

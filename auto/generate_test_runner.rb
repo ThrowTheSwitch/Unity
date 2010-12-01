@@ -203,6 +203,7 @@ class UnityTestRunnerGenerator
     va_args1   = @options[:use_param_tests] ? ', ...' : ''
     va_args2   = @options[:use_param_tests] ? '__VA_ARGS__' : ''
     output.puts("\n//=======Test Runner Used To Run Each Test Below=====")
+    output.puts("#define RUN_TEST_NO_ARGS") if @options[:use_param_tests] 
     output.puts("#define RUN_TEST(TestFunc, TestLineNum#{va_args1}) \\")
     output.puts("{ \\")
     output.puts("  Unity.CurrentTestName = #TestFunc; \\")
@@ -246,12 +247,16 @@ class UnityTestRunnerGenerator
     output.puts("  suite_setup();") unless @options[:suite_setup].nil?
     output.puts("  Unity.TestFile = \"#{filename}\";")
     output.puts("  UnityBegin();")
-    tests.each do |test|
-      if ((test[:args].nil?) or (test[:args].empty?))
-        output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]});")
-      else
-        test[:args].each {|args| output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]}, #{args});")}
+    if (@options[:use_param_tests])
+      tests.each do |test|
+        if ((test[:args].nil?) or (test[:args].empty?))
+          output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]}, RUN_TEST_NO_ARGS);")
+        else
+          test[:args].each {|args| output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]}, #{args});")}
+        end
       end
+    else
+        tests.each { |test| output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]});") }
     end
     output.puts()
     output.puts("  return #{@options[:suite_teardown].nil? ? "" : "suite_teardown"}(UnityEnd());")
