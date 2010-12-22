@@ -6,6 +6,7 @@ compiler:
   options:
     - '-c'
     - '-Wall'
+    - '-Wno-address'
     - '-std=c99'
     - '-pedantic'
   includes:
