@@ -110,6 +110,8 @@ if @yaml_config
   @update_svn   = cfg[:defaults][:update_svn] if @update_svn.nil?
   @extra_inc    = cfg[:includes]
   @boilerplates = cfg[:boilerplates]
+else
+  @boilerplates = {}
 end
 
 # Create default file paths if none were provided
