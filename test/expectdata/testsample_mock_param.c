@@ -4,7 +4,7 @@
 #define RUN_TEST_NO_ARGS
 #define RUN_TEST(TestFunc, TestLineNum, ...) \
 { \
-  Unity.CurrentTestName = #TestFunc; \
+  Unity.CurrentTestName = #TestFunc "(" #__VA_ARGS__ ")"; \
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
   if (TEST_PROTECT()) \

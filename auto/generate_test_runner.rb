@@ -206,7 +206,7 @@ class UnityTestRunnerGenerator
     output.puts("#define RUN_TEST_NO_ARGS") if @options[:use_param_tests] 
     output.puts("#define RUN_TEST(TestFunc, TestLineNum#{va_args1}) \\")
     output.puts("{ \\")
-    output.puts("  Unity.CurrentTestName = #TestFunc; \\")
+    output.puts("  Unity.CurrentTestName = #TestFunc#{va_args2.empty? ? '' : " \"(\" ##{va_args2} \")\""}; \\")
     output.puts("  Unity.CurrentTestLineNumber = TestLineNum; \\")
     output.puts("  Unity.NumberOfTests++; \\")
     output.puts("  if (TEST_PROTECT()) \\")
