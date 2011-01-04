@@ -186,18 +186,32 @@ void * unity_malloc(size_t size)
     return (void*)mem;
 }
 
-void unity_free(void * mem)
+static int isOverrun(void * mem)
 {
     Guard* guard = (Guard*)mem;
     char* memAsChar = (char*)mem;
     guard--;
-    if (strcmp(&memAsChar[guard->size], end) != 0)
+
+    return strcmp(&memAsChar[guard->size], end) != 0;
+}
+
+static void release_memory(void * mem)
+{
+    Guard* guard = (Guard*)mem;
+    guard--;
+
+    malloc_count--;
+    free(guard);
+}
+
+void unity_free(void * mem)
+{
+    int overrun = isOverrun(mem);//strcmp(&memAsChar[guard->size], end) != 0;
+    release_memory(mem);
+    if (overrun)
     {
         TEST_FAIL_MESSAGE("Buffer overrun detected during free()");
     }
-
-    malloc_count--;
-    free((void*)guard);
 }
 
 void* unity_calloc(size_t num, size_t size)
@@ -210,21 +224,22 @@ void* unity_calloc(size_t num, size_t size)
 void* unity_realloc(void * oldMem, size_t size)
 {
     Guard* guard = (Guard*)oldMem;
-    char* memAsChar = (char*)oldMem;
+//    char* memAsChar = (char*)oldMem;
     void* newMem;
 
     if (oldMem == 0)
         return unity_malloc(size);
 
     guard--;
-    if (strcmp(&memAsChar[guard->size], end) != 0)
+    if (isOverrun(oldMem))
     {
+        release_memory(oldMem);
         TEST_FAIL_MESSAGE("Buffer overrun detected during realloc()");
     }
 
     if (size == 0)
     {
-        unity_free(oldMem);
+        release_memory(oldMem);
         return 0;
     }
 
@@ -356,4 +371,3 @@ void UnityConcludeFixtureTest()
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
 }
-

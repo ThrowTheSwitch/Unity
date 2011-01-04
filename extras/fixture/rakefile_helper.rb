@@ -24,7 +24,11 @@ module RakefileHelpers
   end
   
   def configure_clean
-    CLEAN.include($cfg['compiler']['build_path'] + '*.*') unless $cfg['compiler']['build_path'].nil?
+    unless $cfg['compiler']['build_path'].nil?
+      CLEAN.include($cfg['compiler']['build_path'] + "*#{$cfg['compiler']['object_files']['extension']}") 
+      CLEAN.include($cfg['compiler']['build_path'] + "*#{$cfg['linker']['bin_files']['extension']}") 
+      CLEAN.include($cfg['compiler']['build_path'] + "*.test*") 
+    end
   end
   
   def configure_toolchain(config_file=DEFAULT_CONFIG_FILE)
@@ -147,6 +151,7 @@ module RakefileHelpers
     
     # Get a list of all source files needed
     src_files  = Dir[HERE+'src/*.c']
+    src_files += Dir[HERE+'main/*.c']
     src_files += Dir[HERE+'test/*.c']
     src_files << '../../src/Unity.c'
     
