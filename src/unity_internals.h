@@ -117,10 +117,12 @@ typedef UNITY_FLOAT_TYPE _UF;
 //-------------------------------------------------------
 
 #ifndef UNITY_OUTPUT_CHAR
+//Default to using putchar, which is defined in stdio.h above
 #define UNITY_OUTPUT_CHAR(a) putchar(a)
-#endif
-
+#else
+//If defined as something else, make sure we declare it here so it's ready for use
 extern int UNITY_OUTPUT_CHAR(int);
+#endif
 
 //-------------------------------------------------------
 // Footprint
