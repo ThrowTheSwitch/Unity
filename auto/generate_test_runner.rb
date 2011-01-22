@@ -75,9 +75,14 @@ class UnityTestRunnerGenerator
     lines.each_with_index do |line, index|
       #find tests
       if line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+(test.*?)\s*\(\s*(.*)\s*\)/
+        arguments = $1
         name = $2
         call = $3
-        args = (@options[:use_param_tests] and $1) ? ($1.gsub(/\s*TEST_CASE\s*\(\s*/,'').strip.split(/\s*\)/).compact) : nil
+        args = nil
+        if (@options[:use_param_tests] and !arguments.empty?)
+          args = []
+          arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) {|a| args << a[0]}
+        end
         tests_and_line_numbers << { :name => name, :args => args, :call => call, :line_number => 0 }
         tests_args = []
       end

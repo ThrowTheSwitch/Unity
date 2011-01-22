@@ -52,7 +52,7 @@ void tearDown(void)
 
 TEST_CASE(0)
 TEST_CASE(44)
-TEST_CASE(99)
+TEST_CASE((90)+9)
 void test_TheseShouldAllPass(int Num)
 {
     TEST_ASSERT_TRUE(Num < 100);
@@ -60,7 +60,7 @@ void test_TheseShouldAllPass(int Num)
 
 TEST_CASE(3)
 TEST_CASE(77)
-TEST_CASE(99)
+TEST_CASE( (99) + 1 - (1))
 void test_TheseShouldAllFail(int Num)
 {
     EXPECT_ABORT_BEGIN
