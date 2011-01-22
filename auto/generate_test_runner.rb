@@ -123,8 +123,8 @@ class UnityTestRunnerGenerator
     output.puts("\n//=======Automagically Detected Files To Include=====")
     output.puts("#include \"#{@options[:framework].to_s}.h\"")
     output.puts('#include "cmock.h"') unless (mocks.empty?)
-    @options[:includes].flatten.uniq.compact.each do |includes|
-      output.puts("#include \"#{includes.gsub('.h','')}.h\"")
+    @options[:includes].flatten.uniq.compact.each do |inc|
+      output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h','')}.h\""}")
     end
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
@@ -274,7 +274,7 @@ if ($0 == __FILE__)
     case(arg)
       when '-cexception' 
         options[:plugins] = [:cexception]; true
-      when /\w+\.yml/
+      when /\.*\.yml/
         options = UnityTestRunnerGenerator.grab_config(arg); true
       else false
     end
@@ -292,7 +292,7 @@ if ($0 == __FILE__)
   ARGV[1] = ARGV[0].gsub(".c","_Runner.c") if (!ARGV[1])
   
   #everything else is an include file
-  options[:includes] = (ARGV.slice(2..-1).flatten.compact) if (ARGV.size > 2)
+  options[:includes] ||= (ARGV.slice(2..-1).flatten.compact) if (ARGV.size > 2)
   
   UnityTestRunnerGenerator.new(options).run(ARGV[0], ARGV[1])
 end

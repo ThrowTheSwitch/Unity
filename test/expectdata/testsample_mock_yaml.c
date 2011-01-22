@@ -8,10 +8,13 @@
   Unity.NumberOfTests++; \
   if (TEST_PROTECT()) \
   { \
+    CEXCEPTION_T e; \
+    Try { \
       CMock_Init(); \
       setUp(); \
       TestFunc(); \
       CMock_Verify(); \
+    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, "Unhandled Exception!"); } \
   } \
   CMock_Destroy(); \
   if (TEST_PROTECT() && !TEST_IS_IGNORED) \
@@ -24,8 +27,12 @@
 //=======Automagically Detected Files To Include=====
 #include "unity.h"
 #include "cmock.h"
+#include "two.h"
+#include "three.h"
+#include <four.h>
 #include <setjmp.h>
 #include <stdio.h>
+#include "CException.h"
 #include "Mockstanky.h"
 
 //=======External Functions This Runner Calls=====

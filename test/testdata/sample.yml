@@ -1,7 +1,8 @@
 :unity:
-  :includes
+  :includes:
     - two.h
     - three.h
+    - <four.h>
   :plugins:
     - :cexception
   :suite_setup: |
