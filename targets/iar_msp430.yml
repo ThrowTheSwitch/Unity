@@ -42,6 +42,7 @@ compiler:
       - '__MSP430F149__'
       - 'INT_WIDTH=16'
       - 'UNITY_EXCLUDE_FLOAT'
+      - 'UNITY_SUPPORT_TEST_CASES'
   object_files:
     prefix: '-o'
     extension: '.r43'

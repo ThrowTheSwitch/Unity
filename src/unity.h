@@ -32,6 +32,9 @@
 //     - by default, line numbers are stored in unsigned shorts.  Define UNITY_LINE_TYPE with a different type if your files are huge
 //     - by default, test and failure counters are unsigned shorts.  Define UNITY_COUNTER_TYPE with a different type if you want to save space or have more than 65535 Tests.
 
+// Test Cases
+//     - define UNITY_SUPPORT_TEST_CASES to include the TEST_CASE macro, though really it's mostly about the runner generator script
+
 //-------------------------------------------------------
 // Test Running Macros
 //-------------------------------------------------------
@@ -47,7 +50,9 @@
 #define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
 #define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
 
+#ifdef UNITY_SUPPORT_TEST_CASES
 #define TEST_CASE(...)
+#endif
 
 //-------------------------------------------------------
 // Basic Fail and Ignore
