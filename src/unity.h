@@ -35,6 +35,9 @@
 // Test Cases
 //     - define UNITY_SUPPORT_TEST_CASES to include the TEST_CASE macro, though really it's mostly about the runner generator script
 
+// Parameterized Tests
+//     - you'll want to create a define of TEST_CASE(...) which basically evaluates to nothing
+
 //-------------------------------------------------------
 // Test Running Macros
 //-------------------------------------------------------
@@ -49,10 +52,6 @@
 
 #define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
 #define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
-
-#ifdef UNITY_SUPPORT_TEST_CASES
-#define TEST_CASE(...)
-#endif
 
 //-------------------------------------------------------
 // Basic Fail and Ignore

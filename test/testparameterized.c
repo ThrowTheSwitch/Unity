@@ -7,6 +7,8 @@
 #include <setjmp.h>
 #include "unity.h"
 
+#define TEST_CASE(...)
+
 #define EXPECT_ABORT_BEGIN \
     if (TEST_PROTECT())    \
     {
