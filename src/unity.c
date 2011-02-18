@@ -77,12 +77,13 @@ void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T s
     }
     else if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
     {
-        UnityPrintNumberUnsigned((_U_UINT)number);
+        UnityPrintNumberUnsigned(((_U_UINT)number & ((_U_UINT)1 << (((int)style & 0x000F) << 3)) - 1));
     }
     else
     {
         UnityPrintNumberHex((_U_UINT)number, (style & 0x000F) << 1);
     }
+    
 }
 
 //-----------------------------------------------

@@ -161,6 +161,27 @@ void testNotEqualInts(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualInt8s(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT8(-127, -126);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualInt16s(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT16(-16383, -16382);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualInt32s(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT32(-2147483647, -2147483646);
+    VERIFY_FAILS_END
+}
+
 void testNotEqualBits(void)
 {
     EXPECT_ABORT_BEGIN
@@ -177,6 +198,42 @@ void testNotEqualUInts(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT(v0, v1);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUInt8s(void)
+{
+    _UU8 v0, v1;
+    
+    v0 = 254;
+    v1 = 255;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT8(v0, v1);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUInt16s(void)
+{
+    _UU16 v0, v1;
+    
+    v0 = 65535;
+    v1 = 65534;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT16(v0, v1);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUInt32s(void)
+{
+    _UU32 v0, v1;
+    
+    v0 = 4294967295;
+    v1 = 4294967294;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT32(v0, v1);
     VERIFY_FAILS_END
 }
 
@@ -939,6 +996,50 @@ void testNotEqualInt16Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualUINT16Arrays(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {1, 8, 987, 65132u};
+    unsigned short p2[] = {1, 8, 987, 2};
+    unsigned short p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualUINT16Arrays1(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {1, 8, 987, 65131u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT16Arrays2(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {2, 8, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT16Arrays3(void)
+{
+    unsigned short p0[] = {1, 8, 987, 65132u};
+    unsigned short p1[] = {1, 8, 986, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
 }
 
