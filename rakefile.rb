@@ -17,7 +17,7 @@ include RakefileHelpers
 DEFAULT_CONFIG_FILE = 'gcc.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
-desc "Test unity with it's own unit tests"
+desc "Test unity with its own unit tests"
 task :unit do
   run_tests get_unit_test_files
 end
