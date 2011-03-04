@@ -28,6 +28,20 @@ const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Poin
 const char* UnityStrNullPointerForExpected= " Expected pointer to be NULL";
 const char* UnityStrNullPointerForActual  = " Actual pointer was NULL";
 
+const _U_UINT UnitySizeMask[] = 
+{
+    255,
+    65535,
+    65535,
+    4294967295,
+    4294967295,
+    4294967295,
+    4294967295
+#ifdef UNITY_SUPPORT_64
+    ,0xFFFFFFFFFFFFFFFF
+#endif
+};
+
 //-----------------------------------------------
 // Pretty Printers & Test Result Output Handlers
 //-----------------------------------------------
@@ -77,13 +91,12 @@ void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T s
     }
     else if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
     {
-        UnityPrintNumberUnsigned((_U_UINT)number & ((_U_UINT)1 << ((((int)style & 0x000F) << 3) - 1)));
+        UnityPrintNumberUnsigned(  (_U_UINT)number  &  UnitySizeMask[((_U_UINT)style & (_U_UINT)0x0F) - 1]  );
     }
     else
     {
         UnityPrintNumberHex((_U_UINT)number, (style & 0x000F) << 1);
     }
-    
 }
 
 //-----------------------------------------------
