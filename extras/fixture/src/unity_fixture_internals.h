@@ -25,6 +25,7 @@ void UnityTestRunner(unityfunction * setup,
         const char * name,
         const char * file, int line);
 
+void UnityIgnoreTest();
 void UnityMalloc_StartTest();
 void UnityMalloc_EndTest();
 int UnityFailureCount();

@@ -116,6 +116,13 @@ void UnityTestRunner(unityfunction* setup,
     }
 }
 
+void UnityIgnoreTest()
+{
+    Unity.NumberOfTests++;
+    Unity.CurrentTestIgnored = 1;
+    UNITY_OUTPUT_CHAR('!');
+}
+
 
 //-------------------------------------------------
 //Malloc and free stuff
@@ -371,3 +378,4 @@ void UnityConcludeFixtureTest()
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
 }
+

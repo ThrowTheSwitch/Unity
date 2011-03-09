@@ -25,24 +25,25 @@ int UnityMain(int argc, char* argv[], void (*runAllTests)());
 
 
 #define TEST(group, name) \
-    void TEST_##group##_##name##_testBody();\
+    void TEST_##group##_##name##_();\
     void TEST_##group##_##name##_run()\
     {\
         UnityTestRunner(TEST_##group##_SETUP,\
-             TEST_##group##_##name##_testBody,\
+             TEST_##group##_##name##_,\
             TEST_##group##_TEAR_DOWN,\
             "TEST(" #group ", " #name ")",\
             #group, #name,\
             __FILE__, __LINE__);\
     }\
-    void  TEST_##group##_##name##_testBody()
+    void  TEST_##group##_##name##_()
 
 #define IGNORE_TEST(group, name) \
-    void TEST_##group##_##name##_testBody();\
+    void TEST_##group##_##name##_();\
     void TEST_##group##_##name##_run()\
     {\
+        UnityIgnoreTest();\
     }\
-    void  TEST_##group##_##name##_testBody()
+    void  TEST_##group##_##name##_()
 
 #define DECLARE_TEST_CASE(group, name) \
     void TEST_##group##_##name##_run()
