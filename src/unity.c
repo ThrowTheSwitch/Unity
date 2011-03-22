@@ -30,13 +30,13 @@ const char* UnityStrNullPointerForActual  = " Actual pointer was NULL";
 
 const _U_UINT UnitySizeMask[] = 
 {
-    255,
-    65535,
-    65535,
-    4294967295,
-    4294967295,
-    4294967295,
-    4294967295
+    255u,
+    65535u,
+    65535u,
+    4294967295u,
+    4294967295u,
+    4294967295u,
+    4294967295u
 #ifdef UNITY_SUPPORT_64
     ,0xFFFFFFFFFFFFFFFF
 #endif
