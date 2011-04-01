@@ -22,7 +22,8 @@ const char* UnityStrExpected = " Expected ";
 const char* UnityStrWas      = " Was ";
 const char* UnityStrTo       = " To ";
 const char* UnityStrElement  = " Element ";
-const char* UnityStrMemory   = " Memory Mismatch";
+const char* UnityStrByte     = " Byte ";
+const char* UnityStrMemory   = " Memory Mismatch.";
 const char* UnityStrDelta    = " Values Not Within Delta ";
 const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Pointless.";
 const char* UnityStrNullPointerForExpected= " Expected pointer to be NULL";
@@ -725,9 +726,10 @@ void UnityAssertEqualMemory( const void* expected,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber)
 {
-    unsigned char* expected_ptr = (unsigned char*)expected;
-    unsigned char* actual_ptr = (unsigned char*)actual;
+    unsigned char* ptr_exp = (unsigned char*)expected;
+    unsigned char* ptr_act = (unsigned char*)actual;
     _UU32 elements = num_elements;
+    _UU32 bytes;
 
     UNITY_SKIP_EXECUTION;
   
@@ -744,26 +746,33 @@ void UnityAssertEqualMemory( const void* expected,
         
     while (elements--)
     {
-        if (memcmp((const void*)expected_ptr, (const void*)actual_ptr, length) != 0)
+        /////////////////////////////////////
+        bytes = length;
+        while (bytes--)
         {
-            Unity.CurrentTestFailed = 1;
-            break;
+            if (*ptr_exp != *ptr_act)
+            {
+                UnityTestResultsFailBegin(lineNumber);
+                UnityPrint(UnityStrMemory);
+                if (num_elements > 1)
+                {
+                    UnityPrint(UnityStrElement);
+                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                }
+                UnityPrint(UnityStrByte);
+                UnityPrintNumberByStyle((length - bytes - 1), UNITY_DISPLAY_STYLE_UINT);
+                UnityPrint(UnityStrExpected);
+                UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE_HEX8);
+                UnityPrint(UnityStrWas);
+                UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE_HEX8);
+                UnityAddMsgIfSpecified(msg);
+                UNITY_FAIL_AND_BAIL;
+            }
+            ptr_exp += 1;
+            ptr_act += 1;
         }
-        expected_ptr += length;
-        actual_ptr += length;
-    }
-
-    if (Unity.CurrentTestFailed)
-    {
-        UnityTestResultsFailBegin(lineNumber);
-        if (num_elements > 1)
-        {
-            UnityPrint(UnityStrElement);
-            UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
-        }
-        UnityPrint(UnityStrMemory);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        /////////////////////////////////////
+        
     }
 }
 
