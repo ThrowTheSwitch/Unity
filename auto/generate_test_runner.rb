@@ -45,6 +45,16 @@ class UnityTestRunnerGenerator
     end
 
     #build runner file
+    generate(input_file, output_file, tests, includes, used_mocks)
+    
+    #determine which files were used to return them
+    all_files_used = [input_file, output_file]
+    all_files_used += includes.map {|filename| filename + '.c'} unless includes.empty?
+    all_files_used += @options[:includes] unless @options[:includes].empty?
+    return all_files_used.uniq
+  end
+  
+  def generate(input_file, output_file, tests, includes, used_mocks)
     File.open(output_file, 'w') do |output|
       create_header(output, used_mocks)
       create_externs(output, tests, used_mocks)
@@ -53,11 +63,6 @@ class UnityTestRunnerGenerator
       create_reset(output, used_mocks)
       create_main(output, input_file, tests)
     end
-    
-    all_files_used = [input_file, output_file]
-    all_files_used += includes.map {|filename| filename + '.c'} unless includes.empty?
-    all_files_used += @options[:includes] unless @options[:includes].empty?
-    return all_files_used.uniq
   end
   
   def find_tests(input_file)
