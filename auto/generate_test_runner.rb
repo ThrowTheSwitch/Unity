@@ -88,7 +88,7 @@ class UnityTestRunnerGenerator
           args = []
           arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) {|a| args << a[0]}
         end
-        tests_and_line_numbers << { :name => name, :args => args, :call => call, :line_number => 0 }
+        tests_and_line_numbers << { :test => name, :args => args, :call => call, :line_number => 0 }
         tests_args = []
       end
     end
@@ -98,7 +98,7 @@ class UnityTestRunnerGenerator
     source_index = 0;
     tests_and_line_numbers.size.times do |i|
       source_lines[source_index..-1].each_with_index do |line, index|
-        if (line =~ /#{tests_and_line_numbers[i][:name]}/)
+        if (line =~ /#{tests_and_line_numbers[i][:test]}/)
           source_index += index
           tests_and_line_numbers[i][:line_number] = source_index + 1
           break
@@ -155,7 +155,7 @@ class UnityTestRunnerGenerator
     output.puts("extern void setUp(void);")
     output.puts("extern void tearDown(void);")
     tests.each do |test|
-      output.puts("extern void #{test[:name]}(#{test[:call]});")
+      output.puts("extern void #{test[:test]}(#{test[:call]});")
     end
     output.puts('')
   end
@@ -260,13 +260,13 @@ class UnityTestRunnerGenerator
     if (@options[:use_param_tests])
       tests.each do |test|
         if ((test[:args].nil?) or (test[:args].empty?))
-          output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]}, RUN_TEST_NO_ARGS);")
+          output.puts("  RUN_TEST(#{test[:test]}, #{test[:line_number]}, RUN_TEST_NO_ARGS);")
         else
-          test[:args].each {|args| output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]}, #{args});")}
+          test[:args].each {|args| output.puts("  RUN_TEST(#{test[:test]}, #{test[:line_number]}, #{args});")}
         end
       end
     else
-        tests.each { |test| output.puts("  RUN_TEST(#{test[:name]}, #{test[:line_number]});") }
+        tests.each { |test| output.puts("  RUN_TEST(#{test[:test]}, #{test[:line_number]});") }
     end
     output.puts()
     output.puts("  return #{@options[:suite_teardown].nil? ? "" : "suite_teardown"}(UnityEnd());")
