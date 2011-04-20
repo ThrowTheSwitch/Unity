@@ -329,6 +329,56 @@ void testEqualInts(void)
     TEST_ASSERT_EQUAL_INT(*p0, 19467);
 }
 
+void testEqualInt8s(void)
+{
+    _US8 v0, v1;
+    _US8 *p0, *p1;
+    
+    v0 = 0x22;
+    v1 = 0x22;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_INT8(0x22, 0x22);
+    TEST_ASSERT_EQUAL_INT8(v0, v1);
+    TEST_ASSERT_EQUAL_INT8(0x22, v1);
+    TEST_ASSERT_EQUAL_INT8(v0, 0x22);
+    TEST_ASSERT_EQUAL_INT8(*p0, v1);
+    TEST_ASSERT_EQUAL_INT8(*p0, *p1);
+    TEST_ASSERT_EQUAL_INT8(*p0, 0x22);
+}
+
+void testEqualInt8sWhenThereAreDifferencesOutside8Bits(void)
+{
+    TEST_ASSERT_EQUAL_INT8(0x321,0x421);
+    TEST_ASSERT_EQUAL_INT8(0xFF21,0x0021);
+}
+
+void testEqualInt16s(void)
+{
+    _US16 v0, v1;
+    _US16 *p0, *p1;
+    
+    v0 = 0x9876;
+    v1 = 0x9876;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_INT16(0x9876, 0x9876);
+    TEST_ASSERT_EQUAL_INT16(v0, v1);
+    TEST_ASSERT_EQUAL_INT16(0x9876, v1);
+    TEST_ASSERT_EQUAL_INT16(v0, 0x9876);
+    TEST_ASSERT_EQUAL_INT16(*p0, v1);
+    TEST_ASSERT_EQUAL_INT16(*p0, *p1);
+    TEST_ASSERT_EQUAL_INT16(*p0, 0x9876);
+}
+
+void testEqualInt16sWhenThereAreDifferencesOutside16Bits(void)
+{
+    TEST_ASSERT_EQUAL_INT16(0x54321,0x64321);
+    TEST_ASSERT_EQUAL_INT16(0xFFFF4321,0x00004321);
+}
+
 void testEqualUints(void)
 {
     unsigned int v0, v1;
@@ -347,6 +397,57 @@ void testEqualUints(void)
     TEST_ASSERT_EQUAL_UINT(*p0, *p1);
     TEST_ASSERT_EQUAL_UINT(*p0, 19467);
     TEST_ASSERT_EQUAL_UINT(60872u, 60872u);
+}
+
+
+void testEqualUint8s(void)
+{
+    _UU8 v0, v1;
+    _UU8 *p0, *p1;
+    
+    v0 = 0x22;
+    v1 = 0x22;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_UINT8(0x22, 0x22);
+    TEST_ASSERT_EQUAL_UINT8(v0, v1);
+    TEST_ASSERT_EQUAL_UINT8(0x22, v1);
+    TEST_ASSERT_EQUAL_UINT8(v0, 0x22);
+    TEST_ASSERT_EQUAL_UINT8(*p0, v1);
+    TEST_ASSERT_EQUAL_UINT8(*p0, *p1);
+    TEST_ASSERT_EQUAL_UINT8(*p0, 0x22);
+}
+
+void testEqualUint8sWhenThereAreDifferencesOutside8Bits(void)
+{
+    TEST_ASSERT_EQUAL_UINT8(0x321,0x421);
+    TEST_ASSERT_EQUAL_UINT8(0xFF21,0x0021);
+}
+
+void testEqualUint16s(void)
+{
+    _UU16 v0, v1;
+    _UU16 *p0, *p1;
+    
+    v0 = 0x9876;
+    v1 = 0x9876;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_UINT16(0x9876, 0x9876);
+    TEST_ASSERT_EQUAL_UINT16(v0, v1);
+    TEST_ASSERT_EQUAL_UINT16(0x9876, v1);
+    TEST_ASSERT_EQUAL_UINT16(v0, 0x9876);
+    TEST_ASSERT_EQUAL_UINT16(*p0, v1);
+    TEST_ASSERT_EQUAL_UINT16(*p0, *p1);
+    TEST_ASSERT_EQUAL_UINT16(*p0, 0x9876);
+}
+
+void testEqualUint16sWhenThereAreDifferencesOutside16Bits(void)
+{
+    TEST_ASSERT_EQUAL_UINT16(0x54321,0x64321);
+    TEST_ASSERT_EQUAL_UINT16(0xFFFF4321,0x00004321);
 }
 
 void testNotEqual(void)
@@ -377,6 +478,12 @@ void testEqualHex8s(void)
     TEST_ASSERT_EQUAL_HEX8(*p0, v1);
     TEST_ASSERT_EQUAL_HEX8(*p0, *p1);
     TEST_ASSERT_EQUAL_HEX8(*p0, 0x22);
+}
+
+void testEqualHex8sWhenThereAreDifferencesOutside8Bits(void)
+{
+    TEST_ASSERT_EQUAL_HEX8(0x321,0x421);
+    TEST_ASSERT_EQUAL_HEX8(0xFF21,0x0021);
 }
 
 void testEqualHex8sNegatives(void)
@@ -415,6 +522,12 @@ void testEqualHex16s(void)
     TEST_ASSERT_EQUAL_HEX16(*p0, v1);
     TEST_ASSERT_EQUAL_HEX16(*p0, *p1);
     TEST_ASSERT_EQUAL_HEX16(*p0, 0x9876);
+}
+
+void testEqualHex16sWhenThereAreDifferencesOutside16Bits(void)
+{
+    TEST_ASSERT_EQUAL_HEX16(0x54321,0x64321);
+    TEST_ASSERT_EQUAL_HEX16(0xFFFF4321,0x00004321);
 }
 
 void testEqualHex32s(void)
@@ -630,6 +743,11 @@ void testHEX16sWithinDelta(void)
     TEST_ASSERT_HEX16_WITHIN(5, 5000, 5005);
 }
 
+void testHEX16sWithinDeltaWhenThereAreDifferenceOutsideOf16Bits(void)
+{
+    TEST_ASSERT_HEX16_WITHIN(5, 0x54321, 0x44321); 
+}
+
 void testHEX16sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
@@ -642,6 +760,11 @@ void testHEX8sWithinDelta(void)
     TEST_ASSERT_HEX8_WITHIN(1, 254, 255);
     TEST_ASSERT_HEX8_WITHIN(5, 251, 255);
     TEST_ASSERT_HEX8_WITHIN(5, 1, 4);
+}
+
+void testHEX8sWithinDeltaWhenThereAreDifferenceOutsideOf8Bits(void)
+{
+    TEST_ASSERT_HEX8_WITHIN(5, 0x123, 0xF23); 
 }
 
 void testHEX8sNotWithinDelta(void)
