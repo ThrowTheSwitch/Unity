@@ -133,7 +133,7 @@ class UnityTestRunnerGenerator
     output.puts("\n//=======Automagically Detected Files To Include=====")
     output.puts("#include \"#{@options[:framework].to_s}.h\"")
     output.puts('#include "cmock.h"') unless (mocks.empty?)
-    (@options[:includes].flatten.uniq.compact + includes.flatten.uniq.compact).each do |inc|
+    ((@options[:includes] + includes).flatten.uniq.compact).each do |inc|
       output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h','')}.h\""}")
     end
     output.puts('#include <setjmp.h>')
