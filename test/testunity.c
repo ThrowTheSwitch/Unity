@@ -359,18 +359,37 @@ void testEqualInt16s(void)
     _US16 v0, v1;
     _US16 *p0, *p1;
     
-    v0 = 0x9876;
-    v1 = 0x9876;
+    v0 = 0x7876;
+    v1 = 0x7876;
     p0 = &v0;
     p1 = &v1;
 
-    TEST_ASSERT_EQUAL_INT16(0x9876, 0x9876);
+    TEST_ASSERT_EQUAL_INT16(0x7876, 0x7876);
     TEST_ASSERT_EQUAL_INT16(v0, v1);
-    TEST_ASSERT_EQUAL_INT16(0x9876, v1);
-    TEST_ASSERT_EQUAL_INT16(v0, 0x9876);
+    TEST_ASSERT_EQUAL_INT16(0x7876, v1);
+    TEST_ASSERT_EQUAL_INT16(v0, 0x7876);
     TEST_ASSERT_EQUAL_INT16(*p0, v1);
     TEST_ASSERT_EQUAL_INT16(*p0, *p1);
-    TEST_ASSERT_EQUAL_INT16(*p0, 0x9876);
+    TEST_ASSERT_EQUAL_INT16(*p0, 0x7876);
+}
+
+void testEqualInt16sNegatives(void)
+{
+    _US16 v0, v1;
+    _US16 *p0, *p1;
+    
+    v0 = -7876;
+    v1 = -7876;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_INT16(-7876, -7876);
+    TEST_ASSERT_EQUAL_INT16(v0, v1);
+    TEST_ASSERT_EQUAL_INT16(-7876, v1);
+    TEST_ASSERT_EQUAL_INT16(v0, -7876);
+    TEST_ASSERT_EQUAL_INT16(*p0, v1);
+    TEST_ASSERT_EQUAL_INT16(*p0, *p1);
+    TEST_ASSERT_EQUAL_INT16(*p0, -7876);
 }
 
 void testEqualInt16sWhenThereAreDifferencesOutside16Bits(void)
