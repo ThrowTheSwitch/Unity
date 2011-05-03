@@ -578,7 +578,102 @@ void UnityAssertFloatsWithin(const _UF delta,
         UNITY_FAIL_AND_BAIL;
     }
 }
+
+#endif //not UNITY_EXCLUDE_FLOAT
+
+//-----------------------------------------------
+#ifndef UNITY_EXCLUDE_DOUBLE
+void UnityAssertEqualDoubleArray(const _UD* expected,
+                                 const _UD* actual,
+                                 const _UU32 num_elements,
+                                 const char* msg,
+                                 const UNITY_LINE_TYPE lineNumber)
+{
+    _UU32 elements = num_elements;
+    const _UD* ptr_expected = expected;
+    const _UD* ptr_actual = actual;
+    _UD diff, tol;
+
+    UNITY_SKIP_EXECUTION;
+  
+    if (elements == 0)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrPointless);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+    
+    if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
+        return;
+
+    while (elements--)
+    {
+        diff = *ptr_expected - *ptr_actual;
+        if (diff < 0.0)
+          diff = 0.0 - diff;
+        tol = UNITY_DOUBLE_PRECISION * *ptr_expected;
+        if (tol < 0.0)
+            tol = 0.0 - tol;
+        if (diff > tol)
+        {
+            UnityTestResultsFailBegin(lineNumber);
+            UnityPrint(UnityStrElement);
+            UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+#ifdef UNITY_DOUBLE_VERBOSE
+            UnityPrint(UnityStrExpected);
+            UnityPrintFloat((float)(*ptr_expected));
+            UnityPrint(UnityStrWas);
+            UnityPrintFloat((float)(*ptr_actual));
+#else
+            UnityPrint(UnityStrDelta);
 #endif
+            UnityAddMsgIfSpecified(msg);
+            UNITY_FAIL_AND_BAIL;
+        }
+        ptr_expected++;
+        ptr_actual++;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertDoublesWithin(const _UD delta,
+                              const _UD expected,
+                              const _UD actual,
+                              const char* msg,
+                              const UNITY_LINE_TYPE lineNumber)
+{
+    _UD diff = actual - expected;
+    _UD pos_delta = delta;
+
+    UNITY_SKIP_EXECUTION;
+  
+    if (diff < 0)
+    {
+        diff = 0.0f - diff;
+    }
+    if (pos_delta < 0)
+    {
+        pos_delta = 0.0f - pos_delta;
+    }
+
+    if (pos_delta < diff)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+#ifdef UNITY_DOUBLE_VERBOSE
+        UnityPrint(UnityStrExpected);
+        UnityPrintFloat((float)expected);
+        UnityPrint(UnityStrWas);
+        UnityPrintFloat((float)actual);
+#else
+        UnityPrint(UnityStrDelta);
+#endif
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+#endif // not UNITY_EXCLUDE_DOUBLE
 
 //-----------------------------------------------
 void UnityAssertNumbersWithin( const _U_SINT delta,

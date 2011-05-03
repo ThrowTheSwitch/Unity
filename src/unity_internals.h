@@ -113,6 +113,37 @@ typedef UNITY_FLOAT_TYPE _UF;
 #endif
 
 //-------------------------------------------------------
+// Double Float Support
+//-------------------------------------------------------
+
+//unlike FLOAT, we DON'T include by default
+#ifndef UNITY_EXCLUDE_DOUBLE
+#ifndef UNITY_INCLUDE_DOUBLE
+#define UNITY_EXCLUDE_DOUBLE
+#endif
+#endif
+
+#ifdef UNITY_EXCLUDE_DOUBLE 
+
+//No Floating Point Support
+#undef UNITY_DOUBLE_PRECISION
+#undef UNITY_DOUBLE_TYPE
+#undef UNITY_DOUBLE_VERBOSE
+
+#else
+
+//Floating Point Support
+#ifndef UNITY_DOUBLE_PRECISION
+#define UNITY_DOUBLE_PRECISION (1e-12f) 
+#endif
+#ifndef UNITY_DOUBLE_TYPE
+#define UNITY_DOUBLE_TYPE double
+#endif
+typedef UNITY_DOUBLE_TYPE _UD;
+    
+#endif
+
+//-------------------------------------------------------
 // Output Method
 //-------------------------------------------------------
 
@@ -280,6 +311,20 @@ void UnityAssertEqualFloatArray(const _UF* expected,
                                 const UNITY_LINE_TYPE lineNumber);
 #endif
 
+#ifndef UNITY_EXCLUDE_DOUBLE
+void UnityAssertDoublesWithin(const _UD delta,
+                              const _UD expected,
+                              const _UD actual,
+                              const char* msg,
+                              const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertEqualDoubleArray(const _UD* expected,
+                                 const _UD* actual,
+                                 const _UU32 num_elements,
+                                 const char* msg,
+                                 const UNITY_LINE_TYPE lineNumber);
+#endif
+
 //-------------------------------------------------------
 // Basic Fail and Ignore
 //-------------------------------------------------------
@@ -350,6 +395,16 @@ void UnityAssertEqualFloatArray(const _UF* expected,
 #define UNITY_TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual, line, message)                   UnityAssertFloatsWithin((_UF)(delta), (_UF)(expected), (_UF)(actual), (message), (UNITY_LINE_TYPE)line)
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT(expected, actual, line, message)                           UNITY_TEST_ASSERT_FLOAT_WITHIN((_UF)(expected) * (_UF)UNITY_FLOAT_PRECISION, (_UF)expected, (_UF)actual, (UNITY_LINE_TYPE)line, message)
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualFloatArray((_UF*)(expected), (_UF*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
+#endif
+
+#ifdef UNITY_EXCLUDE_DOUBLE
+#define UNITY_TEST_ASSERT_DOUBLE_WITHIN(delta, expected, actual, line, message)                  UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
+#define UNITY_TEST_ASSERT_EQUAL_DOUBLE(expected, actual, line, message)                          UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
+#define UNITY_TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected, actual, num_elements, line, message)      UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
+#else
+#define UNITY_TEST_ASSERT_DOUBLE_WITHIN(delta, expected, actual, line, message)                  UnityAssertDoublesWithin((_UD)(delta), (_UD)(expected), (_UD)(actual), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_EQUAL_DOUBLE(expected, actual, line, message)                          UNITY_TEST_ASSERT_DOUBLE_WITHIN((_UF)(expected) * (_UD)UNITY_DOUBLE_PRECISION, (_UD)expected, (_UD)actual, (UNITY_LINE_TYPE)line, message)
+#define UNITY_TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected, actual, num_elements, line, message)      UnityAssertEqualDoubleArray((_UD*)(expected), (_UD*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
 #endif
 
 #endif

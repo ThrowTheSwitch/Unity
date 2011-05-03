@@ -19,6 +19,7 @@ compiler:
     prefix: '-D'
     items:
       - UNITY_SUPPORT_64
+      - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
   object_files:
     prefix: '-o'
