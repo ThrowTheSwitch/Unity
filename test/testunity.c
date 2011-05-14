@@ -1049,6 +1049,86 @@ void testNotEqualIntArrays3(void)
     VERIFY_FAILS_END
 }
 
+void testEqualPtrArrays(void)
+{
+    char A = 1;
+    char B = 2;
+    char C = 3;
+    char* p0[] = {&A, &B, &C};
+    char* p1[] = {&A, &B, &C, &A};
+    char* p2[] = {&A, &B};
+    char* p3[] = {&A};
+
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p0, 3);
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 3);
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p1, p2, 2);
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p3, p0, 1);
+}
+
+void testNotEqualPtrArraysNullExpected(void)
+{
+    char A = 1;
+    char B = 2;
+    char** p0 = NULL;
+    char* p1[] = {&A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 2);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrArraysNullActual(void)
+{
+    char A = 1;
+    char B = 2;
+    char** p0 = NULL;
+    char* p1[] = {&A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p1, p0, 2);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrArrays1(void)
+{
+    char A = 1;
+    char B = 2;
+    char C = 3;
+    char* p0[] = {&A, &B, &C, &B};
+    char* p1[] = {&A, &B, &C, &A};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrArrays2(void)
+{
+    char A = 1;
+    char B = 2;
+    char C = 3;
+    char* p0[] = {&B, &B, &C, &A};
+    char* p1[] = {&A, &B, &C, &A};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrArrays3(void)
+{
+    char A = 1;
+    char B = 2;
+    char C = 3;
+    char* p0[] = {&A, &B, &B, &A};
+    char* p1[] = {&A, &B, &C, &A};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
 void testEqualInt8Arrays(void)
 {
     _US8 p0[] = {1, 8, 117, -2};
