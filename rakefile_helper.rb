@@ -120,7 +120,7 @@ module RakefileHelpers
     return {:command => command, :options => options, :includes => includes}
   end
   
-  def link(exe_name, obj_list)
+  def link_it(exe_name, obj_list)
     linker = build_linker_fields
     cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]} " +
       (obj_list.map{|obj|"#{$cfg['linker']['object_files']['path']}#{obj} "}).join +
@@ -219,7 +219,7 @@ module RakefileHelpers
       obj_list << test_base.ext($cfg['compiler']['object_files']['extension'])
       
       # Link the test executable
-      link(test_base, obj_list)
+      link_it(test_base, obj_list)
       
       # Execute unit test and generate results file
       simulator = build_simulator_fields

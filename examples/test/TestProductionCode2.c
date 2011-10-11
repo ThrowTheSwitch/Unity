@@ -2,6 +2,11 @@
 #include "ProductionCode2.h"
 #include "unity.h"
 
+/* These should be ignored because they are commented out in various ways:
+#include "whatever.h" 
+*/
+//#include "somethingelse.h"
+
 void setUp(void)
 {
 }

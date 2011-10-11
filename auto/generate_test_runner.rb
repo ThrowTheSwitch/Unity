@@ -111,12 +111,17 @@ class UnityTestRunnerGenerator
 
   def find_includes(input_file)
     input_file.rewind
-    includes = []
-    input_file.readlines.each do |line|
-      scan_results = line.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/)
-      includes << scan_results[0][0] if (scan_results.size > 0)
-    end
-    return includes
+    
+    #read in file
+    source = input_file.read
+    
+    #remove comments (block and line, in three steps to ensure correct precedence)
+    source.gsub!(/\/\/(?:.+\/\*|\*(?:$|[^\/])).*$/, '')  # remove line comments that comment out the start of blocks
+    source.gsub!(/\/\*.*?\*\//m, '')                     # remove block comments 
+    source.gsub!(/\/\/.*$/, '')                          # remove line comments (all that remain)
+    
+    #parse out includes
+    return source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten
   end
   
   def find_mocks(includes)

@@ -105,7 +105,7 @@ class UnityTestSummary
   end
   
   def parse_test_summary(summary)
-    if summary[-3..-1].join("\n") =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/
+    if summary.find { |v| v =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/ }
       [$1.to_i,$2.to_i,$3.to_i]
     else
       raise "Couldn't parse test results: #{summary}"

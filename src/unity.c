@@ -816,8 +816,8 @@ void UnityAssertEqualStringArray( const char** expected,
 //-----------------------------------------------
 void UnityAssertEqualMemory( const void* expected,
                              const void* actual,
-                             _UU32 length,
-                             _UU32 num_elements,
+                             const _UU32 length,
+                             const _UU32 num_elements,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber)
 {
@@ -933,6 +933,10 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 void UnityBegin(void)
 {
     Unity.NumberOfTests = 0;
+    Unity.TestFailures = 0;
+    Unity.TestIgnores = 0;
+    Unity.CurrentTestFailed = 0;
+    Unity.CurrentTestIgnored = 0;
 }
 
 //-----------------------------------------------
