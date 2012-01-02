@@ -79,16 +79,17 @@ class UnityTestSummary
   end
 
   def usage(err_msg=nil)
+    puts "\nERROR: "
     puts err_msg if err_msg
-    puts "Usage: unity_test_summary.rb"
+    puts "\nUsage: unity_test_summary.rb result_file_directoy/ root_path/"
+    puts "     result_file_directory - The location of your relults files." 
+    puts "                             Defaults to current directory if not specified."
+    puts "                             Should end in / if specified."
+    puts "     root_path - Helpful for producing more verbose output if using relative paths."
     exit 1
   end
   
   protected
-  
-  @@targets=nil
-  @@path=nil
-  @@root=nil
 
   def get_details(result_file, lines)
     results = { :failures => [], :ignores => [], :successes => [] }
@@ -117,10 +118,22 @@ class UnityTestSummary
 end
 
 if $0 == __FILE__
-  script = UnityTestSummary.new
+  uts = UnityTestSummary.new
   begin
-    script.run
+    #look in the specified or current directory for result files
+    ARGV[0] ||= './'
+    targets = "#{ARGV[0].gsub(/\\/, '/')}*.test*"
+    results = Dir[targets]
+    raise "No *.testpass or *.testfail files found in '#{targets}'" if results.empty?
+    uts.set_targets(results)
+    
+    #set the root path
+    ARGV[1] ||= File.expand_path(File.dirname(__FILE__)) + '/'
+    uts.set_root_path(ARGV[1])
+    
+    #run the summarizer
+    puts uts.run
   rescue Exception => e
-    script.usage e.message
+    uts.usage e.message
   end
 end

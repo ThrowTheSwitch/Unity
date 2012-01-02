@@ -19,7 +19,7 @@ int verbose = 0;
 void setUp(void)    { /*does nothing*/ }
 void tearDown(void) { /*does nothing*/ }
 
-void announceTestRun(int runNumber)
+void announceTestRun(unsigned int runNumber)
 {
     UnityPrint("Unity test run ");
     UnityPrintNumber(runNumber+1);
@@ -31,7 +31,7 @@ void announceTestRun(int runNumber)
 int UnityMain(int argc, char* argv[], void (*runAllTests)())
 {
     int result = UnityGetCommandLineOptions(argc, argv);
-    int r;
+    unsigned int r;
     if (result != 0)
         return result;
 

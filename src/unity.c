@@ -44,6 +44,9 @@ const _U_UINT UnitySizeMask[] =
 #endif
 };
 
+void UnityPrintFail(void);
+void UnityPrintOk(void);
+
 //-----------------------------------------------
 // Pretty Printers & Test Result Output Handlers
 //-----------------------------------------------
@@ -218,6 +221,18 @@ void UnityPrintFloat(_UF number)
     UnityPrint(TempBuffer);
 }
 #endif
+
+//-----------------------------------------------
+
+void UnityPrintFail(void)
+{
+    UnityPrint("FAIL");
+}
+
+void UnityPrintOk(void)
+{
+    UnityPrint("OK");
+}
 
 //-----------------------------------------------
 void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
@@ -880,7 +895,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     UNITY_SKIP_EXECUTION;
 
     UnityTestResultsBegin(Unity.TestFile, line);
-    UnityPrint("FAIL");
+    UnityPrintFail();
     if (msg != NULL)
     {
       UNITY_OUTPUT_CHAR(':');
@@ -953,11 +968,11 @@ int UnityEnd(void)
     UNITY_PRINT_EOL;
     if (Unity.TestFailures == 0U)
     {
-        UnityPrint("OK");
+        UnityPrintOk();
     }
     else
     {
-        UnityPrint("FAIL");
+        UnityPrintFail();
     }
     UNITY_PRINT_EOL;
     return Unity.TestFailures;

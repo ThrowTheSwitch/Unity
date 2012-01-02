@@ -163,11 +163,11 @@ extern int UNITY_OUTPUT_CHAR(int);
 //-------------------------------------------------------
 
 #ifndef UNITY_LINE_TYPE
-#define UNITY_LINE_TYPE unsigned short
+#define UNITY_LINE_TYPE _U_UINT
 #endif
 
 #ifndef UNITY_COUNTER_TYPE
-#define UNITY_COUNTER_TYPE unsigned short
+#define UNITY_COUNTER_TYPE _U_UINT
 #endif
 
 //-------------------------------------------------------
@@ -219,7 +219,7 @@ struct _Unity
 {
     const char* TestFile;
     const char* CurrentTestName;
-    _UU32 CurrentTestLineNumber;
+    UNITY_LINE_TYPE CurrentTestLineNumber;
     UNITY_COUNTER_TYPE NumberOfTests;
     UNITY_COUNTER_TYPE TestFailures;
     UNITY_COUNTER_TYPE TestIgnores;

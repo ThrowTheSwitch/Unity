@@ -98,10 +98,11 @@ module RakefileHelpers
 
   def compile(file, defines=[])
     compiler = build_compiler_fields
-    cmd_str = "#{compiler[:command]}#{compiler[:defines]}#{compiler[:options]}#{compiler[:includes]} #{file} " +
-      "#{$cfg['compiler']['object_files']['prefix']}#{$cfg['compiler']['object_files']['destination']}" +
-      "#{File.basename(file, C_EXTENSION)}#{$cfg['compiler']['object_files']['extension']}"
-    execute(cmd_str)
+    cmd_str  = "#{compiler[:command]}#{compiler[:defines]}#{compiler[:options]}#{compiler[:includes]} #{file} " +
+               "#{$cfg['compiler']['object_files']['prefix']}#{$cfg['compiler']['object_files']['destination']}"
+    obj_file = "#{File.basename(file, C_EXTENSION)}#{$cfg['compiler']['object_files']['extension']}"
+    execute(cmd_str + obj_file)
+    return obj_file
   end
   
   def build_linker_fields
@@ -190,8 +191,7 @@ module RakefileHelpers
         # Compile corresponding source file if it exists
         src_file = find_source_file(header, include_dirs)
         if !src_file.nil?
-          compile(src_file, test_defines)
-          obj_list << header.ext($cfg['compiler']['object_files']['extension'])
+          obj_list << compile(src_file, test_defines)
         end
       end
       
@@ -210,13 +210,10 @@ module RakefileHelpers
       options = $cfg[:unity]
       options[:use_param_tests] = (test =~ /parameterized/) ? true : false
       UnityTestRunnerGenerator.new(options).run(test, runner_path)
-
-      compile(runner_path, test_defines)
-      obj_list << runner_name.ext($cfg['compiler']['object_files']['extension'])
+      obj_list << compile(runner_path, test_defines)
       
       # Build the test module
-      compile(test, test_defines)
-      obj_list << test_base.ext($cfg['compiler']['object_files']['extension'])
+      obj_list << compile(test, test_defines)
       
       # Link the test executable
       link_it(test_base, obj_list)
