@@ -4,12 +4,23 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ========================================== 
 
-HERE = File.expand_path(File.dirname(__FILE__)) + '/'
+UNITY_ROOT = File.expand_path(File.dirname(__FILE__)) + '/'
 
 require 'rake'
 require 'rake/clean'
 require 'rake/testtask'
-require HERE + 'rakefile_helper'
+require UNITY_ROOT + 'rakefile_helper'
+
+TEMP_DIRS = [
+	File.join(UNITY_ROOT, 'build')
+]
+
+TEMP_DIRS.each do |dir|
+  directory(dir)
+  CLOBBER.include(dir)
+end
+
+task :prepare_for_tests => TEMP_DIRS
 
 include RakefileHelpers
 
@@ -18,7 +29,7 @@ DEFAULT_CONFIG_FILE = 'gcc.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
 desc "Test unity with its own unit tests"
-task :unit do
+task :unit => [:prepare_for_tests] do
   run_tests get_unit_test_files
 end
 
@@ -33,7 +44,7 @@ task :summary do
 end
 
 desc "Build and test Unity"
-task :all => [:clean, :scripts, :unit, :summary]
+task :all => [:clean, :prepare_for_tests, :scripts, :unit, :summary]
 task :default => [:clobber, :all]
 task :ci => [:no_color, :default]
 task :cruise => [:no_color, :default]
