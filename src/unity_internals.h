@@ -72,8 +72,12 @@ typedef _US64 _U_SINT;
 //-------------------------------------------------------
 
 #ifndef UNITY_POINTER_WIDTH
+#ifdef UNITY_SUPPORT_64
+#define UNITY_POINTER_WIDTH (64)
+#else
 #define UNITY_POINTER_WIDTH (32)
 #endif
+#endif /* UNITY_POINTER_WIDTH */
 
 #if (UNITY_POINTER_WIDTH == 32)
     typedef _UU32 _UP;
