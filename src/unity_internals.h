@@ -15,6 +15,9 @@
 #ifdef UNITY_USE_LIMITS_H
 #include <limits.h>
 #endif
+#ifdef UNITY_USE_STDINT_H
+#include <stdint.h>
+#endif
 
 //-------------------------------------------------------
 // Int Support
@@ -109,6 +112,9 @@ typedef _US64 _U_SINT;
 
 #endif
 
+#ifndef UINTPTR_MAX
+#error "OH SHITSTICKS!"
+#endif
 //-------------------------------------------------------
 // Pointer Support
 //-------------------------------------------------------
@@ -117,19 +123,29 @@ typedef _US64 _U_SINT;
 // We first try to guess based on INTPTR_MAX (if it exists)
 // Otherwise we fall back on assuming 32-bit
 #ifndef UNITY_POINTER_WIDTH
-  #ifdef INTPTR_MAX
-    #if (INTPTR_MAX == 0xFFFF)
+  #ifdef UINTPTR_MAX
+    #if (UINTPTR_MAX <= 0xFFFF)
       #define UNITY_POINTER_WIDTH (16)
-    #elif (INTPTR_MAX == 0xFFFFFFFF)
+    #elif (UINTPTR_MAX <= 0xFFFFFFFF)
       #define UNITY_POINTER_WIDTH (32)
-    #elif (INTPTR_MAX == 0xFFFFFFFFFFFFFFFF)
+    #elif (UINTPTR_MAX <= 0xFFFFFFFFFFFFFFFF)
       #define UNITY_POINTER_WIDTH (64)
-    #else
-      #define UNITY_POINTER_WIDTH (32)
     #endif
-  #else
-    #define UNITY_POINTER_WIDTH (32)
   #endif
+#endif
+#ifndef UNITY_POINTER_WIDTH
+  #ifdef INTPTR_MAX
+    #if (INTPTR_MAX <= 0x7FFF)
+      #define UNITY_POINTER_WIDTH (16)
+    #elif (INTPTR_MAX <= 0x7FFFFFFF)
+      #define UNITY_POINTER_WIDTH (32)
+    #elif (INTPTR_MAX <= 0x7FFFFFFFFFFFFFFF)
+      #define UNITY_POINTER_WIDTH (64)
+    #endif
+  #endif
+#endif
+#ifndef UNITY_POINTER_WIDTH
+  #define UNITY_POINTER_WIDTH (32)
 #endif
 
 #if (UNITY_POINTER_WIDTH == 32)
