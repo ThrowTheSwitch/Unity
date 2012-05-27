@@ -10,12 +10,12 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-//Limits.h is often automatically included.
+//stdint.h is often automatically included.
 //Unity uses it to guess at the sizes of integer types, etc.
 #ifdef UNITY_USE_LIMITS_H
 #include <limits.h>
 #endif
-#ifdef UNITY_USE_STDINT_H
+#ifndef UNITY_EXCLUDE_STDINT_H
 #include <stdint.h>
 #endif
 
@@ -112,9 +112,6 @@ typedef _US64 _U_SINT;
 
 #endif
 
-#ifndef UINTPTR_MAX
-#error "OH SHITSTICKS!"
-#endif
 //-------------------------------------------------------
 // Pointer Support
 //-------------------------------------------------------

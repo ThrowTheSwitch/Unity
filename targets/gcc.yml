@@ -21,7 +21,6 @@ compiler:
       - UNITY_SUPPORT_64
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
-      - UNITY_USE_STDINT_H
   object_files:
     prefix: '-o'
     extension: '.o'
