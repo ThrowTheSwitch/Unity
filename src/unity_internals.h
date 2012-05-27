@@ -10,16 +10,58 @@
 #include <stdio.h>
 #include <setjmp.h>
 
+//Limits.h is often automatically included.
+//Unity uses it to guess at the sizes of integer types, etc.
+#ifdef UNITY_USE_LIMITS_H
+#include <limits.h>
+#endif
+
 //-------------------------------------------------------
 // Int Support
 //-------------------------------------------------------
 
+// If the INT Width hasn't been specified,
+// We first try to guess based on UINT_MAX (if it exists)
+// Otherwise we fall back on assuming 32-bit
 #ifndef UNITY_INT_WIDTH
-#define UNITY_INT_WIDTH (32)
+  #ifdef UINT_MAX
+    #if (UINT_MAX == 0xFFFF)
+      #define UNITY_INT_WIDTH (16)
+    #elif (UINT_MAX == 0xFFFFFFFF)
+      #define UNITY_INT_WIDTH (32)
+    #elif (UINT_MAX == 0xFFFFFFFFFFFFFFFF)
+      #define UNITY_INT_WIDTH (64)
+      #ifndef UNITY_SUPPORT_64
+      #define UNITY_SUPPORT_64
+      #endif
+    #else
+      #define UNITY_INT_WIDTH (32)
+    #endif
+  #else
+    #define UNITY_INT_WIDTH (32)
+  #endif
 #endif
 
+// If the Long Width hasn't been specified,
+// We first try to guess based on ULONG_MAX (if it exists)
+// Otherwise we fall back on assuming 32-bit
 #ifndef UNITY_LONG_WIDTH
-#define UNITY_LONG_WIDTH (32)
+  #ifdef ULONG_MAX
+    #if (ULONG_MAX == 0xFFFF)
+      #define UNITY_LONG_WIDTH (16)
+    #elif (ULONG_MAX == 0xFFFFFFFF)
+      #define UNITY_LONG_WIDTH (32)
+    #elif (ULONG_MAX == 0xFFFFFFFFFFFFFFFF)
+      #define UNITY_LONG_WIDTH (64)
+    #else
+      #define UNITY_LONG_WIDTH (32)
+      #ifndef UNITY_SUPPORT_64
+      #define UNITY_SUPPORT_64
+      #endif
+    #endif
+  #else
+    #define UNITY_LONG_WIDTH (32)
+  #endif
 #endif
 
 #if (UNITY_INT_WIDTH == 32)
@@ -71,8 +113,23 @@ typedef _US64 _U_SINT;
 // Pointer Support
 //-------------------------------------------------------
 
+// If the Pointer Width hasn't been specified,
+// We first try to guess based on INTPTR_MAX (if it exists)
+// Otherwise we fall back on assuming 32-bit
 #ifndef UNITY_POINTER_WIDTH
-#define UNITY_POINTER_WIDTH (32)
+  #ifdef INTPTR_MAX
+    #if (INTPTR_MAX == 0xFFFF)
+      #define UNITY_POINTER_WIDTH (16)
+    #elif (INTPTR_MAX == 0xFFFFFFFF)
+      #define UNITY_POINTER_WIDTH (32)
+    #elif (INTPTR_MAX == 0xFFFFFFFFFFFFFFFF)
+      #define UNITY_POINTER_WIDTH (64)
+    #else
+      #define UNITY_POINTER_WIDTH (32)
+    #endif
+  #else
+    #define UNITY_POINTER_WIDTH (32)
+  #endif
 #endif
 
 #if (UNITY_POINTER_WIDTH == 32)
@@ -187,6 +244,8 @@ typedef enum
     UNITY_DISPLAY_STYLE_INT      = 2 + UNITY_DISPLAY_RANGE_INT + UNITY_DISPLAY_RANGE_AUTO,
 #elif (UNITY_INT_WIDTH  == 32)
     UNITY_DISPLAY_STYLE_INT      = 4 + UNITY_DISPLAY_RANGE_INT + UNITY_DISPLAY_RANGE_AUTO,
+#elif (UNITY_INT_WIDTH  == 64)
+    UNITY_DISPLAY_STYLE_INT      = 8 + UNITY_DISPLAY_RANGE_INT + UNITY_DISPLAY_RANGE_AUTO,
 #endif
     UNITY_DISPLAY_STYLE_INT8     = 1 + UNITY_DISPLAY_RANGE_INT,
     UNITY_DISPLAY_STYLE_INT16    = 2 + UNITY_DISPLAY_RANGE_INT,
@@ -196,9 +255,11 @@ typedef enum
 #endif
 
 #if (UNITY_INT_WIDTH == 16)
-    UNITY_DISPLAY_STYLE_UINT     = 4 + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
-#elif (UNITY_INT_WIDTH  == 32)
     UNITY_DISPLAY_STYLE_UINT     = 2 + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
+#elif (UNITY_INT_WIDTH  == 32)
+    UNITY_DISPLAY_STYLE_UINT     = 4 + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
+#elif (UNITY_INT_WIDTH  == 64)
+    UNITY_DISPLAY_STYLE_UINT     = 8 + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
 #endif
     UNITY_DISPLAY_STYLE_UINT8    = 1 + UNITY_DISPLAY_RANGE_UINT,
     UNITY_DISPLAY_STYLE_UINT16   = 2 + UNITY_DISPLAY_RANGE_UINT,
