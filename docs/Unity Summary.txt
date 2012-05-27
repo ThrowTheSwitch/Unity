@@ -2,7 +2,7 @@
 Unity Test API
 ==============
 
-[Copyright (c) 2007 - Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams]
+[Copyright (c) 2007 - 2012 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams]
 
 -------------
 Running Tests 
@@ -96,16 +96,20 @@ Compare two integers for equality and display errors as signed integers. A cast 
 to your natural integer size so often this can just be used.  When you need to specify the exact size,
 like when comparing arrays, you can use a specific version:
 
-
-
-TEST_ASSERT_EQUAL_UINT(expected, actual)	
+TEST_ASSERT_EQUAL_UINT(expected, actual)
+TEST_ASSERT_EQUAL_UINT8(expected, actual)
+TEST_ASSERT_EQUAL_UINT16(expected, actual)
+TEST_ASSERT_EQUAL_UINT32(expected, actual)
+TEST_ASSERT_EQUAL_UINT64(expected, actual)
 
 Compare two integers for equality and display errors as unsigned integers.  Like INT, there are 
 variants for different sizes also.
 
-
-
 TEST_ASSERT_EQUAL_HEX(expected, actual)
+TEST_ASSERT_EQUAL_HEX8(expected, actual)
+TEST_ASSERT_EQUAL_HEX16(expected, actual)
+TEST_ASSERT_EQUAL_HEX32(expected, actual)
+TEST_ASSERT_EQUAL_HEX64(expected, actual)
 
 Compares two integers for equality and display errors as hexadecimal.  Like the other integer comparisons,
 you can specify the size... here the size will also effect how many nibbles are shown (for example, HEX16 
@@ -119,12 +123,9 @@ additional argument which is the number of elements to compare.  For example:
 
 TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, actual, elements)
 
-
 TEST_ASSERT_EQUAL(expected, actual)
 
 Another way of calling TEST_ASSERT_EQUAL_INT
-
-
 
 TEST_ASSERT_INT_WITHIN(delta, expected, actual)
 
@@ -165,6 +166,7 @@ TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual)
 Asserts that the actual value is within plus or minus delta of the expected value.
 
 TEST_ASSERT_EQUAL_FLOAT(expected, actual)
+TEST_ASSERT_EQUAL_DOUBLE(expected, actual)
 
 Asserts that two floating point values are "equal" within a small % delta of the expected value.
 
@@ -211,7 +213,4 @@ _MESSAGE
 you can append _MESSAGE to any of the macros to make them take an additional argument.  This argument
 is a string that will be printed at the end of the failure strings.  This is useful for specifying more
 information about the problem.
-
-
-
 
