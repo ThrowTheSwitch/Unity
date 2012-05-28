@@ -20,7 +20,7 @@
 #endif
 
 //-------------------------------------------------------
-// Int Support
+// Guess Widths If Not Specified
 //-------------------------------------------------------
 
 // If the INT Width hasn't been specified,
@@ -66,6 +66,45 @@
     #define UNITY_LONG_WIDTH (32)
   #endif
 #endif
+
+// If the Pointer Width hasn't been specified,
+// We first try to guess based on INTPTR_MAX (if it exists)
+// Otherwise we fall back on assuming 32-bit
+#ifndef UNITY_POINTER_WIDTH
+  #ifdef UINTPTR_MAX
+    #if (UINTPTR_MAX <= 0xFFFF)
+      #define UNITY_POINTER_WIDTH (16)
+    #elif (UINTPTR_MAX <= 0xFFFFFFFF)
+      #define UNITY_POINTER_WIDTH (32)
+    #elif (UINTPTR_MAX <= 0xFFFFFFFFFFFFFFFF)
+      #define UNITY_POINTER_WIDTH (64)
+      #ifndef UNITY_SUPPORT_64
+      #define UNITY_SUPPORT_64
+      #endif
+    #endif
+  #endif
+#endif
+#ifndef UNITY_POINTER_WIDTH
+  #ifdef INTPTR_MAX
+    #if (INTPTR_MAX <= 0x7FFF)
+      #define UNITY_POINTER_WIDTH (16)
+    #elif (INTPTR_MAX <= 0x7FFFFFFF)
+      #define UNITY_POINTER_WIDTH (32)
+    #elif (INTPTR_MAX <= 0x7FFFFFFFFFFFFFFF)
+      #define UNITY_POINTER_WIDTH (64)
+      #ifndef UNITY_SUPPORT_64
+      #define UNITY_SUPPORT_64
+      #endif
+    #endif
+  #endif
+#endif
+#ifndef UNITY_POINTER_WIDTH
+  #define UNITY_POINTER_WIDTH (32)
+#endif
+
+//-------------------------------------------------------
+// Int Support
+//-------------------------------------------------------
 
 #if (UNITY_INT_WIDTH == 32)
     typedef unsigned char   _UU8;
@@ -115,35 +154,6 @@ typedef _US64 _U_SINT;
 //-------------------------------------------------------
 // Pointer Support
 //-------------------------------------------------------
-
-// If the Pointer Width hasn't been specified,
-// We first try to guess based on INTPTR_MAX (if it exists)
-// Otherwise we fall back on assuming 32-bit
-#ifndef UNITY_POINTER_WIDTH
-  #ifdef UINTPTR_MAX
-    #if (UINTPTR_MAX <= 0xFFFF)
-      #define UNITY_POINTER_WIDTH (16)
-    #elif (UINTPTR_MAX <= 0xFFFFFFFF)
-      #define UNITY_POINTER_WIDTH (32)
-    #elif (UINTPTR_MAX <= 0xFFFFFFFFFFFFFFFF)
-      #define UNITY_POINTER_WIDTH (64)
-    #endif
-  #endif
-#endif
-#ifndef UNITY_POINTER_WIDTH
-  #ifdef INTPTR_MAX
-    #if (INTPTR_MAX <= 0x7FFF)
-      #define UNITY_POINTER_WIDTH (16)
-    #elif (INTPTR_MAX <= 0x7FFFFFFF)
-      #define UNITY_POINTER_WIDTH (32)
-    #elif (INTPTR_MAX <= 0x7FFFFFFFFFFFFFFF)
-      #define UNITY_POINTER_WIDTH (64)
-    #endif
-  #endif
-#endif
-#ifndef UNITY_POINTER_WIDTH
-  #define UNITY_POINTER_WIDTH (32)
-#endif
 
 #if (UNITY_POINTER_WIDTH == 32)
     typedef _UU32 _UP;
