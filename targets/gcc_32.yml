@@ -5,6 +5,7 @@ compiler:
   build_path:      &build_path 'build/'
   options:
     - '-c'
+    - '-m32'
     - '-Wall'
     - '-Wno-address'
     - '-std=c99'
@@ -18,7 +19,6 @@ compiler:
   defines:
     prefix: '-D'
     items:
-      - UNITY_SUPPORT_64
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
   object_files:
@@ -29,6 +29,7 @@ linker:
   path: gcc
   options:
     - -lm
+    - '-m32'
   includes:
     prefix: '-I'
   object_files:

@@ -25,7 +25,7 @@ task :prepare_for_tests => TEMP_DIRS
 include RakefileHelpers
 
 # Load default configuration, for now
-DEFAULT_CONFIG_FILE = 'gcc.yml'
+DEFAULT_CONFIG_FILE = 'gcc_32.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
 desc "Test unity with its own unit tests"

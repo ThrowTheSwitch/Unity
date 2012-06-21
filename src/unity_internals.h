@@ -155,6 +155,10 @@ typedef _US64 _U_SINT;
 // Pointer Support
 //-------------------------------------------------------
 
+#ifndef UNITY_POINTER_WIDTH
+#define UNITY_POINTER_WIDTH (32)
+#endif /* UNITY_POINTER_WIDTH */
+
 #if (UNITY_POINTER_WIDTH == 32)
     typedef _UU32 _UP;
 #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX32
