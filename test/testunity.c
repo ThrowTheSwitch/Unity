@@ -699,10 +699,29 @@ void testIntsWithinDelta(void)
     TEST_ASSERT_INT_WITHIN(5, -1, 1);
 }
 
+void testIntsWithinDeltaAndCustomMessage(void)
+{
+    TEST_ASSERT_INT_WITHIN_MESSAGE(1, 5000, 5001, "Custom Message.");
+    TEST_ASSERT_INT_WITHIN_MESSAGE(5, 5000, 4996, "Custom Message.");
+    TEST_ASSERT_INT_WITHIN_MESSAGE(5, 5000, 5005, "Custom Message.");
+    TEST_ASSERT_INT_WITHIN_MESSAGE(500, 50, -440, "Custom Message.");
+    
+    TEST_ASSERT_INT_WITHIN_MESSAGE(2, -1, -1, "Custom Message.");
+    TEST_ASSERT_INT_WITHIN_MESSAGE(5, 1, -1, "Custom Message.");
+    TEST_ASSERT_INT_WITHIN_MESSAGE(5, -1, 1, "Custom Message.");
+}
+
 void testIntsNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT_WITHIN(5, 5000, 5006);
+    VERIFY_FAILS_END
+}
+
+void testIntsNotWithinDeltaAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_INT_WITHIN_MESSAGE(5, 5000, 5006, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -713,10 +732,24 @@ void testUIntsWithinDelta(void)
     TEST_ASSERT_UINT_WITHIN(5, 5000, 5005);
 }
 
+void testUIntsWithinDeltaAndCustomMessage(void)
+{
+    TEST_ASSERT_UINT_WITHIN_MESSAGE(1, 5000, 5001, "Custom Message.");
+    TEST_ASSERT_UINT_WITHIN_MESSAGE(5, 5000, 4996, "Custom Message.");
+    TEST_ASSERT_UINT_WITHIN_MESSAGE(5, 5000, 5005, "Custom Message.");
+}
+
 void testUIntsNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN(1, 2147483647u, 2147483649u);
+    VERIFY_FAILS_END
+}
+
+void testUIntsNotWithinDeltaAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_UINT_WITHIN_MESSAGE(1, 2147483647u, 2147483649u, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -727,10 +760,24 @@ void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassSmallFirst(void)
     VERIFY_FAILS_END
 }
 
+void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassSmallFirstAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_UINT_WITHIN_MESSAGE(5, 1, -1, "Custom Message.");
+    VERIFY_FAILS_END
+}
+
 void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassBigFirst(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN(5, -1, 1);
+    VERIFY_FAILS_END
+}
+
+void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassBigFirstAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_UINT_WITHIN_MESSAGE(5, -1, 1, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -741,10 +788,24 @@ void testHEX32sWithinDelta(void)
     TEST_ASSERT_HEX32_WITHIN(5, 5000, 5005);
 }
 
+void testHEX32sWithinDeltaAndCustomMessage(void)
+{
+    TEST_ASSERT_HEX32_WITHIN_MESSAGE(1, 5000, 5001, "Custom Message.");
+    TEST_ASSERT_HEX32_WITHIN_MESSAGE(5, 5000, 4996, "Custom Message.");
+    TEST_ASSERT_HEX32_WITHIN_MESSAGE(5, 5000, 5005, "Custom Message.");
+}
+
 void testHEX32sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX32_WITHIN(1, 2147483647u, 2147483649u);
+    VERIFY_FAILS_END
+}
+
+void testHEX32sNotWithinDeltaAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX32_WITHIN_MESSAGE(1, 2147483647u, 2147483649u, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -755,6 +816,13 @@ void testHEX32sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
     VERIFY_FAILS_END
 }
 
+void testHEX32sNotWithinDeltaEvenThoughASignedIntWouldPassAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX32_WITHIN_MESSAGE(5, 1, -1, "Custom Message.");
+    VERIFY_FAILS_END
+}
+
 void testHEX16sWithinDelta(void)
 {
     TEST_ASSERT_HEX16_WITHIN(1, 5000, 5001);
@@ -762,15 +830,34 @@ void testHEX16sWithinDelta(void)
     TEST_ASSERT_HEX16_WITHIN(5, 5000, 5005);
 }
 
+void testHEX16sWithinDeltaAndCustomMessage(void)
+{
+    TEST_ASSERT_HEX16_WITHIN_MESSAGE(1, 5000, 5001, "Custom Message.");
+    TEST_ASSERT_HEX16_WITHIN_MESSAGE(5, 5000, 4996, "Custom Message.");
+    TEST_ASSERT_HEX16_WITHIN_MESSAGE(5, 5000, 5005, "Custom Message.");
+}
+
 void testHEX16sWithinDeltaWhenThereAreDifferenceOutsideOf16Bits(void)
 {
     TEST_ASSERT_HEX16_WITHIN(5, 0x54321, 0x44321); 
+}
+
+void testHEX16sWithinDeltaWhenThereAreDifferenceOutsideOf16BitsAndCustomMessage(void)
+{
+    TEST_ASSERT_HEX16_WITHIN_MESSAGE(5, 0x54321, 0x44321, "Custom Message."); 
 }
 
 void testHEX16sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX16_WITHIN(2, 65535, 0);
+    VERIFY_FAILS_END
+}
+
+void testHEX16sNotWithinDeltaAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX16_WITHIN_MESSAGE(2, 65535, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -781,15 +868,34 @@ void testHEX8sWithinDelta(void)
     TEST_ASSERT_HEX8_WITHIN(5, 1, 4);
 }
 
+void testHEX8sWithinDeltaAndCustomMessage(void)
+{
+    TEST_ASSERT_HEX8_WITHIN_MESSAGE(1, 254, 255, "Custom Message.");
+    TEST_ASSERT_HEX8_WITHIN_MESSAGE(5, 251, 255, "Custom Message.");
+    TEST_ASSERT_HEX8_WITHIN_MESSAGE(5, 1, 4, "Custom Message.");
+}
+
 void testHEX8sWithinDeltaWhenThereAreDifferenceOutsideOf8Bits(void)
 {
     TEST_ASSERT_HEX8_WITHIN(5, 0x123, 0xF23); 
+}
+
+void testHEX8sWithinDeltaWhenThereAreDifferenceOutsideOf8BitsAndCustomMessage(void)
+{
+    TEST_ASSERT_HEX8_WITHIN_MESSAGE(5, 0x123, 0xF23, "Custom Message."); 
 }
 
 void testHEX8sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX8_WITHIN(2, 255, 0);
+    VERIFY_FAILS_END
+}
+
+void testHEX8sNotWithinDeltaAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_HEX8_WITHIN_MESSAGE(2, 255, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
