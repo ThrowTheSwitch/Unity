@@ -81,8 +81,8 @@ class UnityTestSummary
   def usage(err_msg=nil)
     puts "\nERROR: "
     puts err_msg if err_msg
-    puts "\nUsage: unity_test_summary.rb result_file_directoy/ root_path/"
-    puts "     result_file_directory - The location of your relults files." 
+    puts "\nUsage: unity_test_summary.rb result_file_directory/ root_path/"
+    puts "     result_file_directory - The location of your results files."
     puts "                             Defaults to current directory if not specified."
     puts "                             Should end in / if specified."
     puts "     root_path - Helpful for producing more verbose output if using relative paths."
