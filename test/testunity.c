@@ -50,12 +50,15 @@ void tearDown(void)
   }
 }
 
-void testBreadCrumbs(void)
+void testUnitySizeInitializationReminder(void)
 {
+    char * message = "Unexpected size for _Unity struct. Please check that "
+                     "the initialization of the Unity symbol in unity.c is "
+                     "still correct.";
     /* This test ensures that sizeof(struct _Unity) doesn't change. If this
      * test breaks, go look at the initialization of the Unity global variable
      * in unity.c and make sure we're filling in the proper fields. */
-    TEST_ASSERT_EQUAL(104, sizeof(Unity));
+    TEST_ASSERT_EQUAL_MESSAGE(104, sizeof(Unity), message);
 }
 
 void testTrue(void)
