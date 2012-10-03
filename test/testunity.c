@@ -50,6 +50,14 @@ void tearDown(void)
   }
 }
 
+void testBreadCrumbs(void)
+{
+    /* This test ensures that sizeof(struct _Unity) doesn't change. If this
+     * test breaks, go look at the initialization of the Unity global variable
+     * in unity.c and make sure we're filling in the proper fields. */
+    TEST_ASSERT_EQUAL(104, sizeof(Unity));
+}
+
 void testTrue(void)
 {
     TEST_ASSERT(1);
