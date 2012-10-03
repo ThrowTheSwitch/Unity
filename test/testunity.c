@@ -50,6 +50,36 @@ void tearDown(void)
   }
 }
 
+void testUnitySizeInitializationReminder(void)
+{
+    /* This test ensures that sizeof(struct _Unity) doesn't change. If this
+     * test breaks, go look at the initialization of the Unity global variable
+     * in unity.c and make sure we're filling in the proper fields. */
+    char * message = "Unexpected size for _Unity struct. Please check that "
+                     "the initialization of the Unity symbol in unity.c is "
+                     "still correct.";
+
+    /* Define a structure with all the same fields as `struct _Unity`. */
+    struct {
+        const char* TestFile;
+        const char* CurrentTestName;
+        UNITY_LINE_TYPE CurrentTestLineNumber;
+        UNITY_COUNTER_TYPE NumberOfTests;
+        UNITY_COUNTER_TYPE TestFailures;
+        UNITY_COUNTER_TYPE TestIgnores;
+        UNITY_COUNTER_TYPE CurrentTestFailed;
+        UNITY_COUNTER_TYPE CurrentTestIgnored;
+        jmp_buf AbortFrame;
+    } _Expected_Unity;
+
+    /* Compare our fake structure's size to the actual structure's size. They
+     * should be the same.
+     *
+     * This accounts for alignment, padding, and packing issues that might come
+     * up between different architectures. */
+    TEST_ASSERT_EQUAL_MESSAGE(sizeof(_Expected_Unity), sizeof(Unity), message);
+}
+
 void testTrue(void)
 {
     TEST_ASSERT(1);
