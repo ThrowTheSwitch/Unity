@@ -332,6 +332,13 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 //-------------------------------------------------------
 
 void UnityPrint(const char* string);
+#ifdef UNITY_MPLAB
+void UnityPrintRom(const rom char* string);
+int putchar(int c);
+#else
+#define UnityPrintRom(x) UnityPrint(x)
+#endif
+
 void UnityPrintMask(const _U_UINT mask, const _U_UINT number);
 void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T style);
 void UnityPrintNumber(const _U_SINT number);

@@ -214,3 +214,15 @@ you can append _MESSAGE to any of the macros to make them take an additional arg
 is a string that will be printed at the end of the failure strings.  This is useful for specifying more
 information about the problem.
 
+==============
+Customisations
+==============
+
+--------------------
+MPLAB C18 C Compiler
+--------------------
+
+The MPLAB C18 C Compiler treats character pointers for string constants that are in ROM differently
+from those in RAM. To use Unity with this compiler, define the macro UNITY_MPLAB. (Use Project > Build Options >
+Project > MPLAB C18 > Add...). While you're adding that, you may also want to add a macro UNITY_EXCLUDE_STDINT_H.
+
