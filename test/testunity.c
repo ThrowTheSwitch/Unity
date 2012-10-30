@@ -2237,6 +2237,50 @@ void testFloatsNotEqualActualNaN(void)
 #endif
 }
 
+void testFloatsNotEqualExpectedNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(0.0f / 0.0f, 85.963f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualBothNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(0.0f / 0.0f, 0.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualInfNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(1.0f / 0.0f, 0.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualNaNInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(0.0f / 0.0f, 1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualFloatArrays(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
