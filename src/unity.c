@@ -578,7 +578,7 @@ void UnityAssertFloatsWithin(const _UF delta,
         pos_delta = 0.0f - pos_delta;
     }
 
-    // NOTE: This comparrison is deliberately this way round so that NaNs fail.
+    // NOTE: This comparison is deliberately this way round so that NaNs fail.
     if ( ! (pos_delta >= diff) )
     {
         UnityTestResultsFailBegin(lineNumber);
