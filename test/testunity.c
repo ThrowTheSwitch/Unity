@@ -2325,6 +2325,80 @@ void testFloatsNotEqualPlusMinusInf(void)
 #endif
 }
 
+void testFloatIsInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_INF(2.0f / 0.0f);
+    TEST_ASSERT_FLOAT_IS_NEG_INF(-3.0f / 0.0f);
+#endif
+}
+
+void testFloatIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_INF(2.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNotNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NEG_INF(-999.876f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_NAN(0.0f / 0.0f);    
+#endif
+}
+
+void testFloatIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NAN(234.9f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatInfIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NAN(1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatNanIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_INF(0.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualFloatArrays(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
@@ -2621,6 +2695,80 @@ void testDoublesNotEqualPlusMinusInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0f / 0.0f, -1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_INF(2.0f / 0.0f);
+    TEST_ASSERT_DOUBLE_IS_NEG_INF(-3.0f / 0.0f);
+#endif
+}
+
+void testDoubleIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_INF(2.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNotNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NEG_INF(-999.876f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_NAN(0.0f / 0.0f);    
+#endif
+}
+
+void testDoubleIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NAN(234.9f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleInfIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NAN(1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleNanIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_INF(0.0f / 0.0f);
     VERIFY_FAILS_END
 #endif
 }
