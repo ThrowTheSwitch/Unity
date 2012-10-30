@@ -578,8 +578,8 @@ void UnityAssertFloatsWithin(const _UF delta,
         pos_delta = 0.0f - pos_delta;
     }
 
-    // NOTE: This comparison is deliberately this way round so that NaNs fail.
-    if ( ! (pos_delta >= diff) )
+    //This first part of this condition will catch any NaN or Infinite values
+    if ((diff * 0.0f != 0.0f) || (pos_delta < diff))
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_FLOAT_VERBOSE
