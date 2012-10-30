@@ -673,7 +673,8 @@ void UnityAssertDoublesWithin(const _UD delta,
         pos_delta = 0.0f - pos_delta;
     }
 
-    if (pos_delta < diff)
+    //This first part of this condition will catch any NaN or Infinite values
+    if ((diff * 0.0f != 0.0f) || (pos_delta < diff))
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_DOUBLE_VERBOSE

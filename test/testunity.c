@@ -2526,6 +2526,105 @@ void testDoublesNotEqualNegative2(void)
 #endif
 }
 
+void testDoublesNotEqualActualNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(85.963f, 0.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualExpectedNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(0.0f / 0.0f, 85.963f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualBothNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(0.0f / 0.0f, 0.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualInfNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0f / 0.0f, 0.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualNaNInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(0.0f / 0.0f, 1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualActualInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(321.642f, 1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualExpectedInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0f / 0.0f, 321.642f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0f / 0.0f, 1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualPlusMinusInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0f / 0.0f, -1.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualDoubleArrays(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
