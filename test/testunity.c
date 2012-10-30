@@ -2226,6 +2226,17 @@ void testFloatsNotEqualNegative2(void)
 #endif
 }
 
+void testFloatsNotEqualActualNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(85.963f, 0.0f / 0.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualFloatArrays(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT

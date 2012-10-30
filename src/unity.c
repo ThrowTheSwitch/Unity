@@ -578,7 +578,8 @@ void UnityAssertFloatsWithin(const _UF delta,
         pos_delta = 0.0f - pos_delta;
     }
 
-    if (pos_delta < diff)
+    // NOTE: This comparison is deliberately this way round so that NaNs fail.
+    if ( ! (pos_delta >= diff) )
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_FLOAT_VERBOSE
