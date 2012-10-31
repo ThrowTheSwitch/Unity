@@ -539,7 +539,9 @@ void UnityAssertEqualFloatArray(const _UF* expected,
         tol = UNITY_FLOAT_PRECISION * *ptr_expected;
         if (tol < 0.0)
             tol = 0.0 - tol;
-        if (diff > tol)
+        
+        //This first part of this condition will catch any NaN or Infinite values
+        if ((diff * 0.0f != 0.0f) || (diff > tol))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -703,7 +705,9 @@ void UnityAssertEqualDoubleArray(const _UD* expected,
         tol = UNITY_DOUBLE_PRECISION * *ptr_expected;
         if (tol < 0.0)
             tol = 0.0 - tol;
-        if (diff > tol)
+        
+        //This first part of this condition will catch any NaN or Infinite values
+        if ((diff * 0.0f != 0.0f) || (diff > tol))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);

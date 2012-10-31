@@ -2529,6 +2529,34 @@ void testNotEqualFloatArraysNegative3(void)
 #endif
 }
 
+void testNotEqualFloatArraysNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0, 0.0 / 0.0, 25.4, 0.253};
+    float p1[] = {1.0, 0.0 / 0.0, 25.4, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatArraysInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0, 1.0 / 0.0, 25.4, 0.253};
+    float p1[] = {1.0, 1.0 / 0.0, 25.4, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DOUBLE SUPPORT ==================
 
 void testDoublesWithinDelta(void)
@@ -2903,3 +2931,30 @@ void testNotEqualDoubleArraysNegative3(void)
 #endif
 }
  
+void testNotEqualDoubleArraysNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {1.0, 0.0 / 0.0, 25.4, 0.253};
+    double p1[] = {1.0, 0.0 / 0.0, 25.4, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleArraysInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {1.0, 1.0 / 0.0, 25.4, 0.253};
+    double p1[] = {1.0, 1.0 / 0.0, 25.4, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
