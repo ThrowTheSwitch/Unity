@@ -14,7 +14,7 @@ require HERE + 'rakefile_helper'
 include RakefileHelpers
 
 # Load default configuration, for now
-DEFAULT_CONFIG_FILE = 'gcc.yml'
+DEFAULT_CONFIG_FILE = 'gcc_32.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
 task :unit do

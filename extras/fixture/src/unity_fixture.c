@@ -107,12 +107,8 @@ void UnityTestRunner(unityfunction* setup,
             UnityPointer_UndoAllSets();
             if (!Unity.CurrentTestFailed)
                 UnityMalloc_EndTest();
-            UnityConcludeFixtureTest();
         }
-        else
-        {
-            //aborting - jwg - di i need these for the other TEST_PROTECTS?
-        }
+        UnityConcludeFixtureTest();
     }
 }
 
@@ -254,7 +250,7 @@ void* unity_realloc(void * oldMem, size_t size)
         return oldMem;
 
     newMem = unity_malloc(size);
-    memcpy(newMem, oldMem, size);
+    memcpy(newMem, oldMem, guard->size);
     unity_free(oldMem);
     return newMem;
 }
