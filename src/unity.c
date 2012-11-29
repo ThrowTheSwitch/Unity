@@ -32,6 +32,13 @@ const char* UnityStrInf      = "Infinity";
 const char* UnityStrNegInf   = "Negative Infinity";
 const char* UnityStrNaN      = "NaN";
 
+// Dividing by these constants produces +/- infinity.
+// The rationale is given in UnityAssertFloatIsInf's body.
+static const _UF f_zero = 0.0f;
+#ifndef UNITY_EXCLUDE_DOUBLE
+static const _UD d_zero = 0.0;
+#endif
+
 // compiler-generic print formatting masks
 const _U_UINT UnitySizeMask[] = 
 {
@@ -607,7 +614,12 @@ void UnityAssertFloatIsInf(const _UF actual,
 {
     UNITY_SKIP_EXECUTION;
 
-    if ((1.0f / 0.0f) != actual)
+    // In Microsoft Visual C++ Express Edition 2008,
+    //   if ((1.0f / f_zero) != actual)
+    // produces
+    //   error C2124: divide or mod by zero
+    // As a workaround, place 0 into a variable.
+    if ((1.0f / f_zero) != actual)
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_FLOAT_VERBOSE
@@ -630,7 +642,8 @@ void UnityAssertFloatIsNegInf(const _UF actual,
 {
     UNITY_SKIP_EXECUTION;
 
-    if ((-1.0f / 0.0f) != actual)
+    // The rationale for not using 1.0f/0.0f is given in UnityAssertFloatIsInf's body.
+    if ((-1.0f / f_zero) != actual)
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_FLOAT_VERBOSE
@@ -773,7 +786,8 @@ void UnityAssertDoubleIsInf(const _UD actual,
 {
     UNITY_SKIP_EXECUTION;
 
-    if ((1.0 / 0.0) != actual)
+    // The rationale for not using 1.0/0.0 is given in UnityAssertFloatIsInf's body.
+    if ((1.0 / d_zero) != actual)
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_DOUBLE_VERBOSE
@@ -796,7 +810,8 @@ void UnityAssertDoubleIsNegInf(const _UD actual,
 {
     UNITY_SKIP_EXECUTION;
 
-    if ((-1.0 / 0.0) != actual)
+    // The rationale for not using 1.0/0.0 is given in UnityAssertFloatIsInf's body.
+    if ((-1.0 / d_zero) != actual)
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_DOUBLE_VERBOSE
