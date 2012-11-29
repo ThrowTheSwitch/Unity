@@ -10,11 +10,14 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-//stdint.h is often automatically included.
-//Unity uses it to guess at the sizes of integer types, etc.
+// Unity attempts to determine sizeof(various types)
+// based on UINT_MAX, ULONG_MAX, etc. These are typically
+// defined in limits.h.
 #ifdef UNITY_USE_LIMITS_H
 #include <limits.h>
 #endif
+// As a fallback, hope that including stdint.h will
+// provide this information.
 #ifndef UNITY_EXCLUDE_STDINT_H
 #include <stdint.h>
 #endif
@@ -23,9 +26,10 @@
 // Guess Widths If Not Specified
 //-------------------------------------------------------
 
-// If the INT Width hasn't been specified,
-// We first try to guess based on UINT_MAX (if it exists)
-// Otherwise we fall back on assuming 32-bit
+// Determine the size of an int, if not already specificied.
+// We cannot use sizeof(int), because it is not yet defined
+// at this stage in the trnslation of the C program.
+// Therefore, infer it from UINT_MAX if possible.
 #ifndef UNITY_INT_WIDTH
   #ifdef UINT_MAX
     #if (UINT_MAX == 0xFFFF)
@@ -37,17 +41,16 @@
       #ifndef UNITY_SUPPORT_64
       #define UNITY_SUPPORT_64
       #endif
-    #else
-      #define UNITY_INT_WIDTH (32)
     #endif
-  #else
-    #define UNITY_INT_WIDTH (32)
   #endif
 #endif
+#ifndef UNITY_INT_WIDTH
+  #define UNITY_INT_WIDTH (32)
+#endif
 
-// If the Long Width hasn't been specified,
-// We first try to guess based on ULONG_MAX (if it exists)
-// Otherwise we fall back on assuming 32-bit
+// Determine the size of a long, if not already specified,
+// by following the process used above to define
+// UNITY_INT_WIDTH.
 #ifndef UNITY_LONG_WIDTH
   #ifdef ULONG_MAX
     #if (ULONG_MAX == 0xFFFF)
@@ -56,20 +59,19 @@
       #define UNITY_LONG_WIDTH (32)
     #elif (ULONG_MAX == 0xFFFFFFFFFFFFFFFF)
       #define UNITY_LONG_WIDTH (64)
-    #else
-      #define UNITY_LONG_WIDTH (32)
       #ifndef UNITY_SUPPORT_64
       #define UNITY_SUPPORT_64
       #endif
     #endif
-  #else
-    #define UNITY_LONG_WIDTH (32)
   #endif
 #endif
+#ifndef UNITY_LONG_WIDTH
+  #define UNITY_LONG_WIDTH (32)
+#endif
 
-// If the Pointer Width hasn't been specified,
-// We first try to guess based on INTPTR_MAX (if it exists)
-// Otherwise we fall back on assuming 32-bit
+// Determine the size of a pointer, if not already specified,
+// by following the process used above to define
+// UNITY_INT_WIDTH.
 #ifndef UNITY_POINTER_WIDTH
   #ifdef UINTPTR_MAX
     #if (UINTPTR_MAX <= 0xFFFF)
@@ -154,10 +156,6 @@ typedef _US64 _U_SINT;
 //-------------------------------------------------------
 // Pointer Support
 //-------------------------------------------------------
-
-#ifndef UNITY_POINTER_WIDTH
-#define UNITY_POINTER_WIDTH (32)
-#endif /* UNITY_POINTER_WIDTH */
 
 #if (UNITY_POINTER_WIDTH == 32)
     typedef _UU32 _UP;
