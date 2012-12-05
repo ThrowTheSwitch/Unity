@@ -258,9 +258,9 @@ void* unity_realloc(void * oldMem, size_t size)
 
 //--------------------------------------------------------
 //Automatic pointer restoration functions
-typedef struct _PointerPair
+typedef struct PointerPair
 {
-    struct _PointerPair * next;
+    struct PointerPair * next;
     void ** pointer;
     void * old_value;
 } PointerPair;

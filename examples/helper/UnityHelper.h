@@ -1,5 +1,5 @@
-#ifndef _TESTHELPER_H
-#define _TESTHELPER_H
+#ifndef TESTHELPER_H_
+#define TESTHELPER_H_
 
 #include "Types.h"
 
@@ -9,4 +9,4 @@ void AssertEqualExampleStruct(const EXAMPLE_STRUCT_T expected, const EXAMPLE_STR
 
 #define TEST_ASSERT_EQUAL_EXAMPLE_STRUCT_T(expected, actual) UNITY_TEST_ASSERT_EQUAL_EXAMPLE_STRUCT_T(expected, actual, __LINE__, NULL);
 
-#endif // _TESTHELPER_H
+#endif // TESTHELPER_H_

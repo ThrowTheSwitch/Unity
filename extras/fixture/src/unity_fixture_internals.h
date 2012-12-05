@@ -8,7 +8,7 @@
 #ifndef UNITY_FIXTURE_INTERNALS_H_
 #define UNITY_FIXTURE_INTERNALS_H_
 
-typedef struct _UNITY_FIXTURE_T
+typedef struct
 {
     int Verbose;
     unsigned int RepeatCount;
