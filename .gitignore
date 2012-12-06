@@ -1,2 +1,7 @@
+# Editor swap files
+*~
+*.swp
+
+# Build files
 build/
 testunity.out
