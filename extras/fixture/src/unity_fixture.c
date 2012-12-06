@@ -7,11 +7,14 @@
 
 #include "unity_fixture.h"
 #include "unity_internals.h"
-#include <string.h>
+
+/* glibc 2.15's string.h includes stdlib.h on x64, messing with Unity's malloc overrides, so declare some string functions here */
+char * strstr( const char *, const char * );
 
 UNITY_FIXTURE_T UnityFixture;
 
 //If you decide to use the function pointer approach.
+int putchar( int );
 int (*outputChar)(int) = putchar;
 
 int verbose = 0;
