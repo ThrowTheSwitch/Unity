@@ -163,7 +163,7 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 
 typedef struct GuardBytes
 {
-    int size;
+    size_t size;
     char guard[sizeof(int)];
 } Guard;
 
