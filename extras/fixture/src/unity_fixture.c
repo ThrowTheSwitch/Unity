@@ -184,7 +184,7 @@ void * unity_malloc(size_t size)
 
     malloc_count++;
 
-    guard = (Guard*)malloc(size + sizeof(Guard) + 4);
+    guard = (Guard*)malloc(size + sizeof(Guard) + strlen( end ) + 1 );
     guard->size = size;
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, strlen(end) + 1);
