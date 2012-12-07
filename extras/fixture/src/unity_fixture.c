@@ -184,12 +184,15 @@ void * unity_malloc(size_t size)
 
     malloc_count++;
 
-    guard = (Guard*)malloc(size + sizeof(Guard) + strlen( end ) + 1 );
+    guard = malloc( size + sizeof(Guard) + strlen( end ) + 1 );
+    if ( guard == NULL ) {
+	    return NULL;
+    }
     guard->size = size;
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, strlen(end) + 1);
 
-    return (void*)mem;
+    return mem;
 }
 
 static int isOverrun(void * mem)
