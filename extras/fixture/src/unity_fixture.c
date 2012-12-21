@@ -117,6 +117,7 @@ void UnityIgnoreTest()
     Unity.NumberOfTests++;
     Unity.CurrentTestIgnored = 1;
     UNITY_OUTPUT_CHAR('!');
+    UnityConcludeFixtureTest();
 }
 
 
