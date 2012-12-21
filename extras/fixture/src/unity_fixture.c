@@ -5,9 +5,9 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
+#include <string.h>
 #include "unity_fixture.h"
 #include "unity_internals.h"
-#include <string.h>
 
 UNITY_FIXTURE_T UnityFixture;
 
