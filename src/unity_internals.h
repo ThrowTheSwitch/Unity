@@ -19,6 +19,21 @@
 #include <stdint.h>
 #endif
 
+#ifdef UNITY_ENABLE_STACKTRACE
+  #ifdef __GNUC__
+    #ifndef _WIN32
+      #define UNITY_USE_GLIBC_STACKTRACE
+      #include <execinfo.h>
+      #include <errno.h>
+    #else
+      #define UNITY_USE_WINDOWS_STACKTRACE
+      #include <windows.h>
+      #include <imagehlp.h>
+      #include <stdbool.h>
+    #endif
+  #endif
+#endif
+
 //-------------------------------------------------------
 // Guess Widths If Not Specified
 //-------------------------------------------------------
@@ -101,6 +116,7 @@
 #ifndef UNITY_POINTER_WIDTH
   #define UNITY_POINTER_WIDTH (32)
 #endif
+
 
 //-------------------------------------------------------
 // Int Support
@@ -306,6 +322,7 @@ typedef enum
 struct _Unity
 {
     const char* TestFile;
+    const char* TestRunnerPath;
     const char* CurrentTestName;
     UNITY_LINE_TYPE CurrentTestLineNumber;
     UNITY_COUNTER_TYPE NumberOfTests;
@@ -397,6 +414,11 @@ void UnityAssertNumbersWithin(const _U_SINT delta,
 void UnityFail(const char* message, const UNITY_LINE_TYPE line);
 
 void UnityIgnore(const char* message, const UNITY_LINE_TYPE line);
+
+#ifdef UNITY_ENABLE_STACKTRACE
+void UnitySetExceptionhHandler();
+int UnityAddr2Line(void * addr);
+#endif
 
 #ifndef UNITY_EXCLUDE_FLOAT
 void UnityAssertFloatsWithin(const _UF delta,

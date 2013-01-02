@@ -257,10 +257,12 @@ class UnityTestRunnerGenerator
   
   def create_main(output, filename, tests)
     output.puts("\n\n//=======MAIN=====")
-    output.puts("int main(void)")
+    output.puts("int main(int argc, char* argv[])")
     output.puts("{")
+    output.puts("  (void)argc;")
     output.puts("  suite_setup();") unless @options[:suite_setup].nil?
     output.puts("  Unity.TestFile = \"#{filename}\";")
+    output.puts("  Unity.TestRunnerPath = argv[0];")
     output.puts("  UnityBegin();")
     if (@options[:use_param_tests])
       tests.each do |test|

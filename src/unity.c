@@ -7,6 +7,8 @@
 #include "unity.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <signal.h>
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
@@ -14,7 +16,7 @@
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
 #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
 
-struct _Unity Unity = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , { 0 } };
+struct _Unity Unity = { 0 , 0, 0 , 0 , 0 , 0 , 0 , 0 , 0 , { 0 } };
 
 const char* UnityStrNull     = "NULL";
 const char* UnityStrSpacer   = ". ";
@@ -944,6 +946,335 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
     UnityConcludeTest();
 }
 
+#ifdef UNITY_ENABLE_STACKTRACE
+
+    void UnityPrintStackTraceHeader()
+    {
+      printf("(note that these are where functions will\n");
+      printf(" returned to, not where the calls originated.\n");
+      printf(" Also the last call maybe be missing.)\n");
+      printf("Unity stacktrace:\n");
+    }
+
+    #ifndef UNITY_USE_CUSTOM_ADDR2LINE
+
+        int UnityAddr2Line(void * addr)
+        {
+            char addr2line_cmd[512] = {0};
+
+            if (NULL == Unity.TestRunnerPath)
+            {
+                puts("Test runner path is NULL. Try a clobber, if that doesn't work something in Unity is broken.\n");
+                return -1;
+            }
+
+            /* have addr2line map the address to the relent line in the code */
+            #ifdef __APPLE__
+                /* apple does things differently for some reason... */
+                sprintf(addr2line_cmd,"atos -o %.256s %p", Unity.TestRunnerPath, addr); 
+            #else
+                sprintf(addr2line_cmd,"addr2line -f -p -e %.256s %p", Unity.TestRunnerPath, addr); 
+            #endif
+
+            printf("  ");
+            /* flush the buffer so that the outputs from the system() call
+              comes out in the right order */
+            fflush(stdout);
+
+            {
+              int r = system(addr2line_cmd);
+              if (0 != r)
+              {
+                  printf("Error resolving symbol from address via command: %s\n", addr2line_cmd);
+              }
+              return r;
+            }
+        }
+
+    #endif
+
+    #ifdef UNITY_USE_GLIBC_STACKTRACE
+
+
+        /* If this is too big (e.g. 200) backtrace_symbols crashes for some unknown reason */
+        #define UNITY_MAX_STACK_FRAMES 64
+        static void *unity_stack_traces[UNITY_MAX_STACK_FRAMES];
+
+        void PosixPrintStacktrace()
+        {
+            int i, trace_size = 0;
+            char **messages = (char **)NULL;
+
+            UnityPrintStackTraceHeader();
+
+            trace_size = backtrace(unity_stack_traces, UNITY_MAX_STACK_FRAMES);
+            messages = backtrace_symbols(unity_stack_traces, trace_size);
+
+            /* skip the first couple stack frames (as they are this function and
+               our handler) and also skip the last frame as it's (always?) junk. */
+            for (i = 3; i < (trace_size - 1); ++i)
+            {
+                if (UnityAddr2Line(unity_stack_traces[i]) != 0)
+                {
+                    printf("  Error determining line # for: %s\n", messages[i]);
+                }
+
+            }
+            if (messages) { free(messages); }
+            
+        }
+
+        void PosixSignalHandler(int sig, siginfo_t *siginfo, void *context)
+        {
+            PosixPrintStacktrace();
+
+            switch(sig)
+            {
+                case SIGSEGV:
+                    UnityFail("Error: SIGSEGV Segmentation Fault", Unity.CurrentTestLineNumber);
+                    break;
+                case SIGINT:
+                    UnityFail("Error: SIGINT Interactive attention signal, (usually ctrl+c)", Unity.CurrentTestLineNumber);
+                    break;
+                case SIGFPE:
+                    switch(siginfo->si_code)
+                    {
+                      case FPE_INTDIV:
+                          UnityFail("Error: SIGFPE (integer divide by zero)", Unity.CurrentTestLineNumber);
+                          break;
+                      case FPE_INTOVF:
+                          UnityFail("Error: SIGFPE (integer overflow)", Unity.CurrentTestLineNumber);
+                          break;
+                      case FPE_FLTDIV:
+                          UnityFail("Error: SIGFPE (floating-point divide by zero)", Unity.CurrentTestLineNumber);
+                          break;
+                      case FPE_FLTOVF:
+                          UnityFail("Error: SIGFPE (floating-point overflow)", Unity.CurrentTestLineNumber);
+                          break;
+                      case FPE_FLTUND:
+                          UnityFail("Error: SIGFPE (floating-point underflow)", Unity.CurrentTestLineNumber);
+                          break;
+                      case FPE_FLTRES:
+                          UnityFail("Error: SIGFPE (floating-point inexact result)", Unity.CurrentTestLineNumber);
+                          break;
+                      case FPE_FLTINV:
+                          UnityFail("Error: SIGFPE (floating-point invalid operation)", Unity.CurrentTestLineNumber);
+                          break;
+                      case FPE_FLTSUB:
+                          UnityFail("Error: SIGFPE (subscript out of range)", Unity.CurrentTestLineNumber);
+                          break;
+                      default:
+                          UnityFail("Error: SIGFPE Arithmetic Exception", Unity.CurrentTestLineNumber);
+                          break;
+                    }
+                case SIGILL:
+                    switch(siginfo->si_code)
+                    {
+                      case ILL_ILLOPC:
+                          UnityFail("Error: SIGILL (illegal opcode)", Unity.CurrentTestLineNumber);
+                          break;
+                      case ILL_ILLOPN:
+                          UnityFail("Error: SIGILL (illegal operand)", Unity.CurrentTestLineNumber);
+                          break;
+                      case ILL_ILLADR:
+                          UnityFail("Error: SIGILL (illegal addressing mode)", Unity.CurrentTestLineNumber);
+                          break;
+                      case ILL_ILLTRP:
+                          UnityFail("Error: SIGILL (illegal trap)", Unity.CurrentTestLineNumber);
+                          break;
+                      case ILL_PRVOPC:
+                          UnityFail("Error: SIGILL (privileged opcode)", Unity.CurrentTestLineNumber);
+                          break;
+                      case ILL_PRVREG:
+                          UnityFail("Error: SIGILL (privileged register)", Unity.CurrentTestLineNumber);
+                          break;
+                      case ILL_COPROC:
+                          UnityFail("Error: SIGILL (coprocessor error)", Unity.CurrentTestLineNumber);
+                          break;
+                      case ILL_BADSTK:
+                          UnityFail("Error: SIGILL (internal stack error)", Unity.CurrentTestLineNumber);
+                          break;
+                      default:
+                          UnityFail("Error: SIGILL Illegal Instruction", Unity.CurrentTestLineNumber);
+                          break;
+                    }
+                    break;
+                case SIGTERM:
+                    UnityFail("Error: SIGTERM", Unity.CurrentTestLineNumber);
+                    break;
+                case SIGABRT:
+                default:
+                    UnityFail("Error: SIGABRT", Unity.CurrentTestLineNumber);
+                    break;
+            }
+        }
+
+        static uint8_t unity_alternate_stack[SIGSTKSZ];
+
+        void UnitySetExceptionHandler()
+        {
+            {
+                stack_t ss = {0};
+                ss.ss_sp = (void*)unity_alternate_stack;
+                ss.ss_size = SIGSTKSZ;
+                ss.ss_flags = 0;
+
+                if (sigaltstack(&ss, NULL) != 0) { err(errno, "sigaltstack"); }
+            }
+
+
+            {
+                struct sigaction sig_action = {0};
+                sig_action.sa_sigaction = PosixSignalHandler;
+                sigemptyset(&sig_action.sa_mask);
+
+                #ifdef __APPLE__
+                    /* for some reason we backtrace() doesn't work on osx
+                       when we use an alternate stack */
+                    sig_action.sa_flags = SA_SIGINFO;
+                #else
+                    sig_action.sa_flags = SA_SIGINFO | SA_ONSTACK;
+                #endif
+
+                if (sigaction(SIGSEGV, &sig_action, NULL) != 0) { err(errno, "sigaction"); }
+                if (sigaction(SIGFPE,  &sig_action, NULL) != 0) { err(errno, "sigaction"); }
+                if (sigaction(SIGINT,  &sig_action, NULL) != 0) { err(errno, "sigaction"); }
+                if (sigaction(SIGILL,  &sig_action, NULL) != 0) { err(errno, "sigaction"); }
+                if (sigaction(SIGTERM, &sig_action, NULL) != 0) { err(errno, "sigaction"); }
+                if (sigaction(SIGABRT, &sig_action, NULL) != 0) { err(errno, "sigaction"); }
+            }
+        }
+
+    #else
+        #ifdef UNITY_USE_WINDOWS_STACKTRACE
+
+            static void WindowsPrintStacktrace(CONTEXT* context)
+            {
+                UnityPrintStackTraceHeader();
+
+                SymInitialize(GetCurrentProcess(), 0, true);
+
+                STACKFRAME frame = { 0 };
+
+                /* setup initial stack frame */
+                frame.AddrPC.Offset         = context->Eip;
+                frame.AddrPC.Mode           = AddrModeFlat;
+                frame.AddrStack.Offset      = context->Esp;
+                frame.AddrStack.Mode        = AddrModeFlat;
+                frame.AddrFrame.Offset      = context->Ebp;
+                frame.AddrFrame.Mode        = AddrModeFlat;
+
+                while (StackWalk(IMAGE_FILE_MACHINE_I386 ,
+                                 GetCurrentProcess(),
+                                 GetCurrentThread(),
+                                 & frame,
+                                 context,
+                                 0,
+                                 SymFunctionTableAccess,
+                                 SymGetModuleBase,
+                                 0 ) )
+                {
+                    UnityAddr2Line((void*)frame.AddrPC.Offset);
+                }
+
+                SymCleanup( GetCurrentProcess() );
+            }
+
+            LONG WINAPI WindowsExceptionHandler(EXCEPTION_POINTERS * ExceptionInfo)
+            {
+                /* If this is a stack overflow then we can't walk the stack, so just show
+                   where the error happened */
+                if (EXCEPTION_STACK_OVERFLOW != ExceptionInfo->ExceptionRecord->ExceptionCode)
+                {
+                    WindowsPrintStacktrace(ExceptionInfo->ContextRecord);
+                }
+                else
+                {
+                    UnityAddr2Line((void*)ExceptionInfo->ContextRecord->Eip);
+                }
+
+                switch(ExceptionInfo->ExceptionRecord->ExceptionCode)
+                {
+                    case EXCEPTION_ACCESS_VIOLATION:
+                        UnityFail("Error: EXCEPTION_ACCESS_VIOLATION", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+                        UnityFail("Error: EXCEPTION_ARRAY_BOUNDS_EXCEEDED", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_BREAKPOINT:
+                        UnityFail("Error: EXCEPTION_BREAKPOINT", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_DATATYPE_MISALIGNMENT:
+                        UnityFail("Error: EXCEPTION_DATATYPE_MISALIGNMENT", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_FLT_DENORMAL_OPERAND:
+                        UnityFail("Error: EXCEPTION_FLT_DENORMAL_OPERAND", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+                        UnityFail("Error: EXCEPTION_FLT_DIVIDE_BY_ZERO", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_FLT_INEXACT_RESULT:
+                        UnityFail("Error: EXCEPTION_FLT_INEXACT_RESULT", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_FLT_INVALID_OPERATION:
+                        UnityFail("Error: EXCEPTION_FLT_INVALID_OPERATION", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_FLT_OVERFLOW:
+                        UnityFail("Error: EXCEPTION_FLT_OVERFLOW", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_FLT_STACK_CHECK:
+                        UnityFail("Error: EXCEPTION_FLT_STACK_CHECK", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_FLT_UNDERFLOW:
+                        UnityFail("Error: EXCEPTION_FLT_UNDERFLOW", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_ILLEGAL_INSTRUCTION:
+                        UnityFail("Error: EXCEPTION_ILLEGAL_INSTRUCTION", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_IN_PAGE_ERROR:
+                        UnityFail("Error: EXCEPTION_IN_PAGE_ERROR", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_INT_DIVIDE_BY_ZERO:
+                        UnityFail("Error: EXCEPTION_INT_DIVIDE_BY_ZERO", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_INT_OVERFLOW:
+                        UnityFail("Error: EXCEPTION_INT_OVERFLOW", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_INVALID_DISPOSITION:
+                        UnityFail("Error: EXCEPTION_INVALID_DISPOSITION", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+                        UnityFail("Error: EXCEPTION_NONCONTINUABLE_EXCEPTION", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_PRIV_INSTRUCTION:
+                        UnityFail("Error: EXCEPTION_PRIV_INSTRUCTION", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_SINGLE_STEP:
+                        UnityFail("Error: EXCEPTION_SINGLE_STEP", Unity.CurrentTestLineNumber);
+                        break;
+                    case EXCEPTION_STACK_OVERFLOW:
+                        UnityFail("Error: EXCEPTION_STACK_OVERFLOW", Unity.CurrentTestLineNumber);
+                        break;
+                    default:
+                        break;
+                }
+                UnityFail("Error: Unknown Exception", Unity.CurrentTestLineNumber);
+
+                return EXCEPTION_EXECUTE_HANDLER;
+            }
+
+            void UnitySetExceptionHandler()
+            {
+                SetUnhandledExceptionFilter(WindowsExceptionHandler);
+            }
+
+        #endif
+    #endif
+#endif
+
+
+
+
 //-----------------------------------------------
 void UnityBegin(void)
 {
@@ -952,7 +1283,12 @@ void UnityBegin(void)
     Unity.TestIgnores = 0;
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+
+    #ifdef UNITY_ENABLE_STACKTRACE
+    UnitySetExceptionHandler();
+    #endif
 }
+
 
 //-----------------------------------------------
 int UnityEnd(void)

@@ -62,6 +62,7 @@ void testUnitySizeInitializationReminder(void)
     /* Define a structure with all the same fields as `struct _Unity`. */
     struct {
         const char* TestFile;
+        const char* TestRunnerPath;
         const char* CurrentTestName;
         UNITY_LINE_TYPE CurrentTestLineNumber;
         UNITY_COUNTER_TYPE NumberOfTests;
