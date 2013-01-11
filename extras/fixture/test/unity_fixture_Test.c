@@ -49,10 +49,12 @@ TEST(UnityFixture, PointerSetting)
 
 TEST(UnityFixture, ForceMallocFail)
 {
+    void* m;
+    void* mfails;
     UnityMalloc_MakeMallocFailAfterCount(1);
-    void* m = malloc(10);
+    m = malloc(10);
     CHECK(m);
-    void* mfails = malloc(10);
+    mfails = malloc(10);
     TEST_ASSERT_POINTERS_EQUAL(0, mfails);
     free(m);
 }
@@ -76,8 +78,9 @@ TEST(UnityFixture, ReallocSameIsUnchanged)
 TEST(UnityFixture, ReallocLargerNeeded)
 {
     void* m1 = malloc(10);
+    void* m2;
     strcpy((char*)m1, "123456789");
-    void* m2 = realloc(m1, 15);
+    m2 = realloc(m1, 15);
     CHECK(m1 != m2);
     STRCMP_EQUAL("123456789", m2);
     free(m2);
