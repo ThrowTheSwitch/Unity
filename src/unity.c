@@ -14,6 +14,7 @@
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
 #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
 
+#if ( defined( __STDC_VERSION__ ) && ( __STDC_VERSION__ >= 199901L ) )
 struct Unity Unity = {
 	.TestFile = NULL,
 	.CurrentTestName = NULL,
@@ -24,6 +25,9 @@ struct Unity Unity = {
 	.CurrentTestFailed = 0,
 	.CurrentTestIgnored = 0
 };
+#else
+struct Unity Unity = { NULL, NULL, 0, 0, 0, 0, 0, 0 };
+#endif
 
 const char* UnityStrNull     = "NULL";
 const char* UnityStrSpacer   = ". ";
