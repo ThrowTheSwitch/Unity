@@ -5,13 +5,16 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
-#include <string.h>
 #include "unity_fixture.h"
 #include "unity_internals.h"
+
+/* glibc 2.15's string.h includes stdlib.h on x64, messing with Unity's malloc overrides, so declare some string functions here */
+char * strstr( const char *, const char * );
 
 UNITY_FIXTURE_T UnityFixture;
 
 //If you decide to use the function pointer approach.
+int putchar( int );
 int (*outputChar)(int) = putchar;
 
 int verbose = 0;
@@ -185,12 +188,15 @@ void * unity_malloc(size_t size)
 
     malloc_count++;
 
-    guard = (Guard*)malloc(size + sizeof(Guard) + 4);
+    guard = malloc( size + sizeof(Guard) + strlen( end ) + 1 );
+    if ( guard == NULL ) {
+	    return NULL;
+    }
     guard->size = size;
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, strlen(end) + 1);
 
-    return (void*)mem;
+    return mem;
 }
 
 static int isOverrun(void * mem)
@@ -262,9 +268,9 @@ void* unity_realloc(void * oldMem, size_t size)
 
 //--------------------------------------------------------
 //Automatic pointer restoration functions
-typedef struct _PointerPair
+typedef struct PointerPair
 {
-    struct _PointerPair * next;
+    struct PointerPair * next;
     void ** pointer;
     void * old_value;
 } PointerPair;
