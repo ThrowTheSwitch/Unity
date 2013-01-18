@@ -7,6 +7,13 @@
 #include <setjmp.h>
 #include "unity.h"
 
+// Dividing by these constants produces +/- infinity.
+// The rationale is given in UnityAssertFloatIsInf's body.
+static const _UF f_zero = 0.0f;
+#ifndef UNITY_EXCLUDE_DOUBLE
+static const _UD d_zero = 0.0;
+#endif
+
 #define EXPECT_ABORT_BEGIN \
     if (TEST_PROTECT())    \
     {
@@ -2226,15 +2233,188 @@ void testFloatsNotEqualNegative2(void)
 #endif
 }
 
+void testFloatsNotEqualActualNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(85.963f, 0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualExpectedNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 85.963f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualBothNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualInfNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualNaNInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualActualInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(321.642f, 1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualExpectedInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 321.642f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotEqualPlusMinusInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, -1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_INF(2.0f / f_zero);
+    TEST_ASSERT_FLOAT_IS_NEG_INF(-3.0f / f_zero);
+#endif
+}
+
+void testFloatIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_INF(2.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNotNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NEG_INF(-999.876f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_NAN(0.0f / f_zero);    
+#endif
+}
+
+void testFloatIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NAN(234.9f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatInfIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NAN(1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatNanIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_INF(0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualFloatArrays(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {1.0, -8.0,  25.4, -0.123};
-    float p1[] = {1.0, -8.0,  25.4, -0.123};
-    float p2[] = {1.0, -8.0,  25.4, -0.2};
-    float p3[] = {1.0, -23.0, 25.0, -0.26};
+    float p0[] = {1.0f, -8.0f,  25.4f, -0.123f};
+    float p1[] = {1.0f, -8.0f,  25.4f, -0.123f};
+    float p2[] = {1.0f, -8.0f,  25.4f, -0.2f};
+    float p3[] = {1.0f, -23.0f, 25.0f, -0.26f};
 
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p0, 4);
@@ -2250,7 +2430,7 @@ void testNotEqualFloatArraysExpectedNull(void)
     TEST_IGNORE();
 #else
     float* p0 = NULL;
-    float p1[] = {1.0, 8.0, 25.4, 0.252};
+    float p1[] = {1.0f, 8.0f, 25.4f, 0.252f};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
@@ -2263,7 +2443,7 @@ void testNotEqualFloatArraysActualNull(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {1.0, 8.0, 25.4, 0.253};
+    float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
     float* p1 = NULL;
 
     EXPECT_ABORT_BEGIN
@@ -2277,8 +2457,8 @@ void testNotEqualFloatArrays1(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {1.0, 8.0, 25.4, 0.253};
-    float p1[] = {1.0, 8.0, 25.4, 0.252};
+    float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
+    float p1[] = {1.0f, 8.0f, 25.4f, 0.252f};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
@@ -2291,8 +2471,8 @@ void testNotEqualFloatArrays2(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {1.0, 8.0, 25.4, 0.253};
-    float p1[] = {2.0, 8.0, 25.4, 0.253};
+    float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
+    float p1[] = {2.0f, 8.0f, 25.4f, 0.253f};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
@@ -2305,8 +2485,8 @@ void testNotEqualFloatArrays3(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {1.0, 8.0, 25.4, 0.253};
-    float p1[] = {1.0, 8.0, 25.5, 0.253};
+    float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
+    float p1[] = {1.0f, 8.0f, 25.5f, 0.253f};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
@@ -2319,8 +2499,8 @@ void testNotEqualFloatArraysNegative1(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {-1.0, -8.0, -25.4, -0.253};
-    float p1[] = {-1.0, -8.0, -25.4, -0.252};
+    float p0[] = {-1.0f, -8.0f, -25.4f, -0.253f};
+    float p1[] = {-1.0f, -8.0f, -25.4f, -0.252f};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
@@ -2333,8 +2513,8 @@ void testNotEqualFloatArraysNegative2(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {-1.0, -8.0, -25.4, -0.253};
-    float p1[] = {-2.0, -8.0, -25.4, -0.253};
+    float p0[] = {-1.0f, -8.0f, -25.4f, -0.253f};
+    float p1[] = {-2.0f, -8.0f, -25.4f, -0.253f};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
@@ -2347,8 +2527,36 @@ void testNotEqualFloatArraysNegative3(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    float p0[] = {-1.0, -8.0, -25.4, -0.253};
-    float p1[] = {-1.0, -8.0, -25.5, -0.253};
+    float p0[] = {-1.0f, -8.0f, -25.4f, -0.253f};
+    float p1[] = {-1.0f, -8.0f, -25.5f, -0.253f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatArraysNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
+    float p1[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatArraysInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
+    float p1[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
@@ -2423,6 +2631,179 @@ void testDoublesNotEqualNegative2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.0049, -9273.9649);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualActualNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(85.963, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualExpectedNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 85.963);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualBothNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualInfNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualNaNInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualActualInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(321.642, 1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualExpectedInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 321.642);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotEqualPlusMinusInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_INF(2.0 / d_zero);
+    TEST_ASSERT_DOUBLE_IS_NEG_INF(-3.0 / d_zero);
+#endif
+}
+
+void testDoubleIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_INF(2.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNotNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NEG_INF(-999.876);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_NAN(0.0 / d_zero);    
+#endif
+}
+
+void testDoubleIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NAN(234.9);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleInfIsNotNan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NAN(1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleNanIsNotInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_INF(0.0 / d_zero);
     VERIFY_FAILS_END
 #endif
 }
@@ -2557,3 +2938,30 @@ void testNotEqualDoubleArraysNegative3(void)
 #endif
 }
  
+void testNotEqualDoubleArraysNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
+    double p1[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleArraysInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
+    double p1[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}

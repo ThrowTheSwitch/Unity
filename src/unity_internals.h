@@ -10,11 +10,14 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-//stdint.h is often automatically included.
-//Unity uses it to guess at the sizes of integer types, etc.
+// Unity attempts to determine sizeof(various types)
+// based on UINT_MAX, ULONG_MAX, etc. These are typically
+// defined in limits.h.
 #ifdef UNITY_USE_LIMITS_H
 #include <limits.h>
 #endif
+// As a fallback, hope that including stdint.h will
+// provide this information.
 #ifndef UNITY_EXCLUDE_STDINT_H
 #include <stdint.h>
 #endif
@@ -23,9 +26,10 @@
 // Guess Widths If Not Specified
 //-------------------------------------------------------
 
-// If the INT Width hasn't been specified,
-// We first try to guess based on UINT_MAX (if it exists)
-// Otherwise we fall back on assuming 32-bit
+// Determine the size of an int, if not already specificied.
+// We cannot use sizeof(int), because it is not yet defined
+// at this stage in the trnslation of the C program.
+// Therefore, infer it from UINT_MAX if possible.
 #ifndef UNITY_INT_WIDTH
   #ifdef UINT_MAX
     #if (UINT_MAX == 0xFFFF)
@@ -37,17 +41,16 @@
       #ifndef UNITY_SUPPORT_64
       #define UNITY_SUPPORT_64
       #endif
-    #else
-      #define UNITY_INT_WIDTH (32)
     #endif
-  #else
-    #define UNITY_INT_WIDTH (32)
   #endif
 #endif
+#ifndef UNITY_INT_WIDTH
+  #define UNITY_INT_WIDTH (32)
+#endif
 
-// If the Long Width hasn't been specified,
-// We first try to guess based on ULONG_MAX (if it exists)
-// Otherwise we fall back on assuming 32-bit
+// Determine the size of a long, if not already specified,
+// by following the process used above to define
+// UNITY_INT_WIDTH.
 #ifndef UNITY_LONG_WIDTH
   #ifdef ULONG_MAX
     #if (ULONG_MAX == 0xFFFF)
@@ -56,20 +59,19 @@
       #define UNITY_LONG_WIDTH (32)
     #elif (ULONG_MAX == 0xFFFFFFFFFFFFFFFF)
       #define UNITY_LONG_WIDTH (64)
-    #else
-      #define UNITY_LONG_WIDTH (32)
       #ifndef UNITY_SUPPORT_64
       #define UNITY_SUPPORT_64
       #endif
     #endif
-  #else
-    #define UNITY_LONG_WIDTH (32)
   #endif
 #endif
+#ifndef UNITY_LONG_WIDTH
+  #define UNITY_LONG_WIDTH (32)
+#endif
 
-// If the Pointer Width hasn't been specified,
-// We first try to guess based on INTPTR_MAX (if it exists)
-// Otherwise we fall back on assuming 32-bit
+// Determine the size of a pointer, if not already specified,
+// by following the process used above to define
+// UNITY_INT_WIDTH.
 #ifndef UNITY_POINTER_WIDTH
   #ifdef UINTPTR_MAX
     #if (UINTPTR_MAX <= 0xFFFF)
@@ -154,10 +156,6 @@ typedef _US64 _U_SINT;
 //-------------------------------------------------------
 // Pointer Support
 //-------------------------------------------------------
-
-#ifndef UNITY_POINTER_WIDTH
-#define UNITY_POINTER_WIDTH (32)
-#endif /* UNITY_POINTER_WIDTH */
 
 #if (UNITY_POINTER_WIDTH == 32)
     typedef _UU32 _UP;
@@ -410,6 +408,18 @@ void UnityAssertEqualFloatArray(const _UF* expected,
                                 const _UU32 num_elements,
                                 const char* msg,
                                 const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertFloatIsInf(const _UF actual,
+                           const char* msg,
+                           const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertFloatIsNegInf(const _UF actual,
+                              const char* msg,
+                              const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertFloatIsNaN(const _UF actual,
+                           const char* msg,
+                           const UNITY_LINE_TYPE lineNumber);
 #endif
 
 #ifndef UNITY_EXCLUDE_DOUBLE
@@ -424,6 +434,18 @@ void UnityAssertEqualDoubleArray(const _UD* expected,
                                  const _UU32 num_elements,
                                  const char* msg,
                                  const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertDoubleIsInf(const _UD actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertDoubleIsNegInf(const _UD actual,
+                               const char* msg,
+                               const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertDoubleIsNaN(const _UD actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber);
 #endif
 
 //-------------------------------------------------------
@@ -493,20 +515,32 @@ void UnityAssertEqualDoubleArray(const _UD* expected,
 #define UNITY_TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual, line, message)                   UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Floating Point Disabled")
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT(expected, actual, line, message)                           UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Floating Point Disabled")
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements, line, message)       UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Floating Point Disabled")
+#define UNITY_TEST_ASSERT_FLOAT_IS_INF(actual, line, message)                                    UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Floating Point Disabled")
+#define UNITY_TEST_ASSERT_FLOAT_IS_NEG_INF(actual, line, message)                                UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Floating Point Disabled")
+#define UNITY_TEST_ASSERT_FLOAT_IS_NAN(actual, line, message)                                    UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Floating Point Disabled")
 #else
 #define UNITY_TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual, line, message)                   UnityAssertFloatsWithin((_UF)(delta), (_UF)(expected), (_UF)(actual), (message), (UNITY_LINE_TYPE)line)
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT(expected, actual, line, message)                           UNITY_TEST_ASSERT_FLOAT_WITHIN((_UF)(expected) * (_UF)UNITY_FLOAT_PRECISION, (_UF)expected, (_UF)actual, (UNITY_LINE_TYPE)line, message)
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualFloatArray((_UF*)(expected), (_UF*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_FLOAT_IS_INF(actual, line, message)                                    UnityAssertFloatIsInf((_UF)(actual), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_FLOAT_IS_NEG_INF(actual, line, message)                                UnityAssertFloatIsNegInf((_UF)(actual), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_FLOAT_IS_NAN(actual, line, message)                                    UnityAssertFloatIsNaN((_UF)(actual), (message), (UNITY_LINE_TYPE)line)
 #endif
 
 #ifdef UNITY_EXCLUDE_DOUBLE
 #define UNITY_TEST_ASSERT_DOUBLE_WITHIN(delta, expected, actual, line, message)                  UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
 #define UNITY_TEST_ASSERT_EQUAL_DOUBLE(expected, actual, line, message)                          UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
 #define UNITY_TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected, actual, num_elements, line, message)      UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
+#define UNITY_TEST_ASSERT_DOUBLE_IS_INF(actual, line, message)                                   UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
+#define UNITY_TEST_ASSERT_DOUBLE_IS_NEG_INF(actual, line, message)                               UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
+#define UNITY_TEST_ASSERT_DOUBLE_IS_NAN(actual, line, message)                                   UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, "Unity Double Precision Disabled")
 #else
 #define UNITY_TEST_ASSERT_DOUBLE_WITHIN(delta, expected, actual, line, message)                  UnityAssertDoublesWithin((_UD)(delta), (_UD)(expected), (_UD)(actual), (message), (UNITY_LINE_TYPE)line)
 #define UNITY_TEST_ASSERT_EQUAL_DOUBLE(expected, actual, line, message)                          UNITY_TEST_ASSERT_DOUBLE_WITHIN((_UF)(expected) * (_UD)UNITY_DOUBLE_PRECISION, (_UD)expected, (_UD)actual, (UNITY_LINE_TYPE)line, message)
 #define UNITY_TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected, actual, num_elements, line, message)      UnityAssertEqualDoubleArray((_UD*)(expected), (_UD*)(actual), (_UU32)(num_elements), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_DOUBLE_IS_INF(actual, line, message)                                   UnityAssertFloatIsInf((_UF)(actual), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_DOUBLE_IS_NEG_INF(actual, line, message)                               UnityAssertFloatIsNegInf((_UF)(actual), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_DOUBLE_IS_NAN(actual, line, message)                                   UnityAssertFloatIsNaN((_UF)(actual), (message), (UNITY_LINE_TYPE)line)
 #endif
 
 #endif

@@ -176,21 +176,24 @@ class UnityTestRunnerGenerator
         output.puts("  GlobalOrderError = NULL;") 
       end
       mocks.each do |mock|
-        output.puts("  #{mock}_Init();")
+        mock_clean = mock.gsub(/(?:-|\s+)/, "_")
+        output.puts("  #{mock_clean}_Init();")
       end
       output.puts("}\n")
 
       output.puts("static void CMock_Verify(void)")
       output.puts("{")
       mocks.each do |mock|
-        output.puts("  #{mock}_Verify();")
+        mock_clean = mock.gsub(/(?:-|\s+)/, "_")
+        output.puts("  #{mock_clean}_Verify();")
       end
       output.puts("}\n")
 
       output.puts("static void CMock_Destroy(void)")
       output.puts("{")
       mocks.each do |mock|
-        output.puts("  #{mock}_Destroy();")
+        mock_clean = mock.gsub(/(?:-|\s+)/, "_")
+        output.puts("  #{mock_clean}_Destroy();")
       end
       output.puts("}\n")
     end

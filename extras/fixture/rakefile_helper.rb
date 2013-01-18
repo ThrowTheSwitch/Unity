@@ -87,7 +87,7 @@ module RakefileHelpers
     return {:command => command, :options => options, :includes => includes}
   end
   
-  def link(exe_name, obj_list)
+  def link_it(exe_name, obj_list)
     linker = build_linker_fields
     cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]} " +
       (obj_list.map{|obj|"#{$cfg['linker']['object_files']['path']}#{obj} "}).join +
@@ -148,7 +148,8 @@ module RakefileHelpers
     # Get a list of all source files needed
     src_files  = Dir[HERE+'src/*.c']
     src_files += Dir[HERE+'test/*.c']
-    src_files << '../../src/Unity.c'
+    src_files += Dir[HERE+'test/main/*.c']
+    src_files << '../../src/unity.c'
     
     # Build object files
     src_files.each { |f| compile(f, test_defines) }
@@ -156,7 +157,7 @@ module RakefileHelpers
     
     # Link the test executable
     test_base = "framework_test"
-    link(test_base, obj_list)
+    link_it(test_base, obj_list)
       
     # Execute unit test and generate results file
     simulator = build_simulator_fields

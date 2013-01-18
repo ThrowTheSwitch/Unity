@@ -5,9 +5,9 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
+#include <string.h>
 #include "unity_fixture.h"
 #include "unity_internals.h"
-#include <string.h>
 
 UNITY_FIXTURE_T UnityFixture;
 
@@ -107,20 +107,20 @@ void UnityTestRunner(unityfunction* setup,
             UnityPointer_UndoAllSets();
             if (!Unity.CurrentTestFailed)
                 UnityMalloc_EndTest();
-            UnityConcludeFixtureTest();
         }
-        else
-        {
-            //aborting - jwg - di i need these for the other TEST_PROTECTS?
-        }
+        UnityConcludeFixtureTest();
     }
 }
 
-void UnityIgnoreTest()
+void UnityIgnoreTest(const char * printableName)
 {
     Unity.NumberOfTests++;
     Unity.CurrentTestIgnored = 1;
-    UNITY_OUTPUT_CHAR('!');
+    if (!UnityFixture.Verbose)
+        UNITY_OUTPUT_CHAR('!');
+    else
+        UnityPrint(printableName);
+    UnityConcludeFixtureTest();
 }
 
 
@@ -164,8 +164,8 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 
 typedef struct GuardBytes
 {
-    int size;
-    char guard[sizeof(int)];
+    size_t size;
+    char guard[sizeof(size_t)];
 } Guard;
 
 
@@ -254,7 +254,7 @@ void* unity_realloc(void * oldMem, size_t size)
         return oldMem;
 
     newMem = unity_malloc(size);
-    memcpy(newMem, oldMem, size);
+    memcpy(newMem, oldMem, guard->size);
     unity_free(oldMem);
     return newMem;
 }
@@ -360,6 +360,10 @@ void UnityConcludeFixtureTest()
 {
     if (Unity.CurrentTestIgnored)
     {
+        if (UnityFixture.Verbose)
+        {
+            UNITY_OUTPUT_CHAR('\n');
+        }
         Unity.TestIgnores++;
     }
     else if (!Unity.CurrentTestFailed)
@@ -378,4 +382,3 @@ void UnityConcludeFixtureTest()
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
 }
-
