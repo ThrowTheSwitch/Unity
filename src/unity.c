@@ -981,7 +981,7 @@ void UnityAssertEqualStringArray( const char** expected,
             if (num_elements > 1)
             {
                 UnityPrint(UnityStrElement);
-                UnityPrintNumberByStyle((num_elements - j - 1), UNITY_DISPLAY_STYLE_UINT);
+                UnityPrintNumberByStyle((j), UNITY_DISPLAY_STYLE_UINT);
             }
             UnityPrintExpectedAndActualStrings((const char*)(expected[j]), (const char*)(actual[j]));
             UnityAddMsgIfSpecified(msg);
