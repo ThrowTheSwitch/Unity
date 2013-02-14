@@ -20,7 +20,7 @@ SYMBOLS=-DTEST -DUNITY_SUPPORT_64
 ifeq ($(OS),Windows_NT)
 	CLEANUP = del /F /Q build\* && del /F /Q $(TARGET)
 else
-	CLEANUP = rm -f build/*.o ; rm -f $(TARGET)
+	CLEANUP = rm -f build/*.o ; rm -f $(TARGET) ; mkdir -p build
 endif
 
 all: clean default
@@ -28,7 +28,7 @@ all: clean default
 default:
 	ruby auto/generate_test_runner.rb test/testunity.c build/testunity_Runner.c
 	$(C_COMPILER) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES) $(OUT_FILE)
-	$(TARGET)
+	./$(TARGET)
 
 clean:
 	$(CLEANUP)

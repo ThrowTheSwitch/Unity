@@ -32,11 +32,13 @@ const char* UnityStrInf      = "Infinity";
 const char* UnityStrNegInf   = "Negative Infinity";
 const char* UnityStrNaN      = "NaN";
 
+#ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
 static const _UF f_zero = 0.0f;
 #ifndef UNITY_EXCLUDE_DOUBLE
 static const _UD d_zero = 0.0;
+#endif
 #endif
 
 // compiler-generic print formatting masks
@@ -981,7 +983,7 @@ void UnityAssertEqualStringArray( const char** expected,
             if (num_elements > 1)
             {
                 UnityPrint(UnityStrElement);
-                UnityPrintNumberByStyle((num_elements - j - 1), UNITY_DISPLAY_STYLE_UINT);
+                UnityPrintNumberByStyle((j), UNITY_DISPLAY_STYLE_UINT);
             }
             UnityPrintExpectedAndActualStrings((const char*)(expected[j]), (const char*)(actual[j]));
             UnityAddMsgIfSpecified(msg);
