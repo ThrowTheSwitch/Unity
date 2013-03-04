@@ -30,6 +30,7 @@ TEST_GROUP_RUNNER(UnityCommandOptions)
     RUN_TEST_CASE(UnityCommandOptions, OptionSelectRepeatTestsSpecificCount);
     RUN_TEST_CASE(UnityCommandOptions, MultipleOptions);
     RUN_TEST_CASE(UnityCommandOptions, MultipleOptionsDashRNotLastAndNoValueSpecified);
+    RUN_TEST_CASE(UnityCommandOptions, UnknownCommandIsIgnored);
 }
 
 TEST_GROUP_RUNNER(LeakDetection)
