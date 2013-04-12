@@ -17,7 +17,9 @@ SRC_FILES=src/unity.c test/testunity.c build/testunity_Runner.c
 INC_DIRS=-Isrc
 SYMBOLS=-DTEST -DUNITY_SUPPORT_64
 
-ifeq ($(OS),Windows_NT)
+ifeq ($(OSTYPE),cygwin)
+	CLEANUP = rm -f build/*.o ; rm -f $(TARGET) ; mkdir -p build
+else ifeq ($(OS),Windows_NT)
 	CLEANUP = del /F /Q build\* && del /F /Q $(TARGET)
 else
 	CLEANUP = rm -f build/*.o ; rm -f $(TARGET) ; mkdir -p build
