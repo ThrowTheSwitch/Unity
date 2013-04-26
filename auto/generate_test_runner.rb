@@ -4,6 +4,8 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ========================================== 
 
+require 'optparse'
+
 File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 
 class UnityTestRunnerGenerator
@@ -29,7 +31,7 @@ class UnityTestRunnerGenerator
     return(options)
   end
 
-  def run(input_file, output_file, options=nil)
+  def run(input_file, output_file, filter, options=nil)
     tests = []
     testfile_includes = []
     used_mocks = []
@@ -39,7 +41,7 @@ class UnityTestRunnerGenerator
     
     #pull required data from source file
     File.open(input_file, 'r') do |input|
-      tests               = find_tests(input)
+      tests               = find_tests(input, filter)
       testfile_includes   = find_includes(input)
       used_mocks          = find_mocks(testfile_includes)
     end
@@ -65,7 +67,7 @@ class UnityTestRunnerGenerator
     end
   end
   
-  def find_tests(input_file)
+  def find_tests(input_file, filter)
     tests_raw = []
     tests_args = []
     tests_and_line_numbers = []
@@ -84,12 +86,15 @@ class UnityTestRunnerGenerator
         name = $2
         call = $3
         args = nil
-        if (@options[:use_param_tests] and !arguments.empty?)
-          args = []
-          arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) {|a| args << a[0]}
+	#include tests that passes user specified pattern filtering
+	if $& !~ %r{#{filter}}				
+          if (@options[:use_param_tests] and !arguments.empty?)
+            args = []
+            arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) {|a| args << a[0]}
+          end
+          tests_and_line_numbers << { :test => name, :args => args, :call => call, :line_number => 0 }
+          tests_args = []
         end
-        tests_and_line_numbers << { :test => name, :args => args, :call => call, :line_number => 0 }
-        tests_args = []
       end
     end
 
@@ -106,10 +111,10 @@ class UnityTestRunnerGenerator
       end
     end
     
-   #randomize test-case order
-   tests_and_line_numbers.shuffle!(random: Random.new(Time.now.to_i))
- 
-   return tests_and_line_numbers
+    #randomize test-case order
+    tests_and_line_numbers.shuffle!(random: Random.new(Time.now.to_i))
+
+    return tests_and_line_numbers
   end
 
   def find_includes(input_file)
@@ -311,9 +316,20 @@ if ($0 == __FILE__)
   
   #create the default test runner name if not specified
   ARGV[1] = ARGV[0].gsub(".c","_Runner.c") if (!ARGV[1])
+
+  filter = ""
+  opts = OptionParser.new
+
+  opts.on("--filter_out=DEFAULT", "Filter Out Test Cases", String)    do |ptrn|
+    filter = ptrn
+  end
   
+  opts.parse(*ARGV)
+
+  puts filter
+
   #everything else is an include file
   options[:includes] ||= (ARGV.slice(2..-1).flatten.compact) if (ARGV.size > 2)
   
-  UnityTestRunnerGenerator.new(options).run(ARGV[0], ARGV[1])
+  UnityTestRunnerGenerator.new(options).run(ARGV[0], ARGV[1], filter)
 end

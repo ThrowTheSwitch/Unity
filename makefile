@@ -26,7 +26,7 @@ endif
 all: clean default
 
 default:
-	ruby auto/generate_test_runner.rb test/testunity.c build/testunity_Runner.c
+	ruby auto/generate_test_runner.rb test/testunity.c build/testunity_Runner.c -f"False"
 	$(C_COMPILER) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES) $(OUT_FILE)
 	./$(TARGET)
 
