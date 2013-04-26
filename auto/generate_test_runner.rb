@@ -106,10 +106,10 @@ class UnityTestRunnerGenerator
       end
     end
     
-    #randomize test-case order
-    tests_and_line_numbers.shuffle!
-
-    return tests_and_line_numbers
+   #randomize test-case order
+   tests_and_line_numbers.shuffle!(random: Random.new(Time.now.to_i))
+ 
+   return tests_and_line_numbers
   end
 
   def find_includes(input_file)
