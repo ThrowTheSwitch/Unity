@@ -425,7 +425,10 @@ void UnityAssertEqualIntArray(const _U_SINT* expected,
     if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
         return;
 
-    switch(style)
+    // If style is UNITY_DISPLAY_STYLE_INT, we'll fall into the default case rather than the INT16 or INT32 (etc) case
+    // as UNITY_DISPLAY_STYLE_INT includes a flag for UNITY_DISPLAY_RANGE_AUTO, which the width-specific
+    // variants do not. Therefore remove this flag.
+    switch(style & ~UNITY_DISPLAY_RANGE_AUTO)
     {
         case UNITY_DISPLAY_STYLE_HEX8:
         case UNITY_DISPLAY_STYLE_INT8:
