@@ -1622,10 +1622,10 @@ void testNotEqualUINT32Arrays3(void)
 
 void testEqualHEXArrays(void)
 {
-    unsigned int p0[] = {1, 8, 987, 65132u};
-    unsigned int p1[] = {1, 8, 987, 65132u};
-    unsigned int p2[] = {1, 8, 987, 2};
-    unsigned int p3[] = {1, 500, 600, 700};
+    _UU32 p0[] = {1, 8, 987, 65132u};
+    _UU32 p1[] = {1, 8, 987, 65132u};
+    _UU32 p2[] = {1, 8, 987, 2};
+    _UU32 p3[] = {1, 500, 600, 700};
 
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p0, 4);
@@ -1636,8 +1636,8 @@ void testEqualHEXArrays(void)
 
 void testNotEqualHEXArrays1(void)
 {
-    unsigned int p0[] = {1, 8, 987, 65132u};
-    unsigned int p1[] = {1, 8, 987, 65131u};
+    _UU32 p0[] = {1, 8, 987, 65132u};
+    _UU32 p1[] = {1, 8, 987, 65131u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
@@ -1646,8 +1646,8 @@ void testNotEqualHEXArrays1(void)
 
 void testNotEqualHEXArrays2(void)
 {
-    unsigned int p0[] = {1, 8, 987, 65132u};
-    unsigned int p1[] = {2, 8, 987, 65132u};
+    _UU32 p0[] = {1, 8, 987, 65132u};
+    _UU32 p1[] = {2, 8, 987, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
@@ -1656,8 +1656,8 @@ void testNotEqualHEXArrays2(void)
 
 void testNotEqualHEXArrays3(void)
 {
-    unsigned int p0[] = {1, 8, 987, 65132u};
-    unsigned int p1[] = {1, 8, 986, 65132u};
+    _UU32 p0[] = {1, 8, 987, 65132u};
+    _UU32 p1[] = {1, 8, 986, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p1, 4);
