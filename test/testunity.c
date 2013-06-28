@@ -1803,11 +1803,11 @@ void testEqualMemoryArrays(void)
     int p2[] = {1, 8, 987, 2};
     int p3[] = {1, 500, 600, 700};
 
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 1);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, 4, 4);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p2, 4, 3);
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p3, 4, 1);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, sizeof(int), 1);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p0, sizeof(int), 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p2, sizeof(int), 3);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p3, sizeof(int), 1);
 }
 
 void testNotEqualMemoryArraysExpectedNull(void)
@@ -1816,7 +1816,7 @@ void testNotEqualMemoryArraysExpectedNull(void)
     int p1[] = {1, 8, 987, 2};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
     VERIFY_FAILS_END
 }
 
@@ -1826,7 +1826,7 @@ void testNotEqualMemoryArraysActualNull(void)
     int* p1 = NULL;
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
     VERIFY_FAILS_END
 }
 
@@ -1836,7 +1836,7 @@ void testNotEqualMemoryArrays1(void)
     int p1[] = {1, 8, 987, 2};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
     VERIFY_FAILS_END
 }
 
@@ -1846,7 +1846,7 @@ void testNotEqualMemoryArrays2(void)
     int p1[] = {2, 8, 987, -2};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
     VERIFY_FAILS_END
 }
 
@@ -1856,7 +1856,7 @@ void testNotEqualMemoryArrays3(void)
     int p1[] = {1, 8, 986, -2};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, 4, 4);
+    TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
     VERIFY_FAILS_END
 }
 
