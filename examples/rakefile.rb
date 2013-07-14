@@ -5,13 +5,24 @@ require 'rake/clean'
 require 'rake/testtask'
 require HERE+'rakefile_helper'
 
+TEMP_DIRS = [
+	File.join(HERE, 'build')
+]
+
+TEMP_DIRS.each do |dir|
+  directory(dir)
+  CLOBBER.include(dir)
+end
+
+task :prepare_for_tests => TEMP_DIRS
+
 include RakefileHelpers
 
 # Load default configuration, for now
 DEFAULT_CONFIG_FILE = 'gcc_32.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
-task :unit do
+task :unit => [:prepare_for_tests] do
   run_tests get_unit_test_files
 end
 
