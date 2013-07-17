@@ -13,7 +13,16 @@ else
 	TARGET_EXTENSION=.out
 endif
 TARGET1 = $(TARGET_BASE1)$(TARGET_EXTENSION)
-SRC_FILES1=$(UNITY_ROOT)/src/unity.c $(UNITY_ROOT)/extras/fixture/src/unity_fixture.c src/ProductionCode.c src/ProductionCode2.c test/TestProductionCode.c test/TestProductionCode2.c test/test_runners/TestProductionCode_Runner.c test/test_runners/TestProductionCode2_Runner.c test/test_runners/all_tests.c
+SRC_FILES1=\
+  $(UNITY_ROOT)/src/unity.c \
+  $(UNITY_ROOT)/extras/fixture/src/unity_fixture.c \
+  src/ProductionCode.c \
+  src/ProductionCode2.c \
+  test/TestProductionCode.c \
+  test/TestProductionCode2.c \
+  test/test_runners/TestProductionCode_Runner.c \
+  test/test_runners/TestProductionCode2_Runner.c \
+  test/test_runners/all_tests.c
 INC_DIRS=-Isrc -I$(UNITY_ROOT)/src -I$(UNITY_ROOT)/extras/fixture/src
 SYMBOLS=
 
