@@ -401,8 +401,8 @@ void UnityAssertEqualNumber(const _U_SINT expected,
 }
 
 //-----------------------------------------------
-void UnityAssertEqualIntArray(const _U_SINT* expected,
-                              const _U_SINT* actual,
+void UnityAssertEqualIntArray(const void* expected,
+                              const void* actual,
                               const _UU32 num_elements,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
