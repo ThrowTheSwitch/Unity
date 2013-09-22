@@ -42,7 +42,7 @@ static const _UD d_zero = 0.0;
 #endif
 
 // compiler-generic print formatting masks
-const _U_UINT UnitySizeMask[] = 
+const _U_UINT UnitySizeMask[] =
 {
     255u,         // 0xFF
     65535u,       // 0xFFFF
@@ -308,7 +308,7 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
     }
     else
     {
-      UnityPrint(UnityStrNull);          
+      UnityPrint(UnityStrNull);
     }
     UnityPrint(UnityStrWas);
     if (actual != NULL)
@@ -319,7 +319,7 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
     }
     else
     {
-      UnityPrint(UnityStrNull);          
+      UnityPrint(UnityStrNull);
     }
 }
 
@@ -332,7 +332,7 @@ int UnityCheckArraysForNull(UNITY_PTR_ATTRIBUTE const void* expected, UNITY_PTR_
     //return true if they are both NULL
     if ((expected == NULL) && (actual == NULL))
         return 1;
-        
+
     //throw error if just expected is NULL
     if (expected == NULL)
     {
@@ -350,7 +350,7 @@ int UnityCheckArraysForNull(UNITY_PTR_ATTRIBUTE const void* expected, UNITY_PTR_
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     //return false if neither is NULL
     return 0;
 }
@@ -366,7 +366,7 @@ void UnityAssertBits(const _U_SINT mask,
                      const UNITY_LINE_TYPE lineNumber)
 {
     UNITY_SKIP_EXECUTION;
-  
+
     if ((mask & expected) != (mask & actual))
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -401,8 +401,8 @@ void UnityAssertEqualNumber(const _U_SINT expected,
 }
 
 //-----------------------------------------------
-void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const _U_SINT* expected,
-                              UNITY_PTR_ATTRIBUTE const _U_SINT* actual,
+void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
+                              UNITY_PTR_ATTRIBUTE const void* actual,
                               const _UU32 num_elements,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
@@ -413,7 +413,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const _U_SINT* expected,
     UNITY_PTR_ATTRIBUTE const _US8* ptr_act = (UNITY_PTR_ATTRIBUTE _US8*)actual;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -421,7 +421,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const _U_SINT* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE void*)expected, (UNITY_PTR_ATTRIBUTE void*)actual, lineNumber, msg) == 1)
         return;
 
@@ -531,7 +531,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
     _UF diff, tol;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -539,7 +539,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE void*)expected, (UNITY_PTR_ATTRIBUTE void*)actual, lineNumber, msg) == 1)
         return;
 
@@ -551,7 +551,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
         tol = UNITY_FLOAT_PRECISION * *ptr_expected;
         if (tol < 0.0f)
             tol = 0.0f - tol;
-        
+
         //This first part of this condition will catch any NaN or Infinite values
         if ((diff * 0.0f != 0.0f) || (diff > tol))
         {
@@ -585,7 +585,7 @@ void UnityAssertFloatsWithin(const _UF delta,
     _UF pos_delta = delta;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (diff < 0.0f)
     {
         diff = 0.0f - diff;
@@ -703,7 +703,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
     _UD diff, tol;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -711,7 +711,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE void*)expected, (UNITY_PTR_ATTRIBUTE void*)actual, lineNumber, msg) == 1)
         return;
 
@@ -723,7 +723,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
         tol = UNITY_DOUBLE_PRECISION * *ptr_expected;
         if (tol < 0.0)
             tol = 0.0 - tol;
-        
+
         //This first part of this condition will catch any NaN or Infinite values
         if ((diff * 0.0 != 0.0) || (diff > tol))
         {
@@ -757,7 +757,7 @@ void UnityAssertDoublesWithin(const _UD delta,
     _UD pos_delta = delta;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (diff < 0.0)
     {
         diff = 0.0 - diff;
@@ -866,7 +866,7 @@ void UnityAssertNumbersWithin( const _U_SINT delta,
                                const UNITY_DISPLAY_STYLE_T style)
 {
     UNITY_SKIP_EXECUTION;
-    
+
     if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
     {
         if (actual > expected)
@@ -905,7 +905,7 @@ void UnityAssertEqualString(const char* expected,
     _UU32 i;
 
     UNITY_SKIP_EXECUTION;
-  
+
     // if both pointers not null compare the strings
     if (expected && actual)
     {
@@ -943,9 +943,9 @@ void UnityAssertEqualStringArray( const char** expected,
                                   const UNITY_LINE_TYPE lineNumber)
 {
     _UU32 i, j = 0;
-    
+
     UNITY_SKIP_EXECUTION;
-  
+
     // if no elements, it's an error
     if (num_elements == 0)
     {
@@ -957,7 +957,7 @@ void UnityAssertEqualStringArray( const char** expected,
 
     if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE void*)expected, (UNITY_PTR_ATTRIBUTE void*)actual, lineNumber, msg) == 1)
         return;
-    
+
     do
     {
         // if both pointers not null compare the strings
@@ -991,7 +991,7 @@ void UnityAssertEqualStringArray( const char** expected,
             UnityPrintExpectedAndActualStrings((const char*)(expected[j]), (const char*)(actual[j]));
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
-        } 
+        }
     } while (++j < num_elements);
 }
 
@@ -1009,7 +1009,7 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
     _UU32 bytes;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if ((elements == 0) || (length == 0))
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -1020,7 +1020,7 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
 
     if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE void*)expected, (UNITY_PTR_ATTRIBUTE void*)actual, lineNumber, msg) == 1)
         return;
-        
+
     while (elements--)
     {
         /////////////////////////////////////
@@ -1049,7 +1049,7 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
             ptr_act += 1;
         }
         /////////////////////////////////////
-        
+
     }
 }
 
@@ -1068,7 +1068,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
       UNITY_OUTPUT_CHAR(':');
       if (msg[0] != ' ')
       {
-        UNITY_OUTPUT_CHAR(' ');  
+        UNITY_OUTPUT_CHAR(' ');
       }
       UnityPrint(msg);
     }
@@ -1098,7 +1098,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 {
     Unity.CurrentTestName = FuncName;
     Unity.CurrentTestLineNumber = FuncLineNum;
-    Unity.NumberOfTests++; 
+    Unity.NumberOfTests++;
     if (TEST_PROTECT())
     {
         setUp();
