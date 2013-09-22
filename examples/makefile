@@ -19,7 +19,9 @@ SRC_FILES2=../src/unity.c src/ProductionCode2.c test/TestProductionCode2.c test/
 INC_DIRS=-Isrc -I../src
 SYMBOLS=-DTEST
 
-ifeq ($(OS),Windows_NT)
+ifeq ($(OSTYPE),cygwin)
+        CLEANUP = rm -f build/*.o ; rm -f $(TARGET) ; mkdir -p build
+else ifeq ($(OS),Windows_NT)
 	CLEANUP = del /F /Q build\* && del /F /Q $(TARGET1) && del /F /Q $(TARGET2)
 else
 	CLEANUP = rm -f build/*.o ; rm -f $(TARGET1) ; rm -f $(TARGET2)
