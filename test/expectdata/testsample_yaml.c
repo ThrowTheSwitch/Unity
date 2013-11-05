@@ -29,6 +29,9 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include "CException.h"
+#include "funky.h"
+#include "stanky.h"
+#include <setjmp.h>
 
 //=======External Functions This Runner Calls=====
 extern void setUp(void);

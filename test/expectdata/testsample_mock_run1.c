@@ -32,6 +32,8 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include "CException.h"
+#include "funky.h"
+#include <setjmp.h>
 #include "Mockstanky.h"
 
 int GlobalExpectCount;
