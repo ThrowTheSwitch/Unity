@@ -19,7 +19,9 @@ SRC_FILES2=../src/unity.c src/ProductionCode2.c test/TestProductionCode2.c test/
 INC_DIRS=-Isrc -I../src
 SYMBOLS=-DTEST
 
-ifeq ($(OS),Windows_NT)
+ifeq ($(OSTYPE),cygwin)
+        CLEANUP = rm -f build/*.o ; rm -f $(TARGET) ; mkdir -p build
+else ifeq ($(OS),Windows_NT)
 	CLEANUP = del /F /Q build\* && del /F /Q $(TARGET1) && del /F /Q $(TARGET2)
 else
 	CLEANUP = rm -f build/*.o ; rm -f $(TARGET1) ; rm -f $(TARGET2)
@@ -32,8 +34,8 @@ default:
 #	ruby auto/generate_test_runner.rb test/TestProductionCode2.c test/no_ruby/TestProductionCode2_Runner.c
 	$(C_COMPILER) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
 	$(C_COMPILER) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES2) -o $(TARGET2)
-	$(TARGET1)
-	$(TARGET2)
+	./$(TARGET1)
+	./$(TARGET2)
 
 clean:
 	$(CLEANUP)
