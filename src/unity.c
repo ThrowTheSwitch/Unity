@@ -1,4 +1,4 @@
-/* ==========================================
+`/* ==========================================
     Unity Project - A Test Framework for C
     Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
     [Released under MIT License. Please refer to license.txt for details]
@@ -226,7 +226,16 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 
 //-----------------------------------------------
 #ifdef UNITY_FLOAT_VERBOSE
-void UnityPrintFloat(_UF number)
+void UnityPrintFloat(const _UF number)
+{
+    char TempBuffer[32];
+    sprintf(TempBuffer, "%.6f", number);
+    UnityPrint(TempBuffer);
+}
+#endif
+
+#ifdef UNITY_DOUBLE_VERBOSE
+void UnityPrintDouble(const _UD number)
 {
     char TempBuffer[32];
     sprintf(TempBuffer, "%.6f", number);
@@ -732,9 +741,9 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
             UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
 #ifdef UNITY_DOUBLE_VERBOSE
             UnityPrint(UnityStrExpected);
-            UnityPrintFloat((float)(*ptr_expected));
+            UnityPrintDouble(*ptr_expected);
             UnityPrint(UnityStrWas);
-            UnityPrintFloat((float)(*ptr_actual));
+            UnityPrintDouble(ptr_actual);
 #else
             UnityPrint(UnityStrDelta);
 #endif
@@ -773,9 +782,9 @@ void UnityAssertDoublesWithin(const _UD delta,
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_DOUBLE_VERBOSE
         UnityPrint(UnityStrExpected);
-        UnityPrintFloat((float)expected);
+        UnityPrintDouble(expected);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
@@ -799,7 +808,7 @@ void UnityAssertDoubleIsInf(const _UD actual,
         UnityPrint(UnityStrExpected);
         UnityPrint(UnityStrInf);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
@@ -823,7 +832,7 @@ void UnityAssertDoubleIsNegInf(const _UD actual,
         UnityPrint(UnityStrExpected);
         UnityPrint(UnityStrNegInf);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
@@ -846,7 +855,7 @@ void UnityAssertDoubleIsNaN(const _UD actual,
         UnityPrint(UnityStrExpected);
         UnityPrint(UnityStrNaN);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif

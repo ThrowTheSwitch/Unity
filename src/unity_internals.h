@@ -343,6 +343,9 @@ void UnityPrintNumberHex(const _U_UINT number, const char nibbles);
 #ifdef UNITY_FLOAT_VERBOSE
 void UnityPrintFloat(const _UF number);
 #endif
+#ifdef UNITY_DOUBLE_VERBOSE
+void UnityPrintDouble(const _UD number);
+#endif
 
 //-------------------------------------------------------
 // Test Assertion Fuctions
