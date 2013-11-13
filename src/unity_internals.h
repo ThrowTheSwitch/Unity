@@ -188,6 +188,10 @@ typedef _US64 _U_SINT;
 #undef UNITY_FLOAT_TYPE
 #undef UNITY_FLOAT_VERBOSE
 
+#ifdef UNITY_INCLUDE_DOUBLE
+#undef UNITY_INCLUDE_DOUBLE
+#endif
+
 #else
 
 //Floating Point Support
