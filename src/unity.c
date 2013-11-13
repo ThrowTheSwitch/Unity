@@ -40,9 +40,9 @@ const char* UnityStrNaN      = "NaN";
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
 static const _UF f_zero = 0.0f;
-#endif
 #ifndef UNITY_EXCLUDE_DOUBLE
 static const _UD d_zero = 0.0;
+#endif
 #endif
 
 // compiler-generic print formatting masks
