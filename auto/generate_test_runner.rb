@@ -65,9 +65,37 @@ class UnityTestRunnerGenerator
     end
   end
   
+  def find_test_for_normal_case(arguments, name, call)
+    args = nil
+    
+    if (@options[:use_param_tests] and !arguments.empty?)
+      args = []
+      arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) {|a| args << a[0]}
+    end
+    return { :type => "TEST_CASE", :test => name, :args => args, :call => call, :line_number => 0 }
+  end
+  
+  def find_test_for_range_case(arguments, name, call)
+    args   = nil
+    ranges = nil
+    if (@options[:use_param_tests] and !arguments.empty?)
+      args = []
+      targs = []
+      ranges = []
+      # discover the variable type for each loop
+      call.strip.split(/,/).each { |s| targs << s.strip.split(/\s/) }
+      # discover the loop boundaries
+      args = arguments.strip.gsub(/\s*\]\s*,\s*\[\s*/,"-").gsub(/\[|\]/,"").split('-')
+      args.each_index  do |i|
+        iter = args[i].split(/,/)
+        ranges << { :vtype => targs[i][0], :start =>iter[0], :stop =>iter[1], :increment =>iter[2] }
+      end 
+    end
+    return { :type => "TEST_RANGE", :test => name, :args => args, :call => call, :line_number => 0, :iterator=> ranges}
+  end
+
   def find_tests(input_file)
     tests_raw = []
-    tests_args = []
     tests_and_line_numbers = []
     
     input_file.rewind
@@ -78,18 +106,12 @@ class UnityTestRunnerGenerator
                               | (;|\{|\}) /x)                  # Match ;, {, and } as end of lines
 
     lines.each_with_index do |line, index|
-      #find tests
-      if line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+(test.*?)\s*\(\s*(.*)\s*\)/
-        arguments = $1
-        name = $2
-        call = $3
-        args = nil
-        if (@options[:use_param_tests] and !arguments.empty?)
-          args = []
-          arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) {|a| args << a[0]}
-        end
-        tests_and_line_numbers << { :test => name, :args => args, :call => call, :line_number => 0 }
-        tests_args = []
+      #find range tests
+      if line =~ /^\s*TEST_RANGE\s*\((.*)\)\s*void\s+(test.*?)\s*\(\s*(.*)\s*\)/
+        tests_and_line_numbers << find_test_for_range_case($1, $2, $3)
+      #find normal tests, includes test cases
+      elsif line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+(test.*?)\s*\(\s*(.*)\s*\)/
+        tests_and_line_numbers << find_test_for_normal_case($1, $2, $3)
       end
     end
 
@@ -122,9 +144,9 @@ class UnityTestRunnerGenerator
     
     #parse out includes
     includes = source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten  
-	brackets_includes = source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten
-	brackets_includes.each { |inc| includes << '<' + inc +'>' }		
-	return includes
+    brackets_includes = source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten
+    brackets_includes.each { |inc| includes << '<' + inc +'>' }		
+    return includes
   end
   
   def find_mocks(includes)
@@ -147,11 +169,11 @@ class UnityTestRunnerGenerator
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
     output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
-	testfile_includes.delete("unity").delete("cmock")
-	testrunner_includes = testfile_includes - mocks	
-	testrunner_includes.each do |inc|	  
-	  output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h','')}.h\""}")	  
-	end
+    testfile_includes.delete("unity").delete("cmock")
+    testrunner_includes = testfile_includes - mocks	
+    testrunner_includes.each do |inc|	  
+      output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h','')}.h\""}")	  
+    end
     mocks.each do |mock|
       output.puts("#include \"#{mock.gsub('.h','')}.h\"")
     end
@@ -266,6 +288,45 @@ class UnityTestRunnerGenerator
     output.puts("}")
   end
   
+  def create_tagged_testcase(output, test)
+    test[:args].each {|args| output.puts("  RUN_TEST(#{test[:test]}, #{test[:line_number]}, #{args});")}
+  end
+  
+  def create_tagged_testrange(output, test)
+    s = ""
+    output.puts("  /* TEST_RANGE( #{test[:args]} ) */")
+    cnt = 1
+    args_list = []
+    
+    # generate on the fly code for the start of nested loops
+    test[:iterator].each do |iter|
+      s << "  "*cnt + "arg#{cnt} = #{iter[:start]}\n"
+      s << "  "*cnt + "while arg#{cnt} <= #{iter[:stop]} do\n"
+      
+      args_list << "arg#{cnt}"
+      cnt += 1
+    end
+    
+    # generate on the fly code to discover number of arguments
+    # to pass to RUN_TEST macro
+    args  = ""
+    args_list.each {|a| args << "\#{#{a}}, " }
+    args.chop!.chop!
+    command = "  RUN_TEST(#{test[:test]}, #{test[:line_number]}, #{args} );"
+    s << "  "*cnt + "output.puts(\"#{command}\")\n"
+    
+    # generate on the fly code to properly increment counter
+    # and finish loops
+    test[:iterator].reverse.each do |iter|
+      cnt -= 1
+      s << "  "*cnt + "  arg#{cnt} += #{iter[:increment]}\n"
+      s << "  "*cnt + "end\n"
+    end
+    
+    # execute/evaluate on the fly code here
+    eval s
+  end
+
   def create_main(output, filename, tests)
     output.puts("\n\n//=======MAIN=====")
     output.puts("int main(void)")
@@ -278,7 +339,15 @@ class UnityTestRunnerGenerator
         if ((test[:args].nil?) or (test[:args].empty?))
           output.puts("  RUN_TEST(#{test[:test]}, #{test[:line_number]}, RUN_TEST_NO_ARGS);")
         else
-          test[:args].each {|args| output.puts("  RUN_TEST(#{test[:test]}, #{test[:line_number]}, #{args});")}
+          case test[:type]
+          when "TEST_CASE"
+            create_tagged_testcase(output, test)
+          when "TEST_RANGE"
+            create_tagged_testrange(output, test)
+          else
+            # something when wrong
+            output.puts("  /* Something when wrong*/ #error \"TEST_CASE vs TEST_RANGE\" ")
+          end
         end
       end
     else
