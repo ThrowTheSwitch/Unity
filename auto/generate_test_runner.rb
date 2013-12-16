@@ -80,15 +80,12 @@ class UnityTestRunnerGenerator
     ranges = nil
     if (@options[:use_param_tests] and !arguments.empty?)
       args = []
-      targs = []
       ranges = []
-      # discover the variable type for each loop
-      call.strip.split(/,/).each { |s| targs << s.strip.split(/\s/) }
       # discover the loop boundaries
       args = arguments.strip.gsub(/\s*\]\s*,\s*\[\s*/,"-").gsub(/\[|\]/,"").split('-')
       args.each_index  do |i|
         iter = args[i].split(/,/)
-        ranges << { :vtype => targs[i][0], :start =>iter[0], :stop =>iter[1], :increment =>iter[2] }
+        ranges << { :start =>iter[0], :stop =>iter[1], :increment =>iter[2] }
       end 
     end
     return { :type => "TEST_RANGE", :test => name, :args => args, :call => call, :line_number => 0, :iterator=> ranges}
