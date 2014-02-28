@@ -255,6 +255,23 @@ TEST(UnityCommandOptions, MultipleOptionsDashRNotLastAndNoValueSpecified)
     TEST_ASSERT_EQUAL(2, UnityFixture.RepeatCount);
 }
 
+static char* unknownCommand[] = {
+        "testrunner.exe",
+        "-v",
+        "-g", "groupname",
+        "-n", "testname",
+        "-r", "98",
+        "-z"
+};
+TEST(UnityCommandOptions, UnknownCommandIsIgnored)
+{
+    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(9, unknownCommand));
+    TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
+    STRCMP_EQUAL("groupname", UnityFixture.GroupFilter);
+    STRCMP_EQUAL("testname", UnityFixture.NameFilter);
+    TEST_ASSERT_EQUAL(98, UnityFixture.RepeatCount);
+}
+
 
 //------------------------------------------------------------
 

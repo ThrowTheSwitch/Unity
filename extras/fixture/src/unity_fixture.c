@@ -351,6 +351,9 @@ int UnityGetCommandLineOptions(int argc, char* argv[])
                     i++;
                 }
             }
+        } else {
+            // ignore unknown parameter
+            i++;
         }
     }
     return 0;
