@@ -20,6 +20,10 @@ const char* UnityStrNull     = "NULL";
 const char* UnityStrSpacer   = ". ";
 const char* UnityStrExpected = " Expected ";
 const char* UnityStrWas      = " Was ";
+const char* UnityStrExpectedGreaterThan= " Expected greater than ";
+const char* UnityStrExpectedGreaterThanOrEqualTo= " Expected greater than or equal to ";
+const char* UnityStrExpectedLessThanOrEqualTo= " Expected less than or equal to ";
+const char* UnityStrExpectedLessThan= " Expected less than ";
 const char* UnityStrTo       = " To ";
 const char* UnityStrElement  = " Element ";
 const char* UnityStrByte     = " Byte ";
@@ -226,7 +230,16 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 
 //-----------------------------------------------
 #ifdef UNITY_FLOAT_VERBOSE
-void UnityPrintFloat(_UF number)
+void UnityPrintFloat(const _UF number)
+{
+    char TempBuffer[32];
+    sprintf(TempBuffer, "%.6f", number);
+    UnityPrint(TempBuffer);
+}
+#endif
+
+#ifdef UNITY_DOUBLE_VERBOSE
+void UnityPrintDouble(const _UD number)
 {
     char TempBuffer[32];
     sprintf(TempBuffer, "%.6f", number);
@@ -394,6 +407,166 @@ void UnityAssertEqualNumber(const _U_SINT expected,
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
         UnityPrintNumberByStyle(expected, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertGreaterNumber(const _U_SINT border,
+                            const _U_SINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border >= actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedGreaterThan);
+        UnityPrintNumberByStyle(border, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertGreaterOrEqualNumber(const _U_SINT border,
+                            const _U_SINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border > actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedGreaterThanOrEqualTo);
+        UnityPrintNumberByStyle(border, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertLessOrEqualNumber(const _U_SINT border,
+                            const _U_SINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border < actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedLessThanOrEqualTo);
+        UnityPrintNumberByStyle(border, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertLessNumber(const _U_SINT border,
+                            const _U_SINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border <= actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedLessThan);
+        UnityPrintNumberByStyle(border, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertGreaterUnsignedNumber(const _U_UINT border,
+                            const _U_UINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border >= actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedGreaterThan);
+        UnityPrintNumberByStyle(border, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertGreaterOrEqualUnsignedNumber(const _U_UINT border,
+                            const _U_UINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border > actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedGreaterThanOrEqualTo);
+        UnityPrintNumberByStyle(border, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertLessOrEqualUnsignedNumber(const _U_UINT border,
+                            const _U_UINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border < actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedLessThanOrEqualTo);
+        UnityPrintNumberByStyle(border, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertLessUnsignedNumber(const _U_UINT border,
+                            const _U_UINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (border <= actual) {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpectedLessThan);
+        UnityPrintNumberByStyle(border, style);
         UnityPrint(UnityStrWas);
         UnityPrintNumberByStyle(actual, style);
         UnityAddMsgIfSpecified(msg);
@@ -733,9 +906,9 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
             UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
 #ifdef UNITY_DOUBLE_VERBOSE
             UnityPrint(UnityStrExpected);
-            UnityPrintFloat((float)(*ptr_expected));
+            UnityPrintDouble(*ptr_expected);
             UnityPrint(UnityStrWas);
-            UnityPrintFloat((float)(*ptr_actual));
+            UnityPrintDouble(ptr_actual);
 #else
             UnityPrint(UnityStrDelta);
 #endif
@@ -774,9 +947,9 @@ void UnityAssertDoublesWithin(const _UD delta,
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_DOUBLE_VERBOSE
         UnityPrint(UnityStrExpected);
-        UnityPrintFloat((float)expected);
+        UnityPrintDouble(expected);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
@@ -800,7 +973,7 @@ void UnityAssertDoubleIsInf(const _UD actual,
         UnityPrint(UnityStrExpected);
         UnityPrint(UnityStrInf);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
@@ -824,7 +997,7 @@ void UnityAssertDoubleIsNegInf(const _UD actual,
         UnityPrint(UnityStrExpected);
         UnityPrint(UnityStrNegInf);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
@@ -847,7 +1020,7 @@ void UnityAssertDoubleIsNaN(const _UD actual,
         UnityPrint(UnityStrExpected);
         UnityPrint(UnityStrNaN);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintDouble(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
