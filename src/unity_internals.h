@@ -219,6 +219,10 @@ typedef UNITY_FLOAT_TYPE _UF;
 #undef UNITY_DOUBLE_TYPE
 #undef UNITY_DOUBLE_VERBOSE
 
+#ifdef UNITY_INCLUDE_DOUBLE
+#undef UNITY_INCLUDE_DOUBLE
+#endif
+
 #else
 
 //Floating Point Support
