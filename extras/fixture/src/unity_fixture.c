@@ -28,7 +28,7 @@ void announceTestRun(unsigned int runNumber)
     UNITY_OUTPUT_CHAR('\n');
 }
 
-int UnityMain(int argc, char* argv[], void (*runAllTests)())
+int UnityMain(int argc, char* argv[], void (*runAllTests)(void))
 {
     int result = UnityGetCommandLineOptions(argc, argv);
     unsigned int r;
