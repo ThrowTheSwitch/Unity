@@ -16,7 +16,7 @@ typedef struct _UNITY_FIXTURE_T
     const char* GroupFilter;
 } UNITY_FIXTURE_T;
 
-typedef void unityfunction();
+typedef void unityfunction(void);
 void UnityTestRunner(unityfunction * setup,
         unityfunction * body,
         unityfunction * teardown,
@@ -26,15 +26,15 @@ void UnityTestRunner(unityfunction * setup,
         const char * file, int line);
 
 void UnityIgnoreTest(const char * printableName);
-void UnityMalloc_StartTest();
-void UnityMalloc_EndTest();
-int UnityFailureCount();
+void UnityMalloc_StartTest(void);
+void UnityMalloc_EndTest(void);
+int UnityFailureCount(void);
 int UnityGetCommandLineOptions(int argc, char* argv[]);
-void UnityConcludeFixtureTest();
+void UnityConcludeFixtureTest(void);
 
 void UnityPointer_Set(void ** ptr, void * newValue);
-void UnityPointer_UndoAllSets();
-void UnityPointer_Init();
+void UnityPointer_UndoAllSets(void);
+void UnityPointer_Init(void);
 
 void UnityAssertEqualPointer(const void * expected,
                             const void * actual,
