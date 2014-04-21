@@ -40,7 +40,7 @@ class UnityTestRunnerGenerator
 
     #pull required data from source file
     source = File.read(input_file)
-    source = source.force_encoding("ISO-8859-1").encode("utf-8", replace: nil) if ($QUICK_RUBY_VERSION > 10900)
+    source = source.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil) if ($QUICK_RUBY_VERSION > 10900)
     tests               = find_tests(source)
     testfile_includes   = find_includes(source)
     used_mocks          = find_mocks(testfile_includes)
