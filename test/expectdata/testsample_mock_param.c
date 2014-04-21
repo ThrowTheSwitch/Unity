@@ -7,18 +7,18 @@
   Unity.CurrentTestName = #TestFunc "(" #__VA_ARGS__ ")"; \
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
+  CMock_Init(); \
   if (TEST_PROTECT()) \
   { \
-      CMock_Init(); \
       setUp(); \
       TestFunc(__VA_ARGS__); \
-      CMock_Verify(); \
   } \
-  CMock_Destroy(); \
   if (TEST_PROTECT() && !TEST_IS_IGNORED) \
   { \
     tearDown(); \
+    CMock_Verify(); \
   } \
+  CMock_Destroy(); \
   UnityConcludeTest(); \
 }
 

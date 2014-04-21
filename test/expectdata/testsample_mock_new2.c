@@ -6,18 +6,18 @@
   Unity.CurrentTestName = #TestFunc; \
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
+  CMock_Init(); \
   if (TEST_PROTECT()) \
   { \
-      CMock_Init(); \
       setUp(); \
       TestFunc(); \
-      CMock_Verify(); \
   } \
-  CMock_Destroy(); \
   if (TEST_PROTECT() && !TEST_IS_IGNORED) \
   { \
     tearDown(); \
+    CMock_Verify(); \
   } \
+  CMock_Destroy(); \
   UnityConcludeTest(); \
 }
 
