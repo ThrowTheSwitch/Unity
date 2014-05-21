@@ -71,5 +71,6 @@ int main(void)
   RUN_TEST(test_TheFirstThingToTest, 21, RUN_TEST_NO_ARGS);
   RUN_TEST(test_TheSecondThingToTest, 43, RUN_TEST_NO_ARGS);
 
+  CMock_Guts_MemFreeFinal();
   return (UnityEnd());
 }

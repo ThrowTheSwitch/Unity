@@ -62,7 +62,7 @@ class UnityTestRunnerGenerator
       create_mock_management(output, used_mocks)
       create_suite_setup_and_teardown(output)
       create_reset(output, used_mocks)
-      create_main(output, input_file, tests)
+      create_main(output, input_file, tests, used_mocks)
     end
   end
 
@@ -142,11 +142,11 @@ class UnityTestRunnerGenerator
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
     output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
-	testfile_includes.delete("unity").delete("cmock")
-	testrunner_includes = testfile_includes - mocks
-	testrunner_includes.each do |inc|
-	  output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h','')}.h\""}")
-	end
+  testfile_includes.delete("unity").delete("cmock")
+  testrunner_includes = testfile_includes - mocks
+  testrunner_includes.each do |inc|
+    output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h','')}.h\""}")
+  end
     mocks.each do |mock|
       output.puts("#include \"#{mock.gsub('.h','')}.h\"")
     end
@@ -261,7 +261,7 @@ class UnityTestRunnerGenerator
     output.puts("}")
   end
 
-  def create_main(output, filename, tests)
+  def create_main(output, filename, tests, used_mocks)
     output.puts("\n\n//=======MAIN=====")
     output.puts("int main(void)")
     output.puts("{")
@@ -280,6 +280,7 @@ class UnityTestRunnerGenerator
         tests.each { |test| output.puts("  RUN_TEST(#{test[:test]}, #{test[:line_number]});") }
     end
     output.puts()
+    output.puts("  CMock_Guts_MemFreeFinal();") unless used_mocks.empty?
     output.puts("  return #{@options[:suite_teardown].nil? ? "" : "suite_teardown"}(UnityEnd());")
     output.puts("}")
   end

@@ -83,5 +83,6 @@ int main(void)
   RUN_TEST(test_TheFirstThingToTest, 21);
   RUN_TEST(test_TheSecondThingToTest, 43);
 
+  CMock_Guts_MemFreeFinal();
   return suite_teardown(UnityEnd());
 }
