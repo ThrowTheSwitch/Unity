@@ -92,7 +92,7 @@ void UnityPrint(const char* string)
             else
             {
                 UNITY_OUTPUT_CHAR('\\');
-                UnityPrintNumberHex((_U_SINT)*pch, 2);
+                UnityPrintNumberHex((_U_UINT)*pch, 2);
             }
             pch++;
         }
@@ -112,7 +112,7 @@ void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T s
     }
     else
     {
-        UnityPrintNumberHex((_U_UINT)number, (style & 0x000F) << 1);
+        UnityPrintNumberHex((_U_UINT)number, (char)((style & 0x000F) << 1));
     }
 }
 
@@ -252,7 +252,7 @@ void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
     UNITY_PRINT_EOL;
     UnityPrint(file);
     UNITY_OUTPUT_CHAR(':');
-    UnityPrintNumber(line);
+    UnityPrintNumber((_U_SINT)line);
     UNITY_OUTPUT_CHAR(':');
     UnityPrint(Unity.CurrentTestName);
     UNITY_OUTPUT_CHAR(':');
@@ -372,9 +372,9 @@ void UnityAssertBits(const _U_SINT mask,
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
-        UnityPrintMask(mask, expected);
+        UnityPrintMask((_U_UINT)mask, (_U_UINT)expected);
         UnityPrint(UnityStrWas);
-        UnityPrintMask(mask, actual);
+        UnityPrintMask((_U_UINT)mask, (_U_UINT)actual);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
@@ -429,7 +429,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
     // If style is UNITY_DISPLAY_STYLE_INT, we'll fall into the default case rather than the INT16 or INT32 (etc) case
     // as UNITY_DISPLAY_STYLE_INT includes a flag for UNITY_DISPLAY_RANGE_AUTO, which the width-specific
     // variants do not. Therefore remove this flag.
-    switch(style & ~UNITY_DISPLAY_RANGE_AUTO)
+    switch(style & (UNITY_DISPLAY_STYLE_T)(~UNITY_DISPLAY_RANGE_AUTO))
     {
         case UNITY_DISPLAY_STYLE_HEX8:
         case UNITY_DISPLAY_STYLE_INT8:
@@ -1098,7 +1098,7 @@ void tearDown(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
 {
     Unity.CurrentTestName = FuncName;
-    Unity.CurrentTestLineNumber = FuncLineNum;
+    Unity.CurrentTestLineNumber = (UNITY_LINE_TYPE)FuncLineNum;
     Unity.NumberOfTests++;
     if (TEST_PROTECT())
     {
@@ -1130,11 +1130,11 @@ int UnityEnd(void)
 {
     UnityPrint("-----------------------");
     UNITY_PRINT_EOL;
-    UnityPrintNumber(Unity.NumberOfTests);
+    UnityPrintNumber((_U_SINT)(Unity.NumberOfTests));
     UnityPrint(" Tests ");
-    UnityPrintNumber(Unity.TestFailures);
+    UnityPrintNumber((_U_SINT)(Unity.TestFailures));
     UnityPrint(" Failures ");
-    UnityPrintNumber(Unity.TestIgnores);
+    UnityPrintNumber((_U_SINT)(Unity.TestIgnores));
     UnityPrint(" Ignored");
     UNITY_PRINT_EOL;
     if (Unity.TestFailures == 0U)
@@ -1146,5 +1146,5 @@ int UnityEnd(void)
         UnityPrintFail();
     }
     UNITY_PRINT_EOL;
-    return Unity.TestFailures;
+    return (int)(Unity.TestFailures);
 }
