@@ -2,7 +2,7 @@
 #   Unity Project - A Test Framework for C
 #   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
 #   [Released under MIT License. Please refer to license.txt for details]
-# ========================================== 
+# ==========================================
 
 C_COMPILER=gcc
 TARGET_BASE = testunity
@@ -15,7 +15,7 @@ TARGET = $(TARGET_BASE)$(TARGET_EXTENSION)
 OUT_FILE=-o $(TARGET)
 SRC_FILES=src/unity.c test/testunity.c build/testunity_Runner.c
 INC_DIRS=-Isrc
-SYMBOLS=-DTEST -DUNITY_SUPPORT_64
+SYMBOLS=-DTEST -DUNITY_SUPPORT_64 -DUNITY_INCLUDE_DOUBLE
 
 ifeq ($(OSTYPE),cygwin)
 	CLEANUP = rm -f build/*.o ; rm -f $(TARGET) ; mkdir -p build
@@ -34,4 +34,4 @@ default:
 
 clean:
 	$(CLEANUP)
-	
+

@@ -1,15 +1,15 @@
-/* ==========================================
+/* =========================================================================
     Unity Project - A Test Framework for C
-    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+    Copyright (c) 2007-14 Mike Karlesky, Mark VanderVoord, Greg Williams
     [Released under MIT License. Please refer to license.txt for details]
-========================================== */
+============================================================================ */
 
 #include "unity.h"
 #include <stdio.h>
 #include <string.h>
 
-#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
-#define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
+#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
+#define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
 #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
@@ -276,7 +276,6 @@ void UnityConcludeTest(void)
     {
         UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
         UnityPrint("PASS");
-        UNITY_PRINT_EOL;
     }
     else
     {
@@ -1128,6 +1127,7 @@ void UnityBegin(void)
 //-----------------------------------------------
 int UnityEnd(void)
 {
+    UNITY_PRINT_EOL;
     UnityPrint("-----------------------");
     UNITY_PRINT_EOL;
     UnityPrintNumber((_U_SINT)(Unity.NumberOfTests));
@@ -1148,3 +1148,7 @@ int UnityEnd(void)
     UNITY_PRINT_EOL;
     return (int)(Unity.TestFailures);
 }
+
+//-----------------------------------------------
+
+

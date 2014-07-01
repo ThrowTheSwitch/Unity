@@ -30,7 +30,7 @@
 //     - define UNITY_INCLUDE_DOUBLE to allow double floating point comparisons
 //     - define UNITY_EXCLUDE_DOUBLE to disallow double floating point comparisons (default)
 //     - define UNITY_DOUBLE_PRECISION to specify the precision to use when doing TEST_ASSERT_EQUAL_DOUBLE
-//     - define UNITY_DOUBLE_TYPE to specify something other than double 
+//     - define UNITY_DOUBLE_TYPE to specify something other than double
 //     - define UNITY_DOUBLE_VERBOSE to print floating point values in errors (uses sprintf)
 
 // Output
@@ -54,12 +54,38 @@
 
 #define TEST_ABORT() {longjmp(Unity.AbortFrame, 1);}
 
+//This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__)
 #ifndef RUN_TEST
-#define RUN_TEST(func, line_num) UnityDefaultTestRun(func, #func, line_num)
+#ifdef __STDC_VERSION__
+#if __STDC_VERSION__ >= 199901L
+#define RUN_TEST(...) UnityDefaultTestRun(RUN_TEST_FIRST(__VA_ARGS__), RUN_TEST_SECOND(__VA_ARGS__))
+#define RUN_TEST_FIRST(...) RUN_TEST_FIRST_HELPER(__VA_ARGS__, throwaway)
+#define RUN_TEST_FIRST_HELPER(first,...) first, #first
+#define RUN_TEST_SECOND(...) RUN_TEST_SECOND_HELPER(__VA_ARGS__, __LINE__, throwaway)
+#define RUN_TEST_SECOND_HELPER(first,second,...) second
+#endif
+#endif
+#endif
+
+//If we can't do the tricky version, we'll just have to require them to always include the line number
+#ifndef RUN_TEST
+#ifdef CMOCK
+#define RUN_TEST(func, num) UnityDefaultTestRun(func, #func, num)
+#else
+#define RUN_TEST(func) UnityDefaultTestRun(func, #func, __LINE__)
+#endif
 #endif
 
 #define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
 #define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
+
+#ifndef UNITY_BEGIN
+#define UNITY_BEGIN() {UnityBegin(); Unity.TestFile = __FILE__;}
+#endif
+
+#ifndef UNITY_END
+#define UNITY_END() UnityEnd()
+#endif
 
 //-------------------------------------------------------
 // Basic Fail and Ignore
