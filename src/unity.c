@@ -1092,8 +1092,14 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 }
 
 //-----------------------------------------------
+#ifdef UNITY_SUPPORT_WEAK
+void setUp(void) { }
+void tearDown(void) { }
+#else
 void setUp(void);
 void tearDown(void);
+#endif
+//-----------------------------------------------
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
 {
     Unity.CurrentTestName = FuncName;
