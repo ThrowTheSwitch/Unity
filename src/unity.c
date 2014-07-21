@@ -33,6 +33,9 @@ const char* UnityStrInf      = "Infinity";
 const char* UnityStrNegInf   = "Negative Infinity";
 const char* UnityStrNaN      = "NaN";
 const char* UnityStrDet      = "Determinate";
+const char* UnityStrErrFloat = "Unity Floating Point Disabled";
+const char* UnityStrErrDouble= "Unity Double Precision Disabled";
+const char* UnityStrErr64    = "Unity 64-bit Support Disabled";
 
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
