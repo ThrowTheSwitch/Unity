@@ -2468,6 +2468,50 @@ void testFloatNanIsNotInf(void)
 #endif
 }
 
+void testFloatIsDeterminate1(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_DETERMINATE(0.0f);
+    TEST_ASSERT_FLOAT_IS_DETERMINATE(123.3f);
+    TEST_ASSERT_FLOAT_IS_DETERMINATE(-88.3f);
+#endif
+}
+
+void testFloatIsDeterminate2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(-88.3f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNotDeterminate1(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(1.0f / f_zero);
+    TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(-1.0f / f_zero);
+    TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(0.0f / f_zero);
+#endif
+}
+
+void testFloatIsNotDeterminate2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_DETERMINATE(-1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualFloatArrays(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
@@ -2796,17 +2840,47 @@ void testDoublesNotEqualPlusMinusInf(void)
 #endif
 }
 
-void testDoubleIsInf(void)
+void testDoubleIsPosInf1(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
     TEST_ASSERT_DOUBLE_IS_INF(2.0 / d_zero);
+#endif
+}
+
+void testDoubleIsPosInf2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NOT_INF(2.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNegInf1(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
     TEST_ASSERT_DOUBLE_IS_NEG_INF(-3.0 / d_zero);
 #endif
 }
 
-void testDoubleIsNotInf(void)
+void testDoubleIsNegInf2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(-3.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNotPosInf1(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
@@ -2814,6 +2888,15 @@ void testDoubleIsNotInf(void)
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_INF(2.0);
     VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNotPosInf2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_NOT_INF(2.0);
 #endif
 }
 
@@ -2828,7 +2911,7 @@ void testDoubleIsNotNegInf(void)
 #endif
 }
 
-void testDoubleIsNan(void)
+void testDoubleIsNan1(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
@@ -2837,7 +2920,18 @@ void testDoubleIsNan(void)
 #endif
 }
 
-void testDoubleIsNotNan(void)
+void testDoubleIsNan2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NOT_NAN(0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNotNan1(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
@@ -2845,6 +2939,15 @@ void testDoubleIsNotNan(void)
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NAN(234.9);
     VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNotNan2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_NOT_NAN(234.9);
 #endif
 }
 
@@ -2866,6 +2969,50 @@ void testDoubleNanIsNotInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_INF(0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsDeterminate1(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_DETERMINATE(0.0);
+    TEST_ASSERT_DOUBLE_IS_DETERMINATE(123.3);
+    TEST_ASSERT_DOUBLE_IS_DETERMINATE(-88.3);
+#endif
+}
+
+void testDoubleIsDeterminate2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(-88.3);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleIsNotDeterminate1(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(1.0 / d_zero);
+    TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(-1.0 / d_zero);
+    TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(0.0 / d_zero);
+#endif
+}
+
+void testDoubleIsNotDeterminate2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_IS_DETERMINATE(-1.0 / d_zero);
     VERIFY_FAILS_END
 #endif
 }
