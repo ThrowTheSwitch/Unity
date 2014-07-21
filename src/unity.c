@@ -614,95 +614,52 @@ void UnityAssertFloatsWithin(const _UF delta,
 }
 
 //-----------------------------------------------
-void UnityAssertFloatIsInf(const _UF actual,
-                           const _U_SINT should_be,
-                           const char* msg,
-                           const UNITY_LINE_TYPE lineNumber)
+void UnityAssertFloatSpecial(const _UF actual,
+                             const char* msg,
+                             const UNITY_LINE_TYPE lineNumber,
+                             const UNITY_FLOAT_STYLE_T style)
 {
     UNITY_SKIP_EXECUTION;
 
-    // In Microsoft Visual C++ Express Edition 2008,
-    //   if ((1.0f / f_zero) != actual)
-    // produces
-    //   error C2124: divide or mod by zero
-    // As a workaround, place 0 into a variable.
-    _U_SINT is_inf = ((1.0f / f_zero) == actual) ? 1 : 0;
-    if (is_inf != should_be)
+    const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN };
+    _U_SINT should_be_trait   = ((_U_SINT)style & 1);
+    _U_SINT is_trait          = !should_be_trait;
+    _U_SINT trait_index       = style >> 1;
+
+    switch(style)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrExpected);
-        if (!should_be)
-            UnityPrint(UnityStrNot);
-        UnityPrint(UnityStrInf);
-        UnityPrint(UnityStrWas);
-#ifdef UNITY_FLOAT_VERBOSE
-        UnityPrintFloat(actual);
-#else
-        if (should_be)
-            UnityPrint(UnityStrNot);
-        UnityPrint(UnityStrInf);
-#endif
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        //To determine Inf / Neg Inf, we compare to an Inf / Neg Inf value we create on the fly
+        //We are using a variable to hold the zero value because some compilers complain about dividing by zero otherwise
+        case UNITY_FLOAT_IS_INF:
+        case UNITY_FLOAT_IS_NOT_INF:
+            is_trait = ((1.0f / f_zero) == actual) ? 1 : 0;
+            break;
+        case UNITY_FLOAT_IS_NEG_INF:
+        case UNITY_FLOAT_IS_NOT_NEG_INF:
+            is_trait = ((-1.0f / f_zero) == actual) ? 1 : 0;
+            break;
+
+        //NaN is the only floating point value that does NOT equal itself. Therefore if Actual == Actual, then it is NOT NaN.
+        case UNITY_FLOAT_IS_NAN:
+        case UNITY_FLOAT_IS_NOT_NAN:
+            is_trait = (actual == actual) ? 0 : 1;
+            break;
     }
-}
 
-//-----------------------------------------------
-void UnityAssertFloatIsNegInf(const _UF actual,
-                              const _U_SINT should_be,
-                              const char* msg,
-                              const UNITY_LINE_TYPE lineNumber)
-{
-    UNITY_SKIP_EXECUTION;
-
-    // The rationale for not using 1.0f/0.0f is given in UnityAssertFloatIsInf's body.
-    _U_SINT is_inf = ((-1.0f / f_zero) == actual) ? 1 : 0;
-    if (is_inf != should_be)
+    if (is_trait != should_be_trait)
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
-        if (!should_be)
+        if (!should_be_trait)
             UnityPrint(UnityStrNot);
-        UnityPrint(UnityStrNegInf);
+        UnityPrint(trait_names[trait_index]);
         UnityPrint(UnityStrWas);
 #ifdef UNITY_FLOAT_VERBOSE
         UnityPrintFloat(actual);
 #else
-        if (should_be)
+        if (should_be_trait)
             UnityPrint(UnityStrNot);
-        UnityPrint(UnityStrNegInf);
-#endif
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
-    }
-}
-
-//-----------------------------------------------
-void UnityAssertFloatIsNaN(const _UF actual,
-                           const _U_SINT should_be,
-                           const char* msg,
-                           const UNITY_LINE_TYPE lineNumber)
-{
-    UNITY_SKIP_EXECUTION;
-
-    //NaN is the only floating point value that does NOT
-    //equal itself. Therefore if Actual == Actual, then it
-    //is NOT NaN.
-    _U_SINT is_nan = (actual == actual) ? 0 : 1;
-    if (is_nan != should_be)
-    {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrExpected);
-        if (!should_be)
-            UnityPrint(UnityStrNot);
-        UnityPrint(UnityStrNaN);
-        UnityPrint(UnityStrWas);
-#ifdef UNITY_FLOAT_VERBOSE
-        UnityPrintFloat(actual);
-#else
-        if (should_be)
-            UnityPrint(UnityStrNot);
-        UnityPrint(UnityStrNaN);
+        UnityPrint(trait_names[trait_index]);
 #endif
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
