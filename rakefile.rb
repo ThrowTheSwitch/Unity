@@ -2,7 +2,7 @@
 #   Unity Project - A Test Framework for C
 #   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
 #   [Released under MIT License. Please refer to license.txt for details]
-# ========================================== 
+# ==========================================
 
 UNITY_ROOT = File.expand_path(File.dirname(__FILE__)) + '/'
 
@@ -33,9 +33,11 @@ task :unit => [:prepare_for_tests] do
   run_tests get_unit_test_files
 end
 
-Rake::TestTask.new(:scripts) do |t|
-  t.pattern = 'test/test_*.rb'
-  t.verbose = true
+desc "Test unity's helper scripts"
+task :scripts => [:prepare_for_tests] do
+  Dir['test/test_*.rb'].each do |scriptfile|
+    require "./"+scriptfile
+  end
 end
 
 desc "Generate test summary"

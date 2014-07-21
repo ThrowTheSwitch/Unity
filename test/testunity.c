@@ -9,7 +9,10 @@
 
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
+#ifndef UNITY_EXCLUDE_FLOAT
 static const _UF f_zero = 0.0f;
+#endif
+
 #ifndef UNITY_EXCLUDE_DOUBLE
 static const _UD d_zero = 0.0;
 #endif
@@ -2332,17 +2335,47 @@ void testFloatsNotEqualPlusMinusInf(void)
 #endif
 }
 
-void testFloatIsInf(void)
+void testFloatIsPosInf1(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
     TEST_ASSERT_FLOAT_IS_INF(2.0f / f_zero);
+#endif
+}
+
+void testFloatIsPosInf2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NOT_INF(2.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNegInf1(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
     TEST_ASSERT_FLOAT_IS_NEG_INF(-3.0f / f_zero);
 #endif
 }
 
-void testFloatIsNotInf(void)
+void testFloatIsNegInf2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NOT_NEG_INF(-3.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNotPosInf1(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -2350,6 +2383,15 @@ void testFloatIsNotInf(void)
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_INF(2.0f);
     VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNotPosInf2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_NOT_INF(2.0f);
 #endif
 }
 
@@ -2364,7 +2406,7 @@ void testFloatIsNotNegInf(void)
 #endif
 }
 
-void testFloatIsNan(void)
+void testFloatIsNan1(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -2373,7 +2415,18 @@ void testFloatIsNan(void)
 #endif
 }
 
-void testFloatIsNotNan(void)
+void testFloatIsNan2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_IS_NOT_NAN(0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNotNan1(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -2381,6 +2434,15 @@ void testFloatIsNotNan(void)
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NAN(234.9f);
     VERIFY_FAILS_END
+#endif
+}
+
+void testFloatIsNotNan2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_FLOAT_IS_NOT_NAN(234.9f);
 #endif
 }
 
