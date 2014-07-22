@@ -621,7 +621,7 @@ void UnityAssertFloatsWithin(const _UF delta,
 void UnityAssertFloatSpecial(const _UF actual,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber,
-                             const UNITY_FLOAT_STYLE_T style)
+                             const UNITY_FLOAT_TRAIT_T style)
 {
     UNITY_SKIP_EXECUTION;
 
@@ -781,7 +781,7 @@ void UnityAssertDoublesWithin(const _UD delta,
 void UnityAssertDoubleSpecial(const _UD actual,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
-                              const UNITY_FLOAT_STYLE_T style)
+                              const UNITY_FLOAT_TRAIT_T style)
 {
     UNITY_SKIP_EXECUTION;
 
