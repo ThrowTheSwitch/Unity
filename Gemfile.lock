@@ -1,0 +1,12 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    rake (10.3.2)
+    test-unit (2.4.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rake
+  test-unit (= 2.4.3)
