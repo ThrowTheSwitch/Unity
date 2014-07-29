@@ -1,11 +1,15 @@
 /* ==========================================
     Unity Project - A Test Framework for C
-    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+    Copyright (c) 2007-14 Mike Karlesky, Mark VanderVoord, Greg Williams
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
 #ifndef UNITY_INTERNALS_H
 #define UNITY_INTERNALS_H
+
+#ifdef UNITY_INCLUDE_CONFIG_H
+#include "unity_config.h"
+#endif
 
 #include <stdio.h>
 #include <setjmp.h>
@@ -495,6 +499,47 @@ void UnityAssertDoubleSpecial(const _UD actual,
 extern const char* UnityStrErrFloat;
 extern const char* UnityStrErrDouble;
 extern const char* UnityStrErr64;
+
+//-------------------------------------------------------
+// Test Running Macros
+//-------------------------------------------------------
+
+#define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
+
+#define TEST_ABORT() {longjmp(Unity.AbortFrame, 1);}
+
+//This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__)
+#ifndef RUN_TEST
+#ifdef __STDC_VERSION__
+#if __STDC_VERSION__ >= 199901L
+#define RUN_TEST(...) UnityDefaultTestRun(RUN_TEST_FIRST(__VA_ARGS__), RUN_TEST_SECOND(__VA_ARGS__))
+#define RUN_TEST_FIRST(...) RUN_TEST_FIRST_HELPER(__VA_ARGS__, throwaway)
+#define RUN_TEST_FIRST_HELPER(first,...) first, #first
+#define RUN_TEST_SECOND(...) RUN_TEST_SECOND_HELPER(__VA_ARGS__, __LINE__, throwaway)
+#define RUN_TEST_SECOND_HELPER(first,second,...) second
+#endif
+#endif
+#endif
+
+//If we can't do the tricky version, we'll just have to require them to always include the line number
+#ifndef RUN_TEST
+#ifdef CMOCK
+#define RUN_TEST(func, num) UnityDefaultTestRun(func, #func, num)
+#else
+#define RUN_TEST(func) UnityDefaultTestRun(func, #func, __LINE__)
+#endif
+#endif
+
+#define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
+#define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
+
+#ifndef UNITY_BEGIN
+#define UNITY_BEGIN() {UnityBegin(); Unity.TestFile = __FILE__;}
+#endif
+
+#ifndef UNITY_END
+#define UNITY_END() UnityEnd()
+#endif
 
 //-------------------------------------------------------
 // Basic Fail and Ignore

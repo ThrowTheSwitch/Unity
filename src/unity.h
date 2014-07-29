@@ -1,6 +1,6 @@
 /* ==========================================
     Unity Project - A Test Framework for C
-    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+    Copyright (c) 2007-14 Mike Karlesky, Mark VanderVoord, Greg Williams
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
@@ -17,10 +17,15 @@
 // All options described below should be passed as a compiler flag to all files using Unity. If you must add #defines, place them BEFORE the #include above.
 
 // Integers/longs/pointers
-//     - Unity assumes 32 bit integers, longs, and pointers by default
-//     - If your compiler treats ints of a different size, options are:
-//       - define UNITY_USE_LIMITS_H to use limits.h to determine sizes
-//       - define UNITY_INT_WIDTH, UNITY_LONG_WIDTH, nand UNITY_POINTER_WIDTH
+//     - Unity attempts to automatically discover your integer sizes
+//       - define UNITY_EXCLUDE_STDINT_H to stop attempting to look in <stdint.h>
+//       - define UNITY_EXCLUDE_LIMITS_H to stop attempting to look in <limits.h>
+//       - define UNITY_EXCLUDE_SIZEOF to stop attempting to use sizeof in macros
+//     - If you cannot use the automatic methods above, you can force Unity by using these options:
+//       - define UNITY_SUPPORT_64
+//       - define UNITY_INT_WIDTH
+//       - UNITY_LONG_WIDTH
+//       - UNITY_POINTER_WIDTH
 
 // Floats
 //     - define UNITY_EXCLUDE_FLOAT to disallow floating point comparisons
@@ -45,47 +50,6 @@
 
 // Parameterized Tests
 //     - you'll want to create a define of TEST_CASE(...) which basically evaluates to nothing
-
-//-------------------------------------------------------
-// Test Running Macros
-//-------------------------------------------------------
-
-#define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
-
-#define TEST_ABORT() {longjmp(Unity.AbortFrame, 1);}
-
-//This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__)
-#ifndef RUN_TEST
-#ifdef __STDC_VERSION__
-#if __STDC_VERSION__ >= 199901L
-#define RUN_TEST(...) UnityDefaultTestRun(RUN_TEST_FIRST(__VA_ARGS__), RUN_TEST_SECOND(__VA_ARGS__))
-#define RUN_TEST_FIRST(...) RUN_TEST_FIRST_HELPER(__VA_ARGS__, throwaway)
-#define RUN_TEST_FIRST_HELPER(first,...) first, #first
-#define RUN_TEST_SECOND(...) RUN_TEST_SECOND_HELPER(__VA_ARGS__, __LINE__, throwaway)
-#define RUN_TEST_SECOND_HELPER(first,second,...) second
-#endif
-#endif
-#endif
-
-//If we can't do the tricky version, we'll just have to require them to always include the line number
-#ifndef RUN_TEST
-#ifdef CMOCK
-#define RUN_TEST(func, num) UnityDefaultTestRun(func, #func, num)
-#else
-#define RUN_TEST(func) UnityDefaultTestRun(func, #func, __LINE__)
-#endif
-#endif
-
-#define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
-#define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
-
-#ifndef UNITY_BEGIN
-#define UNITY_BEGIN() {UnityBegin(); Unity.TestFile = __FILE__;}
-#endif
-
-#ifndef UNITY_END
-#define UNITY_END() UnityEnd()
-#endif
 
 //-------------------------------------------------------
 // Basic Fail and Ignore
