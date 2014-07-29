@@ -5,7 +5,7 @@ compiler:
   build_path:      &build_path 'build/'
   options:
     - '-c'
-    - '-m32'
+    - '-m64'
     - '-Wall'
     - '-Wno-address'
     - '-std=c99'
@@ -20,10 +20,9 @@ compiler:
     prefix: '-D'
     items:
       - UNITY_EXCLUDE_STDINT_H
-      - UNITY_EXCLUDE_LIMITS_H
-      - UNITY_EXCLUDE_SIZEOF
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
+      - UNITY_SUPPORT_64
   object_files:
     prefix: '-o'
     extension: '.o'
@@ -32,7 +31,7 @@ linker:
   path: gcc
   options:
     - -lm
-    - '-m32'
+    - '-m64'
   includes:
     prefix: '-I'
   object_files:

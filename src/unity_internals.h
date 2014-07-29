@@ -10,18 +10,29 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-// Unity attempts to determine sizeof(various types)
-// based on UINT_MAX, ULONG_MAX, etc. These are typically
-// defined in limits.h.
-#ifdef UNITY_USE_LIMITS_H
-#include <limits.h>
-#endif
-// As a fallback, hope that including stdint.h will
-// provide this information.
+// Unity Attempts to Auto-Detect Integer Types
+// Attempt 1: UINT_MAX, ULONG_MAX, etc in <stdint.h>
+// Attempt 2: UINT_MAX, ULONG_MAX, etc in <limits.h>
+// Attempt 3: Deduced from sizeof() macros
 #ifndef UNITY_EXCLUDE_STDINT_H
 #include <stdint.h>
 #endif
 
+#ifndef UNITY_EXCLUDE_LIMITS_H
+#include <limits.h>
+#endif
+
+#ifndef UNITY_EXCLUDE_SIZEOF
+#ifndef UINT_MAX
+#define UINT_MAX     (sizeof(unsigned int) * 256 - 1)
+#endif
+#ifndef ULONG_MAX
+#define ULONG_MAX    (sizeof(unsigned long) * 256 - 1)
+#endif
+#ifndef UINTPTR_MAX
+#define UINTPTR_MAX  ULONG_MAX  //apparently this is not a constant expression: (sizeof(unsigned int *) * 256 - 1)
+#endif
+#endif
 //-------------------------------------------------------
 // Guess Widths If Not Specified
 //-------------------------------------------------------
@@ -38,9 +49,6 @@
       #define UNITY_INT_WIDTH (32)
     #elif (UINT_MAX == 0xFFFFFFFFFFFFFFFF)
       #define UNITY_INT_WIDTH (64)
-      #ifndef UNITY_SUPPORT_64
-      #define UNITY_SUPPORT_64
-      #endif
     #endif
   #endif
 #endif
@@ -59,9 +67,6 @@
       #define UNITY_LONG_WIDTH (32)
     #elif (ULONG_MAX == 0xFFFFFFFFFFFFFFFF)
       #define UNITY_LONG_WIDTH (64)
-      #ifndef UNITY_SUPPORT_64
-      #define UNITY_SUPPORT_64
-      #endif
     #endif
   #endif
 #endif
@@ -80,9 +85,6 @@
       #define UNITY_POINTER_WIDTH (32)
     #elif (UINTPTR_MAX <= 0xFFFFFFFFFFFFFFFF)
       #define UNITY_POINTER_WIDTH (64)
-      #ifndef UNITY_SUPPORT_64
-      #define UNITY_SUPPORT_64
-      #endif
     #endif
   #endif
 #endif
@@ -94,9 +96,6 @@
       #define UNITY_POINTER_WIDTH (32)
     #elif (INTPTR_MAX <= 0x7FFFFFFFFFFFFFFF)
       #define UNITY_POINTER_WIDTH (64)
-      #ifndef UNITY_SUPPORT_64
-      #define UNITY_SUPPORT_64
-      #endif
     #endif
   #endif
 #endif
@@ -105,7 +104,7 @@
 #endif
 
 //-------------------------------------------------------
-// Int Support
+// Int Support (Define types based on detected sizes)
 //-------------------------------------------------------
 
 #if (UNITY_INT_WIDTH == 32)
@@ -129,6 +128,17 @@
 //-------------------------------------------------------
 // 64-bit Support
 //-------------------------------------------------------
+
+#ifndef UNITY_SUPPORT_64
+#if UNITY_LONG_WIDTH > 32
+#define UNITY_SUPPORT_64
+#endif
+#endif
+#ifndef UNITY_SUPPORT_64
+#if UNITY_POINTER_WIDTH > 32
+#define UNITY_SUPPORT_64
+#endif
+#endif
 
 #ifndef UNITY_SUPPORT_64
 
@@ -161,9 +171,6 @@ typedef _US64 _U_SINT;
     typedef _UU32 _UP;
 #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX32
 #elif (UNITY_POINTER_WIDTH == 64)
-#ifndef UNITY_SUPPORT_64
-#error "You've Specified 64-bit pointers without enabling 64-bit Support. Define UNITY_SUPPORT_64"
-#endif
     typedef _UU64 _UP;
 #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX64
 #elif (UNITY_POINTER_WIDTH == 16)
@@ -184,11 +191,16 @@ typedef _US64 _U_SINT;
 #ifdef UNITY_EXCLUDE_FLOAT
 
 //No Floating Point Support
+#undef UNITY_INCLUDE_FLOAT
 #undef UNITY_FLOAT_PRECISION
 #undef UNITY_FLOAT_TYPE
 #undef UNITY_FLOAT_VERBOSE
 
 #else
+
+#ifndef UNITY_INCLUDE_FLOAT
+#define UNITY_INCLUDE_FLOAT
+#endif
 
 //Floating Point Support
 #ifndef UNITY_FLOAT_PRECISION
