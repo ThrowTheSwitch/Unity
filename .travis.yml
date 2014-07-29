@@ -2,8 +2,5 @@ language: ruby
 rvm:
   - "1.9.3"
   - "2.0.0"
-install:
-  - bundle install
 script:
-  - export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
-  - bundle exec rake ci
+  - rake ci
