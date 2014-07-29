@@ -5,4 +5,5 @@ rvm:
 install:
   - bundle install
 script:
+  - export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
   - bundle exec rake ci
