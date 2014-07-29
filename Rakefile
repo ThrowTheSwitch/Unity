@@ -24,8 +24,13 @@ task :prepare_for_tests => TEMP_DIRS
 
 include RakefileHelpers
 
-# Load default configuration, for now
-DEFAULT_CONFIG_FILE = 'gcc_32.yml'
+# Load proper GCC as defult configuration
+if 1.size == 8 # 8 bytes => 64-bits
+  DEFAULT_CONFIG_FILE = 'gcc_64.yml'
+else # Assume 32-bit otherwise
+  DEFAULT_CONFIG_FILE = 'gcc_32.yml'
+end
+
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
 desc "Test unity with its own unit tests"
