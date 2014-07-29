@@ -30,7 +30,7 @@
 #define ULONG_MAX    (sizeof(unsigned long) * 256 - 1)
 #endif
 #ifndef UINTPTR_MAX
-#define UINTPTR_MAX  ULONG_MAX  //apparently this is not a constant expression: (sizeof(unsigned int *) * 256 - 1)
+//apparently this is not a constant expression: (sizeof(unsigned int *) * 256 - 1) so we have to just let this fall through
 #endif
 #endif
 //-------------------------------------------------------
@@ -100,7 +100,7 @@
   #endif
 #endif
 #ifndef UNITY_POINTER_WIDTH
-  #define UNITY_POINTER_WIDTH (32)
+  #define UNITY_POINTER_WIDTH UNITY_LONG_WIDTH
 #endif
 
 //-------------------------------------------------------
