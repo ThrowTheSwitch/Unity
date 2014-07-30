@@ -8,7 +8,6 @@ UNITY_ROOT = File.expand_path(File.dirname(__FILE__)) + '/'
 
 require 'rake'
 require 'rake/clean'
-require 'rake/testtask'
 require UNITY_ROOT + 'rakefile_helper'
 
 TEMP_DIRS = [
@@ -25,12 +24,7 @@ task :prepare_for_tests => TEMP_DIRS
 include RakefileHelpers
 
 # Load proper GCC as defult configuration
-if 1.size == 8 # 8 bytes => 64-bits
-  DEFAULT_CONFIG_FILE = 'gcc_64.yml'
-else # Assume 32-bit otherwise
-  DEFAULT_CONFIG_FILE = 'gcc_32.yml'
-end
-
+DEFAULT_CONFIG_FILE = 'gcc_auto_stdint.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
 desc "Test unity with its own unit tests"

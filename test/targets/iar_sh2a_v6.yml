@@ -1,8 +1,8 @@
 tools_root: &tools_root 'C:\Program Files\IAR Systems\Embedded Workbench 6.0\'
 compiler:
   path:             [*tools_root, 'sh\bin\iccsh.exe']
-  source_path:      'src\'
-  unit_tests_path:  &unit_tests_path 'test\'
+  source_path:      '..\src\'
+  unit_tests_path:  &unit_tests_path 'tests\'
   build_path:       &build_path 'build\'
   options:
     - -e

@@ -1,34 +1,30 @@
-#Default tool path for IAR 5.4 on Windows XP 64bit
-tools_root: &tools_root 'C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\'
+tools_root: &tools_root 'C:\Program Files\IAR Systems\Embedded Workbench 5.3\'
 compiler:
   path:             [*tools_root, 'arm\bin\iccarm.exe']
-  source_path:      'src\'
-  unit_tests_path:  &unit_tests_path 'test\'
+  source_path:      '..\src\'
+  unit_tests_path:  &unit_tests_path 'tests\'
   build_path:       &build_path 'build\'
-  options: 
-    - --diag_suppress=Pa050
-    #- --diag_suppress=Pe111
-    - --debug
-    - --endian=little
-    - --cpu=Cortex-M3
-    - --no_path_in_file_macros
-    - -e
-    - --fpu=None
+  options:
     - --dlib_config
     - [*tools_root, 'arm\inc\DLib_Config_Normal.h']
-    #- --preinclude --preinclude C:\Vss\T2 Working\common\system.h
+    - --no_cse
+    - --no_unroll
+    - --no_inline
+    - --no_code_motion
+    - --no_tbaa
+    - --no_clustering
+    - --no_scheduling
+    - --debug
+    - --cpu_mode thumb
+    - --endian=little
+    - --cpu=ARM7TDMI
     - --interwork
     - --warnings_are_errors
-#    - Ohz
-    - -Oh
-#    - --no_cse
-#    - --no_unroll
-#    - --no_inline
-#    - --no_code_motion
-#    - --no_tbaa
-#    - --no_clustering
-#    - --no_scheduling 
-
+    - --fpu=None
+    - --diag_suppress=Pa050
+    - --diag_suppress=Pe111
+    - -e
+    - -On
   includes:
     prefix: '-I'
     items:
@@ -41,12 +37,8 @@ compiler:
   defines:
     prefix: '-D'
     items:
-      - ewarm
-      - PART_LM3S9B92
-      - TARGET_IS_TEMPEST_RB1
-      - USE_ROM_DRIVERS
-      - UART_BUFFERED
       - UNITY_SUPPORT_64
+      - 'UNITY_SUPPORT_TEST_CASES'
   object_files:
     prefix: '-o'
     extension: '.r79'
@@ -59,8 +51,7 @@ linker:
     - --semihosting
     - --entry __iar_program_start
     - --config
-    - [*tools_root, 'arm\config\generic.icf']	
-#    - ['C:\Temp\lm3s9b92.icf']
+    - [*tools_root, 'arm\config\generic.icf']
   object_files:
     path: *build_path
     extension: '.o'
@@ -71,23 +62,18 @@ linker:
 simulator:
   path: [*tools_root, 'common\bin\CSpyBat.exe']
   pre_support:
-    #- --silent
+    - --silent
     - [*tools_root, 'arm\bin\armproc.dll']
-    - [*tools_root, 'arm\bin\armsim2.dll']
+    - [*tools_root, 'arm\bin\armsim.dll']
   post_support:
     - --plugin
     - [*tools_root, 'arm\bin\armbat.dll']
     - --backend
     - -B
-    - --endian=little
-    - --cpu=Cortex-M3
-    - --fpu=None
     - -p
-    - [*tools_root, 'arm\config\debugger\TexasInstruments\iolm3sxxxx.ddf']
-    - --semihosting
-    - --device=LM3SxBxx
-    #- -d
-    #- sim
+    - [*tools_root, 'arm\config\debugger\atmel\ioat91sam7X256.ddf']
+    - -d
+    - sim
 colour: true
 :unity:
   :plugins: []

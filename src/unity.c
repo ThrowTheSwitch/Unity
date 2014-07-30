@@ -5,8 +5,6 @@
 ============================================================================ */
 
 #include "unity.h"
-#include <stdio.h>
-#include <string.h>
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
@@ -231,6 +229,7 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 
 //-----------------------------------------------
 #ifdef UNITY_FLOAT_VERBOSE
+#include <string.h>
 void UnityPrintFloat(_UF number)
 {
     char TempBuffer[32];

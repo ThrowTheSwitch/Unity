@@ -3,7 +3,6 @@ UNITY_ROOT = File.expand_path(File.dirname(__FILE__)) + '/../..'
 
 require 'rake'
 require 'rake/clean'
-require 'rake/testtask'
 require HERE+'rakefile_helper'
 
 TEMP_DIRS = [

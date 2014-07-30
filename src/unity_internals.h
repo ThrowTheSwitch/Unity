@@ -11,7 +11,6 @@
 #include "unity_config.h"
 #endif
 
-#include <stdio.h>
 #include <setjmp.h>
 
 // Unity Attempts to Auto-Detect Integer Types
@@ -241,7 +240,7 @@ typedef UNITY_FLOAT_TYPE _UF;
 
 #else
 
-//Floating Point Support
+//Double Floating Point Support
 #ifndef UNITY_DOUBLE_PRECISION
 #define UNITY_DOUBLE_PRECISION (1e-12f)
 #endif
@@ -252,16 +251,27 @@ typedef UNITY_DOUBLE_TYPE _UD;
 
 #endif
 
+#ifdef UNITY_DOUBLE_VERBOSE
+#ifndef UNITY_FLOAT_VERBOSE
+#define UNITY_FLOAT_VERBOSE
+#endif
+#endif
+
 //-------------------------------------------------------
 // Output Method
 //-------------------------------------------------------
 
 #ifndef UNITY_OUTPUT_CHAR
-//Default to using putchar, which is defined in stdio.h above
+
+//Default to using putchar, which is defined in stdio.h
+#include <stdio.h>
 #define UNITY_OUTPUT_CHAR(a) putchar(a)
+
 #else
+
 //If defined as something else, make sure we declare it here so it's ready for use
 extern int UNITY_OUTPUT_CHAR(int);
+
 #endif
 
 //-------------------------------------------------------
@@ -674,4 +684,5 @@ extern const char* UnityStrErr64;
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, line, message)                       UnityAssertDoubleSpecial((_UD)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_FLOAT_IS_NOT_DET)
 #endif
 
+//End of UNITY_INTERNALS_H
 #endif

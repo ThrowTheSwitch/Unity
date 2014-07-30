@@ -6,7 +6,6 @@
 
 #ifndef UNITY_FRAMEWORK_H
 #define UNITY_FRAMEWORK_H
-
 #define UNITY
 
 #include "unity_internals.h"
@@ -268,4 +267,6 @@
 #define TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF_MESSAGE(actual, message)                                 UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(actual, __LINE__, message)
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(actual, message)                                     UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, __LINE__, message)
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, __LINE__, message)
+
+//end of UNITY_FRAMEWORK_H
 #endif

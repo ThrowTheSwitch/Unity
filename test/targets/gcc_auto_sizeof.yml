@@ -1,7 +1,7 @@
 compiler:
   path: gcc
-  source_path:     'src/'
-  unit_tests_path: &unit_tests_path 'test/'
+  source_path:     '../src/'
+  unit_tests_path: &unit_tests_path 'tests/'
   build_path:      &build_path 'build/'
   options:
     - '-c'
@@ -20,6 +20,7 @@ compiler:
     prefix: '-D'
     items:
       - UNITY_EXCLUDE_STDINT_H
+      - UNITY_EXCLUDE_LIMTIS_H
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
       - UNITY_SUPPORT_64

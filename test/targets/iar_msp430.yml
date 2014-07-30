@@ -8,8 +8,8 @@ core_config: &core_config [*core_root, 'config\']
 
 compiler:
   path:             [*core_bin, 'icc430.exe']
-  source_path:      'src\'
-  unit_tests_path:  &unit_tests_path 'test\'
+  source_path:      '..\src\'
+  unit_tests_path:  &unit_tests_path 'tests\'
   build_path:       &build_path 'build\'
   options:
     - --dlib_config

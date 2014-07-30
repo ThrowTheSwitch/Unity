@@ -1,8 +1,8 @@
 ---
 compiler:
   path: clang
-  source_path:     'src/'
-  unit_tests_path: &unit_tests_path 'test/'
+  source_path:     '../src/'
+  unit_tests_path: &unit_tests_path 'tests/'
   build_path:      &build_path 'build/'
   options:
     - '-c'
