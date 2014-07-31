@@ -258,20 +258,23 @@ typedef UNITY_DOUBLE_TYPE _UD;
 #endif
 
 //-------------------------------------------------------
-// Output Method
+// Output Method: stdout (DEFAULT)
 //-------------------------------------------------------
-
 #ifndef UNITY_OUTPUT_CHAR
-
 //Default to using putchar, which is defined in stdio.h
 #include <stdio.h>
 #define UNITY_OUTPUT_CHAR(a) putchar(a)
-
 #else
-
 //If defined as something else, make sure we declare it here so it's ready for use
 extern int UNITY_OUTPUT_CHAR(int);
+#endif
 
+#ifndef UNITY_OUTPUT_START
+#define UNITY_OUTPUT_START()
+#endif
+
+#ifndef UNITY_OUTPUT_COMPLETE
+#define UNITY_OUTPUT_COMPLETE()
 #endif
 
 //-------------------------------------------------------
@@ -388,7 +391,7 @@ extern struct _Unity Unity;
 // Test Suite Management
 //-------------------------------------------------------
 
-void UnityBegin(void);
+void UnityBegin(const char* filename);
 int  UnityEnd(void);
 void UnityConcludeTest(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
@@ -544,7 +547,7 @@ extern const char* UnityStrErr64;
 #define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
 
 #ifndef UNITY_BEGIN
-#define UNITY_BEGIN() {UnityBegin(); Unity.TestFile = __FILE__;}
+#define UNITY_BEGIN() UnityBegin(__FILE__)
 #endif
 
 #ifndef UNITY_END

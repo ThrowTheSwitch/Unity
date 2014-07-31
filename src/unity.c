@@ -1102,9 +1102,9 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 }
 
 //-----------------------------------------------
-void UnityBegin(void)
+void UnityBegin(const char* filename)
 {
-    Unity.TestFile = NULL;
+    Unity.TestFile = filename;
     Unity.CurrentTestName = NULL;
     Unity.CurrentTestLineNumber = 0;
     Unity.NumberOfTests = 0;
@@ -1112,6 +1112,8 @@ void UnityBegin(void)
     Unity.TestIgnores = 0;
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+
+    UNITY_OUTPUT_START();
 }
 
 //-----------------------------------------------
@@ -1136,6 +1138,7 @@ int UnityEnd(void)
         UnityPrintFail();
     }
     UNITY_PRINT_EOL;
+    UNITY_OUTPUT_COMPLETE();
     return (int)(Unity.TestFailures);
 }
 

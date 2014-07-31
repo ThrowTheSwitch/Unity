@@ -172,12 +172,12 @@ module RakefileHelpers
 
   def report_summary
     summary = UnityTestSummary.new
-    summary.set_root_path(UNITY_ROOT )
+    summary.set_root_path(UNITY_ROOT)
     results_glob = "#{$cfg['compiler']['build_path']}*.test*"
     results_glob.gsub!(/\\/, '/')
     results = Dir[results_glob]
     summary.set_targets(results)
-    summary.run
+    report summary.run
   end
 
   def run_tests(test_files)

@@ -78,7 +78,7 @@ class UnityTestRunnerGenerator
 
     lines.each_with_index do |line, index|
       #find tests
-      if line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+(test.*?)\s*\(\s*(.*)\s*\)/
+      if line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+((?:test.*)|(?:spec.*))\s*\(\s*(.*)\s*\)/
         arguments = $1
         name = $2
         call = $3
@@ -266,8 +266,7 @@ class UnityTestRunnerGenerator
     output.puts("int main(void)")
     output.puts("{")
     output.puts("  suite_setup();") unless @options[:suite_setup].nil?
-    output.puts("  UnityBegin();")
-    output.puts("  Unity.TestFile = \"#{filename}\";")
+    output.puts("  UnityBegin(\"#{filename}\");")
     if (@options[:use_param_tests])
       tests.each do |test|
         if ((test[:args].nil?) or (test[:args].empty?))
