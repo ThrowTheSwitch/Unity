@@ -288,6 +288,7 @@ void UnityConcludeTest(void)
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+    UNITY_PRINT_EOL;
 }
 
 //-----------------------------------------------
