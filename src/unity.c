@@ -273,7 +273,6 @@ void UnityPrintOk(void)
 //-----------------------------------------------
 void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
-    UNITY_PRINT_EOL;
     UnityPrint(file);
     UNITY_OUTPUT_CHAR(':');
     UnityPrintNumber((_U_SINT)line);
@@ -309,6 +308,7 @@ void UnityConcludeTest(void)
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+    UNITY_PRINT_EOL;
 }
 
 //-----------------------------------------------
@@ -1164,5 +1164,3 @@ int UnityEnd(void)
 }
 
 //-----------------------------------------------
-
-
