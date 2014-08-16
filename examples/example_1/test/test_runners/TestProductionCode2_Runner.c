@@ -33,8 +33,7 @@ void resetTest()
 
 int main(void)
 {
-  Unity.TestFile = "test/TestProductionCode2.c";
-  UnityBegin();
+  UnityBegin("test/TestProductionCode2.c");
 
   // RUN_TEST calls runTest
   RUN_TEST(test_IgnoredTest, 13);

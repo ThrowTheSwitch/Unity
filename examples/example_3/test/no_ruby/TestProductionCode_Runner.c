@@ -35,8 +35,7 @@ void resetTest()
 
 int main(void)
 {
-  Unity.TestFile = "test/TestProductionCode.c";
-  UnityBegin();
+  UnityBegin("test/TestProductionCode.c");
 
   // RUN_TEST calls runTest
   RUN_TEST(test_FindFunction_WhichIsBroken_ShouldReturnZeroIfItemIsNotInList_WhichWorksEvenInOurBrokenCode, 20);
