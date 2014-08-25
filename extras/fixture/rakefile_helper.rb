@@ -2,7 +2,7 @@
 #   Unity Project - A Test Framework for C
 #   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
 #   [Released under MIT License. Please refer to license.txt for details]
-# ========================================== 
+# ==========================================
 
 require 'yaml'
 require 'fileutils'
@@ -13,27 +13,27 @@ require HERE+'../../auto/colour_reporter'
 module RakefileHelpers
 
   C_EXTENSION = '.c'
-  
+
   def load_configuration(config_file)
     unless ($configured)
-      $cfg_file = HERE+"../../targets/#{config_file}" unless (config_file =~ /[\\|\/]/)
+      $cfg_file = HERE+"../../test/targets/#{config_file}" unless (config_file =~ /[\\|\/]/)
       $cfg = YAML.load(File.read($cfg_file))
       $colour_output = false unless $cfg['colour']
       $configured = true if (config_file != DEFAULT_CONFIG_FILE)
     end
   end
-  
+
   def configure_clean
     CLEAN.include($cfg['compiler']['build_path'] + '*.*') unless $cfg['compiler']['build_path'].nil?
   end
-  
+
   def configure_toolchain(config_file=DEFAULT_CONFIG_FILE)
     config_file += '.yml' unless config_file =~ /\.yml$/
     config_file = config_file unless config_file =~ /[\\|\/]/
     load_configuration(config_file)
     configure_clean
   end
-  
+
   def tackit(strings)
     if strings.is_a?(Array)
       result = "\"#{strings.join}\""
@@ -42,7 +42,7 @@ module RakefileHelpers
     end
     return result
   end
-  
+
   def squash(prefix, items)
     result = ''
     items.each { |item| result += " #{prefix}#{tackit(item)}" }
@@ -70,7 +70,7 @@ module RakefileHelpers
       "#{File.basename(file, C_EXTENSION)}#{$cfg['compiler']['object_files']['extension']}"
     execute(cmd_str)
   end
-  
+
   def build_linker_fields
     command  = tackit($cfg['linker']['path'])
     if $cfg['linker']['options'].nil?
@@ -86,7 +86,7 @@ module RakefileHelpers
     includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
     return {:command => command, :options => options, :includes => includes}
   end
-  
+
   def link_it(exe_name, obj_list)
     linker = build_linker_fields
     cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]} " +
@@ -96,7 +96,7 @@ module RakefileHelpers
       exe_name + $cfg['linker']['bin_files']['extension']
     execute(cmd_str)
   end
-  
+
   def build_simulator_fields
     return nil if $cfg['simulator'].nil?
     if $cfg['simulator']['path'].nil?
@@ -116,7 +116,7 @@ module RakefileHelpers
     end
     return {:command => command, :pre_support => pre_support, :post_support => post_support}
   end
-  
+
   def execute(command_string, verbose=true)
     report command_string
     output = `#{command_string}`.chomp
@@ -126,7 +126,7 @@ module RakefileHelpers
     end
     return output
   end
-  
+
   def report_summary
     summary = UnityTestSummary.new
     summary.set_root_path(HERE)
@@ -136,29 +136,29 @@ module RakefileHelpers
     summary.set_targets(results)
     summary.run
   end
-  
+
   def run_tests
     report 'Running Unity system tests...'
-    
+
     # Tack on TEST define for compiling unit tests
     load_configuration($cfg_file)
     test_defines = ['TEST']
     $cfg['compiler']['defines']['items'] = [] if $cfg['compiler']['defines']['items'].nil?
-    
+
     # Get a list of all source files needed
     src_files  = Dir[HERE+'src/*.c']
     src_files += Dir[HERE+'test/*.c']
     src_files += Dir[HERE+'test/main/*.c']
     src_files << '../../src/unity.c'
-    
+
     # Build object files
     src_files.each { |f| compile(f, test_defines) }
     obj_list = src_files.map {|f| File.basename(f.ext($cfg['compiler']['object_files']['extension'])) }
-    
+
     # Link the test executable
     test_base = "framework_test"
     link_it(test_base, obj_list)
-      
+
     # Execute unit test and generate results file
     simulator = build_simulator_fields
     executable = $cfg['linker']['bin_files']['destination'] + test_base + $cfg['linker']['bin_files']['extension']
