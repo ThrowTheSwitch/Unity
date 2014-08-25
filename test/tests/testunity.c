@@ -18,11 +18,13 @@ static const _UD d_zero = 0.0;
 #endif
 
 #define EXPECT_ABORT_BEGIN \
+    Unity.CurrentAbortFrame += 1; \
     if (TEST_PROTECT())    \
     {
 
 #define VERIFY_FAILS_END                                                       \
     }                                                                          \
+    Unity.CurrentAbortFrame -= 1;                                              \
     Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
@@ -32,6 +34,7 @@ static const _UD d_zero = 0.0;
 
 #define VERIFY_IGNORES_END                                                     \
     }                                                                          \
+    Unity.CurrentAbortFrame -= 1;                                              \
     Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
     Unity.CurrentTestIgnored = 0;                                              \
     if (Unity.CurrentTestFailed == 1) {                                        \
@@ -79,7 +82,8 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
-        jmp_buf AbortFrame;
+        jmp_buf AbortFrame[UNITY_MAX_PROTECTION_NESTING];
+        uint32_t CurrentAbortFrame;
     } _Expected_Unity;
 
     /* Compare our fake structure's size to the actual structure's size. They
@@ -3444,4 +3448,21 @@ void testNotEqualDoubleArraysInf(void)
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
+}
+
+void testDontLoopInJump(void)
+{
+    _UU8 v = 0;
+    EXPECT_ABORT_BEGIN
+    {
+        EXPECT_ABORT_BEGIN
+        {
+            v += 1;
+            TEST_FAIL();
+        }
+        VERIFY_FAILS_END
+        // this test should fail and bail but not increment v.
+        TEST_ASSERT_EQUAL_UINT(v, 2);
+    }
+    VERIFY_FAILS_END
 }

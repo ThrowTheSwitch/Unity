@@ -277,6 +277,10 @@ extern int UNITY_OUTPUT_CHAR(int);
 #define UNITY_OUTPUT_COMPLETE()
 #endif
 
+#ifndef UNITY_MAX_PROTECTION_NESTING
+#define UNITY_MAX_PROTECTION_NESTING 3
+#endif
+
 //-------------------------------------------------------
 // Footprint
 //-------------------------------------------------------
@@ -382,7 +386,8 @@ struct _Unity
     UNITY_COUNTER_TYPE TestIgnores;
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
-    jmp_buf AbortFrame;
+    jmp_buf AbortFrame[UNITY_MAX_PROTECTION_NESTING];
+    uint32_t CurrentAbortFrame;
 };
 
 extern struct _Unity Unity;
@@ -517,9 +522,9 @@ extern const char* UnityStrErr64;
 // Test Running Macros
 //-------------------------------------------------------
 
-#define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
+#define TEST_PROTECT() (setjmp(Unity.AbortFrame[Unity.CurrentAbortFrame]) == 0)
 
-#define TEST_ABORT() {longjmp(Unity.AbortFrame, 1);}
+#define TEST_ABORT() {longjmp(Unity.AbortFrame[Unity.CurrentAbortFrame], 1);}
 
 //This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__)
 #ifndef RUN_TEST
