@@ -122,7 +122,7 @@ TEST(UnityFixture, PointerSet)
     p1 = &c1;
     p2 = &c2;
 
-    UnityPointer_Init(10);
+    UnityPointer_Init();
     UT_PTR_SET(p1, &newC1);
     UT_PTR_SET(p2, &newC2);
     TEST_ASSERT_POINTERS_EQUAL(&newC1, p1);
@@ -289,27 +289,23 @@ TEST_TEAR_DOWN(LeakDetection)
 
 #define EXPECT_ABORT_BEGIN \
   { \
-    jmp_buf TestAbortFrame;   \
-    memcpy(TestAbortFrame, Unity.AbortFrame, sizeof(jmp_buf)); \
+    Unity.CurrentAbortFrame += 1;   \
     if (TEST_PROTECT()) \
     {
 
 #define EXPECT_ABORT_END \
     } \
-    memcpy(Unity.AbortFrame, TestAbortFrame, sizeof(jmp_buf)); \
+    Unity.CurrentAbortFrame -= 1; \
   }
 
 TEST(LeakDetection, DetectsLeak)
 {
     void* m = malloc(10);
-    UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     UnityMalloc_EndTest();
     EXPECT_ABORT_END
-    UnityOutputCharSpy_Enable(0);
-    CHECK(strstr(UnityOutputCharSpy_Get(), "This test leaks!"));
+    TEST_ASSERT_FAILED("This test leaks!");
     free(m);
-    Unity.CurrentTestFailed = 0;
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringFree)
@@ -317,13 +313,10 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     void* m = malloc(10);
     char* s = (char*)m;
     s[10] = (char)0xFF;
-    UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     free(m);
     EXPECT_ABORT_END
-    UnityOutputCharSpy_Enable(0);
-    CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
-    Unity.CurrentTestFailed = 0;
+    TEST_ASSERT_FAILED("Buffer overrun detected during free()");
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
@@ -331,11 +324,8 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     void* m = malloc(10);
     char* s = (char*)m;
     s[10] = (char)0xFF;
-    UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     m = realloc(m, 100);
     EXPECT_ABORT_END
-    UnityOutputCharSpy_Enable(0);
-    CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
-    Unity.CurrentTestFailed = 0;
+    TEST_ASSERT_FAILED("Buffer overrun detected during realloc()");
 }
