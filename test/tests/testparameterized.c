@@ -32,24 +32,13 @@
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
-int SetToOneToFailInTearDown;
-int SetToOneMeanWeAlreadyCheckedThisGuy;
 
 void setUp(void)
 {
-  SetToOneToFailInTearDown = 0;
-  SetToOneMeanWeAlreadyCheckedThisGuy = 0;
 }
 
 void tearDown(void)
 {
-  if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL_MESSAGE("<= Failed in tearDown");
-  if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
-  {
-    UnityPrint("[[[[ Previous Test Should Have Passed But Did Not ]]]]");
-    UNITY_OUTPUT_CHAR('\n');
-  }
 }
 
 TEST_CASE(0)
