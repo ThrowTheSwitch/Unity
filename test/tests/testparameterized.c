@@ -10,28 +10,21 @@
 #define TEST_CASE(...)
 
 #define EXPECT_ABORT_BEGIN \
+    Unity.CurrentAbortFrame += 1; \
     if (TEST_PROTECT())    \
     {
-    
-#define VERIFY_FAILS_END                                                       \
-    }                                                                          \
-    Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
-    if (Unity.CurrentTestFailed == 1) {                                        \
-      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
-      UNITY_OUTPUT_CHAR('\n');                                                 \
-    }
-    
+
 #define VERIFY_IGNORES_END                                                     \
     }                                                                          \
-    Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
-    Unity.CurrentTestIgnored = 0;                                              \
-    if (Unity.CurrentTestFailed == 1) {                                        \
-      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Ignored But Did Not ]]]]");   \
-      UNITY_OUTPUT_CHAR('\n');                                                 \
-    }
+    Unity.CurrentAbortFrame -= 1;                                              \
 
+
+#define VERIFY_FAILS_END(expected)                                             \
+    }                                                                          \
+    Unity.CurrentAbortFrame -= 1;                                              \
+    TEST_ASSERT_FAILED(expected);                                              \
+    UnityResetMessage();                                                       \
+    while(0)
 
 void setUp(void)
 {
@@ -56,7 +49,7 @@ void test_TheseShouldAllFail(int Num)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_TRUE(Num > 100);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END(NULL);
 }
 
 TEST_CASE(1)
@@ -69,7 +62,7 @@ void test_TheseAreEveryOther(int Num)
     {
         EXPECT_ABORT_BEGIN
         TEST_ASSERT_TRUE(Num > 100);
-        VERIFY_FAILS_END
+        VERIFY_FAILS_END(NULL);
     }
     else
     {
@@ -86,5 +79,5 @@ void test_NormalFailsStillWork(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_TRUE(0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END(NULL);
 }

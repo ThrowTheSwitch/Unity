@@ -11,6 +11,7 @@
 #include "unity_config.h"
 #endif
 
+#include <string.h>
 #include <setjmp.h>
 
 // Unity Attempts to Auto-Detect Integer Types
@@ -281,6 +282,10 @@ extern int UNITY_OUTPUT_CHAR(int);
 #define UNITY_MAX_PROTECTION_NESTING 3
 #endif
 
+#ifndef UNITY_MAX_MESSAGE_LEN
+#define UNITY_MAX_MESSAGE_LEN 256
+#endif
+
 //-------------------------------------------------------
 // Footprint
 //-------------------------------------------------------
@@ -381,6 +386,8 @@ struct _Unity
     const char* TestFile;
     const char* CurrentTestName;
     UNITY_LINE_TYPE CurrentTestLineNumber;
+    char CurrentTestMessage[UNITY_MAX_MESSAGE_LEN];
+    UNITY_COUNTER_TYPE CurrentTestMessageLen;
     UNITY_COUNTER_TYPE NumberOfTests;
     UNITY_COUNTER_TYPE TestFailures;
     UNITY_COUNTER_TYPE TestIgnores;
@@ -400,6 +407,19 @@ void UnityBegin(const char* filename);
 int  UnityEnd(void);
 void UnityConcludeTest(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
+
+//-------------------------------------------------------
+// Message Handling
+//-------------------------------------------------------
+void UnityResetMessage(void);
+void UnityAppendChar(const char c);
+void UnityAppendString(const char *str);
+void UnityAppendNumberUnsigned(const _U_UINT number);
+void UnityAppendNumber(const _U_SINT number_to_print);
+void UnityAppendNumberHex(const _U_UINT number, const char nibbles_to_print);
+void UnityAppendNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T style);
+void UnityAppendMask(const _U_UINT mask, const _U_UINT number);
+void UnityAppendExpectedAndActualStrings(const char* expected, const char* actual);
 
 //-------------------------------------------------------
 // Test Output
@@ -509,6 +529,10 @@ void UnityAssertDoubleSpecial(const _UD actual,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_FLOAT_TRAIT_T style);
 #endif
+
+void UnityAssertFailed(const char *expected,
+                       const char *msg,
+                       const UNITY_LINE_TYPE lineNumber);
 
 //-------------------------------------------------------
 // Error Strings We Might Need
@@ -691,6 +715,9 @@ extern const char* UnityStrErr64;
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, line, message)                               UnityAssertDoubleSpecial((_UD)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_FLOAT_IS_NOT_NAN)
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, line, message)                       UnityAssertDoubleSpecial((_UD)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_FLOAT_IS_NOT_DET)
 #endif
+
+#define UNITY_TEST_ASSERT_FAILED(expected, line, message)                                        UnityAssertFailed((expected), (message), (UNITY_LINE_TYPE)line)
+#define UNITY_TEST_ASSERT_MESSAGE(expected, line, message)                                       UnityAssertMessage((expected), (message), (UNITY_LINE_TYPE)line)
 
 //End of UNITY_INTERNALS_H
 #endif

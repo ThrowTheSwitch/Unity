@@ -17,50 +17,60 @@ static const _UF f_zero = 0.0f;
 static const _UD d_zero = 0.0;
 #endif
 
+static const char TestUnityStrIgnoreMessage[] = "This is an expected TEST_IGNORE_MESSAGE string!";
+static const char TestUnityStrEmptyMessage[] = "";
+static const char TestUnityStrPassMessage[] = "Pass with message";
+
 #define EXPECT_ABORT_BEGIN \
     Unity.CurrentAbortFrame += 1; \
     if (TEST_PROTECT())    \
     {
 
-#define VERIFY_FAILS_END                                                       \
-    }                                                                          \
-    Unity.CurrentAbortFrame -= 1;                                              \
-    Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
-    if (Unity.CurrentTestFailed == 1) {                                        \
-      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
-      UNITY_OUTPUT_CHAR('\n');                                                 \
-    }
-
 #define VERIFY_IGNORES_END                                                     \
     }                                                                          \
     Unity.CurrentAbortFrame -= 1;                                              \
-    Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
-    Unity.CurrentTestIgnored = 0;                                              \
-    if (Unity.CurrentTestFailed == 1) {                                        \
-      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Ignored But Did Not ]]]]");   \
-      UNITY_OUTPUT_CHAR('\n');                                                 \
-    }
+
+
+#define VERIFY_FAILS_END(expected)                                             \
+    }                                                                          \
+    Unity.CurrentAbortFrame -= 1;                                              \
+    TEST_ASSERT_FAILED(expected);                                              \
+    UnityResetMessage();                                                       \
+    while(0)
+
 
 int SetToOneToFailInTearDown;
-int SetToOneMeanWeAlreadyCheckedThisGuy;
+const char *ExpectedMessage;
+int ShouldBeIgnored;
 
 void setUp(void)
 {
   SetToOneToFailInTearDown = 0;
-  SetToOneMeanWeAlreadyCheckedThisGuy = 0;
+  ExpectedMessage = NULL;
+  ShouldBeIgnored = 0;
 }
 
 void tearDown(void)
 {
-  if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL_MESSAGE("<= Failed in tearDown");
-  if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
-  {
-    UnityPrint("[[[[ Previous Test Should Have Passed But Did Not ]]]]");
-    UNITY_OUTPUT_CHAR('\n');
-  }
+    if (SetToOneToFailInTearDown == 1)
+        TEST_FAIL_MESSAGE("<= Failed in tearDown");
+
+    if (ShouldBeIgnored != Unity.CurrentTestIgnored) {
+        Unity.CurrentTestIgnored = 0;
+        if (ShouldBeIgnored) {
+            TEST_FAIL_MESSAGE("Test should have been ignored but was not");
+        } else {
+            TEST_FAIL_MESSAGE("Test should not have been ignored");
+        }
+    }
+
+    if (ExpectedMessage != NULL) {
+        Unity.CurrentTestIgnored = 0;
+        char CurrentTestMessage[UNITY_MAX_MESSAGE_LEN];
+        memcpy(CurrentTestMessage, Unity.CurrentTestMessage, Unity.CurrentTestMessageLen);
+        TEST_ASSERT_EQUAL_STRING(ExpectedMessage, CurrentTestMessage);
+        Unity.CurrentTestIgnored = ShouldBeIgnored;
+    }
 }
 
 void testUnitySizeInitializationReminder(void)
@@ -77,6 +87,8 @@ void testUnitySizeInitializationReminder(void)
         const char* TestFile;
         const char* CurrentTestName;
         UNITY_LINE_TYPE CurrentTestLineNumber;
+        const char	CurrentTestMessage[UNITY_MAX_MESSAGE_LEN];
+        UNITY_COUNTER_TYPE CurrentTestMessageLen;
         UNITY_COUNTER_TYPE NumberOfTests;
         UNITY_COUNTER_TYPE TestFailures;
         UNITY_COUNTER_TYPE TestIgnores;
@@ -117,42 +129,42 @@ void testNotVanilla(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT(0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expression Evaluated To FALSE");
 }
 
 void testNotTrue(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_TRUE(0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected TRUE Was FALSE");
 }
 
 void testNotFalse(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FALSE(1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected FALSE Was TRUE");
 }
 
 void testNotUnless(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UNLESS(1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expression Evaluated To TRUE");
 }
 
 void testNotNotEqual(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_NOT_EQUAL(10, 10);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected Not-Equal");
 }
 
 void testFail(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_FAIL_MESSAGE("Expected for testing");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected for testing");
 }
 
 void testIsNull(void)
@@ -170,7 +182,7 @@ void testIsNullShouldFailIfNot(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_NULL(ptr1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected NULL");
 }
 
 void testNotNullShouldFailIfNULL(void)
@@ -179,11 +191,13 @@ void testNotNullShouldFailIfNULL(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_NOT_NULL(ptr1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected Non-NULL");
 }
 
 void testIgnore(void)
 {
+    ShouldBeIgnored = 1;
+    ExpectedMessage = TestUnityStrEmptyMessage;
     EXPECT_ABORT_BEGIN
     TEST_IGNORE();
     TEST_FAIL_MESSAGE("This should not be reached");
@@ -192,8 +206,10 @@ void testIgnore(void)
 
 void testIgnoreMessage(void)
 {
+    ShouldBeIgnored = 1;
+    ExpectedMessage = TestUnityStrIgnoreMessage;
     EXPECT_ABORT_BEGIN
-    TEST_IGNORE_MESSAGE("This is an expected TEST_IGNORE_MESSAGE string!");
+    TEST_IGNORE_MESSAGE(TestUnityStrIgnoreMessage);
     TEST_FAIL_MESSAGE("This should not be reached");
     VERIFY_IGNORES_END
 }
@@ -202,35 +218,35 @@ void testNotEqualInts(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT(3982, 3983);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 3982 Was 3983");
 }
 
 void testNotEqualInt8s(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT8(-127, -126);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected -127 Was -126");
 }
 
 void testNotEqualInt16s(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT16(-16383, -16382);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected -16383 Was -16382");
 }
 
 void testNotEqualInt32s(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT32(-2147483647, -2147483646);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected -2147483647 Was -2147483646");
 }
 
 void testNotEqualBits(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BITS(0xFF00, 0x5555, 0x5A55);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected XXXXXXXXXXXXXXXX01010101XXXXXXXX Was XXXXXXXXXXXXXXXX01011010XXXXXXXX");
 }
 
 void testNotEqualUInts(void)
@@ -242,7 +258,7 @@ void testNotEqualUInts(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 9000 Was 9001");
 }
 
 void testNotEqualUInt8s(void)
@@ -254,7 +270,7 @@ void testNotEqualUInt8s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT8(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 254 Was 255");
 }
 
 void testNotEqualUInt16s(void)
@@ -266,7 +282,7 @@ void testNotEqualUInt16s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT16(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 65535 Was 65534");
 }
 
 void testNotEqualUInt32s(void)
@@ -278,7 +294,7 @@ void testNotEqualUInt32s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 4294967295 Was 4294967294");
 }
 
 void testNotEqualHex8s(void)
@@ -290,7 +306,7 @@ void testNotEqualHex8s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0x23 Was 0x22");
 }
 
 void testNotEqualHex8sIfSigned(void)
@@ -302,7 +318,7 @@ void testNotEqualHex8sIfSigned(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0xFE Was 0x02");
 }
 
 void testNotEqualHex16s(void)
@@ -314,7 +330,7 @@ void testNotEqualHex16s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX16(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0x1234 Was 0x1235");
 }
 
 void testNotEqualHex16sIfSigned(void)
@@ -326,7 +342,7 @@ void testNotEqualHex16sIfSigned(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX16(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0xFC00 Was 0xFBFC");
 }
 
 void testNotEqualHex32s(void)
@@ -338,7 +354,7 @@ void testNotEqualHex32s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0x000DBBA0 Was 0x000DBBA1");
 }
 
 void testNotEqualHex32sIfSigned(void)
@@ -350,7 +366,7 @@ void testNotEqualHex32sIfSigned(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0xFFF24460 Was 0x000DBBA1");
 }
 
 void testEqualInts(void)
@@ -692,7 +708,7 @@ void testNotEqualBitHigh(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BIT_HIGH(31, v0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Was 0XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 }
 
 void testNotEqualBitLow(void)
@@ -701,7 +717,7 @@ void testNotEqualBitLow(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BIT_LOW(30, v0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected X0XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Was X1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 }
 
 void testNotEqualBitsHigh(void)
@@ -711,7 +727,7 @@ void testNotEqualBitsHigh(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BITS_HIGH(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 11111111X1X1X1X11X1X1X1XXXXXXXXX Was 01010101X1X1X1X10X0X0X0XXXXXXXXX");
 
 }
 
@@ -722,7 +738,7 @@ void testNotEqualBitsLow(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BITS_LOW(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 00000000X0X0X0X00X0X0X0XXXXXXXXX Was 01010101X1X1X1X10X0X0X0XXXXXXXXX");
 
 }
 void testEqualShorts(void)
@@ -825,7 +841,11 @@ void testNotEqualPointers(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_PTR(0x12345678, 0x12345677);
-    VERIFY_FAILS_END
+#ifdef __x86_64__
+    VERIFY_FAILS_END("Expected 0x0000000012345678 Was 0x0000000012345677");
+#else
+    VERIFY_FAILS_END("Expected 0x12345678 Was 0x12345677");
+#endif
 }
 
 void testIntsWithinDelta(void)
@@ -856,14 +876,14 @@ void testIntsNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT_WITHIN(5, 5000, 5006);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 5000 Was 5006");
 }
 
 void testIntsNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT_WITHIN_MESSAGE(5, 5000, 5006, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 5000 Was 5006. Custom Message.");
 }
 
 void testUIntsWithinDelta(void)
@@ -884,42 +904,42 @@ void testUIntsNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN(1, 2147483647u, 2147483649u);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected 2147483647 Was 2147483649");
 }
 
 void testUIntsNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN_MESSAGE(1, 2147483647u, 2147483649u, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected 2147483647 Was 2147483649. Custom Message.");
 }
 
 void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassSmallFirst(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN(5, 1, -1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 1 Was 4294967295");
 }
 
 void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassSmallFirstAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN_MESSAGE(5, 1, -1, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 1 Was 4294967295. Custom Message.");
 }
 
 void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassBigFirst(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN(5, -1, 1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 4294967295 Was 1");
 }
 
 void testUIntsNotWithinDeltaEvenThoughASignedIntWouldPassBigFirstAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT_WITHIN_MESSAGE(5, -1, 1, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 4294967295 Was 1. Custom Message.");
 }
 
 void testHEX32sWithinDelta(void)
@@ -940,28 +960,28 @@ void testHEX32sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX32_WITHIN(1, 2147483647u, 2147483649u);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x00000001 Expected 0x7FFFFFFF Was 0x80000001");
 }
 
 void testHEX32sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX32_WITHIN_MESSAGE(1, 2147483647u, 2147483649u, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x00000001 Expected 0x7FFFFFFF Was 0x80000001. Custom Message.");
 }
 
 void testHEX32sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX32_WITHIN(5, 1, -1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x00000005 Expected 0x00000001 Was 0xFFFFFFFF");
 }
 
 void testHEX32sNotWithinDeltaEvenThoughASignedIntWouldPassAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX32_WITHIN_MESSAGE(5, 1, -1, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x00000005 Expected 0x00000001 Was 0xFFFFFFFF. Custom Message.");
 }
 
 void testHEX16sWithinDelta(void)
@@ -992,14 +1012,14 @@ void testHEX16sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX16_WITHIN(2, 65535, 0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x0002 Expected 0xFFFF Was 0x0000");
 }
 
 void testHEX16sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX16_WITHIN_MESSAGE(2, 65535, 0, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x0002 Expected 0xFFFF Was 0x0000. Custom Message.");
 }
 
 void testHEX8sWithinDelta(void)
@@ -1030,14 +1050,14 @@ void testHEX8sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX8_WITHIN(2, 255, 0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x02 Expected 0xFF Was 0x00");
 }
 
 void testHEX8sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX8_WITHIN_MESSAGE(2, 255, 0, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x02 Expected 0xFF Was 0x00. Custom Message.");
 }
 
 //-----------------
@@ -1060,28 +1080,28 @@ void testUINT32sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT32_WITHIN(1, 2147483647u, 2147483649u);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected 2147483647 Was 2147483649");
 }
 
 void testUINT32sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT32_WITHIN_MESSAGE(1, 2147483647u, 2147483649u, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected 2147483647 Was 2147483649. Custom Message.");
 }
 
 void testUINT32sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT32_WITHIN(5, 1, -1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 1 Was 4294967295");
 }
 
 void testUINT32sNotWithinDeltaEvenThoughASignedIntWouldPassAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT32_WITHIN_MESSAGE(5, 1, -1, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 1 Was 4294967295. Custom Message.");
 }
 
 void testUINT16sWithinDelta(void)
@@ -1112,14 +1132,14 @@ void testUINT16sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT16_WITHIN(2, 65535, 0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected 65535 Was 0");
 }
 
 void testUINT16sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT16_WITHIN_MESSAGE(2, 65535, 0, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected 65535 Was 0. Custom Message.");
 }
 
 void testUINT8sWithinDelta(void)
@@ -1150,14 +1170,14 @@ void testUINT8sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT8_WITHIN(2, 255, 0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected 255 Was 0");
 }
 
 void testUINT8sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT8_WITHIN_MESSAGE(2, 255, 0, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected 255 Was 0. Custom Message.");
 }
 
 void testINT32sWithinDelta(void)
@@ -1176,14 +1196,14 @@ void testINT32sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT32_WITHIN(1, -3, 1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected -3 Was 1");
 }
 
 void testINT32sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT32_WITHIN_MESSAGE(1, -2, 1, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected -2 Was 1. Custom Message.");
 }
 
 void testINT16sWithinDelta(void)
@@ -1212,14 +1232,14 @@ void testINT16sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT16_WITHIN(2, 4, -2);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected 4 Was -2");
 }
 
 void testINT16sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT16_WITHIN_MESSAGE(2, 3, 0, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected 3 Was 0. Custom Message.");
 }
 
 void testINT8sWithinDelta(void)
@@ -1248,14 +1268,14 @@ void testINT8sNotWithinDelta(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT8_WITHIN(2, -3, 0);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected -3 Was 0");
 }
 
 void testINT8sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT8_WITHIN_MESSAGE(2, -4, 0, "Custom Message.");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 2 Expected -4 Was 0. Custom Message.");
 }
 
 void testEqualStrings(void)
@@ -1284,28 +1304,28 @@ void testNotEqualString1(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("foo", "bar");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 'foo' Was 'bar'");
 }
 
 void testNotEqualString2(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("foo", "");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 'foo' Was ''");
 }
 
 void testNotEqualString3(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("", "bar");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected '' Was 'bar'");
 }
 
 void testNotEqualString4(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("bar\r", "bar\n");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 'bar\\r' Was 'bar\\n'");
 }
 
 void testNotEqualString5(void)
@@ -1314,21 +1334,21 @@ void testNotEqualString5(void)
     const char str2[] = { 0x41, 0x42, 0x04, 0x00 };
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING(str1, str2);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 'AB\\0x03' Was 'AB\\0x04'");
 }
 
 void testNotEqualString_ExpectedStringIsNull(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING(NULL, "bar");
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected NULL Was 'bar'");
 }
 
 void testNotEqualString_ActualStringIsNull(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("foo", NULL);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 'foo' Was NULL");
 }
 
 void testEqualStringArrays(void)
@@ -1349,7 +1369,7 @@ void testNotEqualStringArray1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 'zoo' Was 'moo'");
 }
 
 void testNotEqualStringArray2(void)
@@ -1359,7 +1379,7 @@ void testNotEqualStringArray2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 'foo' Was 'zoo'");
 }
 
 void testNotEqualStringArray3(void)
@@ -1369,7 +1389,7 @@ void testNotEqualStringArray3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 'zoo' Was NULL");
 }
 
 void testNotEqualStringArray4(void)
@@ -1379,7 +1399,7 @@ void testNotEqualStringArray4(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 1 Expected NULL Was 'boo'");
 }
 
 void testNotEqualStringArray5(void)
@@ -1389,7 +1409,7 @@ void testNotEqualStringArray5(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Actual pointer was NULL");
 }
 
 void testNotEqualStringArray6(void)
@@ -1399,7 +1419,7 @@ void testNotEqualStringArray6(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected pointer to be NULL");
 }
 
 void testEqualStringArrayIfBothNulls(void)
@@ -1426,28 +1446,28 @@ void testNotEqualMemory1(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY("foo", "bar", 3);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Memory Mismatch. Byte 0 Expected 0x66 Was 0x62");
 }
 
 void testNotEqualMemory2(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY("fool", "food", 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Memory Mismatch. Byte 3 Expected 0x6C Was 0x64");
 }
 
 void testNotEqualMemory3(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY(NULL, "food", 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected pointer to be NULL");
 }
 
 void testNotEqualMemory4(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY("fool", NULL, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Actual pointer was NULL");
 }
 
 void testEqualIntArrays(void)
@@ -1471,7 +1491,7 @@ void testNotEqualIntArraysNullExpected(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected pointer to be NULL");
 }
 
 void testNotEqualIntArraysNullActual(void)
@@ -1481,7 +1501,7 @@ void testNotEqualIntArraysNullActual(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Actual pointer was NULL");
 }
 
 void testNotEqualIntArrays1(void)
@@ -1491,7 +1511,7 @@ void testNotEqualIntArrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected -2 Was 2");
 }
 
 void testNotEqualIntArrays2(void)
@@ -1501,7 +1521,7 @@ void testNotEqualIntArrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 1 Was 2");
 }
 
 void testNotEqualIntArrays3(void)
@@ -1511,7 +1531,7 @@ void testNotEqualIntArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 987 Was 986");
 }
 
 void testEqualPtrArrays(void)
@@ -1540,7 +1560,7 @@ void testNotEqualPtrArraysNullExpected(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 2);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected pointer to be NULL");
 }
 
 void testNotEqualPtrArraysNullActual(void)
@@ -1552,7 +1572,7 @@ void testNotEqualPtrArraysNullActual(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_PTR_ARRAY(p1, p0, 2);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Actual pointer was NULL");
 }
 
 void testNotEqualPtrArrays1(void)
@@ -1565,7 +1585,7 @@ void testNotEqualPtrArrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END(NULL);
 }
 
 void testNotEqualPtrArrays2(void)
@@ -1578,7 +1598,7 @@ void testNotEqualPtrArrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END(NULL);
 }
 
 void testNotEqualPtrArrays3(void)
@@ -1591,7 +1611,7 @@ void testNotEqualPtrArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END(NULL);
 }
 
 void testEqualInt8Arrays(void)
@@ -1615,7 +1635,7 @@ void testNotEqualInt8Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected -2 Was 2");
 }
 
 void testEqualUIntArrays(void)
@@ -1639,7 +1659,7 @@ void testNotEqualUIntArrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 65132 Was 65131");
 }
 
 void testNotEqualUIntArrays2(void)
@@ -1649,7 +1669,7 @@ void testNotEqualUIntArrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 1 Was 2");
 }
 
 void testNotEqualUIntArrays3(void)
@@ -1659,7 +1679,7 @@ void testNotEqualUIntArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 987 Was 986");
 }
 
 void testEqualInt16Arrays(void)
@@ -1683,7 +1703,7 @@ void testNotEqualInt16Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 3 Was 2");
 }
 
 void testEqualInt32Arrays(void)
@@ -1707,7 +1727,7 @@ void testNotEqualInt32Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 3 Was 2");
 }
 
 void testEqualUINT8Arrays(void)
@@ -1731,7 +1751,7 @@ void testNotEqualUINT8Arrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT8_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 127 Was 255");
 }
 
 void testNotEqualUINT8Arrays2(void)
@@ -1741,7 +1761,7 @@ void testNotEqualUINT8Arrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT8_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 127 Was 255");
 }
 
 void testNotEqualUINT8Arrays3(void)
@@ -1751,7 +1771,7 @@ void testNotEqualUINT8Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT8_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 127 Was 255");
 }
 
 
@@ -1776,7 +1796,7 @@ void testNotEqualUINT16Arrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 65132 Was 65131");
 }
 
 void testNotEqualUINT16Arrays2(void)
@@ -1786,7 +1806,7 @@ void testNotEqualUINT16Arrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 1 Was 2");
 }
 
 void testNotEqualUINT16Arrays3(void)
@@ -1796,7 +1816,7 @@ void testNotEqualUINT16Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT16_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 987 Was 986");
 }
 
 void testEqualUINT32Arrays(void)
@@ -1820,7 +1840,7 @@ void testNotEqualUINT32Arrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 65132 Was 65131");
 }
 
 void testNotEqualUINT32Arrays2(void)
@@ -1830,7 +1850,7 @@ void testNotEqualUINT32Arrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 1 Was 2");
 }
 
 void testNotEqualUINT32Arrays3(void)
@@ -1840,7 +1860,7 @@ void testNotEqualUINT32Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 987 Was 986");
 }
 
 void testEqualHEXArrays(void)
@@ -1864,7 +1884,7 @@ void testNotEqualHEXArrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 0x0000FE6C Was 0x0000FE6B");
 }
 
 void testNotEqualHEXArrays2(void)
@@ -1874,7 +1894,7 @@ void testNotEqualHEXArrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 0x00000001 Was 0x00000002");
 }
 
 void testNotEqualHEXArrays3(void)
@@ -1884,7 +1904,7 @@ void testNotEqualHEXArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 0x000003DB Was 0x000003DA");
 }
 
 void testEqualHEX32Arrays(void)
@@ -1908,7 +1928,7 @@ void testNotEqualHEX32Arrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 0x0000FE6C Was 0x0000FE6B");
 }
 
 void testNotEqualHEX32Arrays2(void)
@@ -1918,7 +1938,7 @@ void testNotEqualHEX32Arrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 0x00000001 Was 0x00000002");
 }
 
 void testNotEqualHEX32Arrays3(void)
@@ -1928,7 +1948,7 @@ void testNotEqualHEX32Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 0x000003DB Was 0x000003DA");
 }
 
 void testEqualHEX16Arrays(void)
@@ -1952,7 +1972,7 @@ void testNotEqualHEX16Arrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 0xFE6C Was 0xFE6B");
 }
 
 void testNotEqualHEX16Arrays2(void)
@@ -1962,7 +1982,7 @@ void testNotEqualHEX16Arrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 0x0001 Was 0x0002");
 }
 
 void testNotEqualHEX16Arrays3(void)
@@ -1972,7 +1992,7 @@ void testNotEqualHEX16Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX16_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 0x03DB Was 0x03DA");
 }
 
 void testEqualHEX8Arrays(void)
@@ -1996,7 +2016,7 @@ void testNotEqualHEX8Arrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 0xFD Was 0xFC");
 }
 
 void testNotEqualHEX8Arrays2(void)
@@ -2006,7 +2026,7 @@ void testNotEqualHEX8Arrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 0x01 Was 0x02");
 }
 
 void testNotEqualHEX8Arrays3(void)
@@ -2016,7 +2036,7 @@ void testNotEqualHEX8Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 2 Expected 0xFE Was 0xFF");
 }
 
 void testEqualMemoryArrays(void)
@@ -2040,7 +2060,7 @@ void testNotEqualMemoryArraysExpectedNull(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected pointer to be NULL");
 }
 
 void testNotEqualMemoryArraysActualNull(void)
@@ -2050,7 +2070,7 @@ void testNotEqualMemoryArraysActualNull(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Actual pointer was NULL");
 }
 
 void testNotEqualMemoryArrays1(void)
@@ -2060,7 +2080,7 @@ void testNotEqualMemoryArrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Memory Mismatch. Element 3 Byte 0 Expected 0xFE Was 0x02");
 }
 
 void testNotEqualMemoryArrays2(void)
@@ -2070,7 +2090,7 @@ void testNotEqualMemoryArrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Memory Mismatch. Element 0 Byte 0 Expected 0x01 Was 0x02");
 }
 
 void testNotEqualMemoryArrays3(void)
@@ -2080,7 +2100,7 @@ void testNotEqualMemoryArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY_ARRAY(p0, p1, sizeof(int), 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Memory Mismatch. Element 2 Byte 0 Expected 0xDB Was 0xDA");
 }
 
 void testProtection(void)
@@ -2103,6 +2123,7 @@ void testProtection(void)
 
 void testIgnoredAndThenFailInTearDown(void)
 {
+    ShouldBeIgnored = 1;
     SetToOneToFailInTearDown = 1;
     TEST_IGNORE();
 }
@@ -2191,7 +2212,7 @@ void testNotEqualHex64s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0x0000000218711A00 Was 0x000000021E66FB00");
 #endif
 }
 
@@ -2207,7 +2228,7 @@ void testNotEqualUint64s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT64(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 9000000000 Was 9100000000");
 #endif
 }
 
@@ -2223,7 +2244,7 @@ void testNotEqualInt64s(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT64(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected -9000000000 Was 9100000000");
 #endif
 }
 
@@ -2239,7 +2260,7 @@ void testNotEqualHex64sIfSigned(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64(v0, v1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected 0xFFFFFFFDE78EE600 Was 0x0000000218711A00");
 #endif
 }
 
@@ -2261,7 +2282,7 @@ void testHEX64sNotWithinDelta(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x0000000000000001 Expected 0x7FFFFFFFFFFFFFFF Was 0x7FFFFFFFFFFFFFFC");
 #endif
 }
 
@@ -2272,7 +2293,7 @@ void testHEX64sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX64_WITHIN(5, 1, -1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 0x0000000000000005 Expected 0x0000000000000001 Was 0xFFFFFFFFFFFFFFFF");
 #endif
 }
 
@@ -2294,7 +2315,7 @@ void testUINT64sNotWithinDelta(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected 9223372036854775807 Was 9223372036854775804");
 #endif
 }
 
@@ -2305,7 +2326,7 @@ void testUINT64sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT64_WITHIN(5, 1, -1);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 5 Expected 1 Was 18446744073709551615");
 #endif
 }
 
@@ -2327,7 +2348,7 @@ void testINT64sNotWithinDelta(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Values Not Within Delta 1 Expected 9223372036854775807 Was 9223372036854775804");
 #endif
 }
 
@@ -2396,7 +2417,7 @@ void testNotEqualHEX64Arrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 0x000000000000FE6C Was 0x000000000000FE6B");
 #endif
 }
 
@@ -2410,7 +2431,7 @@ void testNotEqualHEX64Arrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 0 Expected 0x0000000000000001 Was 0x0000000000000002");
 #endif
 }
 
@@ -2424,7 +2445,7 @@ void testNotEqualUint64Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected 65132 Was 65131");
 #endif
 }
 
@@ -2438,7 +2459,7 @@ void testNotEqualInt64Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Element 3 Expected -65132 Was -65131");
 #endif
 }
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES FLOAT SUPPORT ==================
@@ -2462,7 +2483,11 @@ void testFloatsNotWithinDelta(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected 9273.264648 Was 9273.205078");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2485,7 +2510,11 @@ void testFloatsNotEqual(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(9273.9649f, 9273.0049f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected 9273.964844 Was 9273.004883");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2496,7 +2525,11 @@ void testFloatsNotEqualNegative1(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(-9273.9649f, -9273.0049f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected -9273.964844 Was -9273.004883");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2507,7 +2540,11 @@ void testFloatsNotEqualNegative2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(-9273.0049f, -9273.9649f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected -9273.004883 Was -9273.964844");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2518,7 +2555,11 @@ void testFloatsNotEqualActualNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(85.963f, 0.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected 85.962997 Was -nan");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2529,7 +2570,11 @@ void testFloatsNotEqualExpectedNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 85.963f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected -nan Was 85.962997");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2540,7 +2585,11 @@ void testFloatsNotEqualBothNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 0.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected -nan Was -nan");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2551,7 +2600,11 @@ void testFloatsNotEqualInfNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 0.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was -nan");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2562,7 +2615,11 @@ void testFloatsNotEqualNaNInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 1.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected -nan Was inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2573,7 +2630,11 @@ void testFloatsNotEqualActualInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(321.642f, 1.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected 321.641998 Was inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2584,7 +2645,11 @@ void testFloatsNotEqualExpectedInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 321.642f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was 321.641998");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2595,7 +2660,11 @@ void testFloatsNotEqualBothInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 1.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2606,7 +2675,11 @@ void testFloatsNotEqualPlusMinusInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, -1.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was -inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2626,7 +2699,11 @@ void testFloatIsPosInf2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_INF(2.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Not Infinity Was inf");
+#else
+    VERIFY_FAILS_END("Expected Not Infinity Was Infinity");
+#endif
 #endif
 }
 
@@ -2646,7 +2723,11 @@ void testFloatIsNegInf2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_NEG_INF(-3.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Not Negative Infinity Was -inf");
+#else
+    VERIFY_FAILS_END("Expected Not Negative Infinity Was Negative Infinity");
+#endif
 #endif
 }
 
@@ -2657,7 +2738,11 @@ void testFloatIsNotPosInf1(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_INF(2.0f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Infinity Was 2.000000");
+#else
+    VERIFY_FAILS_END("Expected Infinity Was Not Infinity");
+#endif
 #endif
 }
 
@@ -2677,7 +2762,11 @@ void testFloatIsNotNegInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NEG_INF(-999.876f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Negative Infinity Was -999.875977");
+#else
+    VERIFY_FAILS_END("Expected Negative Infinity Was Not Negative Infinity");
+#endif
 #endif
 }
 
@@ -2697,7 +2786,11 @@ void testFloatIsNan2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_NAN(0.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Not NaN Was -nan");
+#else
+    VERIFY_FAILS_END("Expected Not NaN Was NaN");
+#endif
 #endif
 }
 
@@ -2708,7 +2801,11 @@ void testFloatIsNotNan1(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NAN(234.9f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected NaN Was 234.899994");
+#else
+    VERIFY_FAILS_END("Expected NaN Was Not NaN");
+#endif
 #endif
 }
 
@@ -2728,7 +2825,11 @@ void testFloatInfIsNotNan(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NAN(1.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected NaN Was inf");
+#else
+    VERIFY_FAILS_END("Expected NaN Was Not NaN");
+#endif
 #endif
 }
 
@@ -2739,7 +2840,11 @@ void testFloatNanIsNotInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_INF(0.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Infinity Was -nan");
+#else
+    VERIFY_FAILS_END("Expected Infinity Was Not Infinity");
+#endif
 #endif
 }
 
@@ -2761,7 +2866,11 @@ void testFloatIsDeterminate2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(-88.3f);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Not Determinate Was -88.300003");
+#else
+    VERIFY_FAILS_END("Expected Not Determinate Was Determinate");
+#endif
 #endif
 }
 
@@ -2783,7 +2892,11 @@ void testFloatIsNotDeterminate2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_DETERMINATE(-1.0f / f_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Expected Determinate Was -inf");
+#else
+    VERIFY_FAILS_END("Expected Determinate Was Not Determinate");
+#endif
 #endif
 }
 
@@ -2815,7 +2928,7 @@ void testNotEqualFloatArraysExpectedNull(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected pointer to be NULL");
 #endif
 }
 
@@ -2829,7 +2942,7 @@ void testNotEqualFloatArraysActualNull(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Actual pointer was NULL");
 #endif
 }
 
@@ -2843,7 +2956,11 @@ void testNotEqualFloatArrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 3 Expected 0.253000 Was 0.252000");
+#else
+    VERIFY_FAILS_END("Element 3 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2857,7 +2974,11 @@ void testNotEqualFloatArrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 0 Expected 1.000000 Was 2.000000");
+#else
+    VERIFY_FAILS_END("Element 0 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2871,7 +2992,11 @@ void testNotEqualFloatArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 2 Expected 25.400000 Was 25.500000");
+#else
+    VERIFY_FAILS_END("Element 2 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2885,7 +3010,11 @@ void testNotEqualFloatArraysNegative1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 3 Expected -0.253000 Was -0.252000");
+#else
+    VERIFY_FAILS_END("Element 3 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2899,7 +3028,11 @@ void testNotEqualFloatArraysNegative2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 0 Expected -1.000000 Was -2.000000");
+#else
+    VERIFY_FAILS_END("Element 0 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2913,7 +3046,11 @@ void testNotEqualFloatArraysNegative3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 2 Expected -25.400000 Was -25.500000");
+#else
+    VERIFY_FAILS_END("Element 2 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2927,7 +3064,11 @@ void testNotEqualFloatArraysNaN(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 1 Expected -nan Was -nan");
+#else
+    VERIFY_FAILS_END("Element 1 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2941,7 +3082,11 @@ void testNotEqualFloatArraysInf(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_FLOAT_VERBOSE
+    VERIFY_FAILS_END("Element 1 Expected inf Was inf");
+#else
+    VERIFY_FAILS_END("Element 1 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2966,7 +3111,11 @@ void testDoublesNotWithinDelta(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_WITHIN(0.05, 9273.2649, 9273.2049);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected 9273.264648 Was 9273.205078");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -2990,7 +3139,11 @@ void testDoublesNotEqual(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(9273.9649, 9273.0049);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected 9273.964844 Was 9273.004883");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3001,7 +3154,11 @@ void testDoublesNotEqualNegative1(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.9649, -9273.0049);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected -9273.964844 Was -9273.004883");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3012,7 +3169,11 @@ void testDoublesNotEqualNegative2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.0049, -9273.9649);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected -9273.004883 Was -9273.964844");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3023,7 +3184,11 @@ void testDoublesNotEqualActualNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(85.963, 0.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected 85.962997 Was -nan");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3034,7 +3199,11 @@ void testDoublesNotEqualExpectedNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 85.963);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected -nan Was 85.962997");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3045,7 +3214,11 @@ void testDoublesNotEqualBothNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected -nan Was -nan");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3056,7 +3229,11 @@ void testDoublesNotEqualInfNaN(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 0.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was -nan");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3067,7 +3244,11 @@ void testDoublesNotEqualNaNInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 1.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected -nan Was inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3078,7 +3259,11 @@ void testDoublesNotEqualActualInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(321.642, 1.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected 321.641998 Was inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3089,7 +3274,11 @@ void testDoublesNotEqualExpectedInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 321.642);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was 321.641998");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3100,7 +3289,11 @@ void testDoublesNotEqualBothInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3111,7 +3304,11 @@ void testDoublesNotEqualPlusMinusInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected inf Was -inf");
+#else
+    VERIFY_FAILS_END("Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3131,7 +3328,11 @@ void testDoubleIsPosInf2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_INF(2.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Not Infinity Was inf");
+#else
+    VERIFY_FAILS_END("Expected Not Infinity Was Infinity");
+#endif
 #endif
 }
 
@@ -3151,7 +3352,11 @@ void testDoubleIsNegInf2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(-3.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Not Negative Infinity Was -inf");
+#else
+    VERIFY_FAILS_END("Expected Not Negative Infinity Was Negative Infinity");
+#endif
 #endif
 }
 
@@ -3162,7 +3367,11 @@ void testDoubleIsNotPosInf1(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_INF(2.0);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Infinity Was 2.000000");
+#else
+    VERIFY_FAILS_END("Expected Infinity Was Not Infinity");
+#endif
 #endif
 }
 
@@ -3182,7 +3391,11 @@ void testDoubleIsNotNegInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NEG_INF(-999.876);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Negative Infinity Was -999.875977");
+#else
+    VERIFY_FAILS_END("Expected Negative Infinity Was Not Negative Infinity");
+#endif
 #endif
 }
 
@@ -3202,7 +3415,11 @@ void testDoubleIsNan2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_NAN(0.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Not NaN Was -nan");
+#else
+    VERIFY_FAILS_END("Expected Not NaN Was NaN");
+#endif
 #endif
 }
 
@@ -3213,7 +3430,11 @@ void testDoubleIsNotNan1(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NAN(234.9);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected NaN Was 234.899994");
+#else
+    VERIFY_FAILS_END("Expected NaN Was Not NaN");
+#endif
 #endif
 }
 
@@ -3233,7 +3454,11 @@ void testDoubleInfIsNotNan(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NAN(1.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected NaN Was inf");
+#else
+    VERIFY_FAILS_END("Expected NaN Was Not NaN");
+#endif
 #endif
 }
 
@@ -3244,7 +3469,11 @@ void testDoubleNanIsNotInf(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_INF(0.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Infinity Was -nan");
+#else
+    VERIFY_FAILS_END("Expected Infinity Was Not Infinity");
+#endif
 #endif
 }
 
@@ -3266,7 +3495,11 @@ void testDoubleIsDeterminate2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(-88.3);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Not Determinate Was -88.300003");
+#else
+    VERIFY_FAILS_END("Expected Not Determinate Was Determinate");
+#endif
 #endif
 }
 
@@ -3288,7 +3521,11 @@ void testDoubleIsNotDeterminate2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_DETERMINATE(-1.0 / d_zero);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Expected Determinate Was -inf");
+#else
+    VERIFY_FAILS_END("Expected Determinate Was Not Determinate");
+#endif
 #endif
 }
 
@@ -3320,7 +3557,7 @@ void testNotEqualDoubleArraysExpectedNull(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Expected pointer to be NULL");
 #endif
 }
 
@@ -3334,7 +3571,7 @@ void testNotEqualDoubleArraysActualNull(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+    VERIFY_FAILS_END("Actual pointer was NULL");
 #endif
 }
 
@@ -3348,7 +3585,11 @@ void testNotEqualDoubleArrays1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 3 Expected 0.256667 Was 0.256667");
+#else
+    VERIFY_FAILS_END("Element 3 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3362,7 +3603,11 @@ void testNotEqualDoubleArrays2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 0 Expected 1.000000 Was 2.000000");
+#else
+    VERIFY_FAILS_END("Element 0 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3376,7 +3621,11 @@ void testNotEqualDoubleArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 2 Expected 25.400000 Was 25.500000");
+#else
+    VERIFY_FAILS_END("Element 2 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3390,7 +3639,11 @@ void testNotEqualDoubleArraysNegative1(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 3 Expected -0.256667 Was -0.256667");
+#else
+    VERIFY_FAILS_END("Element 3 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3404,7 +3657,11 @@ void testNotEqualDoubleArraysNegative2(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 0 Expected -1.000000 Was -2.000000");
+#else
+    VERIFY_FAILS_END("Element 0 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3418,7 +3675,11 @@ void testNotEqualDoubleArraysNegative3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 2 Expected -25.400000 Was -25.500000");
+#else
+    VERIFY_FAILS_END("Element 2 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3432,7 +3693,11 @@ void testNotEqualDoubleArraysNaN(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 1 Expected -nan Was -nan");
+#else
+    VERIFY_FAILS_END("Element 1 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3446,7 +3711,11 @@ void testNotEqualDoubleArraysInf(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
+#ifdef UNITY_DOUBLE_VERBOSE
+    VERIFY_FAILS_END("Element 1 Expected inf Was inf");
+#else
+    VERIFY_FAILS_END("Element 1 Values Not Within Delta");
+#endif
 #endif
 }
 
@@ -3454,15 +3723,22 @@ void testDontLoopInJump(void)
 {
     _UU8 v = 0;
     EXPECT_ABORT_BEGIN
-    {
         EXPECT_ABORT_BEGIN
         {
             v += 1;
             TEST_FAIL();
         }
-        VERIFY_FAILS_END
+        VERIFY_FAILS_END(NULL);
         // this test should fail and bail but not increment v.
-        TEST_ASSERT_EQUAL_UINT(v, 2);
+        TEST_ASSERT_EQUAL_UINT(2, v);
     }
-    VERIFY_FAILS_END
+
+    Unity.CurrentAbortFrame -= 1;
+    TEST_ASSERT_FAILED("Expected 2 Was 1");
+}
+
+void testPrintPassMessage(void)
+{
+    ExpectedMessage = TestUnityStrPassMessage;
+    UnityAppendString(TestUnityStrPassMessage);
 }
