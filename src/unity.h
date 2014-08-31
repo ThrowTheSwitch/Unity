@@ -270,6 +270,26 @@
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(actual, message)                                     UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, __LINE__, message)
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, __LINE__, message)
 
+//-------------------------------------------------------
+// Expecting failure
+//-------------------------------------------------------
+#define EXPECT_ABORT_BEGIN                                                   \
+    Unity.CurrentAbortFrame += 1;                                              \
+    if (TEST_PROTECT())                                                        \
+    {
+
+#define VERIFY_IGNORES_END()                                                   \
+    }                                                                          \
+    Unity.CurrentAbortFrame -= 1;                                              \
+    while(0)
+
+#define VERIFY_FAILS_END(expected)                                             \
+    }                                                                          \
+    Unity.CurrentAbortFrame -= 1;                                              \
+    TEST_ASSERT_FAILED(expected);                                              \
+    UnityResetMessage();                                                       \
+    while(0)
+
 #define TEST_ASSERT_FAILED_MESSAGE(expected, message)                                              UNITY_TEST_ASSERT_FAILED(expected, __LINE__, message)
 
 //end of UNITY_FRAMEWORK_H

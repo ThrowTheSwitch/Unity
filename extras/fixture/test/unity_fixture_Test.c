@@ -287,24 +287,12 @@ TEST_TEAR_DOWN(LeakDetection)
     UnityOutputCharSpy_Destroy();
 }
 
-#define EXPECT_ABORT_BEGIN \
-  { \
-    Unity.CurrentAbortFrame += 1;   \
-    if (TEST_PROTECT()) \
-    {
-
-#define EXPECT_ABORT_END \
-    } \
-    Unity.CurrentAbortFrame -= 1; \
-  }
-
 TEST(LeakDetection, DetectsLeak)
 {
     void* m = malloc(10);
     EXPECT_ABORT_BEGIN
     UnityMalloc_EndTest();
-    EXPECT_ABORT_END
-    TEST_ASSERT_FAILED("This test leaks!");
+    VERIFY_FAILS_END("This test leaks!");
     free(m);
 }
 
@@ -315,8 +303,7 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     s[10] = (char)0xFF;
     EXPECT_ABORT_BEGIN
     free(m);
-    EXPECT_ABORT_END
-    TEST_ASSERT_FAILED("Buffer overrun detected during free()");
+    VERIFY_FAILS_END("Buffer overrun detected during free()");
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
@@ -326,6 +313,5 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     s[10] = (char)0xFF;
     EXPECT_ABORT_BEGIN
     m = realloc(m, 100);
-    EXPECT_ABORT_END
-    TEST_ASSERT_FAILED("Buffer overrun detected during realloc()");
+    VERIFY_FAILS_END("Buffer overrun detected during realloc()");
 }

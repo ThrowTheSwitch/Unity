@@ -9,23 +9,6 @@
 
 #define TEST_CASE(...)
 
-#define EXPECT_ABORT_BEGIN \
-    Unity.CurrentAbortFrame += 1; \
-    if (TEST_PROTECT())    \
-    {
-
-#define VERIFY_IGNORES_END                                                     \
-    }                                                                          \
-    Unity.CurrentAbortFrame -= 1;                                              \
-
-
-#define VERIFY_FAILS_END(expected)                                             \
-    }                                                                          \
-    Unity.CurrentAbortFrame -= 1;                                              \
-    TEST_ASSERT_FAILED(expected);                                              \
-    UnityResetMessage();                                                       \
-    while(0)
-
 void setUp(void)
 {
 }

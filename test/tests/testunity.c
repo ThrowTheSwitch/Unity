@@ -21,24 +21,6 @@ static const char TestUnityStrIgnoreMessage[] = "This is an expected TEST_IGNORE
 static const char TestUnityStrEmptyMessage[] = "";
 static const char TestUnityStrPassMessage[] = "Pass with message";
 
-#define EXPECT_ABORT_BEGIN \
-    Unity.CurrentAbortFrame += 1; \
-    if (TEST_PROTECT())    \
-    {
-
-#define VERIFY_IGNORES_END                                                     \
-    }                                                                          \
-    Unity.CurrentAbortFrame -= 1;                                              \
-
-
-#define VERIFY_FAILS_END(expected)                                             \
-    }                                                                          \
-    Unity.CurrentAbortFrame -= 1;                                              \
-    TEST_ASSERT_FAILED(expected);                                              \
-    UnityResetMessage();                                                       \
-    while(0)
-
-
 int SetToOneToFailInTearDown;
 const char *ExpectedMessage;
 int ShouldBeIgnored;
@@ -201,7 +183,7 @@ void testIgnore(void)
     EXPECT_ABORT_BEGIN
     TEST_IGNORE();
     TEST_FAIL_MESSAGE("This should not be reached");
-    VERIFY_IGNORES_END
+    VERIFY_IGNORES_END();
 }
 
 void testIgnoreMessage(void)
@@ -211,7 +193,7 @@ void testIgnoreMessage(void)
     EXPECT_ABORT_BEGIN
     TEST_IGNORE_MESSAGE(TestUnityStrIgnoreMessage);
     TEST_FAIL_MESSAGE("This should not be reached");
-    VERIFY_IGNORES_END
+    VERIFY_IGNORES_END();
 }
 
 void testNotEqualInts(void)
