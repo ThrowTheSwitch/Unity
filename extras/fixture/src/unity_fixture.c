@@ -41,7 +41,6 @@ int UnityMain(int argc, char* argv[], void (*runAllTests)(void))
         announceTestRun(r);
         UnityBegin(argv[0]);
         runAllTests();
-        UNITY_OUTPUT_CHAR('\n');
         UnityEnd();
     }
 
@@ -386,7 +385,7 @@ void UnityConcludeFixtureTest()
         if (Unity.CurrentTestMessageLen != 0) {
             UnityPrint(": ");
             UnityPrint(Unity.CurrentTestMessage);
-	    }
+        }
         UNITY_OUTPUT_CHAR('\n');
     }
 
