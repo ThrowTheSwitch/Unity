@@ -5,6 +5,7 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
+#include <stdio.h>
 #include <string.h>
 #include "unity_fixture.h"
 #include "unity_internals.h"
@@ -83,12 +84,9 @@ void UnityTestRunner(unityfunction* setup,
         Unity.TestFile = file;
         Unity.CurrentTestName = printableName;
         Unity.CurrentTestLineNumber = line;
-        if (!UnityFixture.Verbose)
-            UNITY_OUTPUT_CHAR('.');
-        else
-            UnityPrint(printableName);
 
         Unity.NumberOfTests++;
+        UnityResetMessage();
         UnityMalloc_StartTest();
         UnityPointer_Init();
 
@@ -361,27 +359,39 @@ int UnityGetCommandLineOptions(int argc, char* argv[])
 
 void UnityConcludeFixtureTest()
 {
+    const char *result = NULL;
+    if (!UnityFixture.Verbose)
+        UNITY_OUTPUT_CHAR('.');
+    else
+        UnityPrint(Unity.CurrentTestName);
+
     if (Unity.CurrentTestIgnored)
     {
-        if (UnityFixture.Verbose)
-        {
-            UNITY_OUTPUT_CHAR('\n');
-        }
+        result = "IGNORE";
         Unity.TestIgnores++;
     }
     else if (!Unity.CurrentTestFailed)
     {
-        if (UnityFixture.Verbose)
-        {
-            UnityPrint(" PASS");
-            UNITY_OUTPUT_CHAR('\n');
-        }
+        result = "PASS";
     }
     else if (Unity.CurrentTestFailed)
     {
+        result = "FAIL";
         Unity.TestFailures++;
+    }
+    if (UnityFixture.Verbose || (Unity.CurrentTestFailed > 0))
+    {
+        UnityPrint(": ");
+        UnityPrint(result);
+        if (Unity.CurrentTestMessageLen != 0) {
+            UnityPrint(": ");
+            UnityPrint(Unity.CurrentTestMessage);
+	    }
+        UNITY_OUTPUT_CHAR('\n');
     }
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+    Unity.CurrentAbortFrame = 0;
+    UnityResetMessage();
 }
