@@ -394,7 +394,7 @@ struct _Unity
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
     jmp_buf AbortFrame[UNITY_MAX_PROTECTION_NESTING];
-    uint32_t CurrentAbortFrame;
+    unsigned int CurrentAbortFrame;
 };
 
 extern struct _Unity Unity;
