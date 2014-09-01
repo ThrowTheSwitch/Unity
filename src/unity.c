@@ -125,18 +125,24 @@ void UnityPrintNumber(const _U_SINT number_to_print)
 {
     _U_SINT divisor = 1;
     _U_SINT next_divisor;
-
     _U_UINT number;
 
-    if (number_to_print < 0)
+    if (number_to_print == (1l << (UNITY_LONG_WIDTH-1)))
     {
+        //The largest representable negative number
         UNITY_OUTPUT_CHAR('-');
-        number = -number_to_print;
+        number = (_U_UINT)number_to_print;
+    }
+    else if (number_to_print < 0)
+    {
+        //Some other negative number
+        UNITY_OUTPUT_CHAR('-');
+        number = (_U_UINT)(-number_to_print);
     }
     else
     {
-        number = number_to_print;
-
+        //Positive number
+        number = (_U_UINT)number_to_print;
     }
 
     // figure out initial divisor
