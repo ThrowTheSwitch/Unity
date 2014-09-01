@@ -125,12 +125,18 @@ void UnityPrintNumber(const _U_SINT number_to_print)
 {
     _U_SINT divisor = 1;
     _U_SINT next_divisor;
-    _U_SINT number = number_to_print;
 
-    if (number < 0)
+    _U_UINT number;
+
+    if (number_to_print < 0)
     {
         UNITY_OUTPUT_CHAR('-');
-        number = -number;
+        number = -number_to_print;
+    }
+    else
+    {
+        number = number_to_print;
+
     }
 
     // figure out initial divisor

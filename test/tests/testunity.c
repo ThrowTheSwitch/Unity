@@ -218,7 +218,7 @@ void testNotEqualInt16s(void)
 void testNotEqualInt32s(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_INT32(-2147483647, -2147483646);
+    TEST_ASSERT_EQUAL_INT32(-2147483647, -2147483648); //use largest 32 bit negative to test printability
     VERIFY_FAILS_END
 }
 
