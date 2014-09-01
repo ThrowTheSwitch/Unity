@@ -290,30 +290,35 @@ if ($0 == __FILE__)
   options = { :includes => [] }
   yaml_file = nil
 
-  #parse out all the options first
+  #parse out all the options first (these will all be removed as we go)
   ARGV.reject! do |arg|
     case(arg)
       when '-cexception'
         options[:plugins] = [:cexception]; true
-      when /\.*\.yml/
+      when /\.*\.ya?ml/
         options = UnityTestRunnerGenerator.grab_config(arg); true
+      when /\.*\.h/
+        options[:includes] << arg; true
       else false
     end
   end
 
   #make sure there is at least one parameter left (the input file)
   if !ARGV[0]
-    puts ["usage: ruby #{__FILE__} (yaml) (options) input_test_file output_test_runner (includes)",
-           "  blah.yml    - will use config options in the yml file (see docs)",
-           "  -cexception - include cexception support"].join("\n")
+    puts ["usage: ruby #{__FILE__} (yaml) (options) input_test_file (output_test_runner) (includes)",
+           "  blah.yml           - will use config options in the yml file. detected by .yml/.yaml",
+           "  input_test_file    - this is the C file you want to create a runner for",
+           "  output_test_runner - this is the name of the runner file to generate",
+           "  includes           - all header files are added as #includes in runner. detected by .h",
+           "  options:",
+           "    -cexception      - include cexception support",
+          ].join("\n")
     exit 1
   end
 
   #create the default test runner name if not specified
   ARGV[1] = ARGV[0].gsub(".c","_Runner.c") if (!ARGV[1])
 
-  #everything else is an include file
-  options[:includes] ||= (ARGV.slice(2..-1).flatten.compact) if (ARGV.size > 2)
 
   UnityTestRunnerGenerator.new(options).run(ARGV[0], ARGV[1])
 end
