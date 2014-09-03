@@ -131,7 +131,7 @@ void UnityPrintNumber(const _U_SINT number_to_print)
     {
         //The largest representable negative number
         UNITY_OUTPUT_CHAR('-');
-        number = (_U_UINT)number_to_print;
+        number = (1ul << (UNITY_LONG_WIDTH-1));
     }
     else if (number_to_print < 0)
     {
