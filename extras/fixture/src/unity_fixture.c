@@ -359,10 +359,14 @@ int UnityGetCommandLineOptions(int argc, char* argv[])
 void UnityConcludeFixtureTest()
 {
     const char *result = NULL;
-    if (!UnityFixture.Verbose)
+    if ((!UnityFixture.Verbose) && (!Unity.CurrentTestFailed))
+    {
         UNITY_OUTPUT_CHAR('.');
-    else
+    } else {
         UnityPrint(Unity.CurrentTestName);
+        UnityPrint(": ");
+        UnityPrintNumber(Unity.CurrentTestLineNumber);
+    }
 
     if (Unity.CurrentTestIgnored)
     {

@@ -508,6 +508,7 @@ int UnityCheckArraysForNull(UNITY_PTR_ATTRIBUTE const void* expected, UNITY_PTR_
     if (expected == NULL)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrNullPointerForExpected);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -517,6 +518,7 @@ int UnityCheckArraysForNull(UNITY_PTR_ATTRIBUTE const void* expected, UNITY_PTR_
     if (actual == NULL)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrNullPointerForActual);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -541,6 +543,7 @@ void UnityAssertBits(const _U_SINT mask,
     if ((mask & expected) != (mask & actual))
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrExpected);
         UnityAppendMask((_U_UINT)mask, (_U_UINT)expected);
         UnityAppendString(UnityStrWas);
@@ -562,6 +565,7 @@ void UnityAssertEqualNumber(const _U_SINT expected,
     if (expected != actual)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrExpected);
         UnityAppendNumberByStyle(expected, style);
         UnityAppendString(UnityStrWas);
@@ -588,6 +592,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
     if (elements == 0)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrPointless);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -609,6 +614,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                 if (*ptr_exp != *ptr_act)
                 {
                     UnityResetMessage();
+                    Unity.CurrentTestLineNumber = lineNumber;
                     UnityAppendString(UnityStrElement);
                     UnityAppendNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
                     UnityAppendChar(' ');
@@ -631,6 +637,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                 if (*(UNITY_PTR_ATTRIBUTE _US16*)ptr_exp != *(UNITY_PTR_ATTRIBUTE _US16*)ptr_act)
                 {
                     UnityResetMessage();
+                    Unity.CurrentTestLineNumber = lineNumber;
                     UnityAppendString(UnityStrElement);
                     UnityAppendNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
                     UnityAppendChar(' ');
@@ -654,6 +661,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                 if (*(UNITY_PTR_ATTRIBUTE _US64*)ptr_exp != *(UNITY_PTR_ATTRIBUTE _US64*)ptr_act)
                 {
                     UnityResetMessage();
+                    Unity.CurrentTestLineNumber = lineNumber;
                     UnityAppendString(UnityStrElement);
                     UnityAppendNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
                     UnityAppendChar(' ');
@@ -675,6 +683,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                 if (*(UNITY_PTR_ATTRIBUTE _US32*)ptr_exp != *(UNITY_PTR_ATTRIBUTE _US32*)ptr_act)
                 {
                     UnityResetMessage();
+                    Unity.CurrentTestLineNumber = lineNumber;
                     UnityAppendString(UnityStrElement);
                     UnityAppendNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
                     UnityAppendChar(' ');
@@ -710,6 +719,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
     if (elements == 0)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrPointless);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -731,6 +741,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
         if ((diff * 0.0f != 0.0f) || (diff > tol))
         {
             UnityResetMessage();
+            Unity.CurrentTestLineNumber = lineNumber;
             UnityAppendString(UnityStrElement);
             UnityAppendNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
             UnityAppendChar(' ');
@@ -775,6 +786,7 @@ void UnityAssertFloatsWithin(const _UF delta,
     if ((diff * 0.0f != 0.0f) || (pos_delta < diff))
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
 #ifdef UNITY_FLOAT_VERBOSE
         UnityAppendString(UnityStrExpected);
         UnityAppendFloat(expected);
@@ -833,6 +845,7 @@ void UnityAssertFloatSpecial(const _UF actual,
     if (is_trait != should_be_trait)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrExpected);
         if (!should_be_trait)
             UnityAppendString(UnityStrNot);
@@ -870,6 +883,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
     if (elements == 0)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrPointless);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -891,6 +905,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
         if ((diff * 0.0 != 0.0) || (diff > tol))
         {
             UnityResetMessage();
+            Unity.CurrentTestLineNumber = lineNumber;
             UnityAppendString(UnityStrElement);
             UnityAppendNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
             UnityAppendChar(' ');
@@ -935,6 +950,7 @@ void UnityAssertDoublesWithin(const _UD delta,
     if ((diff * 0.0 != 0.0) || (pos_delta < diff))
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
 #ifdef UNITY_DOUBLE_VERBOSE
         UnityAppendString(UnityStrExpected);
         UnityAppendFloat((float)expected);
@@ -994,6 +1010,7 @@ void UnityAssertDoubleSpecial(const _UD actual,
     if (is_trait != should_be_trait)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrExpected);
         if (!should_be_trait)
             UnityAppendString(UnityStrNot);
@@ -1042,6 +1059,7 @@ void UnityAssertNumbersWithin( const _U_SINT delta,
     if (Unity.CurrentTestFailed)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrDelta);
         UnityAppendChar(' ');
         UnityAppendNumberByStyle(delta, style);
@@ -1088,6 +1106,7 @@ void UnityAssertEqualString(const char* expected,
     if (Unity.CurrentTestFailed)
     {
       UnityResetMessage();
+      Unity.CurrentTestLineNumber = lineNumber;
       UnityAppendExpectedAndActualStrings(expected, actual);
       UnityAddMsgIfSpecified(msg);
       UNITY_FAIL_AND_BAIL;
@@ -1109,6 +1128,7 @@ void UnityAssertEqualStringArray( const char** expected,
     if (num_elements == 0)
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrPointless);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -1142,6 +1162,7 @@ void UnityAssertEqualStringArray( const char** expected,
         if (Unity.CurrentTestFailed)
         {
             UnityResetMessage();
+            Unity.CurrentTestLineNumber = lineNumber;
             if (num_elements > 1)
             {
                 UnityAppendString(UnityStrElement);
@@ -1173,6 +1194,7 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
     if ((elements == 0) || (length == 0))
     {
         UnityResetMessage();
+        Unity.CurrentTestLineNumber = lineNumber;
         UnityAppendString(UnityStrPointless);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -1190,6 +1212,7 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
             if (*ptr_exp != *ptr_act)
             {
                 UnityResetMessage();
+                Unity.CurrentTestLineNumber = lineNumber;
                 UnityAppendString(UnityStrMemory);
                 if (num_elements > 1)
                 {
@@ -1240,6 +1263,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
     UNITY_SKIP_EXECUTION;
     Unity.CurrentTestFailed = 1;
+    Unity.CurrentTestLineNumber = line;
     if (msg != NULL)
     {
         UnityResetMessage();
@@ -1253,6 +1277,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 {
     UNITY_SKIP_EXECUTION;
     Unity.CurrentTestIgnored = 1;
+    Unity.CurrentTestLineNumber = line;
     if (msg != NULL)
     {
         UnityResetMessage();
