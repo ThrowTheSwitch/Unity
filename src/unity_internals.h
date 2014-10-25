@@ -545,6 +545,10 @@ extern const char* UnityStrErr64;
 
 #define TEST_LINE_NUM (Unity.CurrentTestLineNumber)
 #define TEST_IS_IGNORED (Unity.CurrentTestIgnored)
+#define UNITY_NEW_TEST(a) \
+    Unity.CurrentTestName = a; \
+    Unity.CurrentTestLineNumber = (UNITY_LINE_TYPE)(__LINE__); \
+    Unity.NumberOfTests++;
 
 #ifndef UNITY_BEGIN
 #define UNITY_BEGIN() UnityBegin(__FILE__)
