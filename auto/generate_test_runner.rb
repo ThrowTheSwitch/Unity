@@ -10,7 +10,7 @@ File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 class UnityTestRunnerGenerator
 
   def initialize(options = nil)
-    @options = { :includes => [], :plugins => [], :framework => :unity }
+    @options = self.default_options
     case(options)
       when NilClass then @options
       when String   then @options.merge!(UnityTestRunnerGenerator.grab_config(options))
@@ -19,12 +19,23 @@ class UnityTestRunnerGenerator
     end
   end
 
+  def default_options
+    {
+      :includes      => [],
+      :plugins       => [],
+      :framework     => :unity,
+      :test_prefix   => "test|spec|should",
+      :setup_name    => "setUp",
+      :teardown_name => "tearDown",
+    }
+  end
+
   def self.grab_config(config_file)
-    options = { :includes => [], :plugins => [], :framework => :unity }
+    options = default_options
     unless (config_file.nil? or config_file.empty?)
       require 'yaml'
       yaml_guts = YAML.load_file(config_file)
-      options.merge!(yaml_guts[:unity] ? yaml_guts[:unity] : yaml_guts[:cmock])
+      options.merge!(yaml_guts[:unity] || yaml_guts[:cmock])
       raise "No :unity or :cmock section found in #{config_file}" unless options
     end
     return(options)
@@ -78,7 +89,7 @@ class UnityTestRunnerGenerator
 
     lines.each_with_index do |line, index|
       #find tests
-      if line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+((?:test.*)|(?:spec.*))\s*\(\s*(.*)\s*\)/
+      if line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/
         arguments = $1
         name = $2
         call = $3
@@ -160,8 +171,8 @@ class UnityTestRunnerGenerator
 
   def create_externs(output, tests, mocks)
     output.puts("\n//=======External Functions This Runner Calls=====")
-    output.puts("extern void setUp(void);")
-    output.puts("extern void tearDown(void);")
+    output.puts("extern void #{@options[:setup_name]}(void);")
+    output.puts("extern void #{@options[:teardown_name]}(void);")
     tests.each do |test|
       output.puts("extern void #{test[:test]}(#{test[:call] || 'void'});")
     end
@@ -235,13 +246,13 @@ class UnityTestRunnerGenerator
     output.puts("  { \\")
     output.puts("    CEXCEPTION_T e; \\") if cexception
     output.puts("    Try { \\") if cexception
-    output.puts("      setUp(); \\")
+    output.puts("      #{@options[:setup_name]}(); \\")
     output.puts("      TestFunc(#{va_args2}); \\")
     output.puts("    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\"); } \\") if cexception
     output.puts("  } \\")
     output.puts("  if (TEST_PROTECT() && !TEST_IS_IGNORED) \\")
     output.puts("  { \\")
-    output.puts("    tearDown(); \\")
+    output.puts("    #{@options[:teardown_name]}(); \\")
     output.puts("    CMock_Verify(); \\") unless (used_mocks.empty?)
     output.puts("  } \\")
     output.puts("  CMock_Destroy(); \\") unless (used_mocks.empty?)
@@ -255,9 +266,9 @@ class UnityTestRunnerGenerator
     output.puts("{")
     output.puts("  CMock_Verify();") unless (used_mocks.empty?)
     output.puts("  CMock_Destroy();") unless (used_mocks.empty?)
-    output.puts("  tearDown();")
+    output.puts("  #{@options[:teardown_name]}();")
     output.puts("  CMock_Init();") unless (used_mocks.empty?)
-    output.puts("  setUp();")
+    output.puts("  #{@options[:setup_name]}();")
     output.puts("}")
   end
 
@@ -299,19 +310,29 @@ if ($0 == __FILE__)
         options = UnityTestRunnerGenerator.grab_config(arg); true
       when /\.*\.h/
         options[:includes] << arg; true
+      when /--(\w+)=\"?(.*)\"?/
+        options[$1.to_sym] = $2; true
       else false
     end
   end
 
   #make sure there is at least one parameter left (the input file)
   if !ARGV[0]
-    puts ["usage: ruby #{__FILE__} (yaml) (options) input_test_file (output_test_runner) (includes)",
-           "  blah.yml           - will use config options in the yml file. detected by .yml/.yaml",
-           "  input_test_file    - this is the C file you want to create a runner for",
-           "  output_test_runner - this is the name of the runner file to generate",
-           "  includes           - all header files are added as #includes in runner. detected by .h",
+    puts ["\nusage: ruby #{__FILE__} (files) (options) input_test_file (output)",
+           "\n  input_test_file         - this is the C file you want to create a runner for",
+           "  output                  - this is the name of the runner file to generate",
+           "                            defaults to (input_test_file)_Runner",
+           "  files:",
+           "    *.yml / *.yaml        - loads configuration from here in :unity or :cmock",
+           "    *.h                   - header files are added as #includes in runner",
            "  options:",
-           "    -cexception      - include cexception support",
+           "    -cexception           - include cexception support",
+           "    --setup_name=\"\"       - redefine setUp func name to something else",
+           "    --teardown_name=\"\"    - redefine tearDown func name to something else",
+           "    --test_prefix=\"\"      - redefine test prefix from default test|spec|should",
+           "    --suite_setup=\"\"      - code to execute for setup of entire suite",
+           "    --suite_teardown=\"\"   - code to execute for teardown of entire suite",
+           "    --use_param_tests=1   - enable parameterized tests (disabled by default)",
           ].join("\n")
     exit 1
   end
