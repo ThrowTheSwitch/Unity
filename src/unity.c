@@ -14,26 +14,34 @@
 
 struct _Unity Unity;
 
-const char* UnityStrNull     = "NULL";
-const char* UnityStrSpacer   = ". ";
-const char* UnityStrExpected = " Expected ";
-const char* UnityStrWas      = " Was ";
-const char* UnityStrTo       = " To ";
-const char* UnityStrElement  = " Element ";
-const char* UnityStrByte     = " Byte ";
-const char* UnityStrMemory   = " Memory Mismatch.";
-const char* UnityStrDelta    = " Values Not Within Delta ";
-const char* UnityStrPointless= " You Asked Me To Compare Nothing, Which Was Pointless.";
-const char* UnityStrNullPointerForExpected= " Expected pointer to be NULL";
-const char* UnityStrNullPointerForActual  = " Actual pointer was NULL";
-const char* UnityStrNot      = "Not ";
-const char* UnityStrInf      = "Infinity";
-const char* UnityStrNegInf   = "Negative Infinity";
-const char* UnityStrNaN      = "NaN";
-const char* UnityStrDet      = "Determinate";
-const char* UnityStrErrFloat = "Unity Floating Point Disabled";
-const char* UnityStrErrDouble= "Unity Double Precision Disabled";
-const char* UnityStrErr64    = "Unity 64-bit Support Disabled";
+const char UnityStrOk[]                     = "OK";
+const char UnityStrPass[]                   = "PASS";
+const char UnityStrFail[]                   = "FAIL";
+const char UnityStrIgnore[]                 = "IGNORE";
+const char UnityStrNull[]                   = "NULL";
+const char UnityStrSpacer[]                 = ". ";
+const char UnityStrExpected[]               = " Expected ";
+const char UnityStrWas[]                    = " Was ";
+const char UnityStrTo[]                     = " To ";
+const char UnityStrElement[]                = " Element ";
+const char UnityStrByte[]                   = " Byte ";
+const char UnityStrMemory[]                 = " Memory Mismatch.";
+const char UnityStrDelta[]                  = " Values Not Within Delta ";
+const char UnityStrPointless[]              = " You Asked Me To Compare Nothing, Which Was Pointless.";
+const char UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
+const char UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
+const char UnityStrNot[]                    = "Not ";
+const char UnityStrInf[]                    = "Infinity";
+const char UnityStrNegInf[]                 = "Negative Infinity";
+const char UnityStrNaN[]                    = "NaN";
+const char UnityStrDet[]                    = "Determinate";
+const char UnityStrErrFloat[]               = "Unity Floating Point Disabled";
+const char UnityStrErrDouble[]              = "Unity Double Precision Disabled";
+const char UnityStrErr64[]                  = "Unity 64-bit Support Disabled";
+const char UnityStrBreaker[]                = "-----------------------";
+const char UnityStrResultsTests[]           = " Tests ";
+const char UnityStrResultsFailures[]        = " Failures ";
+const char UnityStrResultsIgnored[]         = " Ignored ";
 
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
@@ -254,12 +262,12 @@ void UnityPrintFloat(_UF number)
 
 void UnityPrintFail(void)
 {
-    UnityPrint("FAIL");
+    UnityPrint(UnityStrFail);
 }
 
 void UnityPrintOk(void)
 {
-    UnityPrint("OK");
+    UnityPrint(UnityStrOk);
 }
 
 //-----------------------------------------------
@@ -278,7 +286,8 @@ void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
-    UnityPrint("FAIL:");
+    UnityPrint(UnityStrFail);
+    UNITY_OUTPUT_CHAR(':');
 }
 
 //-----------------------------------------------
@@ -291,7 +300,7 @@ void UnityConcludeTest(void)
     else if (!Unity.CurrentTestFailed)
     {
         UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
-        UnityPrint("PASS");
+        UnityPrint(UnityStrPass);
     }
     else
     {
@@ -1077,7 +1086,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     UNITY_SKIP_EXECUTION;
 
     UnityTestResultsBegin(Unity.TestFile, line);
-    UnityPrint("IGNORE");
+    UnityPrint(UnityStrIgnore);
     if (msg != NULL)
     {
       UNITY_OUTPUT_CHAR(':');
@@ -1132,14 +1141,14 @@ void UnityBegin(const char* filename)
 int UnityEnd(void)
 {
     UNITY_PRINT_EOL;
-    UnityPrint("-----------------------");
+    UnityPrint(UnityStrBreaker);
     UNITY_PRINT_EOL;
     UnityPrintNumber((_U_SINT)(Unity.NumberOfTests));
-    UnityPrint(" Tests ");
+    UnityPrint(UnityStrResultsTests);
     UnityPrintNumber((_U_SINT)(Unity.TestFailures));
-    UnityPrint(" Failures ");
+    UnityPrint(UnityStrResultsFailures);
     UnityPrintNumber((_U_SINT)(Unity.TestIgnores));
-    UnityPrint(" Ignored");
+    UnityPrint(UnityStrResultsIgnored);
     UNITY_PRINT_EOL;
     if (Unity.TestFailures == 0U)
     {

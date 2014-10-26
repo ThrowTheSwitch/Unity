@@ -509,9 +509,9 @@ void UnityAssertDoubleSpecial(const _UD actual,
 // Error Strings We Might Need
 //-------------------------------------------------------
 
-extern const char* UnityStrErrFloat;
-extern const char* UnityStrErrDouble;
-extern const char* UnityStrErr64;
+extern const char UnityStrErrFloat[];
+extern const char UnityStrErrDouble[];
+extern const char UnityStrErr64[];
 
 //-------------------------------------------------------
 // Test Running Macros
