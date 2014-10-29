@@ -4,12 +4,12 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
-require './auto/generate_test_runner.rb'
+require '../auto/generate_test_runner.rb'
 
-TEST_FILE = 'test/testdata/testsample.c'
-TEST_MOCK = 'test/testdata/mocksample.c'
+TEST_FILE = 'testdata/testsample.c'
+TEST_MOCK = 'testdata/mocksample.c'
 OUT_FILE  = 'build/testsample_'
-EXP_FILE  = 'test/expectdata/testsample_'
+EXP_FILE  = 'expectdata/testsample_'
 
 $generate_test_runner_failures = 0
 
@@ -53,22 +53,22 @@ end
 
 should "GenerateARunnerByPullingYamlOptions" do
   subtest = 'yaml'
-  cmdstr = "ruby auto/generate_test_runner.rb test/testdata/sample.yml \"#{TEST_FILE}\" \"#{OUT_FILE + subtest + '.c'}\""
+  cmdstr = "ruby ../auto/generate_test_runner.rb testdata/sample.yml \"#{TEST_FILE}\" \"#{OUT_FILE + subtest + '.c'}\""
   `#{cmdstr}`
   verify_output_equal(subtest)
 
-  cmdstr = "ruby auto/generate_test_runner.rb test/testdata/sample.yml \"#{TEST_MOCK}\" \"#{OUT_FILE + 'mock_' + subtest + '.c'}\""
+  cmdstr = "ruby ../auto/generate_test_runner.rb testdata/sample.yml \"#{TEST_MOCK}\" \"#{OUT_FILE + 'mock_' + subtest + '.c'}\""
   `#{cmdstr}`
   verify_output_equal('mock_' + subtest)
 end
 
 should "GenerateARunnerByPullingCommandlineOptions" do
   subtest = 'cmd'
-  cmdstr = "ruby auto/generate_test_runner.rb -cexception \"#{TEST_FILE}\" \"#{OUT_FILE + subtest + '.c'}\""
+  cmdstr = "ruby ../auto/generate_test_runner.rb -cexception \"#{TEST_FILE}\" \"#{OUT_FILE + subtest + '.c'}\""
   `#{cmdstr}`
   verify_output_equal(subtest)
 
-  cmdstr = "ruby auto/generate_test_runner.rb -cexception \"#{TEST_MOCK}\" \"#{OUT_FILE + 'mock_' + subtest + '.c'}\""
+  cmdstr = "ruby ../auto/generate_test_runner.rb -cexception \"#{TEST_MOCK}\" \"#{OUT_FILE + 'mock_' + subtest + '.c'}\""
   `#{cmdstr}`
   verify_output_equal('mock_' + subtest)
 end

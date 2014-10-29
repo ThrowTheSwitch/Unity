@@ -34,7 +34,7 @@ end
 
 desc "Test unity's helper scripts"
 task :scripts => [:prepare_for_tests] do
-  Dir['test/test_*.rb'].each do |scriptfile|
+  Dir['tests/test_*.rb'].each do |scriptfile|
     require "./"+scriptfile
   end
 end

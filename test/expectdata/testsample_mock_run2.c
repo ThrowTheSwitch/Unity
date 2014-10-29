@@ -78,8 +78,7 @@ void resetTest()
 int main(void)
 {
   suite_setup();
-  UnityBegin();
-  Unity.TestFile = "test/testdata/mocksample.c";
+  UnityBegin("testdata/mocksample.c");
   RUN_TEST(test_TheFirstThingToTest, 21);
   RUN_TEST(test_TheSecondThingToTest, 43);
 
