@@ -66,8 +66,7 @@ void resetTest()
 //=======MAIN=====
 int main(void)
 {
-  UnityBegin();
-  Unity.TestFile = "test/testdata/mocksample.c";
+  UnityBegin("testdata/mocksample.c");
   RUN_TEST(test_TheFirstThingToTest, 21, RUN_TEST_NO_ARGS);
   RUN_TEST(test_TheSecondThingToTest, 43, RUN_TEST_NO_ARGS);
 

@@ -10,7 +10,7 @@ File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 class UnityTestRunnerGenerator
 
   def initialize(options = nil)
-    @options = self.default_options
+    @options = UnityTestRunnerGenerator.default_options
     case(options)
       when NilClass then @options
       when String   then @options.merge!(UnityTestRunnerGenerator.grab_config(options))
@@ -19,7 +19,7 @@ class UnityTestRunnerGenerator
     end
   end
 
-  def default_options
+  def self.default_options
     {
       :includes      => [],
       :plugins       => [],
@@ -31,7 +31,7 @@ class UnityTestRunnerGenerator
   end
 
   def self.grab_config(config_file)
-    options = default_options
+    options = self.default_options
     unless (config_file.nil? or config_file.empty?)
       require 'yaml'
       yaml_guts = YAML.load_file(config_file)
