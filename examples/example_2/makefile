@@ -4,14 +4,24 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
+#We try to detect the OS we are running on, and adjust commands as needed
+ifeq ($(OSTYPE),cygwin)
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.out
+else ifeq ($(OS),Windows_NT)
+	CLEANUP = del /F /Q
+	MKDIR = mkdir
+	TARGET_EXTENSION=.exe
+else
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.out
+endif
+
 UNITY_ROOT=../..
 C_COMPILER=gcc
 TARGET_BASE1=all_tests
-ifeq ($(OS),Windows_NT)
-	TARGET_EXTENSION=.exe
-else
-	TARGET_EXTENSION=.out
-endif
 TARGET1 = $(TARGET_BASE1)$(TARGET_EXTENSION)
 SRC_FILES1=\
   $(UNITY_ROOT)/src/unity.c \
@@ -25,12 +35,6 @@ SRC_FILES1=\
   test/test_runners/all_tests.c
 INC_DIRS=-Isrc -I$(UNITY_ROOT)/src -I$(UNITY_ROOT)/extras/fixture/src
 SYMBOLS=
-
-ifeq ($(OS),Windows_NT)
-	CLEANUP = del /F /Q $(TARGET1)
-else
-	CLEANUP = rm -f build/*.o ; rm -f $(TARGET1)
-endif
 
 all: clean default
 

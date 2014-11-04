@@ -4,28 +4,32 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
+#We try to detect the OS we are running on, and adjust commands as needed
+ifeq ($(OSTYPE),cygwin)
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.out
+else ifeq ($(OS),Windows_NT)
+	CLEANUP = del /F /Q
+	MKDIR = mkdir
+	TARGET_EXTENSION=.exe
+else
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.out
+endif
+
 UNITY_ROOT=../..
 C_COMPILER=gcc
 CFLAGS=-std=c99
 TARGET_BASE1=test1
 TARGET_BASE2=test2
-ifeq ($(OS),Windows_NT)
-	TARGET_EXTENSION=.exe
-else
-	TARGET_EXTENSION=.out
-endif
 TARGET1 = $(TARGET_BASE1)$(TARGET_EXTENSION)
 TARGET2 = $(TARGET_BASE2)$(TARGET_EXTENSION)
 SRC_FILES1=$(UNITY_ROOT)/src/unity.c src/ProductionCode.c  test/TestProductionCode.c  test/no_ruby/TestProductionCode_Runner.c
 SRC_FILES2=$(UNITY_ROOT)/src/unity.c src/ProductionCode2.c test/TestProductionCode2.c test/no_ruby/TestProductionCode2_Runner.c
 INC_DIRS=-Isrc -I$(UNITY_ROOT)/src
 SYMBOLS=-DTEST
-
-ifeq ($(OS),Windows_NT)
-	CLEANUP = del /F /Q $(TARGET1) && del /F /Q $(TARGET2)
-else
-	CLEANUP = rm -f build/*.o ; rm -f $(TARGET1) ; rm -f $(TARGET2)
-endif
 
 all: clean default
 
