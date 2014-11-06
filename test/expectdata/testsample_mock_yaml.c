@@ -65,7 +65,8 @@ a_yaml_setup();
 }
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   CMock_Verify();
   CMock_Destroy();

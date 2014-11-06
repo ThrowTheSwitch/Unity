@@ -64,7 +64,8 @@ a_custom_teardown();
 }
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   CMock_Verify();
   CMock_Destroy();

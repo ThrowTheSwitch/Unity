@@ -47,7 +47,8 @@ a_yaml_setup();
 }
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   tearDown();
   setUp();

@@ -46,7 +46,8 @@ a_custom_teardown();
 }
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   tearDown();
   setUp();

@@ -52,7 +52,8 @@ static void CMock_Destroy(void)
 }
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   CMock_Verify();
   CMock_Destroy();

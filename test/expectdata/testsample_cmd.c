@@ -38,7 +38,8 @@ extern void test_TheSecondThingToTest(void);
 
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   tearDown();
   setUp();
