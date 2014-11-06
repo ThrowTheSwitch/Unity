@@ -262,7 +262,8 @@ class UnityTestRunnerGenerator
 
   def create_reset(output, used_mocks)
     output.puts("\n//=======Test Reset Option=====")
-    output.puts("void resetTest()")
+    output.puts("void resetTest(void);")
+    output.puts("void resetTest(void)")
     output.puts("{")
     output.puts("  CMock_Verify();") unless (used_mocks.empty?)
     output.puts("  CMock_Destroy();") unless (used_mocks.empty?)
