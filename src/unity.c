@@ -643,12 +643,12 @@ void UnityAssertFloatSpecial(const _UF actual,
                              const UNITY_LINE_TYPE lineNumber,
                              const UNITY_FLOAT_TRAIT_T style)
 {
-    UNITY_SKIP_EXECUTION;
-
     const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
     _U_SINT should_be_trait   = ((_U_SINT)style & 1);
     _U_SINT is_trait          = !should_be_trait;
     _U_SINT trait_index       = style >> 1;
+
+    UNITY_SKIP_EXECUTION;
 
     switch(style)
     {
@@ -803,12 +803,12 @@ void UnityAssertDoubleSpecial(const _UD actual,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_FLOAT_TRAIT_T style)
 {
-    UNITY_SKIP_EXECUTION;
-
     const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
     _U_SINT should_be_trait   = ((_U_SINT)style & 1);
     _U_SINT is_trait          = !should_be_trait;
     _U_SINT trait_index       = style >> 1;
+
+    UNITY_SKIP_EXECUTION;
 
     switch(style)
     {
