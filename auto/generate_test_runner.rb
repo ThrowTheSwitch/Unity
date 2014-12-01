@@ -195,7 +195,7 @@ class UnityTestRunnerGenerator
       end
       output.puts("}\n")
 
-      output.puts("static void CMock_Verify(void)")
+      output.puts("void CMock_Verify(void)")
       output.puts("{")
       mocks.each do |mock|
         mock_clean = mock.gsub(/(?:-|\s+)/, "_")
@@ -241,6 +241,7 @@ class UnityTestRunnerGenerator
     output.puts("  Unity.CurrentTestName = #TestFunc#{va_args2.empty? ? '' : " \"(\" ##{va_args2} \")\""}; \\")
     output.puts("  Unity.CurrentTestLineNumber = TestLineNum; \\")
     output.puts("  Unity.NumberOfTests++; \\")
+    output.puts("  TEST_RESET_GLOBAL_MESSAGE(); \\")
     output.puts("  CMock_Init(); \\") unless (used_mocks.empty?)
     output.puts("  if (TEST_PROTECT()) \\")
     output.puts("  { \\")

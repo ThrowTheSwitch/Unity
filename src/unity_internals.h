@@ -400,6 +400,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 // Test Output
 //-------------------------------------------------------
 
+void UnitySetGlobalMessage(const char* msg);
 void UnityPrint(const char* string);
 void UnityPrintMask(const _U_UINT mask, const _U_UINT number);
 void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T style);
