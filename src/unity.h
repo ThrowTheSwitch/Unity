@@ -6,7 +6,16 @@
 
 #ifndef UNITY_FRAMEWORK_H
 #define UNITY_FRAMEWORK_H
-#define UNITY
+
+#define UNITY_EXCLUDE_STDINT_H // DGS: This prevents Unity from #including <stdint.h>
+
+// DGS: These override the Unity default types which are unsigned shorts
+#define UNITY_LINE_TYPE unsigned long
+#define UNITY_COUNTER_TYPE unsigned long
+
+// make floating point unit tests print the expected and actual values when they fail.
+#define UNITY_FLOAT_VERBOSE
+#define UNITY_FRAMEWORK
 
 #include "unity_internals.h"
 
@@ -267,6 +276,13 @@
 #define TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF_MESSAGE(actual, message)                                 UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(actual, __LINE__, message)
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(actual, message)                                     UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, __LINE__, message)
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, __LINE__, message)
+
+//-------------------------------------------------------
+// Utility Macros
+//-------------------------------------------------------
+#define NUMBER_OF_ARRAY_ELEMENTS(arr)   (sizeof(arr) / sizeof(arr[0]))
+#define TEST_SET_GLOBAL_MESSAGE(msg)    UnitySetGlobalMessage(msg)
+#define TEST_RESET_GLOBAL_MESSAGE()     UnitySetGlobalMessage(NULL)
 
 //end of UNITY_FRAMEWORK_H
 #endif
