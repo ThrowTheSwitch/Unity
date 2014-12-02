@@ -6,6 +6,7 @@
 
 #ifndef UNITY_FRAMEWORK_H
 #define UNITY_FRAMEWORK_H
+#define UNITY
 
 #include "unity_internals.h"
 
