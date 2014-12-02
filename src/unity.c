@@ -5,38 +5,13 @@
 ============================================================================ */
 
 #include "unity.h"
-#include <stdio.h>
-#include <string.h>
-#ifdef UNITY_COLOR_OUTPUT
-#if defined(_MSC_VER)
-#include <Windows.h>
-#define FOREGROUND_YELLOW 6     /* For some reason Microsoft didn't define yellow */
-#define FOREGROUND_WHITE  7     /* ... or white */
-#define UNITY_SET_DEFAULT_COLORS { SetConsoleTextAttribute(hConsoleOut, FOREGROUND_WHITE); }
-#define UNITY_SET_FAIL_COLORS    { SetConsoleTextAttribute(hConsoleOut, FOREGROUND_RED    | FOREGROUND_INTENSITY); }
-#define UNITY_SET_PASS_COLORS    { SetConsoleTextAttribute(hConsoleOut, FOREGROUND_GREEN  | FOREGROUND_INTENSITY); }
-#define UNITY_SET_IGNORE_COLORS  { SetConsoleTextAttribute(hConsoleOut, FOREGROUND_YELLOW | FOREGROUND_INTENSITY); }
-HANDLE hConsoleOut;
-#else // defined (_MSC_VER)
-#define ANSI_ESC 0x1B           /* Escape character for setting ANSI terminal attributes */
-#define UNITY_SET_DEFAULT_COLORS { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('0');                         UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[0m" */
-#define UNITY_SET_FAIL_COLORS    { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('1'); UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[31m" */
-#define UNITY_SET_PASS_COLORS    { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('2'); UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[32m" */
-#define UNITY_SET_IGNORE_COLORS  { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[33m" */
-#endif // defined (_MSC_VER)
-#else // UNITY_COLOR_OUTPUT
-#define UNITY_SET_DEFAULT_COLORS
-#define UNITY_SET_FAIL_COLORS
-#define UNITY_SET_PASS_COLORS
-#define UNITY_SET_IGNORE_COLORS
-#endif // UNITY_COLOR_OUTPUT
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
-#define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n'); }
-// globals
+#define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
+
 #if defined(_MSC_VER)
 #define SAFE_SPRINTF sprintf_s
 #else
@@ -78,7 +53,7 @@ const char UnityStrResultsTests[]           = " Tests ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
 
-const char* UnityStrGlobalTestMsg = NULL;  // DGS: I added this as way to specify a global (per test) message printed on failed or ignored test
+const char* UnityStrGlobalTestMsg = NULL;
 
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
@@ -315,9 +290,6 @@ void UnityPrintOk(void)
 //-----------------------------------------------
 void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
-    // Reset console text to white
-    UNITY_SET_DEFAULT_COLORS;
-
     UNITY_PRINT_EOL;
     UnityPrint(file);
     UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
@@ -325,28 +297,11 @@ void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
     UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
     UnityPrint(Unity.CurrentTestName);
     UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
-
-    if (Unity.CurrentTestFailed)
-    {
-        // Set console text to red
-        UNITY_SET_FAIL_COLORS;
-    }
-    else if(Unity.CurrentTestIgnored)
-    {
-        // Set console text to yellow
-        UNITY_SET_IGNORE_COLORS;
-    }
-    else
-    {
-        // Set console text to green
-        UNITY_SET_PASS_COLORS;
-    }
 }
 
 //-----------------------------------------------
 void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
-    Unity.CurrentTestFailed = 1;        // DGS: Added to trigger color coding of test results. UNITY_FAIL_AND_BAIL sets this as well
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrFail);
     UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
@@ -1159,8 +1114,6 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
     UNITY_SKIP_EXECUTION;
 
-    Unity.CurrentTestFailed = 1;        // DGS: Added to trigger color coding of test results. UNITY_FAIL_AND_BAIL sets this as well
-
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrintFail();
     UnityAddLonelyMsgIfSpecified(msg);
@@ -1171,8 +1124,6 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 {
     UNITY_SKIP_EXECUTION;
-
-    Unity.CurrentTestIgnored = 1;       // DGS: Added to trigger color coding of test results. UNITY_IGNORE_AND_BAIL sets this as well
 
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrIgnore);
@@ -1209,10 +1160,6 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 //-----------------------------------------------
 void UnityBegin(const char* filename)
 {
-#if defined(_MSC_VER)
-    hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-#endif
-
     Unity.TestFile = filename;
     Unity.CurrentTestName = NULL;
     Unity.CurrentTestLineNumber = 0;
@@ -1228,57 +1175,26 @@ void UnityBegin(const char* filename)
 //-----------------------------------------------
 int UnityEnd(void)
 {
-    // Reset console text to white
-    UNITY_SET_DEFAULT_COLORS;
-
     UNITY_PRINT_EOL;
     UnityPrint(UnityStrBreaker);
     UNITY_PRINT_EOL;
     UnityPrintNumber((_U_SINT)(Unity.NumberOfTests));
     UnityPrint(UnityStrResultsTests);
-
-    if(Unity.TestFailures > 0)
-    {
-        // Set console text to red
-        UNITY_SET_FAIL_COLORS;
-    }
-
     UnityPrintNumber((_U_SINT)(Unity.TestFailures));
     UnityPrint(UnityStrResultsFailures);
-
-    // Reset console text to white
-    UNITY_SET_DEFAULT_COLORS;
-
-    if(Unity.TestIgnores > 0)
-    {
-        // Set console text to yellow
-        UNITY_SET_IGNORE_COLORS;
-    }
-
     UnityPrintNumber((_U_SINT)(Unity.TestIgnores));
     UnityPrint(UnityStrResultsIgnored);
-
-    // Reset console text to white
-    UNITY_SET_DEFAULT_COLORS;
-
     UNITY_PRINT_EOL;
     if (Unity.TestFailures == 0U)
     {
-        // Set console text to green
-        UNITY_SET_PASS_COLORS;
         UnityPrintOk();
     }
     else
     {
-        // Set console text to red
-        UNITY_SET_FAIL_COLORS;
         UnityPrintFail();
     }
     UNITY_PRINT_EOL;
-
-    // Reset console text to white
-    UNITY_SET_DEFAULT_COLORS;
-
+    UNITY_OUTPUT_COMPLETE();
     return (int)(Unity.TestFailures);
 }
 
