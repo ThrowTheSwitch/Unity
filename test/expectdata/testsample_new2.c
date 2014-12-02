@@ -6,6 +6,7 @@
   Unity.CurrentTestName = #TestFunc; \
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
+  TEST_RESET_GLOBAL_MESSAGE(); \
   if (TEST_PROTECT()) \
   { \
       setUp(); \

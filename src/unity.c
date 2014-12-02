@@ -7,6 +7,7 @@
 #include "unity.h"
 #include <stdio.h>
 #include <string.h>
+#ifdef UNITY_COLOR_OUTPUT
 #if defined(_MSC_VER)
 #include <Windows.h>
 #define FOREGROUND_YELLOW 6     /* For some reason Microsoft didn't define yellow */
@@ -15,15 +16,20 @@
 #define UNITY_SET_FAIL_COLORS    { SetConsoleTextAttribute(hConsoleOut, FOREGROUND_RED    | FOREGROUND_INTENSITY); }
 #define UNITY_SET_PASS_COLORS    { SetConsoleTextAttribute(hConsoleOut, FOREGROUND_GREEN  | FOREGROUND_INTENSITY); }
 #define UNITY_SET_IGNORE_COLORS  { SetConsoleTextAttribute(hConsoleOut, FOREGROUND_YELLOW | FOREGROUND_INTENSITY); }
-#define SAFE_SPRINTF sprintf_s
-#else
+HANDLE hConsoleOut;
+#else // defined (_MSC_VER)
 #define ANSI_ESC 0x1B           /* Escape character for setting ANSI terminal attributes */
 #define UNITY_SET_DEFAULT_COLORS { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('0');                         UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[0m" */
 #define UNITY_SET_FAIL_COLORS    { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('1'); UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[31m" */
 #define UNITY_SET_PASS_COLORS    { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('2'); UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[32m" */
 #define UNITY_SET_IGNORE_COLORS  { UNITY_OUTPUT_CHAR(ANSI_ESC); UNITY_OUTPUT_CHAR('['); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('3'); UNITY_OUTPUT_CHAR('m'); } /* "<ESC>[33m" */
-#define SAFE_SPRINTF snprintf
-#endif
+#endif // defined (_MSC_VER)
+#else // UNITY_COLOR_OUTPUT
+#define UNITY_SET_DEFAULT_COLORS
+#define UNITY_SET_FAIL_COLORS
+#define UNITY_SET_PASS_COLORS
+#define UNITY_SET_IGNORE_COLORS
+#endif // UNITY_COLOR_OUTPUT
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
@@ -32,11 +38,13 @@
 #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n'); }
 // globals
 #if defined(_MSC_VER)
-HANDLE hConsoleOut;
+#define SAFE_SPRINTF sprintf_s
+#else
+#define SAFE_SPRINTF snprintf
 #endif
 
 #ifndef UNITY_RESULT_DELIMITER
-#define UNITY_RESULT_DELIMITER ';'
+#define UNITY_RESULT_DELIMITER ':'
 #endif
 
 struct _Unity Unity = { 0 };

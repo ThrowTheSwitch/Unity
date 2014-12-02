@@ -7,6 +7,7 @@
   Unity.CurrentTestName = #TestFunc "(" #__VA_ARGS__ ")"; \
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
+  TEST_RESET_GLOBAL_MESSAGE(); \
   CMock_Init(); \
   if (TEST_PROTECT()) \
   { \
