@@ -122,7 +122,7 @@ TEST(UnityFixture, PointerSet)
     p1 = &c1;
     p2 = &c2;
 
-    UnityPointer_Init(10);
+    UnityPointer_Init();
     UT_PTR_SET(p1, &newC1);
     UT_PTR_SET(p2, &newC2);
     TEST_ASSERT_POINTERS_EQUAL(&newC1, p1);
