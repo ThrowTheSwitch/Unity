@@ -677,6 +677,8 @@ void UnityAssertFloatSpecial(const _UF actual,
             else
                 is_trait = 1;
             break;
+	default:
+	    ;
     }
 
     if (is_trait != should_be_trait)
@@ -837,6 +839,8 @@ void UnityAssertDoubleSpecial(const _UD actual,
             else
                 is_trait = 1;
             break;
+	default:
+	    ;
     }
 
     if (is_trait != should_be_trait)
