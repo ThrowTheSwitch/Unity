@@ -292,22 +292,19 @@ extern int UNITY_OUTPUT_CHAR(int);
 //-------------------------------------------------------
 // Language Features Available
 //-------------------------------------------------------
-
-#ifdef __GNUC__
-#define UNITY_SUPPORT_WEAK __attribute__((weak))
+#if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
+#   ifdef __GNUC__ // includes clang
+#       if !(defined(__WIN32__) && defined(__clang__))
+#           define UNITY_WEAK_ATTRIBUTE __attribute__((weak))
+#       endif
+#   endif
 #endif
 
-#ifdef __clang__
-#define UNITY_SUPPORT_WEAK __attribute__((weak))
+#ifdef UNITY_NO_WEAK
+#   undef UNITY_WEAK_ATTRIBUTE
+#   undef UNITY_WEAK_PRAGMA
 #endif
 
-#ifndef UNITY_WEAK
-#ifdef UNITY_SUPPORT_WEAK
-#define UNITY_WEAK UNITY_SUPPORT_WEAK
-#else
-#define UNITY_WEAK
-#endif
-#endif
 
 //-------------------------------------------------------
 // Internal Structs Needed
