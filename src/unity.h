@@ -268,5 +268,11 @@
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(actual, message)                                     UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, __LINE__, message)
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, __LINE__, message)
 
+//-------------------------------------------------------
+// Utility Macros
+//-------------------------------------------------------
+#define TEST_SET_GLOBAL_MESSAGE(msg)    UnitySetGlobalMessage(msg)
+#define TEST_RESET_GLOBAL_MESSAGE()     UnitySetGlobalMessage(NULL)
+
 //end of UNITY_FRAMEWORK_H
 #endif

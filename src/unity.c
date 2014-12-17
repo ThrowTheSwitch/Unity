@@ -12,7 +12,17 @@
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
 #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
 
-struct _Unity Unity;
+#if defined(_MSC_VER)
+#define SAFE_SPRINTF sprintf_s
+#else
+#define SAFE_SPRINTF snprintf
+#endif
+
+#ifndef UNITY_RESULT_DELIMITER
+#define UNITY_RESULT_DELIMITER ':'
+#endif
+
+struct _Unity Unity = { 0 };
 
 const char UnityStrOk[]                     = "OK";
 const char UnityStrPass[]                   = "PASS";
@@ -42,6 +52,8 @@ const char UnityStrBreaker[]                = "-----------------------";
 const char UnityStrResultsTests[]           = " Tests ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
+
+const char* UnityStrGlobalTestMsg = NULL;
 
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
@@ -74,6 +86,11 @@ void UnityPrintOk(void);
 // Pretty Printers & Test Result Output Handlers
 //-----------------------------------------------
 
+void UnitySetGlobalMessage(const char* msg)
+{
+    UnityStrGlobalTestMsg = msg;
+}
+
 void UnityPrint(const char* string)
 {
     const char* pch = string;
@@ -88,13 +105,13 @@ void UnityPrint(const char* string)
                 UNITY_OUTPUT_CHAR(*pch);
             }
             //write escaped carriage returns
-            else if (*pch == 13)
+            else if (*pch == '\r')
             {
                 UNITY_OUTPUT_CHAR('\\');
                 UNITY_OUTPUT_CHAR('r');
             }
             //write escaped line feeds
-            else if (*pch == 10)
+            else if (*pch == '\n')
             {
                 UNITY_OUTPUT_CHAR('\\');
                 UNITY_OUTPUT_CHAR('n');
@@ -250,10 +267,10 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 //-----------------------------------------------
 #ifdef UNITY_FLOAT_VERBOSE
 #include <string.h>
-void UnityPrintFloat(_UF number)
+void UnityPrintFloat(const _UF number)
 {
     char TempBuffer[32];
-    sprintf(TempBuffer, "%.6f", number);
+    SAFE_SPRINTF(TempBuffer, sizeof(TempBuffer), "%.6f", number);
     UnityPrint(TempBuffer);
 }
 #endif
@@ -274,11 +291,11 @@ void UnityPrintOk(void)
 void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
     UnityPrint(file);
-    UNITY_OUTPUT_CHAR(':');
+    UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
     UnityPrintNumber((_U_SINT)line);
-    UNITY_OUTPUT_CHAR(':');
+    UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
     UnityPrint(Unity.CurrentTestName);
-    UNITY_OUTPUT_CHAR(':');
+    UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
 }
 
 //-----------------------------------------------
@@ -286,7 +303,7 @@ void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrFail);
-    UNITY_OUTPUT_CHAR(':');
+    UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
 }
 
 //-----------------------------------------------
@@ -314,9 +331,40 @@ void UnityConcludeTest(void)
 //-----------------------------------------------
 void UnityAddMsgIfSpecified(const char* msg)
 {
-    if (msg)
+    if (UnityStrGlobalTestMsg != NULL)
+    {
+         UnityPrint(UnityStrSpacer);
+         UnityPrint(UnityStrGlobalTestMsg);
+    }
+
+    if (msg != NULL)
     {
         UnityPrint(UnityStrSpacer);
+        UnityPrint(msg);
+    }
+}
+
+//-----------------------------------------------
+void UnityAddLonelyMsgIfSpecified(const char* msg)
+{
+    if (UnityStrGlobalTestMsg != NULL)
+    {
+        UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
+        if (UnityStrGlobalTestMsg[0] != ' ')
+        {
+            UNITY_OUTPUT_CHAR(' ');
+        }
+        UnityPrint(UnityStrGlobalTestMsg);
+        UnitySetGlobalMessage(NULL);      // Prevent UnityAddMsgIfSpecified() from printing UnityStrGlobalTestMsg again
+        UnityAddMsgIfSpecified(msg);
+    }
+    else if (msg != NULL)
+    {
+        UNITY_OUTPUT_CHAR(UNITY_RESULT_DELIMITER);
+        if (msg[0] != ' ')
+        {
+            UNITY_OUTPUT_CHAR(' ');
+        }
         UnityPrint(msg);
     }
 }
@@ -1072,15 +1120,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrintFail();
-    if (msg != NULL)
-    {
-      UNITY_OUTPUT_CHAR(':');
-      if (msg[0] != ' ')
-      {
-        UNITY_OUTPUT_CHAR(' ');
-      }
-      UnityPrint(msg);
-    }
+    UnityAddLonelyMsgIfSpecified(msg);
     UNITY_FAIL_AND_BAIL;
 }
 
@@ -1091,12 +1131,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrIgnore);
-    if (msg != NULL)
-    {
-      UNITY_OUTPUT_CHAR(':');
-      UNITY_OUTPUT_CHAR(' ');
-      UnityPrint(msg);
-    }
+    UnityAddLonelyMsgIfSpecified(msg);
     UNITY_IGNORE_AND_BAIL;
 }
 
