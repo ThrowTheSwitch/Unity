@@ -158,7 +158,7 @@ TEST_TEAR_DOWN(UnityCommandOptions)
 }
 
 
-static char* noOptions[] = {
+static const char* noOptions[] = {
         "testrunner.exe"
 };
 
@@ -171,7 +171,7 @@ TEST(UnityCommandOptions, DefaultOptions)
     TEST_ASSERT_EQUAL(1, UnityFixture.RepeatCount);
 }
 
-static char* verbose[] = {
+static const char* verbose[] = {
         "testrunner.exe",
         "-v"
 };
@@ -182,7 +182,7 @@ TEST(UnityCommandOptions, OptionVerbose)
     TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
 }
 
-static char* group[] = {
+static const char* group[] = {
         "testrunner.exe",
         "-g", "groupname"
 };
@@ -193,7 +193,7 @@ TEST(UnityCommandOptions, OptionSelectTestByGroup)
     STRCMP_EQUAL("groupname", UnityFixture.GroupFilter);
 }
 
-static char* name[] = {
+static const char* name[] = {
         "testrunner.exe",
         "-n", "testname"
 };
@@ -204,7 +204,7 @@ TEST(UnityCommandOptions, OptionSelectTestByName)
     STRCMP_EQUAL("testname", UnityFixture.NameFilter);
 }
 
-static char* repeat[] = {
+static const char* repeat[] = {
         "testrunner.exe",
         "-r", "99"
 };
@@ -221,7 +221,7 @@ TEST(UnityCommandOptions, OptionSelectRepeatTestsSpecificCount)
     TEST_ASSERT_EQUAL(99, UnityFixture.RepeatCount);
 }
 
-static char* multiple[] = {
+static const char* multiple[] = {
         "testrunner.exe",
         "-v",
         "-g", "groupname",
@@ -238,7 +238,7 @@ TEST(UnityCommandOptions, MultipleOptions)
     TEST_ASSERT_EQUAL(98, UnityFixture.RepeatCount);
 }
 
-static char* dashRNotLast[] = {
+static const char* dashRNotLast[] = {
         "testrunner.exe",
         "-v",
         "-g", "gggg",
@@ -255,7 +255,7 @@ TEST(UnityCommandOptions, MultipleOptionsDashRNotLastAndNoValueSpecified)
     TEST_ASSERT_EQUAL(2, UnityFixture.RepeatCount);
 }
 
-static char* unknownCommand[] = {
+static const char* unknownCommand[] = {
         "testrunner.exe",
         "-v",
         "-g", "groupname",

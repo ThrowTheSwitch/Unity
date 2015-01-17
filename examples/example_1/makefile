@@ -21,7 +21,26 @@ endif
 
 UNITY_ROOT=../..
 C_COMPILER=gcc
+
 CFLAGS=-std=c99
+CFLAGS += -Wall
+CFLAGS += -Wextra
+CFLAGS += -Werror 
+CFLAGS += -Wpointer-arith
+CFLAGS += -Wcast-align
+CFLAGS += -Wwrite-strings
+CFLAGS += -Wswitch-default
+CFLAGS += -Wunreachable-code
+CFLAGS += -Winit-self
+CFLAGS += -Wlogical-op
+CFLAGS += -Wmissing-field-initializers
+CFLAGS += -Wno-unknown-pragmas
+CFLAGS += -Wjump-misses-init
+CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wundef
+CFLAGS += -Wunsafe-loop-optimizations
+CFLAGS += -Wold-style-definition
+
 TARGET_BASE1=test1
 TARGET_BASE2=test2
 TARGET1 = $(TARGET_BASE1)$(TARGET_EXTENSION)

@@ -17,10 +17,12 @@ int (*outputChar)(int) = putchar;
 
 int verbose = 0;
 
+void setUp(void);
+void tearDown(void);
 void setUp(void)    { /*does nothing*/ }
 void tearDown(void) { /*does nothing*/ }
 
-void announceTestRun(unsigned int runNumber)
+static void announceTestRun(unsigned int runNumber)
 {
     UnityPrint("Unity test run ");
     UnityPrintNumber(runNumber+1);
@@ -29,7 +31,7 @@ void announceTestRun(unsigned int runNumber)
     UNITY_OUTPUT_CHAR('\n');
 }
 
-int UnityMain(int argc, char* argv[], void (*runAllTests)(void))
+int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
 {
     int result = UnityGetCommandLineOptions(argc, argv);
     unsigned int r;
@@ -65,7 +67,7 @@ static int groupSelected(const char* group)
     return selected(UnityFixture.GroupFilter, group);
 }
 
-static void runTestCase()
+static void runTestCase(void)
 {
 
 }
@@ -132,13 +134,13 @@ void UnityIgnoreTest(const char * printableName)
 static int malloc_count;
 static int malloc_fail_countdown = MALLOC_DONT_FAIL;
 
-void UnityMalloc_StartTest()
+void UnityMalloc_StartTest(void)
 {
     malloc_count = 0;
     malloc_fail_countdown = MALLOC_DONT_FAIL;
 }
 
-void UnityMalloc_EndTest()
+void UnityMalloc_EndTest(void)
 {
     malloc_fail_countdown = MALLOC_DONT_FAIL;
     if (malloc_count != 0)
@@ -274,7 +276,7 @@ enum {MAX_POINTERS=50};
 static PointerPair pointer_store[MAX_POINTERS];
 static int pointer_index = 0;
 
-void UnityPointer_Init()
+void UnityPointer_Init(void)
 {
     pointer_index = 0;
 }
@@ -290,7 +292,7 @@ void UnityPointer_Set(void ** pointer, void * newValue)
     pointer_index++;
 }
 
-void UnityPointer_UndoAllSets()
+void UnityPointer_UndoAllSets(void)
 {
     while (pointer_index > 0)
     {
@@ -301,12 +303,12 @@ void UnityPointer_UndoAllSets()
     }
 }
 
-int UnityFailureCount()
+int UnityFailureCount(void)
 {
     return Unity.TestFailures;
 }
 
-int UnityGetCommandLineOptions(int argc, char* argv[])
+int UnityGetCommandLineOptions(int argc, const char* argv[])
 {
     int i;
     UnityFixture.Verbose = 0;
@@ -360,7 +362,7 @@ int UnityGetCommandLineOptions(int argc, char* argv[])
     return 0;
 }
 
-void UnityConcludeFixtureTest()
+void UnityConcludeFixtureTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
