@@ -7,14 +7,14 @@
 
 #include "unity_fixture.h"
 
-static void runAllTests()
+static void runAllTests(void)
 {
     RUN_TEST_GROUP(UnityFixture);
     RUN_TEST_GROUP(UnityCommandOptions);
     RUN_TEST_GROUP(LeakDetection)
 }
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
     return UnityMain(argc, argv, runAllTests);
 }

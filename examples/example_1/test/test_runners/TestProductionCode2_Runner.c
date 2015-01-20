@@ -12,18 +12,6 @@ extern void test_IgnoredTest(void);
 extern void test_AnotherIgnoredTest(void);
 extern void test_ThisFunctionHasNotBeenTested_NeedsToBeImplemented(void);
 
-static void runTest(UnityTestFunction test)
-{
-  if (TEST_PROTECT())
-  {
-      setUp();
-      test();
-  }
-  if (TEST_PROTECT() && !TEST_IS_IGNORED)
-  {
-    tearDown();
-  }
-}
 void resetTest(void);
 void resetTest(void)
 {
@@ -36,7 +24,6 @@ int main(void)
 {
   UnityBegin("test/TestProductionCode2.c");
 
-  // RUN_TEST calls runTest
   RUN_TEST(test_IgnoredTest, 13);
   RUN_TEST(test_AnotherIgnoredTest, 18);
   RUN_TEST(test_ThisFunctionHasNotBeenTested_NeedsToBeImplemented, 23);

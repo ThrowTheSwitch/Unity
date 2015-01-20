@@ -21,6 +21,28 @@ endif
 
 UNITY_ROOT=../..
 C_COMPILER=gcc
+
+CFLAGS = -std=c99
+CFLAGS += -Wall
+CFLAGS += -Wextra
+CFLAGS += -Werror 
+CFLAGS += -Wpointer-arith
+CFLAGS += -Wcast-align
+CFLAGS += -Wwrite-strings
+CFLAGS += -Wswitch-default
+CFLAGS += -Wunreachable-code
+CFLAGS += -Winit-self
+CFLAGS += -Wlogical-op
+CFLAGS += -Wmissing-field-initializers
+CFLAGS += -Wno-unknown-pragmas
+CFLAGS += -Wjump-misses-init
+CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wundef
+CFLAGS += -Wunsafe-loop-optimizations
+CFLAGS += -Wold-style-definition
+CFLAGS += -Wmissing-prototypes
+CFLAGS += -Wmissing-declarations
+
 TARGET_BASE1=all_tests
 TARGET1 = $(TARGET_BASE1)$(TARGET_EXTENSION)
 SRC_FILES1=\
@@ -41,7 +63,7 @@ all: clean default
 default:
 #	ruby auto/generate_test_runner.rb test/TestProductionCode.c  test/test_runners/TestProductionCode_Runner.c
 #	ruby auto/generate_test_runner.rb test/TestProductionCode2.c test/test_runners/TestProductionCode2_Runner.c
-	$(C_COMPILER) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
+	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
 	./$(TARGET1)
 
 clean:

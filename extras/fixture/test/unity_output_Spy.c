@@ -25,7 +25,7 @@ void UnityOutputCharSpy_Create(int s)
     memset(buffer, 0, size);
 }
 
-void UnityOutputCharSpy_Destroy()
+void UnityOutputCharSpy_Destroy(void)
 {
     size = 0;
     free(buffer);
@@ -45,7 +45,7 @@ int UnityOutputCharSpy_OutputChar(int c)
     return c;
 }
 
-const char * UnityOutputCharSpy_Get()
+const char * UnityOutputCharSpy_Get(void)
 {
     return buffer;
 }
