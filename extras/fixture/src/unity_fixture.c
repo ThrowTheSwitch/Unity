@@ -40,8 +40,8 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
 
     for (r = 0; r < UnityFixture.RepeatCount; r++)
     {
-        announceTestRun(r);
         UnityBegin(argv[0]);
+        announceTestRun(r);
         runAllTests();
         UNITY_OUTPUT_CHAR('\n');
         UnityEnd();
