@@ -162,6 +162,14 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 #undef free
 #endif
 
+#ifdef calloc
+#undef calloc
+#endif
+
+#ifdef realloc
+#undef realloc
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
