@@ -1145,6 +1145,7 @@ void UnityBegin(const char* filename)
     Unity.TestIgnores = 0;
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+    Unity.NumberOfAssertions = 0;
 
     UNITY_OUTPUT_START();
 }
