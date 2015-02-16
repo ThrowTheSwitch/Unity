@@ -79,6 +79,7 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
+        UNITY_COUNTER_TYPE NumberOfAssertions;
         jmp_buf AbortFrame;
     } _Expected_Unity;
 
