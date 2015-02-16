@@ -9,7 +9,7 @@
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
-#define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
+#define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} else { Unity.NumberOfAssertions++; } }
 #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
 
 struct _Unity Unity;
@@ -40,6 +40,7 @@ const char UnityStrErrDouble[]              = "Unity Double Precision Disabled";
 const char UnityStrErr64[]                  = "Unity 64-bit Support Disabled";
 const char UnityStrBreaker[]                = "-----------------------";
 const char UnityStrResultsTests[]           = " Tests ";
+const char UnityStrResultsAssertions[]      = " Assertions ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
 
@@ -1156,6 +1157,8 @@ int UnityEnd(void)
     UNITY_PRINT_EOL;
     UnityPrintNumber((_U_SINT)(Unity.NumberOfTests));
     UnityPrint(UnityStrResultsTests);
+    UnityPrintNumber((_U_SINT)(Unity.NumberOfAssertions));
+    UnityPrint(UnityStrResultsAssertions);
     UnityPrintNumber((_U_SINT)(Unity.TestFailures));
     UnityPrint(UnityStrResultsFailures);
     UnityPrintNumber((_U_SINT)(Unity.TestIgnores));
