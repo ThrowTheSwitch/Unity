@@ -2,7 +2,7 @@
 #   Unity Project - A Test Framework for C
 #   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
 #   [Released under MIT License. Please refer to license.txt for details]
-# ========================================== 
+# ==========================================
 
 HERE = File.expand_path(File.dirname(__FILE__)) + '/'
 
@@ -11,13 +11,24 @@ require 'rake/clean'
 require 'rake/testtask'
 require HERE + 'rakefile_helper'
 
+TEMP_DIRS = [
+    File.join(HERE, 'build')
+]
+
+TEMP_DIRS.each do |dir|
+  directory(dir)
+  CLOBBER.include(dir)
+end
+
+task :prepare_for_tests => TEMP_DIRS
+
 include RakefileHelpers
 
 # Load default configuration, for now
-DEFAULT_CONFIG_FILE = 'gcc_32.yml'
+DEFAULT_CONFIG_FILE = 'gcc_auto_stdint.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
-task :unit do
+task :unit => [:prepare_for_tests] do
   run_tests
 end
 

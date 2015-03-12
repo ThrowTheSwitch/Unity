@@ -29,7 +29,7 @@ void UnityIgnoreTest(const char * printableName);
 void UnityMalloc_StartTest(void);
 void UnityMalloc_EndTest(void);
 int UnityFailureCount(void);
-int UnityGetCommandLineOptions(int argc, char* argv[]);
+int UnityGetCommandLineOptions(int argc, const char* argv[]);
 void UnityConcludeFixtureTest(void);
 
 void UnityPointer_Set(void ** ptr, void * newValue);

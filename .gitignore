@@ -1,2 +1,7 @@
 build/
 .DS_Store
+examples/example_1/test1.out
+examples/example_1/test2.out
+examples/example_2/all_tests.out
+examples/example_3/test1.out
+examples/example_3/test2.out

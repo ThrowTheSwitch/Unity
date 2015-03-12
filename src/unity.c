@@ -271,9 +271,8 @@ void UnityPrintOk(void)
 }
 
 //-----------------------------------------------
-void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
+static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
-    UNITY_PRINT_EOL;
     UnityPrint(file);
     UNITY_OUTPUT_CHAR(':');
     UnityPrintNumber((_U_SINT)line);
@@ -283,7 +282,7 @@ void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 }
 
 //-----------------------------------------------
-void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
+static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrFail);
@@ -309,10 +308,11 @@ void UnityConcludeTest(void)
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+    UNITY_PRINT_EOL;
 }
 
 //-----------------------------------------------
-void UnityAddMsgIfSpecified(const char* msg)
+static void UnityAddMsgIfSpecified(const char* msg)
 {
     if (msg)
     {
@@ -322,7 +322,7 @@ void UnityAddMsgIfSpecified(const char* msg)
 }
 
 //-----------------------------------------------
-void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual)
+static void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual)
 {
     UnityPrint(UnityStrExpected);
     if (expected != NULL)
@@ -352,7 +352,7 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
 // Assertion & Control Helpers
 //-----------------------------------------------
 
-int UnityCheckArraysForNull(UNITY_PTR_ATTRIBUTE const void* expected, UNITY_PTR_ATTRIBUTE const void* actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
+static int UnityCheckArraysForNull(UNITY_PTR_ATTRIBUTE const void* expected, UNITY_PTR_ATTRIBUTE const void* actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
 {
     //return true if they are both NULL
     if ((expected == NULL) && (actual == NULL))
@@ -643,12 +643,12 @@ void UnityAssertFloatSpecial(const _UF actual,
                              const UNITY_LINE_TYPE lineNumber,
                              const UNITY_FLOAT_TRAIT_T style)
 {
-    UNITY_SKIP_EXECUTION;
-
     const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
     _U_SINT should_be_trait   = ((_U_SINT)style & 1);
     _U_SINT is_trait          = !should_be_trait;
     _U_SINT trait_index       = style >> 1;
+
+    UNITY_SKIP_EXECUTION;
 
     switch(style)
     {
@@ -677,6 +677,8 @@ void UnityAssertFloatSpecial(const _UF actual,
             else
                 is_trait = 1;
             break;
+	default:
+	    ;
     }
 
     if (is_trait != should_be_trait)
@@ -803,12 +805,12 @@ void UnityAssertDoubleSpecial(const _UD actual,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_FLOAT_TRAIT_T style)
 {
-    UNITY_SKIP_EXECUTION;
-
     const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
     _U_SINT should_be_trait   = ((_U_SINT)style & 1);
     _U_SINT is_trait          = !should_be_trait;
     _U_SINT trait_index       = style >> 1;
+
+    UNITY_SKIP_EXECUTION;
 
     switch(style)
     {
@@ -837,6 +839,8 @@ void UnityAssertDoubleSpecial(const _UD actual,
             else
                 is_trait = 1;
             break;
+	default:
+	    ;
     }
 
     if (is_trait != should_be_trait)
@@ -1097,12 +1101,19 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 }
 
 //-----------------------------------------------
-#ifdef UNITY_SUPPORT_WEAK
-UNITY_WEAK void setUp(void) { }
-UNITY_WEAK void tearDown(void) { }
+#if defined(UNITY_WEAK_ATTRIBUTE)
+    void setUp(void);
+    void tearDown(void);
+    UNITY_WEAK_ATTRIBUTE void setUp(void) { }
+    UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
+#elif defined(UNITY_WEAK_PRAGMA)
+#   pragma weak setUp
+    void setUp(void);
+#   pragma weak tearDown
+    void tearDown(void);
 #else
-void setUp(void);
-void tearDown(void);
+    void setUp(void);
+    void tearDown(void);
 #endif
 //-----------------------------------------------
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
@@ -1164,5 +1175,3 @@ int UnityEnd(void)
 }
 
 //-----------------------------------------------
-
-
