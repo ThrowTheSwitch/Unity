@@ -7,6 +7,9 @@
 $QUICK_RUBY_VERSION = RUBY_VERSION.split('.').inject(0){|vv,v| vv * 100 + v.to_i }
 File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 
+HERE = File.expand_path(File.dirname(__FILE__))
+require "#{HERE}/type_sanitizer"
+
 class UnityTestRunnerGenerator
 
   def initialize(options = nil)
@@ -190,7 +193,7 @@ class UnityTestRunnerGenerator
         output.puts("  GlobalOrderError = NULL;")
       end
       mocks.each do |mock|
-        mock_clean = mock.gsub(/(?:-|\s+)/, "_")
+        mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
         output.puts("  #{mock_clean}_Init();")
       end
       output.puts("}\n")
@@ -198,7 +201,7 @@ class UnityTestRunnerGenerator
       output.puts("static void CMock_Verify(void)")
       output.puts("{")
       mocks.each do |mock|
-        mock_clean = mock.gsub(/(?:-|\s+)/, "_")
+        mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
         output.puts("  #{mock_clean}_Verify();")
       end
       output.puts("}\n")
@@ -206,7 +209,7 @@ class UnityTestRunnerGenerator
       output.puts("static void CMock_Destroy(void)")
       output.puts("{")
       mocks.each do |mock|
-        mock_clean = mock.gsub(/(?:-|\s+)/, "_")
+        mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
         output.puts("  #{mock_clean}_Destroy();")
       end
       output.puts("}\n")
