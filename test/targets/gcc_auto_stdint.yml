@@ -18,13 +18,10 @@ compiler:
     - '-Wswitch-default'
     - '-Wunreachable-code'
     - '-Winit-self'
-    - '-Wlogical-op'
     - '-Wmissing-field-initializers'
     - '-Wno-unknown-pragmas'
-    - '-Wjump-misses-init'
     - '-Wstrict-prototypes'
     - '-Wundef'
-    - '-Wunsafe-loop-optimizations'
     - '-Wold-style-definition'
   includes:
     prefix: '-I'
