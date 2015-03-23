@@ -105,6 +105,8 @@ class ParseOutput
             else
                 @className = 0
             end
+	else
+                @className = 0
         end
         
     end
