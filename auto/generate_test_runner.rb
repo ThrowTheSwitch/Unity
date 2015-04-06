@@ -54,7 +54,8 @@ class UnityTestRunnerGenerator
     source = File.read(input_file)
     source = source.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil) if ($QUICK_RUBY_VERSION > 10900)
     tests               = find_tests(source)
-    testfile_includes   = find_includes(source)
+    headers             = find_includes(source)
+    testfile_includes   = headers[:local] + headers[:system]
     used_mocks          = find_mocks(testfile_includes)
 
     #build runner file
@@ -128,9 +129,10 @@ class UnityTestRunnerGenerator
     source.gsub!(/\/\/.*$/, '')                          # remove line comments (all that remain)
 
     #parse out includes
-    includes = source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten
-    brackets_includes = source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten
-    brackets_includes.each { |inc| includes << '<' + inc +'>' }
+    includes = {
+      local: source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten,
+      system: source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" }
+    }
     return includes
   end
 
