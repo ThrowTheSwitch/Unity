@@ -6,6 +6,7 @@
 
 #include <setjmp.h>
 #include "unity.h"
+#include <string.h>
 
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
@@ -1271,7 +1272,7 @@ void testEqualStringsLen(void)
     TEST_ASSERT_EQUAL_STRING_LEN(testString, testString, strlen(testString));
     TEST_ASSERT_EQUAL_STRING_LEN("foobar", "foobaz", 5);
     TEST_ASSERT_EQUAL_STRING_LEN("foo", testString, 3);
-    TEST_ASSERT_EQUAL_STRING_LEN(testString, foo, 3);
+    TEST_ASSERT_EQUAL_STRING_LEN(testString, "foo", 3);
     TEST_ASSERT_EQUAL_STRING_LEN("", "", 3);
 }
 
