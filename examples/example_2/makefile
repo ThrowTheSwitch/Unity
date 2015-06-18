@@ -9,7 +9,11 @@ ifeq ($(OSTYPE),cygwin)
 	CLEANUP = rm -f
 	MKDIR = mkdir -p
 	TARGET_EXTENSION=.out
-else ifeq ($(OS),Windows_NT)
+elseifeq ($(OSTYPE),msys)
+    CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.exe
+elseifeq ($(OS),Windows_NT)
 	CLEANUP = del /F /Q
 	MKDIR = mkdir
 	TARGET_EXTENSION=.exe
@@ -58,8 +62,6 @@ SYMBOLS=
 all: clean default
 
 default:
-#	ruby auto/generate_test_runner.rb test/TestProductionCode.c  test/test_runners/TestProductionCode_Runner.c
-#	ruby auto/generate_test_runner.rb test/TestProductionCode2.c test/test_runners/TestProductionCode2_Runner.c
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
 	./$(TARGET1)
 
