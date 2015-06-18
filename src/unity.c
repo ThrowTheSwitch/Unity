@@ -260,31 +260,44 @@ void UnityPrintFloat(_UF number)
 
 //-----------------------------------------------
 
+void UnityPrintFail(void);
 void UnityPrintFail(void)
 {
     UnityPrint(UnityStrFail);
 }
 
+void UnityPrintOk(void);
 void UnityPrintOk(void)
 {
     UnityPrint(UnityStrOk);
 }
 
 //-----------------------------------------------
+static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line);
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
+#ifndef UNITY_FIXTURES
     UnityPrint(file);
     UNITY_OUTPUT_CHAR(':');
     UnityPrintNumber((_U_SINT)line);
     UNITY_OUTPUT_CHAR(':');
     UnityPrint(Unity.CurrentTestName);
     UNITY_OUTPUT_CHAR(':');
+#else
+    UNITY_UNUSED(file);
+    UNITY_UNUSED(line);
+#endif
 }
 
 //-----------------------------------------------
+static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line);
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
+#ifndef UNITY_FIXTURES
     UnityTestResultsBegin(Unity.TestFile, line);
+#else
+    UNITY_UNUSED(line);
+#endif
     UnityPrint(UnityStrFail);
     UNITY_OUTPUT_CHAR(':');
 }
@@ -312,6 +325,7 @@ void UnityConcludeTest(void)
 }
 
 //-----------------------------------------------
+static void UnityAddMsgIfSpecified(const char* msg);
 static void UnityAddMsgIfSpecified(const char* msg)
 {
     if (msg)
@@ -322,6 +336,7 @@ static void UnityAddMsgIfSpecified(const char* msg)
 }
 
 //-----------------------------------------------
+static void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual);
 static void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual)
 {
     UnityPrint(UnityStrExpected);

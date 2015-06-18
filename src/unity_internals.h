@@ -555,6 +555,8 @@ extern const char UnityStrErr64[];
 #define UNITY_END() UnityEnd()
 #endif
 
+#define UNITY_UNUSED(x) (void)(sizeof(x))
+
 //-------------------------------------------------------
 // Basic Fail and Ignore
 //-------------------------------------------------------

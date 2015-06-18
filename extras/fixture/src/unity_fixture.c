@@ -374,10 +374,10 @@ void UnityConcludeFixtureTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
-        if (UnityFixture.Verbose)
-        {
+        //if (UnityFixture.Verbose)
+        //{
             UNITY_OUTPUT_CHAR('\n');
-        }
+        //}
         Unity.TestIgnores++;
     }
     else if (!Unity.CurrentTestFailed)
@@ -391,6 +391,7 @@ void UnityConcludeFixtureTest(void)
     else if (Unity.CurrentTestFailed)
     {
         Unity.TestFailures++;
+        UNITY_OUTPUT_CHAR('\n');
     }
 
     Unity.CurrentTestFailed = 0;
