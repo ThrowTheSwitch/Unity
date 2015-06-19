@@ -122,7 +122,7 @@ if $0 == __FILE__
   begin
     #look in the specified or current directory for result files
     ARGV[0] ||= './'
-    targets = "#{ARGV[0].gsub(/\\/, '/')}*.test*"
+    targets = "#{ARGV[0].gsub(/\\/, '/')}**/*.test*"
     results = Dir[targets]
     raise "No *.testpass or *.testfail files found in '#{targets}'" if results.empty?
     uts.set_targets(results)
