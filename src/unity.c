@@ -496,15 +496,15 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
         case UNITY_DISPLAY_STYLE_UINT16:
             while (elements--)
             {
-                if (*(UNITY_PTR_ATTRIBUTE const _US16*)(void*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const _US16*)(void*)ptr_act)
+                if (*(UNITY_PTR_ATTRIBUTE const _US16*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const _US16*)ptr_act)
                 {
                     UnityTestResultsFailBegin(lineNumber);
                     UnityPrint(UnityStrElement);
                     UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
                     UnityPrint(UnityStrExpected);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US16*)(void*)ptr_exp, style);
+                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US16*)ptr_exp, style);
                     UnityPrint(UnityStrWas);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US16*)(void*)ptr_act, style);
+                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US16*)ptr_act, style);
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
@@ -518,15 +518,15 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
         case UNITY_DISPLAY_STYLE_UINT64:
             while (elements--)
             {
-                if (*(UNITY_PTR_ATTRIBUTE const _US64*)(void*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const _US64*)(void*)ptr_act)
+                if (*(UNITY_PTR_ATTRIBUTE const _US64*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const _US64*)ptr_act)
                 {
                     UnityTestResultsFailBegin(lineNumber);
                     UnityPrint(UnityStrElement);
                     UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
                     UnityPrint(UnityStrExpected);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US64*)(void*)ptr_exp, style);
+                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US64*)ptr_exp, style);
                     UnityPrint(UnityStrWas);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US64*)(void*)ptr_act, style);
+                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US64*)ptr_act, style);
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
@@ -538,15 +538,15 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
         default:
             while (elements--)
             {
-                if (*(UNITY_PTR_ATTRIBUTE const _US32*)(void*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const _US32*)(void*)ptr_act)
+                if (*(UNITY_PTR_ATTRIBUTE const _US32*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const _US32*)ptr_act)
                 {
                     UnityTestResultsFailBegin(lineNumber);
                     UnityPrint(UnityStrElement);
                     UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
                     UnityPrint(UnityStrExpected);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US32*)(void*)ptr_exp, style);
+                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US32*)ptr_exp, style);
                     UnityPrint(UnityStrWas);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US32*)(void*)ptr_act, style);
+                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US32*)ptr_act, style);
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
