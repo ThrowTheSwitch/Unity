@@ -110,6 +110,42 @@ void UnityPrint(const char* string)
     }
 }
 
+void UnityPrintLen(const char* string, const _UU32 length)
+{
+    const char* pch = string;
+
+    if (pch != NULL)
+    {
+        while (*pch && (pch - string) < length)
+        {
+            // printable characters plus CR & LF are printed
+            if ((*pch <= 126) && (*pch >= 32))
+            {
+                UNITY_OUTPUT_CHAR(*pch);
+            }
+            //write escaped carriage returns
+            else if (*pch == 13)
+            {
+                UNITY_OUTPUT_CHAR('\\');
+                UNITY_OUTPUT_CHAR('r');
+            }
+            //write escaped line feeds
+            else if (*pch == 10)
+            {
+                UNITY_OUTPUT_CHAR('\\');
+                UNITY_OUTPUT_CHAR('n');
+            }
+            // unprintable characters are shown as codes
+            else
+            {
+                UNITY_OUTPUT_CHAR('\\');
+                UnityPrintNumberHex((_U_UINT)*pch, 2);
+            }
+            pch++;
+        }
+    }
+}
+
 //-----------------------------------------------
 void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T style)
 {
@@ -362,6 +398,35 @@ static void UnityPrintExpectedAndActualStrings(const char* expected, const char*
       UnityPrint(UnityStrNull);
     }
 }
+
+//-----------------------------------------------
+static void UnityPrintExpectedAndActualStringsLen(const char* expected, const char* actual, const _UU32 length)
+{
+    UnityPrint(UnityStrExpected);
+    if (expected != NULL)
+    {
+        UNITY_OUTPUT_CHAR('\'');
+        UnityPrintLen(expected, length);
+        UNITY_OUTPUT_CHAR('\'');
+    }
+    else
+    {
+      UnityPrint(UnityStrNull);
+    }
+    UnityPrint(UnityStrWas);
+    if (actual != NULL)
+    {
+        UNITY_OUTPUT_CHAR('\'');
+        UnityPrintLen(actual, length);
+        UNITY_OUTPUT_CHAR('\'');
+    }
+    else
+    {
+      UnityPrint(UnityStrNull);
+    }
+}
+
+
 
 //-----------------------------------------------
 // Assertion & Control Helpers
@@ -958,6 +1023,47 @@ void UnityAssertEqualString(const char* expected,
       UNITY_FAIL_AND_BAIL;
     }
 }
+
+//-----------------------------------------------
+void UnityAssertEqualStringLen(const char* expected,
+                            const char* actual,
+                            const _UU32 length,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber)
+{
+    _UU32 i;
+
+    UNITY_SKIP_EXECUTION;
+
+    // if both pointers not null compare the strings
+    if (expected && actual)
+    {
+        for (i = 0; (expected[i] || actual[i]) && i < length; i++)
+        {
+            if (expected[i] != actual[i])
+            {
+                Unity.CurrentTestFailed = 1;
+                break;
+            }
+        }
+    }
+    else
+    { // handle case of one pointers being null (if both null, test should pass)
+        if (expected != actual)
+        {
+            Unity.CurrentTestFailed = 1;
+        }
+    }
+
+    if (Unity.CurrentTestFailed)
+    {
+      UnityTestResultsFailBegin(lineNumber);
+      UnityPrintExpectedAndActualStringsLen(expected, actual, length);
+      UnityAddMsgIfSpecified(msg);
+      UNITY_FAIL_AND_BAIL;
+    }
+}
+
 
 //-----------------------------------------------
 void UnityAssertEqualStringArray( const char** expected,

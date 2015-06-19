@@ -6,6 +6,7 @@
 
 #include <setjmp.h>
 #include "unity.h"
+#include <string.h>
 
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
@@ -1265,6 +1266,16 @@ void testEqualStrings(void)
     TEST_ASSERT_EQUAL_STRING("", "");
 }
 
+void testEqualStringsLen(void)
+{
+    const char *testString = "foobar";
+    TEST_ASSERT_EQUAL_STRING_LEN(testString, testString, strlen(testString));
+    TEST_ASSERT_EQUAL_STRING_LEN("foobar", "foobaz", 5);
+    TEST_ASSERT_EQUAL_STRING_LEN("foo", testString, 3);
+    TEST_ASSERT_EQUAL_STRING_LEN(testString, "foo", 3);
+    TEST_ASSERT_EQUAL_STRING_LEN("", "", 3);
+}
+
 void testEqualStringsWithCarriageReturnsAndLineFeeds(void)
 {
     const char *testString = "foo\r\nbar";
@@ -1283,10 +1294,24 @@ void testNotEqualString1(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualStringLen1(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN("foobar", "foobaz", 6);
+    VERIFY_FAILS_END
+}
+
 void testNotEqualString2(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("foo", "");
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringLen2(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN("foo", "", 3);
     VERIFY_FAILS_END
 }
 
@@ -1297,10 +1322,24 @@ void testNotEqualString3(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualStringLen3(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN("", "bar", 3);
+    VERIFY_FAILS_END
+}
+
 void testNotEqualString4(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("bar\r", "bar\n");
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringLen4(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN("bar\r", "bar\n", 4);
     VERIFY_FAILS_END
 }
 
