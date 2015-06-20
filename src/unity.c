@@ -110,6 +110,7 @@ void UnityPrint(const char* string)
     }
 }
 
+void UnityPrintLen(const char* string, const _UU32 length);
 void UnityPrintLen(const char* string, const _UU32 length)
 {
     const char* pch = string;
