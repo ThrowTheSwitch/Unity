@@ -8,6 +8,8 @@
 #ifndef UNITY_FIXTURE_MALLOC_OVERRIDES_H_
 #define UNITY_FIXTURE_MALLOC_OVERRIDES_H_
 
+#include <stddef.h>
+
 #define malloc  unity_malloc
 #define calloc  unity_calloc
 #define realloc unity_realloc
