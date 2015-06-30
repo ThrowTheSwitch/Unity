@@ -196,7 +196,7 @@ void * unity_malloc(size_t size)
 
     malloc_count++;
 
-    guard = (Guard*)malloc(size + sizeof(Guard) + 4);
+    guard = (Guard*)UNITY_FIXTURE_MALLOC(size + sizeof(Guard) + 4);
     guard->size = size;
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, strlen(end) + 1);
@@ -219,7 +219,7 @@ static void release_memory(void * mem)
     guard--;
 
     malloc_count--;
-    free(guard);
+    UNITY_FIXTURE_FREE(guard);
 }
 
 void unity_free(void * mem)
