@@ -7,8 +7,9 @@
 
 
 #include "unity_output_Spy.h"
+#include "unity_fixture.h"
+
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 static int size;
@@ -21,14 +22,14 @@ void UnityOutputCharSpy_Create(int s)
     size = s;
     count = 0;
     spy_enable = 0;
-    buffer = malloc(size);
+    buffer = UNITY_FIXTURE_MALLOC(size);
     memset(buffer, 0, size);
 }
 
 void UnityOutputCharSpy_Destroy(void)
 {
     size = 0;
-    free(buffer);
+    UNITY_FIXTURE_FREE(buffer);
 }
 
 int UnityOutputCharSpy_OutputChar(int c)
