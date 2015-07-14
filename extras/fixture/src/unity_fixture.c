@@ -314,9 +314,19 @@ void UnityPointer_UndoAllSets(void)
     }
 }
 
-int UnityFailureCount(void)
+UNITY_COUNTER_TYPE UnityFailureCount(void)
 {
     return Unity.TestFailures;
+}
+
+UNITY_COUNTER_TYPE UnityIgnoreCount(void)
+{
+    return Unity.TestIgnores;
+}
+
+UNITY_COUNTER_TYPE UnityTestsCount(void)
+{
+    return Unity.NumberOfTests;
 }
 
 int UnityGetCommandLineOptions(int argc, const char* argv[])
