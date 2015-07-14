@@ -28,7 +28,9 @@ void UnityTestRunner(unityfunction * setup,
 void UnityIgnoreTest(const char * printableName);
 void UnityMalloc_StartTest(void);
 void UnityMalloc_EndTest(void);
-int UnityFailureCount(void);
+UNITY_COUNTER_TYPE UnityFailureCount(void);
+UNITY_COUNTER_TYPE UnityIgnoreCount(void);
+UNITY_COUNTER_TYPE UnityTestsCount(void);
 int UnityGetCommandLineOptions(int argc, const char* argv[]);
 void UnityConcludeFixtureTest(void);
 
