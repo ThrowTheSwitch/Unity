@@ -25,7 +25,7 @@ void UnityTestRunner(unityfunction * setup,
         const char * name,
         const char * file, int line);
 
-void UnityIgnoreTest(const char * printableName);
+void UnityIgnoreTest(const char * printableName, const char * group, const char * name);
 void UnityMalloc_StartTest(void);
 void UnityMalloc_EndTest(void);
 int UnityFailureCount(void);

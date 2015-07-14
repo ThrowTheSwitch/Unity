@@ -115,15 +115,18 @@ void UnityTestRunner(unityfunction* setup,
     }
 }
 
-void UnityIgnoreTest(const char * printableName)
+void UnityIgnoreTest(const char * printableName, const char * group, const char * name)
 {
-    Unity.NumberOfTests++;
-    Unity.CurrentTestIgnored = 1;
-    if (!UnityFixture.Verbose)
-        UNITY_OUTPUT_CHAR('!');
-    else
-        UnityPrint(printableName);
-    UnityConcludeFixtureTest();
+    if (testSelected(name) && groupSelected(group)) 
+    {
+        Unity.NumberOfTests++;
+        Unity.CurrentTestIgnored = 1;
+        if (!UnityFixture.Verbose)
+            UNITY_OUTPUT_CHAR('!');
+        else
+            UnityPrint(printableName);
+        UnityConcludeFixtureTest();
+    }
 }
 
 
