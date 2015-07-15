@@ -1260,7 +1260,7 @@ void testEqualStrings(void)
     const char *testString = "foo";
 
     TEST_ASSERT_EQUAL_STRING(testString, testString);
-    TEST_ASSERT_EQUAL_STRING("foo", "foo");
+    TEST_ASSERT_EQUAL_STRING_MESSAGE("foo", "foo", "foo isn't foo");
     TEST_ASSERT_EQUAL_STRING("foo", testString);
     TEST_ASSERT_EQUAL_STRING(testString, "foo");
     TEST_ASSERT_EQUAL_STRING("", "");
@@ -1270,7 +1270,7 @@ void testEqualStringsLen(void)
 {
     const char *testString = "foobar";
     TEST_ASSERT_EQUAL_STRING_LEN(testString, testString, strlen(testString));
-    TEST_ASSERT_EQUAL_STRING_LEN("foobar", "foobaz", 5);
+    TEST_ASSERT_EQUAL_STRING_LEN_MESSAGE("foobar", "foobaz", 5, "fooba isn't fooba");
     TEST_ASSERT_EQUAL_STRING_LEN("foo", testString, 3);
     TEST_ASSERT_EQUAL_STRING_LEN(testString, "foo", 3);
     TEST_ASSERT_EQUAL_STRING_LEN("", "", 3);
