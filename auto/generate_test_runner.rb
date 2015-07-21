@@ -130,8 +130,8 @@ class UnityTestRunnerGenerator
 
     #parse out includes
     includes = {
-      local: source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten,
-      system: source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" }
+      :local => source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten,
+      :system => source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" }
     }
     return includes
   end

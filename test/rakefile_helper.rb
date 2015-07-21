@@ -195,6 +195,12 @@ module RakefileHelpers
     test_files.each do |test|
       obj_list = []
 
+      if !$cfg['compiler']['aux_sources'].nil?
+        $cfg['compiler']['aux_sources'].each do |aux|
+          obj_list << compile(aux, test_defines)
+        end
+      end
+
       # Detect dependencies and build required modules
       extract_headers(test).each do |header|
         # Compile corresponding source file if it exists
