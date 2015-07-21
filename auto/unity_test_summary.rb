@@ -16,11 +16,13 @@ class UnityTestSummary
 
   attr_reader :report, :total_tests, :failures, :ignored
 
-  def initialize
+  def initialize(opts = {})
     @report = ''
     @total_tests = 0
     @failures = 0
     @ignored = 0
+
+
   end
 
   def run
@@ -95,7 +97,7 @@ class UnityTestSummary
     results = { :failures => [], :ignores => [], :successes => [] }
     lines.each do |line|
       src_file,src_line,test_name,status,msg = line.split(/:/)
-      line_out = ((@root and (@root != 0)) ? "#{@root}#{line}" : line ).gsub(/\//, "\\")
+      line_out = ((@root && (@root != 0)) ? "#{@root}#{line}" : line ).gsub(/\//, "\\")
       case(status)
         when 'IGNORE' then results[:ignores]   << line_out
         when 'FAIL'   then results[:failures]  << line_out
@@ -118,17 +120,24 @@ class UnityTestSummary
 end
 
 if $0 == __FILE__
-  uts = UnityTestSummary.new
+
+  #parse out the command options
+  opts, args = ARGV.partition {|v| v =~ /^--\w+/}
+  opts.map! {|v| v[2..-1].to_sym }
+
+  #create an instance to work with
+  uts = UnityTestSummary.new(opts)
+
   begin
     #look in the specified or current directory for result files
-    ARGV[0] ||= './'
+    args[0] ||= './'
     targets = "#{ARGV[0].gsub(/\\/, '/')}**/*.test*"
     results = Dir[targets]
-    raise "No *.testpass or *.testfail files found in '#{targets}'" if results.empty?
+    raise "No *.testpass, *.testfail, or *.testresults files found in '#{targets}'" if results.empty?
     uts.set_targets(results)
 
     #set the root path
-    ARGV[1] ||= File.expand_path(File.dirname(__FILE__)) + '/'
+    args[1] ||= Dir.pwd + '/'
     uts.set_root_path(ARGV[1])
 
     #run the summarizer
