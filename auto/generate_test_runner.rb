@@ -80,8 +80,6 @@ class UnityTestRunnerGenerator
   end
 
   def find_tests(source)
-    tests_raw = []
-    tests_args = []
     tests_and_line_numbers = []
 
     source_scrubbed = source.gsub(/\/\/.*$/, '')               # remove line comments
@@ -101,9 +99,9 @@ class UnityTestRunnerGenerator
           arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) {|a| args << a[0]}
         end
         tests_and_line_numbers << { :test => name, :args => args, :call => call, :line_number => 0 }
-        tests_args = []
       end
     end
+    tests_and_line_numbers.uniq! {|v| v[:test] }
 
     #determine line numbers and create tests to run
     source_lines = source.split("\n")
