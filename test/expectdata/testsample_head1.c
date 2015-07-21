@@ -8,11 +8,8 @@
   Unity.NumberOfTests++; \
   if (TEST_PROTECT()) \
   { \
-    CEXCEPTION_T e; \
-    Try { \
       setUp(); \
       TestFunc(); \
-    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, "Unhandled Exception!"); } \
   } \
   if (TEST_PROTECT() && !TEST_IS_IGNORED) \
   { \
@@ -25,13 +22,7 @@
 #include "unity.h"
 #include <setjmp.h>
 #include <stdio.h>
-#include "CException.h"
-#include "two.h"
-#include "three.h"
-#include <four.h>
-#include "funky.h"
-#include "stanky.h"
-#include <setjmp.h>
+#include "testsample_head1.h"
 
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
@@ -39,12 +30,6 @@ extern void tearDown(void);
 extern void test_TheFirstThingToTest(void);
 extern void test_TheSecondThingToTest(void);
 
-
-//=======Suite Setup=====
-static int suite_setup(void)
-{
-a_yaml_setup();
-}
 
 //=======Test Reset Option=====
 void resetTest(void);
@@ -58,7 +43,6 @@ void resetTest(void)
 //=======MAIN=====
 int main(void)
 {
-  suite_setup();
   UnityBegin("testdata/testsample.c");
   RUN_TEST(test_TheFirstThingToTest, 21);
   RUN_TEST(test_TheSecondThingToTest, 43);

@@ -38,6 +38,20 @@ should "GenerateARunnerByCreatingRunnerWithOptions" do
   end
 end
 
+should "GenerateARunnerAlongWithAHeaderIfSpecified" do
+  sets = { 'head1' => { :header_file => "#{OUT_FILE}head1.h" } }
+  sets.each_pair do |subtest, options|
+    UnityTestRunnerGenerator.new(options).run(TEST_FILE, OUT_FILE + subtest + '.c')
+    verify_output_equal(subtest)
+  end
+
+  sets = { 'head1' => { :header_file => "#{OUT_FILE}mock_head1.h" } }
+  sets.each_pair do |subtest, options|
+    UnityTestRunnerGenerator.new(options).run(TEST_MOCK, OUT_FILE + 'mock_' + subtest + '.c')
+    verify_output_equal('mock_' + subtest)
+  end
+end
+
 should "GenerateARunnerByRunningRunnerWithOptions" do
   sets = { 'run1' => { :plugins => [:cexception], :includes => ['one.h', 'two.h'], :enforce_strict_ordering => true },
            'run2' => { :plugins => [:ignore], :suite_setup => "a_custom_setup();", :suite_teardown => "a_custom_teardown();" }

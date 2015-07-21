@@ -27,11 +27,11 @@
 //=======Automagically Detected Files To Include=====
 #include "unity.h"
 #include "cmock.h"
-#include "one.h"
-#include "two.h"
 #include <setjmp.h>
 #include <stdio.h>
 #include "CException.h"
+#include "one.h"
+#include "two.h"
 #include "funky.h"
 #include <setjmp.h>
 #include "Mockstanky.h"

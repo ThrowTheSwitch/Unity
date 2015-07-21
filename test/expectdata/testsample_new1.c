@@ -23,11 +23,11 @@
 
 //=======Automagically Detected Files To Include=====
 #include "unity.h"
-#include "one.h"
-#include "two.h"
 #include <setjmp.h>
 #include <stdio.h>
 #include "CException.h"
+#include "one.h"
+#include "two.h"
 #include "funky.h"
 #include "stanky.h"
 #include <setjmp.h>
