@@ -75,7 +75,7 @@ class UnityTestSummary:
         print("\nERROR: ")
         if err_msg:
             print(err_msg)
-        print("\nUsage: unity_test_summary.rb result_file_directory/ root_path/")
+        print("\nUsage: unity_test_summary.py result_file_directory/ root_path/")
         print("     result_file_directory - The location of your results files.")
         print("                             Defaults to current directory if not specified.")
         print("                             Should end in / if specified.")
