@@ -43,6 +43,7 @@ const char UnityStrBreaker[]                = "-----------------------";
 const char UnityStrResultsTests[]           = " Tests ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
+jmp_buf __unity_exp_buf__;
 
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
