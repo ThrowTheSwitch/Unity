@@ -43,6 +43,7 @@ const char UnityStrBreaker[]                = "-----------------------";
 const char UnityStrResultsTests[]           = " Tests ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
+jmp_buf __unity_exp_buf__;
 
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
@@ -1177,8 +1178,8 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
                 UnityAddMsgIfSpecified(msg);
                 UNITY_FAIL_AND_BAIL;
             }
-            ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 1);
-            ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 1);
+            ptr_exp = (UNITY_PTR_ATTRIBUTE const unsigned char *)((_UP)ptr_exp + 1);
+            ptr_act = (UNITY_PTR_ATTRIBUTE const unsigned char *)((_UP)ptr_act + 1);
         }
         /////////////////////////////////////
 

@@ -10,6 +10,7 @@
 
 #include "unity_internals.h"
 
+
 //-------------------------------------------------------
 // Configuration Options
 //-------------------------------------------------------
@@ -271,4 +272,45 @@
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, __LINE__, message)
 
 //end of UNITY_FRAMEWORK_H
+
+// Added by Orion for catching in-code asserts.  Not thread safe.
+
+extern jmp_buf __unity_exp_buf__;
+#define TEST_TRY do{ ; if(!setjmp(__unity_exp_buf__)) {
+#define TEST_CATCH } else {
+#define TEST_ETRY } } while(0)
+#define TEST_THROW longjmp(__unity_exp_buf__, 1)
+
+// Refactor to make this easier to manage
+#define TEST_SHOULD_CATCH_ASSERT(actual)                  \
+    TEST_TRY {                                            \
+        actual;                                           \
+    } TEST_CATCH {                                        \
+        TEST_ASSERT_TRUE(TRUE);                           \
+    } TEST_ETRY;
+
+#define TEST_SHOULD_CATCH_ASSERT_MESSAGE(actual, message) \
+    TEST_TRY {                                            \
+        actual;                                           \
+        TEST_FAIL_MESSAGE(message);                       \
+    } TEST_CATCH {                                        \
+        TEST_ASSERT_TRUE(TRUE);                           \
+    } TEST_ETRY;
+
+#define TEST_SHOULD_NOT_CATCH_ASSERT(actual)                  \
+    TEST_TRY {                                                \
+        actual;                                               \
+        TEST_ASSERT_TRUE(TRUE);                               \
+    } TEST_CATCH {                                            \
+        TEST_FAIL_MESSAGE(message);                           \
+    } TEST_ETRY;
+
+#define TEST_SHOULD_NOT_CATCH_ASSERT_MESSAGE(actual, message) \
+    TEST_TRY {                                                \
+        actual;                                               \
+        TEST_ASSERT_TRUE(TRUE);                               \
+    } TEST_CATCH {                                            \
+        TEST_FAIL_MESSAGE(message);                           \
+    } TEST_ETRY;
+
 #endif
