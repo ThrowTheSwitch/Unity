@@ -18,6 +18,7 @@ TEST_GROUP_RUNNER(UnityFixture)
     RUN_TEST_CASE(UnityFixture, ReallocSizeZeroFreesMemAndReturnsNullPointer);
     RUN_TEST_CASE(UnityFixture, CallocFillsWithZero);
     RUN_TEST_CASE(UnityFixture, PointerSet);
+    RUN_TEST_CASE(UnityFixture, FreeNULLSafety);
 }
 
 TEST_GROUP_RUNNER(UnityCommandOptions)

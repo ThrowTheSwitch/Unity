@@ -227,7 +227,14 @@ static void release_memory(void * mem)
 
 void unity_free(void * mem)
 {
-    int overrun = isOverrun(mem);//strcmp(&memAsChar[guard->size], end) != 0;
+    int overrun;
+
+    if (mem == NULL)
+    {
+        return;
+    }
+
+    overrun = isOverrun(mem);//strcmp(&memAsChar[guard->size], end) != 0;
     release_memory(mem);
     if (overrun)
     {
