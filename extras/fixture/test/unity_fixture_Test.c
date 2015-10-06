@@ -132,6 +132,11 @@ TEST(UnityFixture, PointerSet)
     TEST_ASSERT_POINTERS_EQUAL(&c2, p2);
 }
 
+TEST(UnityFixture, FreeNULLSafety)
+{
+  unity_free(NULL);
+}
+
 //------------------------------------------------------------
 
 TEST_GROUP(UnityCommandOptions);
