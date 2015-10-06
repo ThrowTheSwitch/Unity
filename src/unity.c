@@ -10,7 +10,7 @@
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
-#define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
+#define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} else { Unity.NumberOfAssertions++; } }
 #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
 
 struct _Unity Unity;
@@ -41,6 +41,7 @@ const char UnityStrErrDouble[]              = "Unity Double Precision Disabled";
 const char UnityStrErr64[]                  = "Unity 64-bit Support Disabled";
 const char UnityStrBreaker[]                = "-----------------------";
 const char UnityStrResultsTests[]           = " Tests ";
+const char UnityStrResultsAssertions[]      = " Assertions ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
 
@@ -78,24 +79,26 @@ void UnityPrintOk(void);
 void UnityPrint(const char* string)
 {
     const char* pch = string;
+    unsigned char c;
 
     if (pch != NULL)
     {
-        while (*pch)
+        c = *pch;
+        while (c != '\0')
         {
             // printable characters plus CR & LF are printed
-            if ((*pch <= 126) && (*pch >= 32))
+            if ((c <= 126) && (c >= 32))
             {
-                UNITY_OUTPUT_CHAR(*pch);
+                UNITY_OUTPUT_CHAR(c);
             }
             //write escaped carriage returns
-            else if (*pch == 13)
+            else if (c == 13)
             {
                 UNITY_OUTPUT_CHAR('\\');
                 UNITY_OUTPUT_CHAR('r');
             }
             //write escaped line feeds
-            else if (*pch == 10)
+            else if (c == 10)
             {
                 UNITY_OUTPUT_CHAR('\\');
                 UNITY_OUTPUT_CHAR('n');
@@ -104,9 +107,9 @@ void UnityPrint(const char* string)
             else
             {
                 UNITY_OUTPUT_CHAR('\\');
-                UnityPrintNumberHex((_U_UINT)*pch, 2);
+                UnityPrintNumberHex((_U_UINT)c, 2);
             }
-            pch++;
+            c = *(++pch);
         }
     }
 }
@@ -1267,6 +1270,7 @@ void UnityBegin(const char* filename)
     Unity.TestIgnores = 0;
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+    Unity.NumberOfAssertions = 0;
 
     UNITY_OUTPUT_START();
 }
@@ -1279,6 +1283,8 @@ int UnityEnd(void)
     UNITY_PRINT_EOL;
     UnityPrintNumber((_U_SINT)(Unity.NumberOfTests));
     UnityPrint(UnityStrResultsTests);
+    UnityPrintNumber((_U_SINT)(Unity.NumberOfAssertions));
+    UnityPrint(UnityStrResultsAssertions);
     UnityPrintNumber((_U_SINT)(Unity.TestFailures));
     UnityPrint(UnityStrResultsFailures);
     UnityPrintNumber((_U_SINT)(Unity.TestIgnores));

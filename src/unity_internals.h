@@ -379,6 +379,7 @@ struct _Unity
     UNITY_COUNTER_TYPE TestIgnores;
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
+    UNITY_COUNTER_TYPE NumberOfAssertions;
     jmp_buf AbortFrame;
 };
 
@@ -574,7 +575,7 @@ extern const char UnityStrErr64[];
 // Test Asserts
 //-------------------------------------------------------
 
-#define UNITY_TEST_ASSERT(condition, line, message)                                              if (condition) {} else {UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, message);}
+#define UNITY_TEST_ASSERT(condition, line, message)                                              { Unity.NumberOfAssertions++; if (condition) {} else {UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, message);} }
 #define UNITY_TEST_ASSERT_NULL(pointer, line, message)                                           UNITY_TEST_ASSERT(((pointer) == NULL),  (UNITY_LINE_TYPE)line, message)
 #define UNITY_TEST_ASSERT_NOT_NULL(pointer, line, message)                                       UNITY_TEST_ASSERT(((pointer) != NULL),  (UNITY_LINE_TYPE)line, message)
 
