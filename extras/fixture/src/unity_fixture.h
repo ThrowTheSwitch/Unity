@@ -49,11 +49,8 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
     }\
     void TEST_##group##_##name##_(void)
 
-#define DECLARE_TEST_CASE(group, name) \
-    void TEST_##group##_##name##_run(void)
-
 #define RUN_TEST_CASE(group, name) \
-    { DECLARE_TEST_CASE(group, name);\
+    { void TEST_##group##_##name##_run(void);\
       TEST_##group##_##name##_run(); }
 
 //This goes at the bottom of each test file or in a separate c file
@@ -72,8 +69,8 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
       TEST_##group##_GROUP_RUNNER(); }
 
 //CppUTest Compatibility Macros
-#define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&ptr, (void*)newPointerValue)
-#define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT_EQUAL_PTR(expected, actual)
+#define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&(ptr), (void*)(newPointerValue))
+#define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT_EQUAL_PTR((expected), (actual))
 #define TEST_ASSERT_BYTES_EQUAL(expected, actual)      TEST_ASSERT_EQUAL_HEX8(0xff & (expected), 0xff & (actual))
 #define FAIL(message)                                  TEST_FAIL_MESSAGE((message))
 #define CHECK(condition)                               TEST_ASSERT_TRUE((condition))
