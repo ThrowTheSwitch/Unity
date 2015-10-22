@@ -315,6 +315,7 @@ static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line);
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
 #ifndef UNITY_FIXTURES
+    UNITY_OUTPUT_CHAR('\n');
     UnityPrint(file);
     UNITY_OUTPUT_CHAR(':');
     UnityPrintNumber((_U_SINT)line);
