@@ -86,10 +86,6 @@ void UnityTestRunner(unityfunction* setup,
         Unity.TestFile = file;
         Unity.CurrentTestName = printableName;
         Unity.CurrentTestLineNumber = line;
-        if (!UnityFixture.Verbose)
-            UNITY_OUTPUT_CHAR('.');
-        else
-            UnityPrint(printableName);
 
         Unity.NumberOfTests++;
         UnityMalloc_StartTest();
@@ -117,7 +113,7 @@ void UnityTestRunner(unityfunction* setup,
 
 void UnityIgnoreTest(const char * printableName, const char * group, const char * name)
 {
-    if (testSelected(name) && groupSelected(group)) 
+    if (testSelected(name) && groupSelected(group))
     {
         Unity.NumberOfTests++;
         Unity.CurrentTestIgnored = 1;
@@ -394,17 +390,14 @@ void UnityConcludeFixtureTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
-        //if (UnityFixture.Verbose)
-        //{
-            UNITY_OUTPUT_CHAR('\n');
-        //}
         Unity.TestIgnores++;
     }
     else if (!Unity.CurrentTestFailed)
     {
         if (UnityFixture.Verbose)
         {
-            UnityPrint(" PASS");
+            UnityPrint(Unity.CurrentTestName);
+            UnityPrint(":PASS");
             UNITY_OUTPUT_CHAR('\n');
         }
     }
