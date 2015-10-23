@@ -399,8 +399,6 @@ void UnityConcludeFixtureTest(void)
             UnityPrint(Unity.CurrentTestName);
             UnityPrint(":PASS");
             UNITY_OUTPUT_CHAR('\n');
-        } else {
-            UNITY_OUTPUT_CHAR('.');
         }
     }
     else if (Unity.CurrentTestFailed)
