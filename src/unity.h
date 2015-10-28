@@ -15,6 +15,9 @@ extern "C"
 
 #include "unity_internals.h"
 
+void setUp(void);
+void tearDown(void);
+
 //-------------------------------------------------------
 // Configuration Options
 //-------------------------------------------------------
