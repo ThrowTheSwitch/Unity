@@ -36,6 +36,11 @@
 //apparently this is not a constant expression: (sizeof(unsigned int *) * 256 - 1) so we have to just let this fall through
 #endif
 #endif
+
+#ifndef UNITY_EXCLUDE_MATH_H
+#include <math.h>
+#endif
+
 //-------------------------------------------------------
 // Guess Widths If Not Specified
 //-------------------------------------------------------
@@ -213,6 +218,23 @@ typedef _US64 _U_SINT;
 #define UNITY_FLOAT_TYPE float
 #endif
 typedef UNITY_FLOAT_TYPE _UF;
+
+#ifndef isinf
+#define isinf(n) (((1.0f / f_zero) == n) ? 1 : 0) || (((-1.0f / f_zero) == n) ? 1 : 0)
+#define UNITY_FLOAT_NEEDS_ZERO
+#endif
+
+#ifndef isnan
+#define isnan(n) ((n != n) ? 1 : 0)
+#endif
+
+#ifndef isneg
+#define isneg(n) ((n < 0.0f) ? 1 : 0)
+#endif
+
+#ifndef ispos
+#define ispos(n) ((n > 0.0f) ? 1 : 0)
+#endif
 
 #endif
 

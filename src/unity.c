@@ -44,13 +44,10 @@ const char UnityStrResultsTests[]           = " Tests ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
 
-#ifndef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_FLOAT_NEEDS_ZERO
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
 static const _UF f_zero = 0.0f;
-#ifndef UNITY_EXCLUDE_DOUBLE
-static const _UD d_zero = 0.0;
-#endif
 #endif
 
 // compiler-generic print formatting masks
@@ -738,29 +735,30 @@ void UnityAssertFloatSpecial(const _UF actual,
         //We are using a variable to hold the zero value because some compilers complain about dividing by zero otherwise
         case UNITY_FLOAT_IS_INF:
         case UNITY_FLOAT_IS_NOT_INF:
-            is_trait = ((1.0f / f_zero) == actual) ? 1 : 0;
+            is_trait = isinf(actual) & ispos(actual);
             break;
         case UNITY_FLOAT_IS_NEG_INF:
         case UNITY_FLOAT_IS_NOT_NEG_INF:
-            is_trait = ((-1.0f / f_zero) == actual) ? 1 : 0;
+            is_trait = isinf(actual) & isneg(actual);
             break;
 
         //NaN is the only floating point value that does NOT equal itself. Therefore if Actual == Actual, then it is NOT NaN.
         case UNITY_FLOAT_IS_NAN:
         case UNITY_FLOAT_IS_NOT_NAN:
-            is_trait = (actual == actual) ? 0 : 1;
+            is_trait = isnan(actual);
             break;
 
         //A determinate number is non infinite and not NaN. (therefore the opposite of the two above)
         case UNITY_FLOAT_IS_DET:
         case UNITY_FLOAT_IS_NOT_DET:
-            if ( (actual != actual) || ((1.0f / f_zero) == actual) || ((-1.0f / f_zero) == actual) )
+            if (isinf(actual) | isnan(actual))
                 is_trait = 0;
             else
                 is_trait = 1;
             break;
-	default:
-	    ;
+
+        default:
+            break;
     }
 
     if (is_trait != should_be_trait)
@@ -894,35 +892,36 @@ void UnityAssertDoubleSpecial(const _UD actual,
 
     UNITY_SKIP_EXECUTION;
 
-    switch(style)
+     switch(style)
     {
         //To determine Inf / Neg Inf, we compare to an Inf / Neg Inf value we create on the fly
         //We are using a variable to hold the zero value because some compilers complain about dividing by zero otherwise
         case UNITY_FLOAT_IS_INF:
         case UNITY_FLOAT_IS_NOT_INF:
-            is_trait = ((1.0 / d_zero) == actual) ? 1 : 0;
+            is_trait = isinf(actual) & ispos(actual);
             break;
         case UNITY_FLOAT_IS_NEG_INF:
         case UNITY_FLOAT_IS_NOT_NEG_INF:
-            is_trait = ((-1.0 / d_zero) == actual) ? 1 : 0;
+            is_trait = isinf(actual) & isneg(actual);
             break;
 
         //NaN is the only floating point value that does NOT equal itself. Therefore if Actual == Actual, then it is NOT NaN.
         case UNITY_FLOAT_IS_NAN:
         case UNITY_FLOAT_IS_NOT_NAN:
-            is_trait = (actual == actual) ? 0 : 1;
+            is_trait = isnan(actual);
             break;
 
         //A determinate number is non infinite and not NaN. (therefore the opposite of the two above)
         case UNITY_FLOAT_IS_DET:
         case UNITY_FLOAT_IS_NOT_DET:
-            if ( (actual != actual) || ((1.0 / d_zero) == actual) || ((-1.0 / d_zero) == actual) )
+            if (isinf(actual) | isnan(actual))
                 is_trait = 0;
             else
                 is_trait = 1;
             break;
-	default:
-	    ;
+
+        default:
+            break;
     }
 
     if (is_trait != should_be_trait)
