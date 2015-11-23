@@ -292,7 +292,7 @@ extern int UNITY_OUTPUT_CHAR(int);
 #endif
 
 #ifndef UNITY_PRINT_EOL
-#define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
+#define UNITY_PRINT_EOL       UNITY_OUTPUT_CHAR('\n')
 #endif
 
 #ifndef UNITY_OUTPUT_START
