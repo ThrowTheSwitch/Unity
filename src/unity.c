@@ -11,7 +11,6 @@
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
-#define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
 
 struct _Unity Unity;
 
@@ -356,7 +355,7 @@ void UnityConcludeTest(void)
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
-    UNITY_PRINT_EOL;
+    UNITY_PRINT_EOL();
 }
 
 //-----------------------------------------------
@@ -1273,16 +1272,16 @@ void UnityBegin(const char* filename)
 //-----------------------------------------------
 int UnityEnd(void)
 {
-    UNITY_PRINT_EOL;
+    UNITY_PRINT_EOL();
     UnityPrint(UnityStrBreaker);
-    UNITY_PRINT_EOL;
+    UNITY_PRINT_EOL();
     UnityPrintNumber((_U_SINT)(Unity.NumberOfTests));
     UnityPrint(UnityStrResultsTests);
     UnityPrintNumber((_U_SINT)(Unity.TestFailures));
     UnityPrint(UnityStrResultsFailures);
     UnityPrintNumber((_U_SINT)(Unity.TestIgnores));
     UnityPrint(UnityStrResultsIgnored);
-    UNITY_PRINT_EOL;
+    UNITY_PRINT_EOL();
     if (Unity.TestFailures == 0U)
     {
         UnityPrintOk();
@@ -1291,7 +1290,7 @@ int UnityEnd(void)
     {
         UnityPrintFail();
     }
-    UNITY_PRINT_EOL;
+    UNITY_PRINT_EOL();
     UNITY_OUTPUT_COMPLETE();
     return (int)(Unity.TestFailures);
 }

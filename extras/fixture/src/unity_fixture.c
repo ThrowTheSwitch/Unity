@@ -28,7 +28,7 @@ static void announceTestRun(unsigned int runNumber)
     UnityPrintNumber(runNumber+1);
     UnityPrint(" of ");
     UnityPrintNumber(UnityFixture.RepeatCount);
-    UNITY_OUTPUT_CHAR('\n');
+    UNITY_PRINT_EOL();
 }
 
 int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
@@ -43,7 +43,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
         UnityBegin(argv[0]);
         announceTestRun(r);
         runAllTests();
-        UNITY_OUTPUT_CHAR('\n');
+        UNITY_PRINT_EOL();
         UnityEnd();
     }
 
@@ -396,7 +396,7 @@ void UnityConcludeFixtureTest(void)
     {
         //if (UnityFixture.Verbose)
         //{
-            UNITY_OUTPUT_CHAR('\n');
+            UNITY_PRINT_EOL();
         //}
         Unity.TestIgnores++;
     }
@@ -405,13 +405,13 @@ void UnityConcludeFixtureTest(void)
         if (UnityFixture.Verbose)
         {
             UnityPrint(" PASS");
-            UNITY_OUTPUT_CHAR('\n');
+            UNITY_PRINT_EOL();
         }
     }
     else if (Unity.CurrentTestFailed)
     {
         Unity.TestFailures++;
-        UNITY_OUTPUT_CHAR('\n');
+        UNITY_PRINT_EOL();
     }
 
     Unity.CurrentTestFailed = 0;
