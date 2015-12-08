@@ -593,8 +593,8 @@ extern const char UnityStrErr64[];
 // Basic Fail and Ignore
 //-------------------------------------------------------
 
-#define UNITY_TEST_FAIL(line, message)   UnityFail(   (message), (UNITY_LINE_TYPE)(line));
-#define UNITY_TEST_IGNORE(line, message) UnityIgnore( (message), (UNITY_LINE_TYPE)(line));
+#define UNITY_TEST_FAIL(line, message)   UnityFail(   (message), (UNITY_LINE_TYPE)(line))
+#define UNITY_TEST_IGNORE(line, message) UnityIgnore( (message), (UNITY_LINE_TYPE)(line))
 
 //-------------------------------------------------------
 // Test Asserts
