@@ -1210,13 +1210,28 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     UnityPrintFail();
     if (msg != NULL)
     {
-      UNITY_OUTPUT_CHAR(':');
-      if (msg[0] != ' ')
-      {
-        UNITY_OUTPUT_CHAR(' ');
-      }
-      UnityPrint(msg);
+        UNITY_OUTPUT_CHAR(':');
+
+#ifndef UNITY_EXCLUDE_DETAILS
+        if (Unity.CurrentDetail1)
+        {
+            UnityPrint(UnityStrDetail1Name);
+            UnityPrint(Unity.CurrentDetail1);
+            if (Unity.CurrentDetail2)
+            {
+                UnityPrint(UnityStrDetail2Name);
+                UnityPrint(Unity.CurrentDetail2);
+            }
+            UnityPrint(UnityStrSpacer);
+        }
+#endif
+        if (msg[0] != ' ')
+        {
+            UNITY_OUTPUT_CHAR(' ');
+        }
+        UnityPrint(msg);
     }
+
     UNITY_FAIL_AND_BAIL;
 }
 
