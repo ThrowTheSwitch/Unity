@@ -365,6 +365,18 @@ static void UnityAddMsgIfSpecified(const char* msg)
     if (msg)
     {
         UnityPrint(UnityStrSpacer);
+#ifndef UNITY_EXCLUDE_DETAILS
+        if (Unity.CurrentDetail1)
+        {
+            UnityPrint(Unity.CurrentDetail1);
+            UnityPrint(UnityStrSpacer);
+            if (Unity.CurrentDetail2)
+            {
+                UnityPrint(Unity.CurrentDetail2);
+                UnityPrint(UnityStrSpacer);
+            }
+        }
+#endif
         UnityPrint(msg);
     }
 }
@@ -1242,6 +1254,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
     Unity.CurrentTestName = FuncName;
     Unity.CurrentTestLineNumber = (UNITY_LINE_TYPE)FuncLineNum;
     Unity.NumberOfTests++;
+    UNITY_CLR_DETAILS();
     if (TEST_PROTECT())
     {
         setUp();
@@ -1266,6 +1279,7 @@ void UnityBegin(const char* filename)
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
 
+    UNITY_CLR_DETAILS();
     UNITY_OUTPUT_START();
 }
 

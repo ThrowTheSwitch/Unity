@@ -399,6 +399,10 @@ struct _Unity
 {
     const char* TestFile;
     const char* CurrentTestName;
+#ifndef UNITY_EXCLUDE_DETAILS
+    const char* CurrentDetail1;
+    const char* CurrentDetail2;
+#endif
     UNITY_LINE_TYPE CurrentTestLineNumber;
     UNITY_COUNTER_TYPE NumberOfTests;
     UNITY_COUNTER_TYPE TestFailures;
@@ -418,6 +422,16 @@ void UnityBegin(const char* filename);
 int  UnityEnd(void);
 void UnityConcludeTest(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
+
+#ifndef UNITY_EXCLUDE_DETAILS
+#define UNITY_CLR_DETAILS()      { Unity.CurrentDetail1 = 0;   Unity.CurrentDetail2 = 0;  }
+#define UNITY_SET_DETAIL(d1)     { Unity.CurrentDetail1 = d1;  Unity.CurrentDetail2 = 0;  }
+#define UNITY_SET_DETAILS(d1,d2) { Unity.CurrentDetail1 = d1;  Unity.CurrentDetail2 = d2; }
+#else
+#define UNITY_CLR_DETAILS()
+#define UNITY_SET_DETAIL(d1)
+#define UNITY_SET_DETAILS(d1,d2)
+#endif
 
 //-------------------------------------------------------
 // Test Output
