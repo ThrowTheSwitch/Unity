@@ -254,6 +254,7 @@ class UnityTestRunnerGenerator
     output.puts("  Unity.CurrentTestLineNumber = TestLineNum; \\")
     output.puts("  Unity.NumberOfTests++; \\")
     output.puts("  CMock_Init(); \\") unless (used_mocks.empty?)
+    output.puts("  UNITY_CLR_DETAILS(); \\") unless (used_mocks.empty?)
     output.puts("  if (TEST_PROTECT()) \\")
     output.puts("  { \\")
     output.puts("    CEXCEPTION_T e; \\") if cexception

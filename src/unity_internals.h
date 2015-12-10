@@ -423,14 +423,26 @@ int  UnityEnd(void);
 void UnityConcludeTest(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
 
-#ifndef UNITY_EXCLUDE_DETAILS
-#define UNITY_CLR_DETAILS()      { Unity.CurrentDetail1 = 0;   Unity.CurrentDetail2 = 0;  }
-#define UNITY_SET_DETAIL(d1)     { Unity.CurrentDetail1 = d1;  Unity.CurrentDetail2 = 0;  }
-#define UNITY_SET_DETAILS(d1,d2) { Unity.CurrentDetail1 = d1;  Unity.CurrentDetail2 = d2; }
-#else
+//-------------------------------------------------------
+// Details Support
+//-------------------------------------------------------
+
+#ifdef UNITY_EXCLUDE_DETAILS
 #define UNITY_CLR_DETAILS()
 #define UNITY_SET_DETAIL(d1)
 #define UNITY_SET_DETAILS(d1,d2)
+#else
+#define UNITY_CLR_DETAILS()      { Unity.CurrentDetail1 = 0;   Unity.CurrentDetail2 = 0;  }
+#define UNITY_SET_DETAIL(d1)     { Unity.CurrentDetail1 = d1;  Unity.CurrentDetail2 = 0;  }
+#define UNITY_SET_DETAILS(d1,d2) { Unity.CurrentDetail1 = d1;  Unity.CurrentDetail2 = d2; }
+
+#ifndef UNITY_DETAIL1_NAME
+#define UNITY_DETAIL1_NAME "Function"
+#endif
+
+#ifndef UNITY_DETAIL2_NAME
+#define UNITY_DETAIL2_NAME "Argument"
+#endif
 #endif
 
 //-------------------------------------------------------
@@ -569,9 +581,9 @@ extern const char UnityStrErr64[];
 #ifdef __STDC_VERSION__
 #if __STDC_VERSION__ >= 199901L
 #define RUN_TEST(...) UnityDefaultTestRun(RUN_TEST_FIRST(__VA_ARGS__), RUN_TEST_SECOND(__VA_ARGS__))
-#define RUN_TEST_FIRST(...) RUN_TEST_FIRST_HELPER(##__VA_ARGS__, throwaway)
+#define RUN_TEST_FIRST(...) RUN_TEST_FIRST_HELPER(__VA_ARGS__, throwaway)
 #define RUN_TEST_FIRST_HELPER(first, ...) (first), #first
-#define RUN_TEST_SECOND(...) RUN_TEST_SECOND_HELPER(##__VA_ARGS__, __LINE__, throwaway)
+#define RUN_TEST_SECOND(...) RUN_TEST_SECOND_HELPER(__VA_ARGS__, __LINE__, throwaway)
 #define RUN_TEST_SECOND_HELPER(first, second, ...) (second)
 #endif
 #endif

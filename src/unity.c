@@ -42,6 +42,8 @@ const char UnityStrBreaker[]                = "-----------------------";
 const char UnityStrResultsTests[]           = " Tests ";
 const char UnityStrResultsFailures[]        = " Failures ";
 const char UnityStrResultsIgnored[]         = " Ignored ";
+const char UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
+const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
 
 #ifdef UNITY_FLOAT_NEEDS_ZERO
 // Dividing by these constants produces +/- infinity.
@@ -368,13 +370,14 @@ static void UnityAddMsgIfSpecified(const char* msg)
 #ifndef UNITY_EXCLUDE_DETAILS
         if (Unity.CurrentDetail1)
         {
+            UnityPrint(UnityStrDetail1Name);
             UnityPrint(Unity.CurrentDetail1);
-            UnityPrint(UnityStrSpacer);
             if (Unity.CurrentDetail2)
             {
+                UnityPrint(UnityStrDetail2Name);
                 UnityPrint(Unity.CurrentDetail2);
-                UnityPrint(UnityStrSpacer);
             }
+            UnityPrint(UnityStrSpacer);
         }
 #endif
         UnityPrint(msg);
