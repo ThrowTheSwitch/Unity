@@ -445,7 +445,7 @@ static void UnityPrintExpectedAndActualStringsLen(const char* expected, const ch
 // Assertion & Control Helpers
 //-----------------------------------------------
 
-static int UnityCheckArraysForNull(UNITY_PTR_ATTRIBUTE const void* expected, UNITY_PTR_ATTRIBUTE const void* actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
+static int UnityCheckArraysForNull(UNITY_INTERNAL_PTR expected, UNITY_INTERNAL_PTR actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
 {
     //return true if they are both NULL
     if ((expected == NULL) && (actual == NULL))
@@ -519,16 +519,16 @@ void UnityAssertEqualNumber(const _U_SINT expected,
 }
 
 //-----------------------------------------------
-void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
-                              UNITY_PTR_ATTRIBUTE const void* actual,
+void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
+                              UNITY_INTERNAL_PTR actual,
                               const _UU32 num_elements,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_DISPLAY_STYLE_T style)
 {
     _UU32 elements = num_elements;
-    UNITY_PTR_ATTRIBUTE const void* ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)expected;
-    UNITY_PTR_ATTRIBUTE const void* ptr_act = (UNITY_PTR_ATTRIBUTE const void*)actual;
+    UNITY_INTERNAL_PTR ptr_exp = (UNITY_INTERNAL_PTR)expected;
+    UNITY_INTERNAL_PTR ptr_act = (UNITY_INTERNAL_PTR)actual;
 
     UNITY_SKIP_EXECUTION;
 
@@ -540,7 +540,7 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE const void*)expected, (UNITY_PTR_ATTRIBUTE const void*)actual, lineNumber, msg) == 1)
+    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
         return;
 
     // If style is UNITY_DISPLAY_STYLE_INT, we'll fall into the default case rather than the INT16 or INT32 (etc) case
@@ -565,8 +565,8 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
-                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 1);
-                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 1);
+                ptr_exp = (UNITY_INTERNAL_PTR)((_UP)ptr_exp + 1);
+                ptr_act = (UNITY_INTERNAL_PTR)((_UP)ptr_act + 1);
             }
             break;
         case UNITY_DISPLAY_STYLE_HEX16:
@@ -586,8 +586,8 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
-                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 2);
-                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 2);
+                ptr_exp = (UNITY_INTERNAL_PTR)((_UP)ptr_exp + 2);
+                ptr_act = (UNITY_INTERNAL_PTR)((_UP)ptr_act + 2);
             }
             break;
 #ifdef UNITY_SUPPORT_64
@@ -608,8 +608,8 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
-                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 8);
-                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 8);
+                ptr_exp = (UNITY_INTERNAL_PTR)((_UP)ptr_exp + 8);
+                ptr_act = (UNITY_INTERNAL_PTR)((_UP)ptr_act + 8);
             }
             break;
 #endif
@@ -628,8 +628,8 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
-                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 4);
-                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 4);
+                ptr_exp = (UNITY_INTERNAL_PTR)((_UP)ptr_exp + 4);
+                ptr_act = (UNITY_INTERNAL_PTR)((_UP)ptr_act + 4);
             }
             break;
     }
@@ -658,7 +658,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE const void*)expected, (UNITY_PTR_ATTRIBUTE const void*)actual, lineNumber, msg) == 1)
+    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
         return;
 
     while (elements--)
@@ -820,7 +820,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE void*)expected, (UNITY_PTR_ATTRIBUTE void*)actual, lineNumber, msg) == 1)
+    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
         return;
 
     while (elements--)
@@ -1100,7 +1100,7 @@ void UnityAssertEqualStringArray( const char** expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE void*)expected, (UNITY_PTR_ATTRIBUTE void*)actual, lineNumber, msg) == 1)
+    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
         return;
 
     do
@@ -1141,8 +1141,8 @@ void UnityAssertEqualStringArray( const char** expected,
 }
 
 //-----------------------------------------------
-void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
-                             UNITY_PTR_ATTRIBUTE const void* actual,
+void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
+                             UNITY_INTERNAL_PTR actual,
                              const _UU32 length,
                              const _UU32 num_elements,
                              const char* msg,
@@ -1163,7 +1163,7 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    if (UnityCheckArraysForNull((UNITY_PTR_ATTRIBUTE const void*)expected, (UNITY_PTR_ATTRIBUTE const void*)actual, lineNumber, msg) == 1)
+    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
         return;
 
     while (elements--)
@@ -1190,8 +1190,8 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
                 UnityAddMsgIfSpecified(msg);
                 UNITY_FAIL_AND_BAIL;
             }
-            ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 1);
-            ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 1);
+            ptr_exp = (UNITY_INTERNAL_PTR)((_UP)ptr_exp + 1);
+            ptr_act = (UNITY_INTERNAL_PTR)((_UP)ptr_act + 1);
         }
         /////////////////////////////////////
 
