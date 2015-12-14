@@ -55,13 +55,8 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 
 //This goes at the bottom of each test file or in a separate c file
 #define TEST_GROUP_RUNNER(group)\
-    void TEST_##group##_GROUP_RUNNER_runAll(void);\
     void TEST_##group##_GROUP_RUNNER(void);\
-    void TEST_##group##_GROUP_RUNNER(void)\
-    {\
-        TEST_##group##_GROUP_RUNNER_runAll();\
-    }\
-    void TEST_##group##_GROUP_RUNNER_runAll(void)
+    void TEST_##group##_GROUP_RUNNER(void)
 
 //Call this from main
 #define RUN_TEST_GROUP(group)\
