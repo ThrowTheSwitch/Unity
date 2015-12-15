@@ -398,10 +398,10 @@ void UnityConcludeFixtureTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
-        //if (UnityFixture.Verbose)
-        //{
+        if (UnityFixture.Verbose)
+        {
             UNITY_PRINT_EOL();
-        //}
+        }
         Unity.TestIgnores++;
     }
     else if (!Unity.CurrentTestFailed)

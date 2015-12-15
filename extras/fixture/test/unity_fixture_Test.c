@@ -277,6 +277,10 @@ TEST(UnityCommandOptions, UnknownCommandIsIgnored)
     TEST_ASSERT_EQUAL(98, UnityFixture.RepeatCount);
 }
 
+IGNORE_TEST(UnityCommandOptions, TestShouldBeIgnored)
+{
+    TEST_FAIL_MESSAGE("This test should not run!");
+}
 
 //------------------------------------------------------------
 
