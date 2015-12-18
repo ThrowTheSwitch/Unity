@@ -5,7 +5,6 @@
 ============================================================================ */
 
 #include "unity.h"
-#include "unity_first_line_format.h"
 #include <stddef.h>
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
@@ -332,6 +331,9 @@ static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line);
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
+    if (Unity.LastWasDot || !Unity.IsFirstResultLine) {
+        UNITY_OUTPUT_CHAR('\n');
+    }
 #ifndef UNITY_FIXTURES
     UnityTestResultsBegin(Unity.TestFile, line);
 #else
@@ -1194,7 +1196,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
     UNITY_SKIP_EXECUTION;
 
-    if (UnityLastWasDot || !UnityIsFirstResultLine) {
+    if (Unity.LastWasDot || !Unity.IsFirstResultLine) {
         UNITY_OUTPUT_CHAR('\n');
     }
     UnityTestResultsBegin(Unity.TestFile, line);
@@ -1208,7 +1210,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
       }
       UnityPrint(msg);
     }
-    UnityLastWasDot = 0;
+    Unity.LastWasDot = 0;
     UNITY_FAIL_AND_BAIL;
 }
 
