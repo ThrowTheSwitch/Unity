@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "unity_fixture.h"
 #include "unity_internals.h"
+#include "unity_first_line_format.h"
 
 UNITY_FIXTURE_T UnityFixture;
 
@@ -42,8 +43,9 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
     {
         UnityBegin(argv[0]);
         announceTestRun(r);
+        UnityIsFirstResultLine = 1;
+        UnityLastWasDot = 0;
         runAllTests();
-        UNITY_OUTPUT_CHAR('\n');
         UnityEnd();
     }
 
@@ -90,7 +92,6 @@ void UnityTestRunner(unityfunction* setup,
         Unity.NumberOfTests++;
         UnityMalloc_StartTest();
         UnityPointer_Init();
-
         runTestCase();
         if (TEST_PROTECT())
         {
@@ -396,19 +397,26 @@ void UnityConcludeFixtureTest(void)
     {
         if (UnityFixture.Verbose)
         {
+            if (UnityLastWasDot || !UnityIsFirstResultLine) {
+              UNITY_OUTPUT_CHAR('\n');
+            }
             UnityPrint(Unity.CurrentTestName);
             UnityPrint(":PASS");
-            UNITY_OUTPUT_CHAR('\n');
+            UnityLastWasDot = 0;
         } else {
+            if (!UnityIsFirstResultLine && !UnityLastWasDot) {
+                UNITY_OUTPUT_CHAR('\n');
+            }
             UNITY_OUTPUT_CHAR('.');
-            UNITY_OUTPUT_CHAR('\n');
+            UnityLastWasDot = 1;
         }
     }
     else if (Unity.CurrentTestFailed)
     {
         Unity.TestFailures++;
-        UNITY_OUTPUT_CHAR('\n');
     }
+
+    UnityIsFirstResultLine = 0;
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;

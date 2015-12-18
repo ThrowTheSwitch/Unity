@@ -5,6 +5,7 @@
 ============================================================================ */
 
 #include "unity.h"
+#include "unity_first_line_format.h"
 #include <stddef.h>
 
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
@@ -42,7 +43,7 @@ const char UnityStrErr64[]                  = "Unity 64-bit Support Disabled";
 const char UnityStrBreaker[]                = "-----------------------";
 const char UnityStrResultsTests[]           = " Tests ";
 const char UnityStrResultsFailures[]        = " Failures ";
-const char UnityStrResultsIgnored[]         = " Ignored ";
+const char UnityStrResultsIgnored[]         = " Ignored";
 
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
@@ -1193,6 +1194,9 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
     UNITY_SKIP_EXECUTION;
 
+    if (UnityLastWasDot || !UnityIsFirstResultLine) {
+        UNITY_OUTPUT_CHAR('\n');
+    }
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrintFail();
     if (msg != NULL)
@@ -1204,6 +1208,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
       }
       UnityPrint(msg);
     }
+    UnityLastWasDot = 0;
     UNITY_FAIL_AND_BAIL;
 }
 
