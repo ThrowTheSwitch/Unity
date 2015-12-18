@@ -71,6 +71,7 @@ void testUnitySizeInitializationReminder(void)
                      "still correct.";
 
     /* Define a structure with all the same fields as `struct _Unity`. */
+#ifdef UNITY_EXCLUDE_DETAILS
     struct {
         const char* TestFile;
         const char* CurrentTestName;
@@ -82,6 +83,21 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE CurrentTestIgnored;
         jmp_buf AbortFrame;
     } _Expected_Unity;
+#else
+    struct {
+        const char* TestFile;
+        const char* CurrentTestName;
+        const char* CurrentDetails1;
+        const char* CurrentDetails2;
+        UNITY_LINE_TYPE CurrentTestLineNumber;
+        UNITY_COUNTER_TYPE NumberOfTests;
+        UNITY_COUNTER_TYPE TestFailures;
+        UNITY_COUNTER_TYPE TestIgnores;
+        UNITY_COUNTER_TYPE CurrentTestFailed;
+        UNITY_COUNTER_TYPE CurrentTestIgnored;
+        jmp_buf AbortFrame;
+    } _Expected_Unity;
+#endif
 
     /* Compare our fake structure's size to the actual structure's size. They
      * should be the same.
@@ -3481,6 +3497,46 @@ void testNotEqualDoubleArraysInf(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanBeHandleOneDetail(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAIL("Detail1");
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_MESSAGE(5, 6, "Should Fail And Say Detail1");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanBeHandleTwoDetails(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAILS("Detail1","Detail2");
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX8_MESSAGE(7, 8, "Should Fail And Say Detail1 and Detail2");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanBeHandleSingleDetailClearingTwoDetails(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAILS("Detail1","Detail2");
+    UNITY_SET_DETAIL("DetailNew");
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_MESSAGE("MEH", "GUH", "Should Fail And Say DetailNew");
     VERIFY_FAILS_END
 #endif
 }

@@ -7,6 +7,7 @@
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
   CMock_Init(); \
+  UNITY_CLR_DETAILS(); \
   if (TEST_PROTECT()) \
   { \
       setUp(); \
