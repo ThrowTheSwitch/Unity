@@ -414,6 +414,8 @@ struct _Unity
     UNITY_COUNTER_TYPE TestIgnores;
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
+    int IsFirstResultLine;
+    int LastWasDot;
     jmp_buf AbortFrame;
 };
 

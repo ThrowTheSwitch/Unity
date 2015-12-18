@@ -329,6 +329,9 @@ static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line);
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
+    if (Unity.LastWasDot || !Unity.IsFirstResultLine) {
+        UNITY_PRINT_EOL();
+    }
 #ifndef UNITY_FIXTURES
     UnityTestResultsBegin(Unity.TestFile, line);
 #else
@@ -1206,6 +1209,9 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
     UNITY_SKIP_EXECUTION;
 
+    if (Unity.LastWasDot || !Unity.IsFirstResultLine) {
+        UNITY_PRINT_EOL();
+    }
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrintFail();
     if (msg != NULL)
@@ -1231,7 +1237,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
         }
         UnityPrint(msg);
     }
-
+    Unity.LastWasDot = 0;
     UNITY_FAIL_AND_BAIL;
 }
 

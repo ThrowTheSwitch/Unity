@@ -42,8 +42,9 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
     {
         UnityBegin(argv[0]);
         announceTestRun(r);
+        Unity.IsFirstResultLine = 1;
+        Unity.LastWasDot = 0;
         runAllTests();
-        UNITY_PRINT_EOL();
         UnityEnd();
     }
 
@@ -86,15 +87,10 @@ void UnityTestRunner(unityfunction* setup,
         Unity.TestFile = file;
         Unity.CurrentTestName = printableName;
         Unity.CurrentTestLineNumber = line;
-        if (!UnityFixture.Verbose)
-            UNITY_OUTPUT_CHAR('.');
-        else
-            UnityPrint(printableName);
 
         Unity.NumberOfTests++;
         UnityMalloc_StartTest();
         UnityPointer_Init();
-
         runTestCase();
         if (TEST_PROTECT())
         {
@@ -398,25 +394,32 @@ void UnityConcludeFixtureTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
-        //if (UnityFixture.Verbose)
-        //{
-            UNITY_PRINT_EOL();
-        //}
         Unity.TestIgnores++;
     }
     else if (!Unity.CurrentTestFailed)
     {
         if (UnityFixture.Verbose)
         {
-            UnityPrint(" PASS");
-            UNITY_PRINT_EOL();
+            if (Unity.LastWasDot || !Unity.IsFirstResultLine) {
+              UNITY_PRINT_EOL();
+            }
+            UnityPrint(Unity.CurrentTestName);
+            UnityPrint(":PASS");
+            Unity.LastWasDot = 0;
+        } else {
+            if (!Unity.IsFirstResultLine && !Unity.LastWasDot) {
+                UNITY_PRINT_EOL();
+            }
+            UNITY_OUTPUT_CHAR('.');
+            Unity.LastWasDot = 1;
         }
     }
     else if (Unity.CurrentTestFailed)
     {
         Unity.TestFailures++;
-        UNITY_PRINT_EOL();
     }
+
+    Unity.IsFirstResultLine = 0;
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
