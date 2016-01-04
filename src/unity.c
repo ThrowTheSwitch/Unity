@@ -167,30 +167,24 @@ void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T s
 /// basically do an itoa using as little ram as possible
 void UnityPrintNumber(const _U_SINT number_to_print)
 {
-    _U_SINT divisor = 1;
-    _U_SINT next_divisor;
+    _U_UINT divisor = 1;
+    _U_UINT next_divisor;
     _U_UINT number;
 
-    if (number_to_print == (1l << (UNITY_LONG_WIDTH-1)))
+    if (number_to_print < 0)
     {
-        //The largest representable negative number
-        UNITY_OUTPUT_CHAR('-');
-        number = (1ul << (UNITY_LONG_WIDTH-1));
-    }
-    else if (number_to_print < 0)
-    {
-        //Some other negative number
+        //A negative number, including MIN negative
         UNITY_OUTPUT_CHAR('-');
         number = (_U_UINT)(-number_to_print);
     }
     else
     {
-        //Positive number
+        //Non-negative number
         number = (_U_UINT)number_to_print;
     }
 
     // figure out initial divisor
-    while ((_U_SINT)number / divisor > 9)
+    while (number / divisor > 9)
     {
         next_divisor = divisor * 10;
         if (next_divisor > divisor)
@@ -202,7 +196,7 @@ void UnityPrintNumber(const _U_SINT number_to_print)
     // now mod and print, then divide divisor
     do
     {
-        UNITY_OUTPUT_CHAR((char)('0' + ((_U_SINT)number / divisor % 10)));
+        UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));
         divisor /= 10;
     }
     while (divisor > 0);
