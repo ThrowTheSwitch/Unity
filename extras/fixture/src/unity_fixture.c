@@ -179,11 +179,11 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 typedef struct GuardBytes
 {
     size_t size;
-    char guard[sizeof(size_t)];
+    char guard_space[4];
 } Guard;
 
 
-static const char * end = "END";
+static const char end[] = "END";
 
 void * unity_malloc(size_t size)
 {
@@ -199,10 +199,10 @@ void * unity_malloc(size_t size)
 
     malloc_count++;
 
-    guard = (Guard*)UNITY_FIXTURE_MALLOC(size + sizeof(Guard) + 4);
+    guard = (Guard*)UNITY_FIXTURE_MALLOC(size + sizeof(Guard) + sizeof(end));
     guard->size = size;
     mem = (char*)&(guard[1]);
-    memcpy(&mem[size], end, strlen(end) + 1);
+    memcpy(&mem[size], end, sizeof(end));
 
     return (void*)mem;
 }
@@ -398,10 +398,10 @@ void UnityConcludeFixtureTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
-        //if (UnityFixture.Verbose)
-        //{
+        if (UnityFixture.Verbose)
+        {
             UNITY_PRINT_EOL();
-        //}
+        }
         Unity.TestIgnores++;
     }
     else if (!Unity.CurrentTestFailed)
