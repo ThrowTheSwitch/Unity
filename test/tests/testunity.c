@@ -2158,7 +2158,121 @@ void testIgnoredAndThenFailInTearDown(void)
     TEST_IGNORE();
 }
 
+// Tricky series of macros to set USING_OUTPUT_SPY
+#define USING_SPY_AS(a)           EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
+#define ASSIGN_VALUE(a)           VAL_FUNC_##a
+#define VAL_FUNC_putcharSpy()     0, 1
+#define EXPAND_AND_USE_2ND(a, b)  SECOND_PARAM(a, b, throwaway)
+#define SECOND_PARAM(a, b, ...)   b
+#if USING_SPY_AS(UNITY_OUTPUT_CHAR())
+  #define USING_OUTPUT_SPY // true only if UNITY_OUTPUT_CHAR = putchar_Spy
+#endif
+
+#ifdef USING_OUTPUT_SPY
+#include <stdio.h>
+#define SPY_BUFFER_MAX 40
+static char putcharSpyBuffer[SPY_BUFFER_MAX];
+#endif
+static int indexSpyBuffer;
+static int putcharSpyEnabled;
+
+void startPutcharSpy(void) {indexSpyBuffer = 0; putcharSpyEnabled = 1;}
+
+void endPutcharSpy(void) {putcharSpyEnabled = 0;}
+
+char* getBufferPutcharSpy(void)
+{
+#ifdef USING_OUTPUT_SPY
+    putcharSpyBuffer[indexSpyBuffer] = '\0';
+    return putcharSpyBuffer;
+#else
+    return NULL;
+#endif
+}
+
+int putcharSpy(int c)
+{
+#ifdef USING_OUTPUT_SPY
+    if (putcharSpyEnabled)
+    {
+        if (indexSpyBuffer < SPY_BUFFER_MAX - 1)
+            putcharSpyBuffer[indexSpyBuffer++] = (char)c;
+    } else
+        c = putchar(c);
+#endif
+    return c;
+}
+
+#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
+        startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
+        }
+
+#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) {            \
+        startPutcharSpy(); UnityPrintNumberUnsigned((actual)); endPutcharSpy(); \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());            \
+        }
+
+void testPrintNumbers32(void)
+{
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE_MESSAGE("Compile with '-D UNITY_OUTPUT_CHAR=putcharSpy' to enable print testing");
+#else
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("1", 1);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1", -1);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("2000000000", 2000000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-2147483648", (_US32)0x80000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1",          (_US32)0xFFFFFFFF);
+#endif
+}
+
+void testPrintNumbersUnsigned32(void)
+{
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("1", 1);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("1500000000", 1500000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("2147483648", (_UU32)0x80000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("4294967295", (_UU32)0xFFFFFFFF);
+#endif
+}
+
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ==================
+
+void testPrintNumbersInt64(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+  #ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+  #else
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("10000000000", 10000000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-9223372036854775808", (_U_SINT)0x8000000000000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1", (_U_SINT)0xFFFFFFFFFFFFFFFF);
+  #endif
+#endif
+}
+
+void testPrintNumbersUInt64(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+  #ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+  #else
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("70000000000", 70000000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("9223372036854775808",  (_U_UINT)0x8000000000000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("18446744073709551615", (_U_UINT)0xFFFFFFFFFFFFFFFF);
+  #endif
+#endif
+}
 
 void testEqualHex64s(void)
 {

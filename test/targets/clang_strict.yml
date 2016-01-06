@@ -28,7 +28,7 @@ compiler:
     - '-Wstrict-overflow=5'
     - '-Wuninitialized'
     - '-Wunused'
-    - '-Wunreachable-code'
+#   - '-Wunreachable-code'
     - '-Wreturn-type'
     - '-Wshadow'
     - '-Wundef'
@@ -57,6 +57,7 @@ compiler:
   defines:
     prefix: '-D'
     items:
+      - UNITY_OUTPUT_CHAR=putcharSpy
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
       - UNITY_SUPPORT_64
@@ -65,7 +66,7 @@ compiler:
     extension: '.o'
     destination: *build_path
 linker:
-  path: gcc
+  path: clang
   options:
     - -lm
     - '-m64'

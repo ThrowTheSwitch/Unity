@@ -19,6 +19,7 @@ compiler:
   defines:
     prefix: '-D'
     items:
+      - UNITY_OUTPUT_CHAR=putcharSpy
       - UNITY_EXCLUDE_STDINT_H
       - UNITY_EXCLUDE_LIMITS_H
       - UNITY_EXCLUDE_SIZEOF

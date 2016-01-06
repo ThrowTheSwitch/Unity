@@ -5,7 +5,10 @@
 ========================================== */
 
 #include <setjmp.h>
+#include <stdio.h>
 #include "unity.h"
+
+int putcharSpy(int c) {return putchar(c);} // include passthrough for linking tests
 
 #define TEST_CASE(...)
 
