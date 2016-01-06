@@ -4,8 +4,8 @@ Unity Test API
 [![Unity Build Status](https://api.travis-ci.org/ThrowTheSwitch/Unity.png?branch=master)](https://travis-ci.org/ThrowTheSwitch/Unity)
 __Copyright (c) 2007 - 2014 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
-Running Tests 
-------------- 
+Running Tests
+-------------
 
     RUN_TEST(func, linenum)
 
@@ -96,7 +96,7 @@ like when comparing arrays, you can use a specific version:
     TEST_ASSERT_EQUAL_UINT32(expected, actual)
     TEST_ASSERT_EQUAL_UINT64(expected, actual)
 
-Compare two integers for equality and display errors as unsigned integers.  Like INT, there are 
+Compare two integers for equality and display errors as unsigned integers.  Like INT, there are
 variants for different sizes also.
 
     TEST_ASSERT_EQUAL_HEX(expected, actual)
@@ -123,7 +123,7 @@ Another way of calling TEST_ASSERT_EQUAL_INT
 
     TEST_ASSERT_INT_WITHIN(delta, expected, actual)
 
-Asserts that the actual value is within plus or minus delta of the expected value.  This also comes in 
+Asserts that the actual value is within plus or minus delta of the expected value.  This also comes in
 size specific variants.
 
 
