@@ -1,4 +1,8 @@
 CC = gcc
+CFLAGS += -Werror
+CFLAGS += -std=c99
+CFLAGS += -pedantic
+CFLAGS += -Wundef
 DEFINES = -D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar
 SRC = ../src/unity_fixture.c \
       ../../../src/unity.c   \
@@ -11,5 +15,5 @@ INC_DIR = -I../src -I../../../src/
 TARGET = fixture_tests.exe
 
 all:
-	@ $(CC) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET)
-	@ ./$(TARGET)
+	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET)
+	./$(TARGET)

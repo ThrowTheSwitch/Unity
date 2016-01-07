@@ -308,8 +308,20 @@ TEST_TEAR_DOWN(LeakDetection)
     memcpy(Unity.AbortFrame, TestAbortFrame, sizeof(jmp_buf)); \
   }
 
+// This tricky set of defines lets us see if we are using the Spy, returns 1 if true, else 0
+#define USING_SPY_AS(a)                          EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
+#define ASSIGN_VALUE(a)                          VAL_FUNC_##a
+#define VAL_FUNC_UnityOutputCharSpy_OutputChar() 0, 1
+#define EXPAND_AND_USE_2ND(a, b)                 SECOND_PARAM(a, b, throwaway)
+#define SECOND_PARAM(a, b, ...)                  b
+#if USING_SPY_AS(UNITY_OUTPUT_CHAR())
+  #define USING_OUTPUT_SPY
+#endif
 TEST(LeakDetection, DetectsLeak)
 {
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE_MESSAGE("Build with '-D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar' to enable tests");
+#else
     void* m = malloc(10);
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
@@ -319,10 +331,15 @@ TEST(LeakDetection, DetectsLeak)
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "This test leaks!"));
     free(m);
+#endif
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringFree)
 {
+#ifndef USING_OUTPUT_SPY
+    UNITY_PRINT_EOL();
+    TEST_IGNORE();
+#else
     void* m = malloc(10);
     char* s = (char*)m;
     s[10] = (char)0xFF;
@@ -333,10 +350,15 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
+#endif
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
 {
+#ifndef USING_OUTPUT_SPY
+    UNITY_PRINT_EOL();
+    TEST_IGNORE();
+#else
     void* m = malloc(10);
     char* s = (char*)m;
     s[10] = (char)0xFF;
@@ -347,4 +369,5 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
+#endif
 }
