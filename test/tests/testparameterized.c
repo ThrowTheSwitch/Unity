@@ -15,7 +15,7 @@ int putcharSpy(int c) {return putchar(c);} // include passthrough for linking te
 #define EXPECT_ABORT_BEGIN \
     if (TEST_PROTECT())    \
     {
-    
+
 #define VERIFY_FAILS_END                                                       \
     }                                                                          \
     Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
@@ -24,7 +24,7 @@ int putcharSpy(int c) {return putchar(c);} // include passthrough for linking te
       UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
-    
+
 #define VERIFY_IGNORES_END                                                     \
     }                                                                          \
     Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
