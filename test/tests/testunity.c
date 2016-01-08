@@ -27,6 +27,9 @@ static const _UD d_zero = 0.0;
     Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
+      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
+      UNITY_OUTPUT_CHAR(':');                                                  \
+      UnityPrint(Unity.CurrentTestName);                                       \
       UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
@@ -1192,6 +1195,12 @@ void testINT32sNotWithinDelta(void)
     VERIFY_FAILS_END
 }
 
+void testINT32sNotWithinDeltaAndDifferenceOverflows(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_INT32_WITHIN(1, -1, 0x7FFFFFFF);
+    VERIFY_FAILS_END
+}
 void testINT32sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
@@ -2492,6 +2501,17 @@ void testINT64sNotWithinDelta(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testINT64sNotWithinDeltaAndDifferenceOverflows(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_INT64_WITHIN(1, 0x8000000000000000, 0x7FFFFFFFFFFFFFFF);
     VERIFY_FAILS_END
 #endif
 }
