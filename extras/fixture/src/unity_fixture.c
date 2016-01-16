@@ -6,21 +6,19 @@
 ========================================== */
 
 #include <string.h>
-#include <stdio.h>
 #include "unity_fixture.h"
 #include "unity_internals.h"
 
 UNITY_FIXTURE_T UnityFixture;
 
 //If you decide to use the function pointer approach.
-int (*outputChar)(int) = putchar;
+//Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>
+//int (*outputChar)(int) = putchar;
 
-int verbose = 0;
-
-void setUp(void);
-void tearDown(void);
+#if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
 void setUp(void)    { /*does nothing*/ }
 void tearDown(void) { /*does nothing*/ }
+#endif
 
 static void announceTestRun(unsigned int runNumber)
 {
@@ -67,11 +65,6 @@ static int groupSelected(const char* group)
     return selected(UnityFixture.GroupFilter, group);
 }
 
-static void runTestCase(void)
-{
-
-}
-
 void UnityTestRunner(unityfunction* setup,
         unityfunction* testBody,
         unityfunction* teardown,
@@ -95,7 +88,6 @@ void UnityTestRunner(unityfunction* setup,
         UnityMalloc_StartTest();
         UnityPointer_Init();
 
-        runTestCase();
         if (TEST_PROTECT())
         {
             setup();
@@ -174,7 +166,6 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 #endif
 
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct GuardBytes
 {
