@@ -64,7 +64,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
       TEST_##group##_GROUP_RUNNER(); }
 
 //CppUTest Compatibility Macros
-#define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&(ptr), (void*)(newPointerValue))
+#define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&(ptr), (void*)(newPointerValue), __LINE__)
 #define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT_EQUAL_PTR((expected), (actual))
 #define TEST_ASSERT_BYTES_EQUAL(expected, actual)      TEST_ASSERT_EQUAL_HEX8(0xff & (expected), 0xff & (actual))
 #define FAIL(message)                                  TEST_FAIL_MESSAGE((message))

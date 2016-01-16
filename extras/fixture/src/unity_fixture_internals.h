@@ -34,7 +34,7 @@ UNITY_COUNTER_TYPE UnityTestsCount(void);
 int UnityGetCommandLineOptions(int argc, const char* argv[]);
 void UnityConcludeFixtureTest(void);
 
-void UnityPointer_Set(void** ptr, void* newValue);
+void UnityPointer_Set(void** ptr, void* newValue, UNITY_LINE_TYPE line);
 void UnityPointer_UndoAllSets(void);
 void UnityPointer_Init(void);
 

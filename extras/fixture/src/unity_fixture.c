@@ -299,15 +299,14 @@ void* unity_realloc(void* oldMem, size_t size)
 
 //--------------------------------------------------------
 //Automatic pointer restoration functions
-typedef struct _PointerPair
+struct PointerPair
 {
-    struct _PointerPair* next;
     void** pointer;
     void* old_value;
-} PointerPair;
+};
 
-enum {MAX_POINTERS=50};
-static PointerPair pointer_store[MAX_POINTERS+1];
+enum { MAX_POINTERS = 50 };
+static struct PointerPair pointer_store[MAX_POINTERS];
 static int pointer_index = 0;
 
 void UnityPointer_Init(void)
@@ -315,11 +314,11 @@ void UnityPointer_Init(void)
     pointer_index = 0;
 }
 
-void UnityPointer_Set(void** pointer, void* newValue)
+void UnityPointer_Set(void** pointer, void* newValue, UNITY_LINE_TYPE line)
 {
     if (pointer_index >= MAX_POINTERS)
     {
-        TEST_FAIL_MESSAGE("Too many pointers set");
+        UNITY_TEST_FAIL(line, "Too many pointers set");
     }
     else
     {
