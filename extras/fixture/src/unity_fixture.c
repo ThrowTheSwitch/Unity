@@ -48,7 +48,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
     return UnityFailureCount();
 }
 
-static int selected(const char * filter, const char * name)
+static int selected(const char* filter, const char* name)
 {
     if (filter == 0)
         return 1;
@@ -66,12 +66,12 @@ static int groupSelected(const char* group)
 }
 
 void UnityTestRunner(unityfunction* setup,
-        unityfunction* testBody,
-        unityfunction* teardown,
-        const char * printableName,
-        const char * group,
-        const char * name,
-        const char * file, int line)
+                     unityfunction* testBody,
+                     unityfunction* teardown,
+                     const char* printableName,
+                     const char* group,
+                     const char* name,
+                     const char* file, int line)
 {
     if (testSelected(name) && groupSelected(group))
     {
@@ -107,7 +107,7 @@ void UnityTestRunner(unityfunction* setup,
     }
 }
 
-void UnityIgnoreTest(const char * printableName, const char * group, const char * name)
+void UnityIgnoreTest(const char* printableName, const char* group, const char* name)
 {
     if (testSelected(name) && groupSelected(group))
     {
@@ -176,7 +176,7 @@ typedef struct GuardBytes
 
 static const char end[] = "END";
 
-void * unity_malloc(size_t size)
+void* unity_malloc(size_t size)
 {
     char* mem;
     Guard* guard;
@@ -198,7 +198,7 @@ void * unity_malloc(size_t size)
     return (void*)mem;
 }
 
-static int isOverrun(void * mem)
+static int isOverrun(void* mem)
 {
     Guard* guard = (Guard*)mem;
     char* memAsChar = (char*)mem;
@@ -207,7 +207,7 @@ static int isOverrun(void * mem)
     return strcmp(&memAsChar[guard->size], end) != 0;
 }
 
-static void release_memory(void * mem)
+static void release_memory(void* mem)
 {
     Guard* guard = (Guard*)mem;
     guard--;
@@ -216,7 +216,7 @@ static void release_memory(void * mem)
     UNITY_FIXTURE_FREE(guard);
 }
 
-void unity_free(void * mem)
+void unity_free(void* mem)
 {
     int overrun;
 
@@ -240,7 +240,7 @@ void* unity_calloc(size_t num, size_t size)
     return mem;
 }
 
-void* unity_realloc(void * oldMem, size_t size)
+void* unity_realloc(void* oldMem, size_t size)
 {
     Guard* guard = (Guard*)oldMem;
 //    char* memAsChar = (char*)oldMem;
@@ -276,9 +276,9 @@ void* unity_realloc(void * oldMem, size_t size)
 //Automatic pointer restoration functions
 typedef struct _PointerPair
 {
-    struct _PointerPair * next;
-    void ** pointer;
-    void * old_value;
+    struct _PointerPair* next;
+    void** pointer;
+    void* old_value;
 } PointerPair;
 
 enum {MAX_POINTERS=50};
