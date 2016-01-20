@@ -97,7 +97,7 @@ module RakefileHelpers
     if $cfg['compiler']['defines']['items'].nil?
       defines  = ''
     else
-      defines  = squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'])
+      defines  = squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=putcharSpy'])
     end
     options  = squash('', $cfg['compiler']['options'])
     includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
