@@ -28,6 +28,7 @@ class UnityTestRunnerGenerator
       :test_prefix   => "test|spec|should",
       :setup_name    => "setUp",
       :teardown_name => "tearDown",
+      :main_name     => "main",
     }
   end
 
@@ -288,7 +289,10 @@ class UnityTestRunnerGenerator
 
   def create_main(output, filename, tests, used_mocks)
     output.puts("\n\n//=======MAIN=====")
-    output.puts("int main(void)")
+    if (@options[:main_name] != "main")
+      output.puts("int #{@options[:main_name]}(void);")
+    end
+    output.puts("int #{@options[:main_name]}(void)")
     output.puts("{")
     output.puts("  suite_setup();") unless @options[:suite_setup].nil?
     output.puts("  UnityBegin(\"#{filename.gsub(/\\/,'\\\\')}\");")
@@ -358,6 +362,7 @@ if ($0 == __FILE__)
            "    -cexception           - include cexception support",
            "    --setup_name=\"\"       - redefine setUp func name to something else",
            "    --teardown_name=\"\"    - redefine tearDown func name to something else",
+           "    --main_name=\"\"        - redefine main func name to something else",
            "    --test_prefix=\"\"      - redefine test prefix from default test|spec|should",
            "    --suite_setup=\"\"      - code to execute for setup of entire suite",
            "    --suite_teardown=\"\"   - code to execute for teardown of entire suite",
