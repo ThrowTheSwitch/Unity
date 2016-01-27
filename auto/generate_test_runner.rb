@@ -383,5 +383,5 @@ if ($0 == __FILE__)
   #create the default test runner name if not specified
   ARGV[1] = ARGV[0].gsub(".c","_Runner.c") if (!ARGV[1])
 
-  puts UnityTestRunnerGenerator.new(options).run(ARGV[0], ARGV[1]).inspect
+  UnityTestRunnerGenerator.new(options).run(ARGV[0], ARGV[1])
 end
