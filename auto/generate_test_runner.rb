@@ -146,8 +146,9 @@ class UnityTestRunnerGenerator
 
   def find_mocks(includes)
     mock_headers = []
-    includes.each do |include_file|
-      mock_headers << File.basename(include_file) if (include_file =~ /^mock/i)
+    includes.each do |include_path|
+      include_file = File.basename(include_path)
+      mock_headers << include_path if (include_file =~ /^mock/i)
     end
     return mock_headers
   end
@@ -192,8 +193,8 @@ class UnityTestRunnerGenerator
     output.puts('')
   end
 
-  def create_mock_management(output, mocks)
-    unless (mocks.empty?)
+  def create_mock_management(output, mock_headers)
+    unless (mock_headers.empty?)
       output.puts("\n//=======Mock Management=====")
       output.puts("static void CMock_Init(void)")
       output.puts("{")
@@ -201,6 +202,10 @@ class UnityTestRunnerGenerator
         output.puts("  GlobalExpectCount = 0;")
         output.puts("  GlobalVerifyOrder = 0;")
         output.puts("  GlobalOrderError = NULL;")
+      end
+      mocks = []
+      mock_headers.each do |mock|
+        mocks << File.basename(mock)
       end
       mocks.each do |mock|
         mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
