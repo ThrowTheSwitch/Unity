@@ -10,26 +10,17 @@
 
 #include <stddef.h>
 
-// This function is used by the Unity Fixture to allocate memory on
-// the heap and can be overridden with platform-specific heap
-// implementations. For example, when using FreeRTOS
-// UNITY_FIXTURE_MALLOC becomes pvPortMalloc().
+// These functions are used by the Unity Fixture to allocate and release memory
+// on the heap and can be overridden with platform-specific implementations.
+// For example, when using FreeRTOS UNITY_FIXTURE_MALLOC becomes pvPortMalloc()
+// and UNITY_FIXTURE_FREE becomes vPortFree().
 
-#ifndef UNITY_FIXTURE_MALLOC
-   #define UNITY_FIXTURE_MALLOC( SIZE ) malloc( ( SIZE ) )
+#if !defined(UNITY_FIXTURE_MALLOC) || !defined(UNITY_FIXTURE_FREE)
+    #define UNITY_FIXTURE_MALLOC(size) malloc(size)
+    #define UNITY_FIXTURE_FREE(ptr)    free(ptr)
 #else
-   extern void * UNITY_FIXTURE_MALLOC(size_t size);
-#endif
-
-// This function is used by the Unity Fixture to release memory in the
-// heap and can be overridden with platform-specific heap
-// implementations. For example, when using FreeRTOS
-// UNITY_FIXTURE_FREE becomes vPortFree().
-
-#ifndef UNITY_FIXTURE_FREE
-   #define UNITY_FIXTURE_FREE( PTR ) free( ( PTR ) )
-#else
-   extern void UNITY_FIXTURE_FREE(void *ptr);
+    extern void* UNITY_FIXTURE_MALLOC(size_t size);
+    extern void UNITY_FIXTURE_FREE(void* ptr);
 #endif
 
 #define malloc  unity_malloc

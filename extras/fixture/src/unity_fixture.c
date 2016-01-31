@@ -149,21 +149,12 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
     malloc_fail_countdown = countdown;
 }
 
-#ifdef malloc
+// These definitions are always included from unity_fixture_malloc_overrides.h
+// We undef to use them or avoid conflict with <stdlib.h> per the C standard
 #undef malloc
-#endif
-
-#ifdef free
 #undef free
-#endif
-
-#ifdef calloc
 #undef calloc
-#endif
-
-#ifdef realloc
 #undef realloc
-#endif
 
 #include <stdlib.h>
 
@@ -290,7 +281,7 @@ void UnityPointer_Init(void)
     pointer_index = 0;
 }
 
-void UnityPointer_Set(void ** pointer, void * newValue)
+void UnityPointer_Set(void** pointer, void* newValue)
 {
     if (pointer_index >= MAX_POINTERS)
     {
@@ -311,8 +302,7 @@ void UnityPointer_UndoAllSets(void)
     {
         pointer_index--;
         *(pointer_store[pointer_index].pointer) =
-        pointer_store[pointer_index].old_value;
-
+            pointer_store[pointer_index].old_value;
     }
 }
 
@@ -373,7 +363,13 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
             {
                 if (*(argv[i]) >= '0' && *(argv[i]) <= '9')
                 {
-                    UnityFixture.RepeatCount = atoi(argv[i]);
+                    unsigned int digit = 0;
+                    UnityFixture.RepeatCount = 0;
+                    while (argv[i][digit] >= '0' && argv[i][digit] <= '9')
+                    {
+                        UnityFixture.RepeatCount *= 10;
+                        UnityFixture.RepeatCount += (unsigned int)argv[i][digit++] - '0';
+                    }
                     i++;
                 }
             }
