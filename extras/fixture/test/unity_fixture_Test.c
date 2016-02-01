@@ -79,6 +79,7 @@ TEST(UnityFixture, ReallocLargerNeeded)
 {
     void* m1 = malloc(10);
     void* m2;
+    CHECK(m1);
     strcpy((char*)m1, "123456789");
     m2 = realloc(m1, 15);
     CHECK(m1 != m2);
@@ -104,6 +105,7 @@ TEST(UnityFixture, CallocFillsWithZero)
 {
     void* m = calloc(3, sizeof(char));
     char* s = (char*)m;
+    CHECK(m);
     TEST_ASSERT_BYTES_EQUAL(0, s[0]);
     TEST_ASSERT_BYTES_EQUAL(0, s[1]);
     TEST_ASSERT_BYTES_EQUAL(0, s[2]);
@@ -323,6 +325,7 @@ TEST(LeakDetection, DetectsLeak)
     TEST_IGNORE_MESSAGE("Build with '-D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar' to enable tests");
 #else
     void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     UnityMalloc_EndTest();
@@ -341,6 +344,7 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
@@ -360,6 +364,7 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
