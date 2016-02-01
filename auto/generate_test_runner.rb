@@ -203,10 +203,7 @@ class UnityTestRunnerGenerator
         output.puts("  GlobalVerifyOrder = 0;")
         output.puts("  GlobalOrderError = NULL;")
       end
-      mocks = []
-      mock_headers.each do |mock|
-        mocks << File.basename(mock)
-      end
+      mocks = mock_headers.map {|mock| File.basename(mock)}
       mocks.each do |mock|
         mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
         output.puts("  #{mock_clean}_Init();")
