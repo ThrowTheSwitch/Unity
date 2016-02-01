@@ -179,9 +179,11 @@ void* unity_malloc(size_t size)
         malloc_fail_countdown--;
     }
 
+    if (size == 0) return NULL;
     malloc_count++;
 
     guard = (Guard*)UNITY_FIXTURE_MALLOC(size + sizeof(Guard) + sizeof(end));
+    if (guard == NULL) return NULL;
     guard->size = size;
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, sizeof(end));
@@ -227,6 +229,7 @@ void unity_free(void* mem)
 void* unity_calloc(size_t num, size_t size)
 {
     void* mem = unity_malloc(num * size);
+    if (mem == NULL) return NULL;
     memset(mem, 0, num*size);
     return mem;
 }
@@ -237,8 +240,7 @@ void* unity_realloc(void* oldMem, size_t size)
 //    char* memAsChar = (char*)oldMem;
     void* newMem;
 
-    if (oldMem == 0)
-        return unity_malloc(size);
+    if (oldMem == NULL) return unity_malloc(size);
 
     guard--;
     if (isOverrun(oldMem))
@@ -250,13 +252,13 @@ void* unity_realloc(void* oldMem, size_t size)
     if (size == 0)
     {
         release_memory(oldMem);
-        return 0;
+        return NULL;
     }
 
-    if (guard->size >= size)
-        return oldMem;
+    if (guard->size >= size) return oldMem;
 
     newMem = unity_malloc(size);
+    if (newMem == NULL) return NULL; // Do not release old memory
     memcpy(newMem, oldMem, guard->size);
     unity_free(oldMem);
     return newMem;
