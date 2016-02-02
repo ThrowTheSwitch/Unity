@@ -156,7 +156,12 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 #undef calloc
 #undef realloc
 
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+static unsigned char unity_heap[UNITY_INTERNAL_HEAP_SIZE_BYTES];
+static unsigned int  heap_index;
+#else
 #include <stdlib.h>
+#endif
 
 typedef struct GuardBytes
 {
@@ -171,19 +176,31 @@ void* unity_malloc(size_t size)
 {
     char* mem;
     Guard* guard;
+    size_t total_size = size + sizeof(Guard) + sizeof(end);
 
     if (malloc_fail_countdown != MALLOC_DONT_FAIL)
     {
         if (malloc_fail_countdown == 0)
-            return 0;
+            return NULL;
         malloc_fail_countdown--;
     }
 
     if (size == 0) return NULL;
-    malloc_count++;
-
-    guard = (Guard*)UNITY_FIXTURE_MALLOC(size + sizeof(Guard) + sizeof(end));
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    if (heap_index + total_size > UNITY_INTERNAL_HEAP_SIZE_BYTES)
+    {
+        guard = NULL;
+    }
+    else
+    {
+        guard = (Guard*) &unity_heap[heap_index];
+        heap_index += total_size;
+    }
+#else
+    guard = (Guard*)UNITY_FIXTURE_MALLOC(total_size);
+#endif
     if (guard == NULL) return NULL;
+    malloc_count++;
     guard->size = size;
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, sizeof(end));
@@ -206,7 +223,14 @@ static void release_memory(void* mem)
     guard--;
 
     malloc_count--;
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    if (mem == unity_heap + heap_index - guard->size - sizeof(end))
+    {
+        heap_index -= (guard->size + sizeof(Guard) + sizeof(end));
+    }
+#else
     UNITY_FIXTURE_FREE(guard);
+#endif
 }
 
 void unity_free(void* mem)
@@ -218,7 +242,7 @@ void unity_free(void* mem)
         return;
     }
 
-    overrun = isOverrun(mem);//strcmp(&memAsChar[guard->size], end) != 0;
+    overrun = isOverrun(mem);
     release_memory(mem);
     if (overrun)
     {
@@ -230,14 +254,13 @@ void* unity_calloc(size_t num, size_t size)
 {
     void* mem = unity_malloc(num * size);
     if (mem == NULL) return NULL;
-    memset(mem, 0, num*size);
+    memset(mem, 0, num * size);
     return mem;
 }
 
 void* unity_realloc(void* oldMem, size_t size)
 {
     Guard* guard = (Guard*)oldMem;
-//    char* memAsChar = (char*)oldMem;
     void* newMem;
 
     if (oldMem == NULL) return unity_malloc(size);
@@ -257,10 +280,18 @@ void* unity_realloc(void* oldMem, size_t size)
 
     if (guard->size >= size) return oldMem;
 
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC // Optimization if memory is expandable
+    if (oldMem == unity_heap + heap_index - guard->size - sizeof(end) &&
+        heap_index + size - guard->size <= UNITY_INTERNAL_HEAP_SIZE_BYTES)
+    {
+        release_memory(oldMem); // Not thread-safe, like unity_heap generally
+        return unity_malloc(size); // No memcpy since data is in place
+    }
+#endif
     newMem = unity_malloc(size);
     if (newMem == NULL) return NULL; // Do not release old memory
     memcpy(newMem, oldMem, guard->size);
-    unity_free(oldMem);
+    release_memory(oldMem);
     return newMem;
 }
 

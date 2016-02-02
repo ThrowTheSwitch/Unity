@@ -10,11 +10,21 @@
 
 #include <stddef.h>
 
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+// Define this macro to remove the use of stdlib.h, malloc, and free.
+// Many embedded systems do not have a heap or malloc/free by default.
+// This internal unity_malloc() provides allocated memory deterministically from
+// the end of an array only, unity_free() only releases from end-of-array,
+// blocks are not coalesced, and memory not freed in LIFO order is stranded.
+    #ifndef UNITY_INTERNAL_HEAP_SIZE_BYTES
+    #define UNITY_INTERNAL_HEAP_SIZE_BYTES 256
+    #endif
+#endif
+
 // These functions are used by the Unity Fixture to allocate and release memory
 // on the heap and can be overridden with platform-specific implementations.
 // For example, when using FreeRTOS UNITY_FIXTURE_MALLOC becomes pvPortMalloc()
 // and UNITY_FIXTURE_FREE becomes vPortFree().
-
 #if !defined(UNITY_FIXTURE_MALLOC) || !defined(UNITY_FIXTURE_FREE)
     #define UNITY_FIXTURE_MALLOC(size) malloc(size)
     #define UNITY_FIXTURE_FREE(ptr)    free(ptr)
