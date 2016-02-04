@@ -17,15 +17,15 @@ typedef struct _UNITY_FIXTURE_T
 } UNITY_FIXTURE_T;
 
 typedef void unityfunction(void);
-void UnityTestRunner(unityfunction * setup,
-        unityfunction * body,
-        unityfunction * teardown,
-        const char * printableName,
-        const char * group,
-        const char * name,
-        const char * file, int line);
+void UnityTestRunner(unityfunction* setup,
+                     unityfunction* body,
+                     unityfunction* teardown,
+                     const char* printableName,
+                     const char* group,
+                     const char* name,
+                     const char* file, int line);
 
-void UnityIgnoreTest(const char * printableName, const char * group, const char * name);
+void UnityIgnoreTest(const char* printableName, const char* group, const char* name);
 void UnityMalloc_StartTest(void);
 void UnityMalloc_EndTest(void);
 UNITY_COUNTER_TYPE UnityFailureCount(void);
@@ -34,13 +34,8 @@ UNITY_COUNTER_TYPE UnityTestsCount(void);
 int UnityGetCommandLineOptions(int argc, const char* argv[]);
 void UnityConcludeFixtureTest(void);
 
-void UnityPointer_Set(void ** ptr, void * newValue);
+void UnityPointer_Set(void** ptr, void* newValue);
 void UnityPointer_UndoAllSets(void);
 void UnityPointer_Init(void);
-
-void UnityAssertEqualPointer(const void * expected,
-                            const void * actual,
-                            const char* msg,
-                            const UNITY_LINE_TYPE lineNumber);
 
 #endif /* UNITY_FIXTURE_INTERNALS_H_ */

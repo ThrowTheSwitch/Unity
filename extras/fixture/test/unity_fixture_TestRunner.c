@@ -41,3 +41,11 @@ TEST_GROUP_RUNNER(LeakDetection)
     RUN_TEST_CASE(LeakDetection, BufferOverrunFoundDuringFree);
     RUN_TEST_CASE(LeakDetection, BufferOverrunFoundDuringRealloc);
 }
+
+TEST_GROUP_RUNNER(InternalMalloc)
+{
+    RUN_TEST_CASE(InternalMalloc, MallocPastBufferFails);
+    RUN_TEST_CASE(InternalMalloc, CallocPastBufferFails);
+    RUN_TEST_CASE(InternalMalloc, MallocThenReallocGrowsMemoryInPlace);
+    RUN_TEST_CASE(InternalMalloc, ReallocFailDoesNotFreeMem);
+}

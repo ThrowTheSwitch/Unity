@@ -79,9 +79,10 @@ TEST(UnityFixture, ReallocLargerNeeded)
 {
     void* m1 = malloc(10);
     void* m2;
+    CHECK(m1);
     strcpy((char*)m1, "123456789");
     m2 = realloc(m1, 15);
-    CHECK(m1 != m2);
+    // CHECK(m1 != m2); //Depends on implementation
     STRCMP_EQUAL("123456789", m2);
     free(m2);
 }
@@ -104,6 +105,7 @@ TEST(UnityFixture, CallocFillsWithZero)
 {
     void* m = calloc(3, sizeof(char));
     char* s = (char*)m;
+    CHECK(m);
     TEST_ASSERT_BYTES_EQUAL(0, s[0]);
     TEST_ASSERT_BYTES_EQUAL(0, s[1]);
     TEST_ASSERT_BYTES_EQUAL(0, s[2]);
@@ -134,7 +136,7 @@ TEST(UnityFixture, PointerSet)
 
 TEST(UnityFixture, FreeNULLSafety)
 {
-  unity_free(NULL);
+    free(NULL);
 }
 
 //------------------------------------------------------------
@@ -288,7 +290,11 @@ TEST_GROUP(LeakDetection);
 
 TEST_SETUP(LeakDetection)
 {
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    UnityOutputCharSpy_Create(200);
+#else
     UnityOutputCharSpy_Create(1000);
+#endif
 }
 
 TEST_TEAR_DOWN(LeakDetection)
@@ -323,6 +329,7 @@ TEST(LeakDetection, DetectsLeak)
     TEST_IGNORE_MESSAGE("Build with '-D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar' to enable tests");
 #else
     void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     UnityMalloc_EndTest();
@@ -341,6 +348,7 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
@@ -360,6 +368,7 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
@@ -369,5 +378,59 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
+#endif
+}
+
+TEST_GROUP(InternalMalloc);
+
+TEST_SETUP(InternalMalloc) { }
+TEST_TEAR_DOWN(InternalMalloc) { }
+
+TEST(InternalMalloc, MallocPastBufferFails)
+{
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
+    TEST_ASSERT_NOT_NULL(m);
+    void* n = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    TEST_ASSERT_NULL(n);
+    free(m);
+#endif
+}
+
+TEST(InternalMalloc, CallocPastBufferFails)
+{
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
+    TEST_ASSERT_NOT_NULL(m);
+    void* n = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    TEST_ASSERT_NULL(n);
+    free(m);
+#endif
+}
+
+TEST(InternalMalloc, MallocThenReallocGrowsMemoryInPlace)
+{
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
+    TEST_ASSERT_NOT_NULL(m);
+    void* n = realloc(m, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 9);
+    TEST_ASSERT_EQUAL(m, n);
+    free(n);
+#endif
+}
+
+TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
+{
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    TEST_ASSERT_NOT_NULL(m);
+    void* n1 = malloc(10);
+    void* out_of_mem = realloc(n1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
+    TEST_ASSERT_NULL(out_of_mem);
+    void* n2 = malloc(10);
+    TEST_ASSERT_NOT_EQUAL(n2, n1);
+    free(n2);
+    free(n1);
+    free(m);
 #endif
 }
