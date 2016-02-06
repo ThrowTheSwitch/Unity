@@ -381,6 +381,47 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
 #endif
 }
 
+TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
+{
+#ifndef USING_OUTPUT_SPY
+    UNITY_PRINT_EOL();
+    TEST_IGNORE();
+#else
+    void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
+    char* s = (char*)m;
+    s[-1] = (char)0x00; // Will not detect 0
+    s[-2] = (char)0x01;
+    UnityOutputCharSpy_Enable(1);
+    EXPECT_ABORT_BEGIN
+    free(m);
+    EXPECT_ABORT_END
+    UnityOutputCharSpy_Enable(0);
+    Unity.CurrentTestFailed = 0;
+    CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
+#endif
+}
+
+TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
+{
+#ifndef USING_OUTPUT_SPY
+    UNITY_PRINT_EOL();
+    TEST_IGNORE();
+#else
+    void* m = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
+    char* s = (char*)m;
+    s[-1] = (char)0x0A;
+    UnityOutputCharSpy_Enable(1);
+    EXPECT_ABORT_BEGIN
+    m = realloc(m, 100);
+    EXPECT_ABORT_END
+    UnityOutputCharSpy_Enable(0);
+    Unity.CurrentTestFailed = 0;
+    CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
+#endif
+}
+
 TEST_GROUP(InternalMalloc);
 
 TEST_SETUP(InternalMalloc) { }
