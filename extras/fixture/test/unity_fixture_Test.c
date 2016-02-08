@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern UNITY_FIXTURE_T UnityFixture;
+extern struct _UnityFixture UnityFixture;
 
 TEST_GROUP(UnityFixture);
 

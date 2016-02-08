@@ -8,13 +8,13 @@
 #ifndef UNITY_FIXTURE_INTERNALS_H_
 #define UNITY_FIXTURE_INTERNALS_H_
 
-typedef struct _UNITY_FIXTURE_T
+struct _UnityFixture
 {
     int Verbose;
     unsigned int RepeatCount;
     const char* NameFilter;
     const char* GroupFilter;
-} UNITY_FIXTURE_T;
+};
 
 typedef void unityfunction(void);
 void UnityTestRunner(unityfunction* setup,
