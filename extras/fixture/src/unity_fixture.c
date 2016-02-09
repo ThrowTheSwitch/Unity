@@ -140,7 +140,7 @@ void UnityMalloc_EndTest(void)
     malloc_fail_countdown = MALLOC_DONT_FAIL;
     if (malloc_count != 0)
     {
-        TEST_FAIL_MESSAGE("This test leaks!");
+        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "This test leaks!");
     }
 }
 
@@ -247,7 +247,7 @@ void unity_free(void* mem)
     release_memory(mem);
     if (overrun)
     {
-        TEST_FAIL_MESSAGE("Buffer overrun detected during free()");
+        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "Buffer overrun detected during free()");
     }
 }
 
@@ -270,7 +270,7 @@ void* unity_realloc(void* oldMem, size_t size)
     if (isOverrun(oldMem))
     {
         release_memory(oldMem);
-        TEST_FAIL_MESSAGE("Buffer overrun detected during realloc()");
+        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "Buffer overrun detected during realloc()");
     }
 
     if (size == 0)
