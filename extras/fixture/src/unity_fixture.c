@@ -75,7 +75,6 @@ void UnityTestRunner(unityfunction* setup,
 {
     if (testSelected(name) && groupSelected(group))
     {
-        Unity.CurrentTestFailed = 0;
         Unity.TestFile = file;
         Unity.CurrentTestName = printableName;
         Unity.CurrentTestLineNumber = line;
@@ -112,12 +111,14 @@ void UnityIgnoreTest(const char* printableName, const char* group, const char* n
     if (testSelected(name) && groupSelected(group))
     {
         Unity.NumberOfTests++;
-        Unity.CurrentTestIgnored = 1;
+        Unity.TestIgnores++;
         if (!UnityFixture.Verbose)
             UNITY_OUTPUT_CHAR('!');
         else
+        {
             UnityPrint(printableName);
-        UnityConcludeFixtureTest();
+            UNITY_PRINT_EOL();
+        }
     }
 }
 
@@ -403,11 +404,8 @@ void UnityConcludeFixtureTest(void)
 {
     if (Unity.CurrentTestIgnored)
     {
-        if (UnityFixture.Verbose)
-        {
-            UNITY_PRINT_EOL();
-        }
         Unity.TestIgnores++;
+        UNITY_PRINT_EOL();
     }
     else if (!Unity.CurrentTestFailed)
     {
@@ -417,7 +415,7 @@ void UnityConcludeFixtureTest(void)
             UNITY_PRINT_EOL();
         }
     }
-    else if (Unity.CurrentTestFailed)
+    else // Unity.CurrentTestFailed
     {
         Unity.TestFailures++;
         UNITY_PRINT_EOL();

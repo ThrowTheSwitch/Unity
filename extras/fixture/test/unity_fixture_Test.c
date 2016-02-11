@@ -343,7 +343,6 @@ TEST(LeakDetection, DetectsLeak)
 TEST(LeakDetection, BufferOverrunFoundDuringFree)
 {
 #ifndef USING_OUTPUT_SPY
-    UNITY_PRINT_EOL();
     TEST_IGNORE();
 #else
     void* m = malloc(10);
@@ -363,7 +362,6 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
 TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
 {
 #ifndef USING_OUTPUT_SPY
-    UNITY_PRINT_EOL();
     TEST_IGNORE();
 #else
     void* m = malloc(10);
@@ -383,7 +381,6 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
 TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
 {
 #ifndef USING_OUTPUT_SPY
-    UNITY_PRINT_EOL();
     TEST_IGNORE();
 #else
     void* m = malloc(10);
@@ -404,7 +401,6 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
 TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
 {
 #ifndef USING_OUTPUT_SPY
-    UNITY_PRINT_EOL();
     TEST_IGNORE();
 #else
     void* m = malloc(10);
@@ -424,7 +420,6 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
 TEST(LeakDetection, PointerSettingMax)
 {
 #ifndef USING_OUTPUT_SPY
-    UNITY_PRINT_EOL();
     TEST_IGNORE();
 #else
     int i;
