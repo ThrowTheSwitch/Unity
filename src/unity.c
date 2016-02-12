@@ -551,7 +551,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                 {
                     UnityTestResultsFailBegin(lineNumber);
                     UnityPrint(UnityStrElement);
-                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrintNumberUnsigned(num_elements - elements - 1);
                     UnityPrint(UnityStrExpected);
                     UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US8*)ptr_exp, style);
                     UnityPrint(UnityStrWas);
@@ -572,7 +572,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                 {
                     UnityTestResultsFailBegin(lineNumber);
                     UnityPrint(UnityStrElement);
-                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrintNumberUnsigned(num_elements - elements - 1);
                     UnityPrint(UnityStrExpected);
                     UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US16*)ptr_exp, style);
                     UnityPrint(UnityStrWas);
@@ -594,7 +594,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                 {
                     UnityTestResultsFailBegin(lineNumber);
                     UnityPrint(UnityStrElement);
-                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrintNumberUnsigned(num_elements - elements - 1);
                     UnityPrint(UnityStrExpected);
                     UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US64*)ptr_exp, style);
                     UnityPrint(UnityStrWas);
@@ -614,7 +614,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                 {
                     UnityTestResultsFailBegin(lineNumber);
                     UnityPrint(UnityStrElement);
-                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrintNumberUnsigned(num_elements - elements - 1);
                     UnityPrint(UnityStrExpected);
                     UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const _US32*)ptr_exp, style);
                     UnityPrint(UnityStrWas);
@@ -669,7 +669,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
-            UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+            UnityPrintNumberUnsigned(num_elements - elements - 1);
 #ifdef UNITY_FLOAT_VERBOSE
             UnityPrint(UnityStrExpected);
             UnityPrintFloat(*ptr_expected);
@@ -831,7 +831,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
-            UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+            UnityPrintNumberUnsigned(num_elements - elements - 1);
 #ifdef UNITY_DOUBLE_VERBOSE
             UnityPrint(UnityStrExpected);
             UnityPrintFloat((float)(*ptr_expected));
@@ -1125,7 +1125,7 @@ void UnityAssertEqualStringArray( const char** expected,
             if (num_elements > 1)
             {
                 UnityPrint(UnityStrElement);
-                UnityPrintNumberByStyle((j), UNITY_DISPLAY_STYLE_UINT);
+                UnityPrintNumberUnsigned(j);
             }
             UnityPrintExpectedAndActualStrings((const char*)(expected[j]), (const char*)(actual[j]));
             UnityAddMsgIfSpecified(msg);
@@ -1173,10 +1173,10 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
                 if (num_elements > 1)
                 {
                     UnityPrint(UnityStrElement);
-                    UnityPrintNumberByStyle((num_elements - elements - 1), UNITY_DISPLAY_STYLE_UINT);
+                    UnityPrintNumberUnsigned(num_elements - elements - 1);
                 }
                 UnityPrint(UnityStrByte);
-                UnityPrintNumberByStyle((length - bytes - 1), UNITY_DISPLAY_STYLE_UINT);
+                UnityPrintNumberUnsigned(length - bytes - 1);
                 UnityPrint(UnityStrExpected);
                 UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE_HEX8);
                 UnityPrint(UnityStrWas);
