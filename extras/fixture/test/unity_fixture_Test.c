@@ -136,6 +136,22 @@ TEST(UnityFixture, FreeNULLSafety)
     free(NULL);
 }
 
+TEST(UnityFixture, ConcludeTestIncrementsFailCount)
+{
+    _U_UINT savedFails = Unity.TestFailures;
+    _U_UINT savedIgnores = Unity.TestIgnores;
+    UnityOutputCharSpy_Enable(1);
+    Unity.CurrentTestFailed = 1;
+    UnityConcludeFixtureTest(); // Resets TestFailed for this test to pass
+    Unity.CurrentTestIgnored = 1;
+    UnityConcludeFixtureTest(); // Resets TestIgnored
+    UnityOutputCharSpy_Enable(0);
+    TEST_ASSERT_EQUAL(savedFails + 1, Unity.TestFailures);
+    TEST_ASSERT_EQUAL(savedIgnores + 1, Unity.TestIgnores);
+    Unity.TestFailures = savedFails;
+    Unity.TestIgnores = savedIgnores;
+}
+
 //------------------------------------------------------------
 
 TEST_GROUP(UnityCommandOptions);
@@ -274,6 +290,21 @@ TEST(UnityCommandOptions, UnknownCommandIsIgnored)
     STRCMP_EQUAL("groupname", UnityFixture.GroupFilter);
     STRCMP_EQUAL("testname", UnityFixture.NameFilter);
     TEST_ASSERT_EQUAL(98, UnityFixture.RepeatCount);
+}
+
+TEST(UnityCommandOptions, GroupOrNameFilterWithoutStringFails)
+{
+    TEST_ASSERT_EQUAL(1, UnityGetCommandLineOptions(3, unknownCommand));
+    TEST_ASSERT_EQUAL(1, UnityGetCommandLineOptions(5, unknownCommand));
+    TEST_ASSERT_EQUAL(1, UnityMain(3, unknownCommand, NULL));
+}
+
+TEST(UnityCommandOptions, GroupFilterReallyFilters)
+{
+    _U_UINT saved = Unity.NumberOfTests;
+    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(4, unknownCommand));
+    UnityIgnoreTest(NULL, "non-matching", NULL);
+    TEST_ASSERT_EQUAL(saved, Unity.NumberOfTests);
 }
 
 IGNORE_TEST(UnityCommandOptions, TestShouldBeIgnored)

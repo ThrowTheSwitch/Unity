@@ -75,5 +75,6 @@ CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wswitch-default
 CFLAGS += -Wundef
 CFLAGS += -Wno-error=undef  # Warning only, this should not stop the build
+CFLAGS += -Wunreachable-code
 CFLAGS += -Wunused
 CFLAGS += -fstrict-aliasing

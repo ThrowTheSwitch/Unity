@@ -19,6 +19,7 @@ TEST_GROUP_RUNNER(UnityFixture)
     RUN_TEST_CASE(UnityFixture, CallocFillsWithZero);
     RUN_TEST_CASE(UnityFixture, PointerSet);
     RUN_TEST_CASE(UnityFixture, FreeNULLSafety);
+    RUN_TEST_CASE(UnityFixture, ConcludeTestIncrementsFailCount);
 }
 
 TEST_GROUP_RUNNER(UnityCommandOptions)
@@ -32,6 +33,8 @@ TEST_GROUP_RUNNER(UnityCommandOptions)
     RUN_TEST_CASE(UnityCommandOptions, MultipleOptions);
     RUN_TEST_CASE(UnityCommandOptions, MultipleOptionsDashRNotLastAndNoValueSpecified);
     RUN_TEST_CASE(UnityCommandOptions, UnknownCommandIsIgnored);
+    RUN_TEST_CASE(UnityCommandOptions, GroupOrNameFilterWithoutStringFails);
+    RUN_TEST_CASE(UnityCommandOptions, GroupFilterReallyFilters);
     RUN_TEST_CASE(UnityCommandOptions, TestShouldBeIgnored);
 }
 
