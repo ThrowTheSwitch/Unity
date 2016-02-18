@@ -166,7 +166,7 @@ static unsigned int  heap_index;
 typedef struct GuardBytes
 {
     size_t size;
-    char guard_space[4];
+    size_t guard_space;
 } Guard;
 
 
@@ -202,6 +202,7 @@ void* unity_malloc(size_t size)
     if (guard == NULL) return NULL;
     malloc_count++;
     guard->size = size;
+    guard->guard_space = 0;
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, sizeof(end));
 
@@ -214,7 +215,7 @@ static int isOverrun(void* mem)
     char* memAsChar = (char*)mem;
     guard--;
 
-    return strcmp(&memAsChar[guard->size], end) != 0;
+    return guard->guard_space != 0 || strcmp(&memAsChar[guard->size], end) != 0;
 }
 
 static void release_memory(void* mem)

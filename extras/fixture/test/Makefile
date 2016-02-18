@@ -12,24 +12,27 @@ SRC = ../src/unity_fixture.c \
       main/AllTests.c
 
 INC_DIR = -I../src -I../../../src/
-TARGET = fixture_tests.exe
+TARGET = ../build/fixture_tests.exe
 
 all: default noStdlibMalloc 32bits
 
-default:
+default: ../build/
 	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET)
 	@ echo "default build"
 	./$(TARGET)
 
-32bits:
+32bits: ../build/
 	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32
 	@ echo "32bits build"
 	./$(TARGET)
 
-noStdlibMalloc:
+noStdlibMalloc: ../build/
 	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -D UNITY_EXCLUDE_STDLIB_MALLOC
 	@ echo "build with noStdlibMalloc"
 	./$(TARGET)
 
 clangEverything:
 	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m64 -Weverything # || true #prevents make from failing
+
+../build :
+	mkdir -p ../build
