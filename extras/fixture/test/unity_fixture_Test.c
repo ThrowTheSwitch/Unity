@@ -22,14 +22,13 @@ TEST_TEAR_DOWN(UnityFixture)
 {
 }
 
-int my_int;
-int* pointer1 = 0;
-int* pointer2 = (int*)2;
-int* pointer3 = (int*)3;
-int int1;
-int int2;
-int int3;
-int int4;
+static int* pointer1 = 0;
+static int* pointer2 = (int*)2;
+static int* pointer3 = (int*)3;
+static int int1;
+static int int2;
+static int int3;
+static int int4;
 
 TEST(UnityFixture, PointerSetting)
 {
@@ -112,8 +111,8 @@ TEST(UnityFixture, CallocFillsWithZero)
     free(m);
 }
 
-char *p1;
-char *p2;
+static char *p1;
+static char *p2;
 
 TEST(UnityFixture, PointerSet)
 {
@@ -143,10 +142,10 @@ TEST(UnityFixture, FreeNULLSafety)
 
 TEST_GROUP(UnityCommandOptions);
 
-int savedVerbose;
-unsigned int savedRepeat;
-const char* savedName;
-const char* savedGroup;
+static int savedVerbose;
+static unsigned int savedRepeat;
+static const char* savedName;
+static const char* savedGroup;
 
 TEST_SETUP(UnityCommandOptions)
 {
