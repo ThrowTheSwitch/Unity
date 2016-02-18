@@ -42,6 +42,7 @@ TEST_GROUP_RUNNER(LeakDetection)
     RUN_TEST_CASE(LeakDetection, BufferOverrunFoundDuringRealloc);
     RUN_TEST_CASE(LeakDetection, BufferGuardWriteFoundDuringFree);
     RUN_TEST_CASE(LeakDetection, BufferGuardWriteFoundDuringRealloc);
+    RUN_TEST_CASE(LeakDetection, PointerSettingMax);
 }
 
 TEST_GROUP_RUNNER(InternalMalloc)

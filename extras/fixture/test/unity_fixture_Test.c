@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern UNITY_FIXTURE_T UnityFixture;
+extern struct _UnityFixture UnityFixture;
 
 TEST_GROUP(UnityFixture);
 
@@ -421,6 +421,26 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
 #endif
 }
+
+TEST(LeakDetection, PointerSettingMax)
+{
+#ifndef USING_OUTPUT_SPY
+    UNITY_PRINT_EOL();
+    TEST_IGNORE();
+#else
+    int i;
+    for (i = 0; i < 50; i++) UT_PTR_SET(pointer1, &int1);
+    UnityOutputCharSpy_Enable(1);
+    EXPECT_ABORT_BEGIN
+    UT_PTR_SET(pointer1, &int1);
+    EXPECT_ABORT_END
+    UnityOutputCharSpy_Enable(0);
+    Unity.CurrentTestFailed = 0;
+    CHECK(strstr(UnityOutputCharSpy_Get(), "Too many pointers set"));
+#endif
+}
+
+//------------------------------------------------------------
 
 TEST_GROUP(InternalMalloc);
 

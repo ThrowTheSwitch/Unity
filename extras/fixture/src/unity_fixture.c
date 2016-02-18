@@ -9,7 +9,7 @@
 #include "unity_fixture.h"
 #include "unity_internals.h"
 
-UNITY_FIXTURE_T UnityFixture;
+struct _UnityFixture UnityFixture;
 
 //If you decide to use the function pointer approach.
 //Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>
@@ -140,7 +140,7 @@ void UnityMalloc_EndTest(void)
     malloc_fail_countdown = MALLOC_DONT_FAIL;
     if (malloc_count != 0)
     {
-        TEST_FAIL_MESSAGE("This test leaks!");
+        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "This test leaks!");
     }
 }
 
@@ -247,7 +247,7 @@ void unity_free(void* mem)
     release_memory(mem);
     if (overrun)
     {
-        TEST_FAIL_MESSAGE("Buffer overrun detected during free()");
+        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "Buffer overrun detected during free()");
     }
 }
 
@@ -270,7 +270,7 @@ void* unity_realloc(void* oldMem, size_t size)
     if (isOverrun(oldMem))
     {
         release_memory(oldMem);
-        TEST_FAIL_MESSAGE("Buffer overrun detected during realloc()");
+        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "Buffer overrun detected during realloc()");
     }
 
     if (size == 0)
@@ -299,15 +299,14 @@ void* unity_realloc(void* oldMem, size_t size)
 
 //--------------------------------------------------------
 //Automatic pointer restoration functions
-typedef struct _PointerPair
+struct PointerPair
 {
-    struct _PointerPair* next;
     void** pointer;
     void* old_value;
-} PointerPair;
+};
 
-enum {MAX_POINTERS=50};
-static PointerPair pointer_store[MAX_POINTERS+1];
+enum { MAX_POINTERS = 50 };
+static struct PointerPair pointer_store[MAX_POINTERS];
 static int pointer_index = 0;
 
 void UnityPointer_Init(void)
@@ -315,11 +314,11 @@ void UnityPointer_Init(void)
     pointer_index = 0;
 }
 
-void UnityPointer_Set(void** pointer, void* newValue)
+void UnityPointer_Set(void** pointer, void* newValue, UNITY_LINE_TYPE line)
 {
     if (pointer_index >= MAX_POINTERS)
     {
-        TEST_FAIL_MESSAGE("Too many pointers set");
+        UNITY_TEST_FAIL(line, "Too many pointers set");
     }
     else
     {
