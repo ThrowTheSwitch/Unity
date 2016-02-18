@@ -23,9 +23,9 @@ void tearDown(void) { /*does nothing*/ }
 static void announceTestRun(unsigned int runNumber)
 {
     UnityPrint("Unity test run ");
-    UnityPrintNumber(runNumber+1);
+    UnityPrintNumberUnsigned(runNumber+1);
     UnityPrint(" of ");
-    UnityPrintNumber(UnityFixture.RepeatCount);
+    UnityPrintNumberUnsigned(UnityFixture.RepeatCount);
     UNITY_PRINT_EOL();
 }
 
@@ -45,7 +45,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
         UnityEnd();
     }
 
-    return Unity.TestFailures;
+    return (int)Unity.TestFailures;
 }
 
 static int selected(const char* filter, const char* name)
@@ -71,7 +71,7 @@ void UnityTestRunner(unityfunction* setup,
                      const char* printableName,
                      const char* group,
                      const char* name,
-                     const char* file, int line)
+                     const char* file, unsigned int line)
 {
     if (testSelected(name) && groupSelected(group))
     {

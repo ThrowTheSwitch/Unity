@@ -46,7 +46,7 @@ clean:
 # These extended flags DO get included before any target build runs
 CFLAGS += -Wbad-function-cast
 CFLAGS += -Wcast-qual
-#CFLAGS += -Wconversion
+CFLAGS += -Wconversion
 CFLAGS += -Wformat=2
 CFLAGS += -Wmissing-prototypes
 CFLAGS += -Wold-style-definition

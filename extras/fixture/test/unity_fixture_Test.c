@@ -144,7 +144,7 @@ TEST(UnityFixture, FreeNULLSafety)
 TEST_GROUP(UnityCommandOptions);
 
 int savedVerbose;
-int savedRepeat;
+unsigned int savedRepeat;
 const char* savedName;
 const char* savedGroup;
 
