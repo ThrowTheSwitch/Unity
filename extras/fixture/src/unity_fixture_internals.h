@@ -15,6 +15,7 @@ struct _UnityFixture
     const char* NameFilter;
     const char* GroupFilter;
 };
+extern struct _UnityFixture UnityFixture;
 
 typedef void unityfunction(void);
 void UnityTestRunner(unityfunction* setup,
