@@ -45,7 +45,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
         UnityEnd();
     }
 
-    return UnityFailureCount();
+    return Unity.TestFailures;
 }
 
 static int selected(const char* filter, const char* name)
@@ -337,21 +337,6 @@ void UnityPointer_UndoAllSets(void)
         *(pointer_store[pointer_index].pointer) =
             pointer_store[pointer_index].old_value;
     }
-}
-
-UNITY_COUNTER_TYPE UnityFailureCount(void)
-{
-    return Unity.TestFailures;
-}
-
-UNITY_COUNTER_TYPE UnityIgnoreCount(void)
-{
-    return Unity.TestIgnores;
-}
-
-UNITY_COUNTER_TYPE UnityTestsCount(void)
-{
-    return Unity.NumberOfTests;
 }
 
 int UnityGetCommandLineOptions(int argc, const char* argv[])
