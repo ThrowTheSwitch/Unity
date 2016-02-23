@@ -733,7 +733,7 @@ void UnityAssertFloatSpecial(const _UF actual,
     const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
     _U_SINT should_be_trait   = ((_U_SINT)style & 1);
     _U_SINT is_trait          = !should_be_trait;
-    _U_SINT trait_index       = style >> 1;
+    _U_SINT trait_index       = (_U_SINT)(style >> 1);
 
     UNITY_SKIP_EXECUTION;
 

@@ -158,7 +158,7 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
 static unsigned char unity_heap[UNITY_INTERNAL_HEAP_SIZE_BYTES];
-static unsigned int  heap_index;
+static size_t heap_index;
 #else
 #include <stdlib.h>
 #endif
