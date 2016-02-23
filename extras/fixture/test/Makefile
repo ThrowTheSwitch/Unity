@@ -1,8 +1,11 @@
 CC = gcc
-CFLAGS += -Werror
+#DEBUG = -O0 -g
 CFLAGS += -std=c99
 CFLAGS += -pedantic
-CFLAGS += -Wundef
+CFLAGS += -Wall
+CFLAGS += -Wextra
+CFLAGS += -Werror
+CFLAGS += $(DEBUG)
 DEFINES = -D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar
 SRC = ../src/unity_fixture.c \
       ../../../src/unity.c   \
@@ -32,7 +35,26 @@ noStdlibMalloc: ../build/
 	./$(TARGET)
 
 clangEverything:
-	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m64 -Weverything # || true #prevents make from failing
+	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m64 -Weverything
 
 ../build :
 	mkdir -p ../build
+
+clean:
+	rm -f $(TARGET)
+
+# These extended flags DO get included before any target build runs
+CFLAGS += -Wbad-function-cast
+CFLAGS += -Wcast-qual
+CFLAGS += -Wconversion
+CFLAGS += -Wformat=2
+CFLAGS += -Wmissing-prototypes
+CFLAGS += -Wold-style-definition
+CFLAGS += -Wpointer-arith
+CFLAGS += -Wshadow
+CFLAGS += -Wstrict-overflow=5
+CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wswitch-default
+CFLAGS += -Wundef
+CFLAGS += -Wunused
+CFLAGS += -fstrict-aliasing
