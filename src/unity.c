@@ -280,10 +280,11 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 //-----------------------------------------------
 #ifdef UNITY_FLOAT_VERBOSE
 #include <stdio.h>
+#include <float.h>
 void UnityPrintFloat(_UF number)
 {
-    char TempBuffer[32];
-    sprintf(TempBuffer, "%.6f", number);
+    char TempBuffer[1/*'-'*/ + (FLT_MAX_10_EXP+1)/*38+1 digits*/ + 1/*'.'*/ + 6/*Default? precision*/ + 1/*\0*/];
+    snprintf(TempBuffer, sizeof(TempBuffer), "%.6f", number);
     UnityPrint(TempBuffer);
 }
 #endif
