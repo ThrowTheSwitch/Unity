@@ -44,6 +44,7 @@ void tearDown(void);
 //     - define UNITY_DOUBLE_PRECISION to specify the precision to use when doing TEST_ASSERT_EQUAL_DOUBLE
 //     - define UNITY_DOUBLE_TYPE to specify something other than double
 //     - define UNITY_DOUBLE_VERBOSE to print floating point values in errors (uses sprintf)
+//     - define UNITY_VERBOSE_NUMBER_MAX_LENGTH to change maximum length of printed numbers (used by sprintf)
 
 // Output
 //     - by default, Unity prints to standard out with putchar.  define UNITY_OUTPUT_CHAR(a) with a different function if desired
