@@ -313,14 +313,14 @@ TEST_TEAR_DOWN(LeakDetection)
     memcpy(Unity.AbortFrame, TestAbortFrame, sizeof(jmp_buf)); \
   }
 
-// This tricky set of defines lets us see if we are using the Spy, returns 1 if true, else 0
-#define USING_SPY_AS(a)                          EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
-#define ASSIGN_VALUE(a)                          VAL_FUNC_##a
-#define VAL_FUNC_UnityOutputCharSpy_OutputChar() 0, 1
-#define EXPAND_AND_USE_2ND(a, b)                 SECOND_PARAM(a, b, throwaway)
-#define SECOND_PARAM(a, b, ...)                  b
-#if USING_SPY_AS(UNITY_OUTPUT_CHAR())
-  #define USING_OUTPUT_SPY
+// This tricky set of defines lets us see if we are using the Spy, returns 1 if true
+#define USING_SPY_AS(a)                    EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
+#define ASSIGN_VALUE(a)                    VAL_##a
+#define VAL_UnityOutputCharSpy_OutputChar  0, 1
+#define EXPAND_AND_USE_2ND(a, b)           SECOND_PARAM(a, b, throwaway)
+#define SECOND_PARAM(a, b, ...)            b
+#if USING_SPY_AS(UNITY_OUTPUT_CHAR)
+  #define USING_OUTPUT_SPY // UNITY_OUTPUT_CHAR = UnityOutputCharSpy_OutputChar
 #endif
 TEST(LeakDetection, DetectsLeak)
 {

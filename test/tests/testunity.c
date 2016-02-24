@@ -2175,12 +2175,12 @@ void testIgnoredAndThenFailInTearDown(void)
 
 // Tricky series of macros to set USING_OUTPUT_SPY
 #define USING_SPY_AS(a)           EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
-#define ASSIGN_VALUE(a)           VAL_FUNC_##a
-#define VAL_FUNC_putcharSpy()     0, 1
+#define ASSIGN_VALUE(a)           VAL_##a
+#define VAL_putcharSpy            0, 1
 #define EXPAND_AND_USE_2ND(a, b)  SECOND_PARAM(a, b, throwaway)
 #define SECOND_PARAM(a, b, ...)   b
-#if USING_SPY_AS(UNITY_OUTPUT_CHAR())
-  #define USING_OUTPUT_SPY // true only if UNITY_OUTPUT_CHAR = putchar_Spy
+#if USING_SPY_AS(UNITY_OUTPUT_CHAR)
+  #define USING_OUTPUT_SPY // true only if UNITY_OUTPUT_CHAR = putcharSpy
 #endif
 
 #ifdef USING_OUTPUT_SPY
