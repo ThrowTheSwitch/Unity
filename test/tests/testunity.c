@@ -110,6 +110,12 @@ void testUnitySizeInitializationReminder(void)
     TEST_ASSERT_EQUAL_MESSAGE(sizeof(_Expected_Unity), sizeof(Unity), message);
 }
 
+void testPassShouldEndImmediatelyWithPass(void)
+{
+    TEST_PASS();
+    TEST_FAIL_MESSAGE("We should have passed already and finished this test");
+}
+
 void testTrue(void)
 {
     TEST_ASSERT(1);

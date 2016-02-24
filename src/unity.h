@@ -68,6 +68,10 @@ void tearDown(void);
 #define TEST_IGNORE()                                                                              UNITY_TEST_IGNORE(__LINE__, NULL)
 #define TEST_ONLY()
 
+//It is not necessary for you to call PASS. A PASS condition is assumed if nothing fails.
+//This method allows you to abort a test immediately with a PASS state, ignoring the remainder of the test.
+#define TEST_PASS()                                                                                longjmp(Unity.AbortFrame, 1)
+
 //-------------------------------------------------------
 // Test Asserts (simple)
 //-------------------------------------------------------
