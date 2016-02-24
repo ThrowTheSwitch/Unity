@@ -24,7 +24,7 @@ void UnityOutputCharSpy_Create(int s)
     spy_enable = 0;
     buffer = malloc((size_t)size);
     TEST_ASSERT_NOT_NULL_MESSAGE(buffer, "Internal malloc failed in Spy Create():" __FILE__);
-    memset(buffer, 0, size);
+    memset(buffer, 0, (size_t)size);
 }
 
 void UnityOutputCharSpy_Destroy(void)
