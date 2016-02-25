@@ -41,6 +41,8 @@ extern void setUp(void);
 extern void tearDown(void);
 extern void test_TheFirstThingToTest(void);
 extern void test_TheSecondThingToTest(void);
+extern void test_TheThirdThingToTest(void);
+extern void test_TheFourthThingToTest(void);
 
 
 //=======Test Reset Option=====
@@ -58,6 +60,8 @@ int main(void)
   UnityBegin("testdata/testsample.c");
   RUN_TEST(test_TheFirstThingToTest, 21);
   RUN_TEST(test_TheSecondThingToTest, 43);
+  RUN_TEST(test_TheThirdThingToTest, 53);
+  RUN_TEST(test_TheFourthThingToTest, 58);
 
   return (UnityEnd());
 }

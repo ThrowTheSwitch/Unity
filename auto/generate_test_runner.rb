@@ -91,7 +91,9 @@ class UnityTestRunnerGenerator
   def find_tests(source)
     tests_and_line_numbers = []
 
-    source_scrubbed = source.gsub(/\/\/.*$/, '')               # remove line comments
+    source_scrubbed = source.clone
+    source_scrubbed = source_scrubbed.gsub(/"[^"]*"/, '')      # remove things in strings
+    source_scrubbed = source_scrubbed.gsub(/\/\/.*$/, '')      # remove line comments
     source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '') # remove block comments
     lines = source_scrubbed.split(/(^\s*\#.*$)                 # Treat preprocessor directives as a logical line
                               | (;|\{|\}) /x)                  # Match ;, {, and } as end of lines
@@ -329,7 +331,7 @@ class UnityTestRunnerGenerator
       output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h','')}.h\""}")
     end
     output.puts "\n"
-    tests.each do |test| 
+    tests.each do |test|
       if ((test[:params].nil?) or (test[:params].empty?))
         output.puts("void #{test[:test]}(void);")
       else
