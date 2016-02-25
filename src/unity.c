@@ -280,10 +280,19 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 //-----------------------------------------------
 #ifdef UNITY_FLOAT_VERBOSE
 #include <stdio.h>
+
+#ifndef UNITY_VERBOSE_NUMBER_MAX_LENGTH
+# ifdef UNITY_DOUBLE_VERBOSE
+#  define UNITY_VERBOSE_NUMBER_MAX_LENGTH 317
+# else
+#  define UNITY_VERBOSE_NUMBER_MAX_LENGTH 47
+# endif
+#endif
+
 void UnityPrintFloat(_UF number)
 {
-    char TempBuffer[32];
-    sprintf(TempBuffer, "%.6f", number);
+    char TempBuffer[UNITY_VERBOSE_NUMBER_MAX_LENGTH + 1];
+    snprintf(TempBuffer, sizeof(TempBuffer), "%.6f", number);
     UnityPrint(TempBuffer);
 }
 #endif
