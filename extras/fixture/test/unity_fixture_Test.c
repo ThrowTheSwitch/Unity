@@ -10,8 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern struct _UnityFixture UnityFixture;
-
 TEST_GROUP(UnityFixture);
 
 TEST_SETUP(UnityFixture)
@@ -314,6 +312,9 @@ TEST_TEAR_DOWN(LeakDetection)
   }
 
 // This tricky set of defines lets us see if we are using the Spy, returns 1 if true
+#ifdef __STDC_VERSION__
+
+#if __STDC_VERSION__ >= 199901L
 #define USING_SPY_AS(a)                    EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
 #define ASSIGN_VALUE(a)                    VAL_##a
 #define VAL_UnityOutputCharSpy_OutputChar  0, 1
@@ -322,6 +323,16 @@ TEST_TEAR_DOWN(LeakDetection)
 #if USING_SPY_AS(UNITY_OUTPUT_CHAR)
   #define USING_OUTPUT_SPY // UNITY_OUTPUT_CHAR = UnityOutputCharSpy_OutputChar
 #endif
+#endif // >= 199901
+
+#else  // __STDC_VERSION__ else
+#define UnityOutputCharSpy_OutputChar 42
+#if UNITY_OUTPUT_CHAR == UnityOutputCharSpy_OutputChar // Works if no -Wundef -Werror
+  #define USING_OUTPUT_SPY
+#endif
+#undef UnityOutputCharSpy_OutputChar
+#endif // __STDC_VERSION__
+
 TEST(LeakDetection, DetectsLeak)
 {
 #ifndef USING_OUTPUT_SPY
@@ -346,8 +357,8 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
-    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
+    TEST_ASSERT_NOT_NULL(m);
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
@@ -365,8 +376,8 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
-    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
+    TEST_ASSERT_NOT_NULL(m);
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
@@ -384,8 +395,8 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
-    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
+    TEST_ASSERT_NOT_NULL(m);
     s[-1] = (char)0x00; // Will not detect 0
     s[-2] = (char)0x01;
     UnityOutputCharSpy_Enable(1);
@@ -404,8 +415,8 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
     TEST_IGNORE();
 #else
     void* m = malloc(10);
-    TEST_ASSERT_NOT_NULL(m);
     char* s = (char*)m;
+    TEST_ASSERT_NOT_NULL(m);
     s[-1] = (char)0x0A;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
@@ -445,8 +456,8 @@ TEST(InternalMalloc, MallocPastBufferFails)
 {
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
-    TEST_ASSERT_NOT_NULL(m);
     void* n = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
     free(m);
 #endif
@@ -456,8 +467,8 @@ TEST(InternalMalloc, CallocPastBufferFails)
 {
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
-    TEST_ASSERT_NOT_NULL(m);
     void* n = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
     free(m);
 #endif
@@ -467,8 +478,8 @@ TEST(InternalMalloc, MallocThenReallocGrowsMemoryInPlace)
 {
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
-    TEST_ASSERT_NOT_NULL(m);
     void* n = realloc(m, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 9);
+    TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_EQUAL(m, n);
     free(n);
 #endif
@@ -478,11 +489,11 @@ TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
 {
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
-    TEST_ASSERT_NOT_NULL(m);
     void* n1 = malloc(10);
     void* out_of_mem = realloc(n1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
-    TEST_ASSERT_NULL(out_of_mem);
     void* n2 = malloc(10);
+    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT_NULL(out_of_mem);
     TEST_ASSERT_NOT_EQUAL(n2, n1);
     free(n2);
     free(n1);

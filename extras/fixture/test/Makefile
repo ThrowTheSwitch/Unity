@@ -34,6 +34,11 @@ noStdlibMalloc: ../build/
 	@ echo "build with noStdlibMalloc"
 	./$(TARGET)
 
+clang89: ../build/
+	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32 -std=c89 -Wno-comment
+	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32 \
+		-D UNITY_EXCLUDE_STDLIB_MALLOC -std=c89 -Wno-comment ; ./$(TARGET)
+
 clangEverything:
 	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m64 -Weverything
 
@@ -56,5 +61,6 @@ CFLAGS += -Wstrict-overflow=5
 CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wswitch-default
 CFLAGS += -Wundef
+CFLAGS += -Wno-error=undef  # Warning only, this should not stop the build
 CFLAGS += -Wunused
 CFLAGS += -fstrict-aliasing
