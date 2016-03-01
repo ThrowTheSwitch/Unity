@@ -19,7 +19,7 @@ static int spy_enable;
 
 void UnityOutputCharSpy_Create(int s)
 {
-    size = s;
+    size = (s > 0) ? s : 0;
     count = 0;
     spy_enable = 0;
     buffer = malloc((size_t)size);
