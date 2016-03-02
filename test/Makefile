@@ -28,6 +28,9 @@ coverage: $(BUILD_DIR)/testunityRunner.c
 uncovered:
 	grep '###' $(BUILD_DIR)/unity.c.gcov -C2 || true
 
+test: CFLAGS += -Wbad-function-cast -Wcast-qual -Wconversion -Wformat=2 -Wold-style-definition \
+-Wpointer-arith -Wshadow -Wstrict-overflow=5 -Wstrict-prototypes -Wswitch-default -Wundef      \
+-Wunreachable-code -Wunused -fstrict-aliasing
 test: $(BUILD_DIR)/testunityRunner.c
 	$(CC) $(CFLAGS) $(DEFINES) $(INC_DIR) $(SRC) -o $(TARGET)
 	./$(TARGET)

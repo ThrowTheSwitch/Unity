@@ -35,6 +35,7 @@ const char UnityStrInf[]                    = "Infinity";
 const char UnityStrNegInf[]                 = "Negative Infinity";
 const char UnityStrNaN[]                    = "NaN";
 const char UnityStrDet[]                    = "Determinate";
+const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
 const char UnityStrErrFloat[]               = "Unity Floating Point Disabled";
 const char UnityStrErrDouble[]              = "Unity Double Precision Disabled";
 const char UnityStrErr64[]                  = "Unity 64-bit Support Disabled";
@@ -775,7 +776,9 @@ void UnityAssertFloatSpecial(const _UF actual,
             break;
 
         default:
-            /*break // unreachable code */;
+            trait_index = 0;
+            trait_names[0] = UnityStrInvalidFloatTrait;
+            break;
     }
 
     if (is_trait != should_be_trait)
@@ -905,7 +908,7 @@ void UnityAssertDoubleSpecial(const _UD actual,
     const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
     _U_SINT should_be_trait   = ((_U_SINT)style & 1);
     _U_SINT is_trait          = !should_be_trait;
-    _U_SINT trait_index       = style >> 1;
+    _U_SINT trait_index       = (_U_SINT)(style >> 1);
 
     UNITY_SKIP_EXECUTION;
 
@@ -938,7 +941,9 @@ void UnityAssertDoubleSpecial(const _UD actual,
             break;
 
         default:
-            /*break // unreachable code*/;
+            trait_index = 0;
+            trait_names[0] = UnityStrInvalidFloatTrait;
+            break;
     }
 
     if (is_trait != should_be_trait)
