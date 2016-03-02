@@ -2978,6 +2978,18 @@ void testFloatIsNotDeterminate2(void)
 #endif
 }
 
+void testFloatTraitFailsOnInvalidTrait(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    UnityAssertFloatSpecial(1.0f, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
+    VERIFY_FAILS_END
+#endif
+}
+
+
 void testEqualFloatArrays(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
@@ -3479,6 +3491,17 @@ void testDoubleIsNotDeterminate2(void)
 #else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_DETERMINATE(-1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoubleTraitFailsOnInvalidTrait(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    UnityAssertDoubleSpecial(1.0, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
     VERIFY_FAILS_END
 #endif
 }
