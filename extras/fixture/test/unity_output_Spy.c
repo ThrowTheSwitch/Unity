@@ -7,8 +7,9 @@
 
 
 #include "unity_output_Spy.h"
+#include "unity_fixture.h"
+
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 static int size;
@@ -18,14 +19,15 @@ static int spy_enable;
 
 void UnityOutputCharSpy_Create(int s)
 {
-    size = s;
+    size = (s > 0) ? s : 0;
     count = 0;
     spy_enable = 0;
-    buffer = malloc(size);
-    memset(buffer, 0, size);
+    buffer = malloc((size_t)size);
+    TEST_ASSERT_NOT_NULL_MESSAGE(buffer, "Internal malloc failed in Spy Create():" __FILE__);
+    memset(buffer, 0, (size_t)size);
 }
 
-void UnityOutputCharSpy_Destroy()
+void UnityOutputCharSpy_Destroy(void)
 {
     size = 0;
     free(buffer);
@@ -36,7 +38,7 @@ int UnityOutputCharSpy_OutputChar(int c)
     if (spy_enable)
     {
         if (count < (size-1))
-            buffer[count++] = c;
+            buffer[count++] = (char)c;
     }
     else
     {
@@ -45,7 +47,7 @@ int UnityOutputCharSpy_OutputChar(int c)
     return c;
 }
 
-const char * UnityOutputCharSpy_Get()
+const char * UnityOutputCharSpy_Get(void)
 {
     return buffer;
 }

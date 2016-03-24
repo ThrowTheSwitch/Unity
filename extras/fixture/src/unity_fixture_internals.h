@@ -8,37 +8,32 @@
 #ifndef UNITY_FIXTURE_INTERNALS_H_
 #define UNITY_FIXTURE_INTERNALS_H_
 
-typedef struct _UNITY_FIXTURE_T
+struct _UnityFixture
 {
     int Verbose;
     unsigned int RepeatCount;
     const char* NameFilter;
     const char* GroupFilter;
-} UNITY_FIXTURE_T;
+};
+extern struct _UnityFixture UnityFixture;
 
-typedef void unityfunction();
-void UnityTestRunner(unityfunction * setup,
-        unityfunction * body,
-        unityfunction * teardown,
-        const char * printableName,
-        const char * group,
-        const char * name,
-        const char * file, int line);
+typedef void unityfunction(void);
+void UnityTestRunner(unityfunction* setup,
+                     unityfunction* body,
+                     unityfunction* teardown,
+                     const char* printableName,
+                     const char* group,
+                     const char* name,
+                     const char* file, unsigned int line);
 
-void UnityIgnoreTest(const char * printableName);
-void UnityMalloc_StartTest();
-void UnityMalloc_EndTest();
-int UnityFailureCount();
-int UnityGetCommandLineOptions(int argc, char* argv[]);
-void UnityConcludeFixtureTest();
+void UnityIgnoreTest(const char* printableName, const char* group, const char* name);
+void UnityMalloc_StartTest(void);
+void UnityMalloc_EndTest(void);
+int UnityGetCommandLineOptions(int argc, const char* argv[]);
+void UnityConcludeFixtureTest(void);
 
-void UnityPointer_Set(void ** ptr, void * newValue);
-void UnityPointer_UndoAllSets();
-void UnityPointer_Init();
-
-void UnityAssertEqualPointer(const void * expected,
-                            const void * actual,
-                            const char* msg,
-                            const UNITY_LINE_TYPE lineNumber);
+void UnityPointer_Set(void** ptr, void* newValue, UNITY_LINE_TYPE line);
+void UnityPointer_UndoAllSets(void);
+void UnityPointer_Init(void);
 
 #endif /* UNITY_FIXTURE_INTERNALS_H_ */

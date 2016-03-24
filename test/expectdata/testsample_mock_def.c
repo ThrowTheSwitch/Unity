@@ -6,18 +6,19 @@
   Unity.CurrentTestName = #TestFunc; \
   Unity.CurrentTestLineNumber = TestLineNum; \
   Unity.NumberOfTests++; \
+  CMock_Init(); \
+  UNITY_CLR_DETAILS(); \
   if (TEST_PROTECT()) \
   { \
-      CMock_Init(); \
       setUp(); \
       TestFunc(); \
-      CMock_Verify(); \
   } \
-  CMock_Destroy(); \
   if (TEST_PROTECT() && !TEST_IS_IGNORED) \
   { \
     tearDown(); \
+    CMock_Verify(); \
   } \
+  CMock_Destroy(); \
   UnityConcludeTest(); \
 }
 
@@ -26,6 +27,8 @@
 #include "cmock.h"
 #include <setjmp.h>
 #include <stdio.h>
+#include "funky.h"
+#include <setjmp.h>
 #include "Mockstanky.h"
 
 //=======External Functions This Runner Calls=====
@@ -50,7 +53,8 @@ static void CMock_Destroy(void)
 }
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   CMock_Verify();
   CMock_Destroy();
@@ -63,10 +67,10 @@ void resetTest()
 //=======MAIN=====
 int main(void)
 {
-  Unity.TestFile = "test/testdata/mocksample.c";
-  UnityBegin();
+  UnityBegin("testdata/mocksample.c");
   RUN_TEST(test_TheFirstThingToTest, 21);
   RUN_TEST(test_TheSecondThingToTest, 43);
 
+  CMock_Guts_MemFreeFinal();
   return (UnityEnd());
 }

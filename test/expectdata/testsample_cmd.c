@@ -26,16 +26,22 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include "CException.h"
+#include "funky.h"
+#include "stanky.h"
+#include <setjmp.h>
 
 //=======External Functions This Runner Calls=====
 extern void setUp(void);
 extern void tearDown(void);
 extern void test_TheFirstThingToTest(void);
 extern void test_TheSecondThingToTest(void);
+extern void test_TheThirdThingToTest(void);
+extern void test_TheFourthThingToTest(void);
 
 
 //=======Test Reset Option=====
-void resetTest()
+void resetTest(void);
+void resetTest(void)
 {
   tearDown();
   setUp();
@@ -45,10 +51,11 @@ void resetTest()
 //=======MAIN=====
 int main(void)
 {
-  Unity.TestFile = "test/testdata/testsample.c";
-  UnityBegin();
+  UnityBegin("testdata/testsample.c");
   RUN_TEST(test_TheFirstThingToTest, 21);
   RUN_TEST(test_TheSecondThingToTest, 43);
+  RUN_TEST(test_TheThirdThingToTest, 53);
+  RUN_TEST(test_TheFourthThingToTest, 58);
 
   return (UnityEnd());
 }
