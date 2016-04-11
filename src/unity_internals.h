@@ -421,6 +421,16 @@ struct _Unity
 extern struct _Unity Unity;
 
 //-------------------------------------------------------
+// Command Line Flags Management
+//-------------------------------------------------------
+int MatchFilter(const char *filter);
+int IsFlagTrue(char flag, int argc, char **argv);
+
+// Unity input flags
+#define UNITY_FLAG_LIST_TESTS 'l'
+#define UNITY_FLAG_FILTER_TESTS 'f'
+
+//-------------------------------------------------------
 // Test Suite Management
 //-------------------------------------------------------
 
