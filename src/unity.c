@@ -1336,3 +1336,55 @@ int UnityEnd(void)
 }
 
 //-----------------------------------------------
+int MatchFilter(char *filter)
+{
+	if (!*filter) // Empty filter
+		return 1;
+	while (*filter)
+	{
+		char *begin = filter;
+		char *pattern = (char *)Unity.CurrentTestName;
+		char *prefix = (char *)Unity.TestFile;
+
+		/* First, find out if this is the right test case */
+		while (*filter && *prefix && (*prefix == *filter || *prefix == '.'))
+		{
+			filter++;
+			prefix++;
+			if (*filter == '*')
+				return 1;
+
+		}
+		prefix++;
+		if (!*prefix)
+		{					
+			while (*filter && *pattern && *pattern == *filter)
+			{
+				filter++;
+				pattern++;
+			}
+			// If complete test name match, return true
+			if (!*pattern)
+				return 1;
+		}
+
+		filter = begin + 1;	// Increament main string 
+	}
+	return 0;
+}
+
+//-----------------------------------------------
+int IsFlagTrue(char flag, int argc, char **argv)
+{
+	if (argc > 1)
+	{
+		for (int i = 1; i < argc; i++)
+		{
+			if (argv[i][0] == '-' && argv[i][1] == flag)
+			{
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
