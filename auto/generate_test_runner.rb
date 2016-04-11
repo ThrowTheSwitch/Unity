@@ -29,10 +29,10 @@ class UnityTestRunnerGenerator
       :setup_name          => "setUp",
       :teardown_name       => "tearDown",
       :main_name           => "main",
-      :auto_main_name      => true,
-	    :main_with_params    => false,
-	    :main_export_decl    => "",
-	    :isolation_directive => false,
+      :auto_main_name      => false,
+      :main_with_params    => false,
+      :main_export_decl    => "",
+      :isolation_directive => false,
       :use_param_tests     => false
     }
   end
