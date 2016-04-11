@@ -355,7 +355,7 @@ class UnityTestRunnerGenerator
     output.puts()
     output.puts("  CMock_Guts_MemFreeFinal();") unless used_mocks.empty?
     output.puts("  return #{@options[:suite_teardown].nil? ? "" : "suite_teardown"}(UnityEnd());")
-    output.puts("  }" unless @options[:main_with_params].false?)
+    output.puts("  #{@options[:main_with_params]? "} " : ""}")
     output.puts("}")
     
     if @options[:isolation_directive]
