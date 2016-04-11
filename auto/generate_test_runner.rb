@@ -303,6 +303,7 @@ class UnityTestRunnerGenerator
   end
 
   def create_main(output, filename, tests, used_mocks)
+    main_name = @options[:auto_main_name]? "#{@options[:main_name]}_#{filename.gsub('.c','')}" : "#{@options[:main_name]}"
     output.puts("\n\n//=======MAIN=====")
     if (@options[:main_name] != "main")
            output.puts("#{@options[:main_export_decl]} int #{main_name}(#{@options[:main_with_params]? "int argc, char **argv" : "void"});")
