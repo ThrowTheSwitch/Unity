@@ -3,7 +3,7 @@ ifeq ($(shell uname -s), Darwin)
 CC = clang
 endif
 #DEBUG = -O0 -g
-CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
+CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror -Wredundant-decls
 CFLAGS += $(DEBUG)
 DEFINES = -D UNITY_OUTPUT_CHAR=putcharSpy -D UNITY_INCLUDE_DOUBLE
 SRC = ../src/unity.c tests/testunity.c build/testunityRunner.c

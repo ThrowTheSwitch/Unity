@@ -67,9 +67,6 @@ const _U_UINT UnitySizeMask[] =
 #endif
 };
 
-void UnityPrintFail(void);
-void UnityPrintOk(void);
-
 //-----------------------------------------------
 // Pretty Printers & Test Result Output Handlers
 //-----------------------------------------------
@@ -1261,8 +1258,6 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 
 //-----------------------------------------------
 #if defined(UNITY_WEAK_ATTRIBUTE)
-    void setUp(void);
-    void tearDown(void);
     UNITY_WEAK_ATTRIBUTE void setUp(void) { }
     UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
 #elif defined(UNITY_WEAK_PRAGMA)
@@ -1270,9 +1265,6 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     void setUp(void) { }
 #   pragma weak tearDown
     void tearDown(void) { }
-#else
-    void setUp(void);
-    void tearDown(void);
 #endif
 //-----------------------------------------------
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
