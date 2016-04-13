@@ -7,6 +7,11 @@
 #include "unity.h"
 #include <stddef.h>
 
+#ifndef UNITY_OUTPUT_CHAR_USE_PUTC
+//If defined as something else, make sure we declare it here so it's ready for use
+extern int UNITY_OUTPUT_CHAR(int);
+#endif
+
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
@@ -66,9 +71,6 @@ const _U_UINT UnitySizeMask[] =
     ,0xFFFFFFFFFFFFFFFF
 #endif
 };
-
-void UnityPrintFail(void);
-void UnityPrintOk(void);
 
 //-----------------------------------------------
 // Pretty Printers & Test Result Output Handlers
@@ -1261,8 +1263,6 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 
 //-----------------------------------------------
 #if defined(UNITY_WEAK_ATTRIBUTE)
-    void setUp(void);
-    void tearDown(void);
     UNITY_WEAK_ATTRIBUTE void setUp(void) { }
     UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
 #elif defined(UNITY_WEAK_PRAGMA)
@@ -1270,9 +1270,6 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     void setUp(void) { }
 #   pragma weak tearDown
     void tearDown(void) { }
-#else
-    void setUp(void);
-    void tearDown(void);
 #endif
 //-----------------------------------------------
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)

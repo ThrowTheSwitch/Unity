@@ -8,6 +8,8 @@
 #include "unity.h"
 #include <string.h>
 
+int putcharSpy(int c);
+
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
 #ifndef UNITY_EXCLUDE_FLOAT
