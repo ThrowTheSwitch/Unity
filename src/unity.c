@@ -7,6 +7,11 @@
 #include "unity.h"
 #include <stddef.h>
 
+#ifndef UNITY_OUTPUT_CHAR_USE_PUTC
+//If defined as something else, make sure we declare it here so it's ready for use
+extern int UNITY_OUTPUT_CHAR(int);
+#endif
+
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
