@@ -291,12 +291,9 @@ typedef UNITY_DOUBLE_TYPE _UD;
 //Default to using putchar, which is defined in stdio.h
 #include <stdio.h>
 #define UNITY_OUTPUT_CHAR(a) putchar(a)
-// We need to flag the output char function uses putc in
-//  unity.c the extern function is not declared then.
-// Previously the extern was declared in this header but
-//  when redundant function declaration compiler flag is enabled
-//  it wont compile.
-#define UNITY_OUTPUT_CHAR_USE_PUTC
+#else
+//If defined as something else, make sure we declare it here so it's ready for use
+extern int UNITY_OUTPUT_CHAR(int);
 #endif
 
 #ifndef UNITY_PRINT_EOL
