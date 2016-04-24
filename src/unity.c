@@ -7,6 +7,9 @@
 #include "unity.h"
 #include <stddef.h>
 
+#ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
+int UNITY_OUTPUT_CHAR(int); //If omitted from header, declare it here so it's ready for use
+#endif
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state

@@ -293,7 +293,9 @@ typedef UNITY_DOUBLE_TYPE _UD;
 #define UNITY_OUTPUT_CHAR(a) putchar(a)
 #else
 //If defined as something else, make sure we declare it here so it's ready for use
+  #ifndef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
 extern int UNITY_OUTPUT_CHAR(int);
+  #endif
 #endif
 
 #ifndef UNITY_PRINT_EOL

@@ -6,4 +6,4 @@ script:
   - cd test && rake ci
   - make -s
   - cd ../extras/fixture/test && rake ci
-  - make -s default noStdLibMalloc
+  - make -s default noStdlibMalloc
