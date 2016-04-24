@@ -4,3 +4,6 @@ rvm:
   - "2.0.0"
 script:
   - cd test && rake ci
+  - make -s
+  - cd ../extras/fixture/test && rake ci
+  - make -s default noStdLibMalloc
