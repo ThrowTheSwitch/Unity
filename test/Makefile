@@ -1,6 +1,6 @@
-CC = gcc
+CC ?= gcc
 ifeq ($(shell uname -s), Darwin)
-CC = clang
+CC ?= clang
 endif
 #DEBUG = -O0 -g
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror -Wredundant-decls
