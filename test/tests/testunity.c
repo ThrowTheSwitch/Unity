@@ -46,8 +46,8 @@ static const _UD d_zero = 0.0;
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
-int SetToOneToFailInTearDown;
-int SetToOneMeanWeAlreadyCheckedThisGuy;
+static int SetToOneToFailInTearDown;
+static int SetToOneMeanWeAlreadyCheckedThisGuy;
 
 void setUp(void)
 {

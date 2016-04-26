@@ -19,37 +19,36 @@ extern int UNITY_OUTPUT_CHAR(int);
 
 struct _Unity Unity;
 
-const char UnityStrOk[]                     = "OK";
-const char UnityStrPass[]                   = "PASS";
-const char UnityStrFail[]                   = "FAIL";
-const char UnityStrIgnore[]                 = "IGNORE";
-const char UnityStrNull[]                   = "NULL";
-const char UnityStrSpacer[]                 = ". ";
-const char UnityStrExpected[]               = " Expected ";
-const char UnityStrWas[]                    = " Was ";
-const char UnityStrTo[]                     = " To ";
-const char UnityStrElement[]                = " Element ";
-const char UnityStrByte[]                   = " Byte ";
-const char UnityStrMemory[]                 = " Memory Mismatch.";
-const char UnityStrDelta[]                  = " Values Not Within Delta ";
-const char UnityStrPointless[]              = " You Asked Me To Compare Nothing, Which Was Pointless.";
-const char UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
-const char UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
-const char UnityStrNot[]                    = "Not ";
-const char UnityStrInf[]                    = "Infinity";
-const char UnityStrNegInf[]                 = "Negative Infinity";
-const char UnityStrNaN[]                    = "NaN";
-const char UnityStrDet[]                    = "Determinate";
-const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
-const char UnityStrErrFloat[]               = "Unity Floating Point Disabled";
-const char UnityStrErrDouble[]              = "Unity Double Precision Disabled";
-const char UnityStrErr64[]                  = "Unity 64-bit Support Disabled";
-const char UnityStrBreaker[]                = "-----------------------";
-const char UnityStrResultsTests[]           = " Tests ";
-const char UnityStrResultsFailures[]        = " Failures ";
-const char UnityStrResultsIgnored[]         = " Ignored ";
-const char UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
-const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
+static const char UnityStrOk[]                     = "OK";
+static const char UnityStrPass[]                   = "PASS";
+static const char UnityStrFail[]                   = "FAIL";
+static const char UnityStrIgnore[]                 = "IGNORE";
+static const char UnityStrNull[]                   = "NULL";
+static const char UnityStrSpacer[]                 = ". ";
+static const char UnityStrExpected[]               = " Expected ";
+static const char UnityStrWas[]                    = " Was ";
+static const char UnityStrElement[]                = " Element ";
+static const char UnityStrByte[]                   = " Byte ";
+static const char UnityStrMemory[]                 = " Memory Mismatch.";
+static const char UnityStrDelta[]                  = " Values Not Within Delta ";
+static const char UnityStrPointless[]              = " You Asked Me To Compare Nothing, Which Was Pointless.";
+static const char UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
+static const char UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
+static const char UnityStrNot[]                    = "Not ";
+static const char UnityStrInf[]                    = "Infinity";
+static const char UnityStrNegInf[]                 = "Negative Infinity";
+static const char UnityStrNaN[]                    = "NaN";
+static const char UnityStrDet[]                    = "Determinate";
+static const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
+const char UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
+const char UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
+const char UnityStrErr64[]                         = "Unity 64-bit Support Disabled";
+static const char UnityStrBreaker[]                = "-----------------------";
+static const char UnityStrResultsTests[]           = " Tests ";
+static const char UnityStrResultsFailures[]        = " Failures ";
+static const char UnityStrResultsIgnored[]         = " Ignored ";
+static const char UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
+static const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
 
 #ifdef UNITY_FLOAT_NEEDS_ZERO
 // Dividing by these constants produces +/- infinity.
@@ -58,7 +57,7 @@ static const _UF f_zero = 0.0f;
 #endif
 
 // compiler-generic print formatting masks
-const _U_UINT UnitySizeMask[] =
+static const _U_UINT UnitySizeMask[] =
 {
     255u,         // 0xFF
     65535u,       // 0xFFFF
