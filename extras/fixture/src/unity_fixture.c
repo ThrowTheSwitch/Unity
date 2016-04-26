@@ -15,6 +15,8 @@ struct _UnityFixture UnityFixture;
 //Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>
 //int (*outputChar)(int) = putchar;
 
+extern int  UnityOutputCharSpy_OutputChar(int c);
+
 #if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
 void setUp(void)    { /*does nothing*/ }
 void tearDown(void) { /*does nothing*/ }
