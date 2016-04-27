@@ -668,13 +668,13 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
     {
         diff = *ptr_expected - *ptr_actual;
         if (diff < 0.0f)
-          diff = 0.0f - diff;
+            diff = 0.0f - diff;
         tol = UNITY_FLOAT_PRECISION * *ptr_expected;
         if (tol < 0.0f)
             tol = 0.0f - tol;
 
         //This first part of this condition will catch any NaN or Infinite values
-        if ((diff * 0.0f != 0.0f) || (diff > tol))
+        if (isnan(diff) || isinf(diff) || (diff > tol))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -717,7 +717,7 @@ void UnityAssertFloatsWithin(const _UF delta,
     }
 
     //This first part of this condition will catch any NaN or Infinite values
-    if ((diff * 0.0f != 0.0f) || (pos_delta < diff))
+    if (isnan(diff) || isinf(diff) || (pos_delta < diff))
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_FLOAT_VERBOSE
@@ -838,7 +838,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
             tol = 0.0 - tol;
 
         //This first part of this condition will catch any NaN or Infinite values
-        if ((diff * 0.0 != 0.0) || (diff > tol))
+        if (isnan(diff) || isinf(diff) || (diff > tol))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -881,7 +881,7 @@ void UnityAssertDoublesWithin(const _UD delta,
     }
 
     //This first part of this condition will catch any NaN or Infinite values
-    if ((diff * 0.0 != 0.0) || (pos_delta < diff))
+    if (isnan(diff) || isinf(diff) || (pos_delta < diff))
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_DOUBLE_VERBOSE
