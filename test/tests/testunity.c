@@ -19,11 +19,13 @@ static const _UD d_zero = 0.0;
 #endif
 
 #define EXPECT_ABORT_BEGIN \
+    startPutcharSpy();     \
     if (TEST_PROTECT())    \
     {
 
 #define VERIFY_FAILS_END                                                       \
     }                                                                          \
+    endPutcharSpy(); /* start/end Spy to suppress output of failure message */ \
     Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
@@ -36,6 +38,7 @@ static const _UD d_zero = 0.0;
 
 #define VERIFY_IGNORES_END                                                     \
     }                                                                          \
+    endPutcharSpy(); /* start/end Spy to suppress output of ignore message */  \
     Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
     Unity.CurrentTestIgnored = 0;                                              \
     if (Unity.CurrentTestFailed == 1) {                                        \
@@ -46,6 +49,11 @@ static const _UD d_zero = 0.0;
       UnityPrint(":FAIL: [[[[ Test Should Have Ignored But Did Not ]]]]");     \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
+
+void startPutcharSpy(void);
+void endPutcharSpy(void);
+char* getBufferPutcharSpy(void);
+void putcharSpy(int c);
 
 static int SetToOneToFailInTearDown;
 static int SetToOneMeanWeAlreadyCheckedThisGuy;
