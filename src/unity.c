@@ -1323,6 +1323,9 @@ int UnityEnd(void)
     else
     {
         UnityPrintFail();
+#ifdef UNITY_DIFFERENTIATE_FINAL_FAIL
+        UNITY_OUTPUT_CHAR('E'); UNITY_OUTPUT_CHAR('D');
+#endif
     }
     UNITY_PRINT_EOL();
     UNITY_OUTPUT_COMPLETE();
