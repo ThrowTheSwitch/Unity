@@ -30,7 +30,7 @@ static const _UD d_zero = 0.0;
       UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
       UNITY_OUTPUT_CHAR(':');                                                  \
       UnityPrint(Unity.CurrentTestName);                                       \
-      UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
+      UnityPrint(":FAIL: [[[[ Test Should Have Failed But Did Not ]]]]");      \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
@@ -40,7 +40,10 @@ static const _UD d_zero = 0.0;
     Unity.CurrentTestIgnored = 0;                                              \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Ignored But Did Not ]]]]");   \
+      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
+      UNITY_OUTPUT_CHAR(':');                                                  \
+      UnityPrint(Unity.CurrentTestName);                                       \
+      UnityPrint(":FAIL: [[[[ Test Should Have Ignored But Did Not ]]]]");     \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
@@ -59,7 +62,7 @@ void tearDown(void)
     TEST_FAIL_MESSAGE("<= Failed in tearDown");
   if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
   {
-    UnityPrint("[[[[ Previous Test Should Have Passed But Did Not ]]]]");
+    UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
     UNITY_OUTPUT_CHAR('\n');
   }
 }
