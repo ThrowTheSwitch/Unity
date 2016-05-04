@@ -1545,6 +1545,7 @@ void testEqualIntArrays(void)
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_INT_ARRAY(NULL, NULL, 1);
 }
 
 void testNotEqualIntArraysNullExpected(void)
@@ -3032,6 +3033,7 @@ void testEqualFloatArrays(void)
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(NULL, NULL, 1);
 #endif
 }
 
@@ -3562,6 +3564,7 @@ void testEqualDoubleArrays(void)
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(NULL, NULL, 1);
 #endif
 }
 
