@@ -1390,10 +1390,24 @@ void testNotEqualString_ExpectedStringIsNull(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualStringLen_ExpectedStringIsNull(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN(NULL, "bar", 1);
+    VERIFY_FAILS_END
+}
+
 void testNotEqualString_ActualStringIsNull(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("foo", NULL);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringLen_ActualStringIsNull(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN("foo", NULL, 1);
     VERIFY_FAILS_END
 }
 
