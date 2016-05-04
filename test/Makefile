@@ -5,7 +5,8 @@ endif
 #DEBUG = -O0 -g
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror -Wredundant-decls
 CFLAGS += $(DEBUG)
-DEFINES = -D UNITY_OUTPUT_CHAR=putcharSpy -D UNITY_INCLUDE_DOUBLE
+DEFINES =  -D UNITY_OUTPUT_CHAR=putcharSpy
+DEFINES += -D UNITY_SUPPORT_64 -D UNITY_INCLUDE_DOUBLE -D UNITY_NO_WEAK
 SRC = ../src/unity.c tests/testunity.c build/testunityRunner.c
 INC_DIR = -I ../src
 COV_FLAGS = -fprofile-arcs -ftest-coverage -I ../../src
@@ -24,8 +25,6 @@ coverage: $(BUILD_DIR)/testunityRunner.c
 	./$(TARGET) | grep Tests -A1
 	cd $(BUILD_DIR) && \
 	gcov unity.c | head -3
-
-uncovered:
 	grep '###' $(BUILD_DIR)/unity.c.gcov -C2 || true
 
 test: CFLAGS += -Wbad-function-cast -Wcast-qual -Wconversion -Wformat=2 -Wold-style-definition \
