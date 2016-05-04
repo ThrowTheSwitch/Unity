@@ -3722,6 +3722,8 @@ void testNotEqualDoubleArraysLengthZero(void)
 #endif
 }
 
+// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DETAIL SUPPORT ==================
+
 void testThatDetailsCanBeHandleOneDetail(void)
 {
 #ifdef UNITY_EXCLUDE_DETAILS
@@ -3731,6 +3733,19 @@ void testThatDetailsCanBeHandleOneDetail(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_MESSAGE(5, 6, "Should Fail And Say Detail1");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanHandleTestFail(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAILS("Detail1","Detail2");
+
+    EXPECT_ABORT_BEGIN
+    TEST_FAIL_MESSAGE("Should Fail And Say Detail1 and Detail2");
     VERIFY_FAILS_END
 #endif
 }
