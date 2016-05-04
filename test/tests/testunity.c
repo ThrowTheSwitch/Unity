@@ -1580,6 +1580,16 @@ void testNotEqualIntArrays3(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualIntArraysLengthZero(void)
+{
+    _UU32 p0[1] = {1};
+    _UU32 p1[1] = {1};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 0);
+    VERIFY_FAILS_END
+}
+
 void testEqualPtrArrays(void)
 {
     char A = 1;
@@ -3148,6 +3158,20 @@ void testNotEqualFloatArraysInf(void)
 #endif
 }
 
+void testNotEqualFloatArraysLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[1] = {0.0f};
+    float p1[1] = {0.0f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 0);
+    VERIFY_FAILS_END
+#endif
+}
+
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DOUBLE SUPPORT ==================
 
 void testDoublesWithinDelta(void)
@@ -3660,6 +3684,20 @@ void testNotEqualDoubleArraysInf(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleArraysLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[1] = {0.0};
+    double p1[1] = {0.0};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 0);
     VERIFY_FAILS_END
 #endif
 }
