@@ -1370,7 +1370,7 @@ void testNotEqualString4(void)
 void testNotEqualStringLen4(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_STRING_LEN("bar\r", "bar\n", 4);
+    TEST_ASSERT_EQUAL_STRING_LEN("\r\x16", "bar\n", 4);
     VERIFY_FAILS_END
 }
 
@@ -2258,6 +2258,19 @@ int putcharSpy(int c)
         c = putchar(c);
 #endif
     return c;
+}
+
+void testFailureCountIncrementsAndIsReturnedAtEnd(void)
+{
+    Unity.CurrentTestFailed = 1;
+    startPutcharSpy(); // Suppress output
+    UnityConcludeTest();
+    TEST_ASSERT_EQUAL(1, Unity.TestFailures);
+
+    int failures = UnityEnd();
+    Unity.TestFailures--;
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL(1, failures);
 }
 
 #define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
