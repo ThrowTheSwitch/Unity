@@ -34,6 +34,12 @@ test: $(BUILD_DIR)/testunityRunner.c
 	$(CC) $(CFLAGS) $(DEFINES) $(INC_DIR) $(SRC) -o $(TARGET)
 	./$(TARGET)
 
+# Compile only, for testing that preprocessor detection works
+UNITY_C_ONLY =-c ../src/unity.c -o $(BUILD_DIR)/unity.o
+intDetection:
+	$(CC) $(CFLAGS) $(INC_DIR) $(UNITY_C_ONLY) -D UNITY_EXCLUDE_STDINT_H
+	$(CC) $(CFLAGS) $(INC_DIR) $(UNITY_C_ONLY) -D UNITY_EXCLUDE_LIMITS_H
+
 $(BUILD_DIR)/testunityRunner.c: tests/testunity.c | $(BUILD_DIR)
 	awk $(AWK_SCRIPT) tests/testunity.c > $@
 

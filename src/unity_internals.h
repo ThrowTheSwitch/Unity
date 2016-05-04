@@ -13,10 +13,15 @@
 
 #include <setjmp.h>
 
+#ifndef UNITY_EXCLUDE_MATH_H
+#include <math.h>
+#endif
+
 /* Unity Attempts to Auto-Detect Integer Types
- * Attempt 1: UINT_MAX, ULONG_MAX, etc in <stdint.h>
- * Attempt 2: UINT_MAX, ULONG_MAX, etc in <limits.h>
- * Attempt 3: Deduced from sizeof() macros */
+ * Attempt 1: UINT_MAX, ULONG_MAX in <limits.h>, or default to 32 bits
+ * Attempt 2: UINTPTR_MAX in <stdint.h>, or default to same size as long
+ * The user may override any of these derived constants:
+ * UNITY_INT_WIDTH, UNITY_LONG_WIDTH, UNITY_POINTER_WIDTH */
 #ifndef UNITY_EXCLUDE_STDINT_H
 #include <stdint.h>
 #endif
@@ -25,29 +30,13 @@
 #include <limits.h>
 #endif
 
-#ifndef UNITY_EXCLUDE_SIZEOF
-#ifndef UINT_MAX
-#define UINT_MAX     (sizeof(unsigned int) * 256 - 1)
-#endif
-#ifndef ULONG_MAX
-#define ULONG_MAX    (sizeof(unsigned long) * 256 - 1)
-#endif
-#ifndef UINTPTR_MAX
-/* apparently this is not a constant expression: (sizeof(unsigned int *) * 256 - 1) so we have to just let this fall through */
-#endif
-#endif
-
-#ifndef UNITY_EXCLUDE_MATH_H
-#include <math.h>
-#endif
-
 /*-------------------------------------------------------
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
 
 /* Determine the size of an int, if not already specificied.
  * We cannot use sizeof(int), because it is not yet defined
- * at this stage in the trnslation of the C program.
+ * at this stage in the translation of the C program.
  * Therefore, infer it from UINT_MAX if possible. */
 #ifndef UNITY_INT_WIDTH
   #ifdef UINT_MAX
@@ -58,15 +47,12 @@
     #elif (UINT_MAX == 0xFFFFFFFFFFFFFFFF)
       #define UNITY_INT_WIDTH (64)
     #endif
-  #endif
-#endif
-#ifndef UNITY_INT_WIDTH
-  #define UNITY_INT_WIDTH (32)
+  #else /* Set to default */
+    #define UNITY_INT_WIDTH (32)
+  #endif /* UINT_MAX */
 #endif
 
-/* Determine the size of a long, if not already specified,
- * by following the process used above to define
- * UNITY_INT_WIDTH. */
+/* Determine the size of a long, if not already specified. */
 #ifndef UNITY_LONG_WIDTH
   #ifdef ULONG_MAX
     #if (ULONG_MAX == 0xFFFF)
@@ -76,39 +62,24 @@
     #elif (ULONG_MAX == 0xFFFFFFFFFFFFFFFF)
       #define UNITY_LONG_WIDTH (64)
     #endif
-  #endif
-#endif
-#ifndef UNITY_LONG_WIDTH
-  #define UNITY_LONG_WIDTH (32)
+  #else /* Set to default */
+    #define UNITY_LONG_WIDTH (32)
+  #endif /* ULONG_MAX */
 #endif
 
-/* Determine the size of a pointer, if not already specified,
- * by following the process used above to define
- * UNITY_INT_WIDTH. */
+/* Determine the size of a pointer, if not already specified. */
 #ifndef UNITY_POINTER_WIDTH
   #ifdef UINTPTR_MAX
-    #if (UINTPTR_MAX+0 <= 0xFFFF)
+    #if (UINTPTR_MAX <= 0xFFFF)
       #define UNITY_POINTER_WIDTH (16)
-    #elif (UINTPTR_MAX+0 <= 0xFFFFFFFF)
+    #elif (UINTPTR_MAX <= 0xFFFFFFFF)
       #define UNITY_POINTER_WIDTH (32)
-    #elif (UINTPTR_MAX+0 <= 0xFFFFFFFFFFFFFFFF)
+    #elif (UINTPTR_MAX <= 0xFFFFFFFFFFFFFFFF)
       #define UNITY_POINTER_WIDTH (64)
     #endif
-  #endif
-#endif
-#ifndef UNITY_POINTER_WIDTH
-  #ifdef INTPTR_MAX
-    #if (INTPTR_MAX+0 <= 0x7FFF)
-      #define UNITY_POINTER_WIDTH (16)
-    #elif (INTPTR_MAX+0 <= 0x7FFFFFFF)
-      #define UNITY_POINTER_WIDTH (32)
-    #elif (INTPTR_MAX+0 <= 0x7FFFFFFFFFFFFFFF)
-      #define UNITY_POINTER_WIDTH (64)
-    #endif
-  #endif
-#endif
-#ifndef UNITY_POINTER_WIDTH
-  #define UNITY_POINTER_WIDTH UNITY_LONG_WIDTH
+  #else /* Set to default */
+    #define UNITY_POINTER_WIDTH UNITY_LONG_WIDTH
+  #endif /* UINTPTR_MAX */
 #endif
 
 /*-------------------------------------------------------
@@ -138,36 +109,29 @@
  *-------------------------------------------------------*/
 
 #ifndef UNITY_SUPPORT_64
-#if UNITY_LONG_WIDTH > 32
-#define UNITY_SUPPORT_64
-#endif
-#endif
-#ifndef UNITY_SUPPORT_64
-#if UNITY_POINTER_WIDTH > 32
-#define UNITY_SUPPORT_64
-#endif
+  #if UNITY_LONG_WIDTH == 64 || UNITY_POINTER_WIDTH == 64
+    #define UNITY_SUPPORT_64
+  #endif
 #endif
 
 #ifndef UNITY_SUPPORT_64
-
-/* No 64-bit Support */
-typedef _UU32 _U_UINT;
-typedef _US32 _U_SINT;
-
+    /* No 64-bit Support */
+    typedef _UU32 _U_UINT;
+    typedef _US32 _U_SINT;
 #else
 
-/* 64-bit Support */
-#if (UNITY_LONG_WIDTH == 32)
+    /* 64-bit Support */
+  #if (UNITY_LONG_WIDTH == 32)
     typedef unsigned long long _UU64;
     typedef signed long long   _US64;
-#elif (UNITY_LONG_WIDTH == 64)
+  #elif (UNITY_LONG_WIDTH == 64)
     typedef unsigned long      _UU64;
     typedef signed long        _US64;
-#else
+  #else
     #error Invalid UNITY_LONG_WIDTH specified! (32 or 64 are supported)
-#endif
-typedef _UU64 _U_UINT;
-typedef _US64 _U_SINT;
+  #endif
+    typedef _UU64 _U_UINT;
+    typedef _US64 _U_SINT;
 
 #endif
 
@@ -369,13 +333,7 @@ typedef void (*UnityTestFunction)(void);
 
 typedef enum
 {
-#if (UNITY_INT_WIDTH == 16)
-    UNITY_DISPLAY_STYLE_INT      = 2 + UNITY_DISPLAY_RANGE_INT + UNITY_DISPLAY_RANGE_AUTO,
-#elif (UNITY_INT_WIDTH  == 32)
-    UNITY_DISPLAY_STYLE_INT      = 4 + UNITY_DISPLAY_RANGE_INT + UNITY_DISPLAY_RANGE_AUTO,
-#elif (UNITY_INT_WIDTH  == 64)
-    UNITY_DISPLAY_STYLE_INT      = 8 + UNITY_DISPLAY_RANGE_INT + UNITY_DISPLAY_RANGE_AUTO,
-#endif
+UNITY_DISPLAY_STYLE_INT = sizeof(int)+ UNITY_DISPLAY_RANGE_INT + UNITY_DISPLAY_RANGE_AUTO,
     UNITY_DISPLAY_STYLE_INT8     = 1 + UNITY_DISPLAY_RANGE_INT,
     UNITY_DISPLAY_STYLE_INT16    = 2 + UNITY_DISPLAY_RANGE_INT,
     UNITY_DISPLAY_STYLE_INT32    = 4 + UNITY_DISPLAY_RANGE_INT,
@@ -383,25 +341,21 @@ typedef enum
     UNITY_DISPLAY_STYLE_INT64    = 8 + UNITY_DISPLAY_RANGE_INT,
 #endif
 
-#if (UNITY_INT_WIDTH == 16)
-    UNITY_DISPLAY_STYLE_UINT     = 2 + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
-#elif (UNITY_INT_WIDTH  == 32)
-    UNITY_DISPLAY_STYLE_UINT     = 4 + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
-#elif (UNITY_INT_WIDTH  == 64)
-    UNITY_DISPLAY_STYLE_UINT     = 8 + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
-#endif
+UNITY_DISPLAY_STYLE_UINT = sizeof(unsigned) + UNITY_DISPLAY_RANGE_UINT + UNITY_DISPLAY_RANGE_AUTO,
     UNITY_DISPLAY_STYLE_UINT8    = 1 + UNITY_DISPLAY_RANGE_UINT,
     UNITY_DISPLAY_STYLE_UINT16   = 2 + UNITY_DISPLAY_RANGE_UINT,
     UNITY_DISPLAY_STYLE_UINT32   = 4 + UNITY_DISPLAY_RANGE_UINT,
 #ifdef UNITY_SUPPORT_64
     UNITY_DISPLAY_STYLE_UINT64   = 8 + UNITY_DISPLAY_RANGE_UINT,
 #endif
+
     UNITY_DISPLAY_STYLE_HEX8     = 1 + UNITY_DISPLAY_RANGE_HEX,
     UNITY_DISPLAY_STYLE_HEX16    = 2 + UNITY_DISPLAY_RANGE_HEX,
     UNITY_DISPLAY_STYLE_HEX32    = 4 + UNITY_DISPLAY_RANGE_HEX,
 #ifdef UNITY_SUPPORT_64
     UNITY_DISPLAY_STYLE_HEX64    = 8 + UNITY_DISPLAY_RANGE_HEX,
 #endif
+
     UNITY_DISPLAY_STYLE_UNKNOWN
 } UNITY_DISPLAY_STYLE_T;
 
