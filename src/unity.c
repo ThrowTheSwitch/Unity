@@ -491,6 +491,13 @@ void UnityAssertEqualNumber(const _U_SINT expected,
     }
 }
 
+#define UnityPrintPointlessAndBail()       \
+{                                          \
+    UnityTestResultsFailBegin(lineNumber); \
+    UnityPrint(UnityStrPointless);         \
+    UnityAddMsgIfSpecified(msg);           \
+    UNITY_FAIL_AND_BAIL; }
+
 //-----------------------------------------------
 void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                               UNITY_INTERNAL_PTR actual,
@@ -507,10 +514,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
     if (elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -625,10 +629,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
 
     if (elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -789,10 +790,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
 
     if (elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -1071,10 +1069,7 @@ void UnityAssertEqualStringArray( const char** expected,
     // if no elements, it's an error
     if (num_elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -1134,10 +1129,7 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
 
     if ((elements == 0) || (length == 0))
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
