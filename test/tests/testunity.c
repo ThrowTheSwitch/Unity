@@ -1476,6 +1476,16 @@ void testEqualStringArrayIfBothNulls(void)
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
 }
 
+void testNotEqualStringArrayLengthZero(void)
+{
+    const char *testStrings[] = {NULL};
+    const char **expStrings = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 0);
+    VERIFY_FAILS_END
+}
+
 void testEqualMemory(void)
 {
     const char *testString = "whatever";
@@ -1513,6 +1523,13 @@ void testNotEqualMemory4(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_MEMORY("fool", NULL, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryLengthZero(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 0);
     VERIFY_FAILS_END
 }
 
