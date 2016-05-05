@@ -1370,7 +1370,7 @@ void testNotEqualString4(void)
 void testNotEqualStringLen4(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_STRING_LEN("bar\r", "bar\n", 4);
+    TEST_ASSERT_EQUAL_STRING_LEN("\r\x16", "bar\n", 4);
     VERIFY_FAILS_END
 }
 
@@ -1390,10 +1390,24 @@ void testNotEqualString_ExpectedStringIsNull(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualStringLen_ExpectedStringIsNull(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN(NULL, "bar", 1);
+    VERIFY_FAILS_END
+}
+
 void testNotEqualString_ActualStringIsNull(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("foo", NULL);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringLen_ActualStringIsNull(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN("foo", NULL, 1);
     VERIFY_FAILS_END
 }
 
@@ -1476,6 +1490,16 @@ void testEqualStringArrayIfBothNulls(void)
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
 }
 
+void testNotEqualStringArrayLengthZero(void)
+{
+    const char *testStrings[] = {NULL};
+    const char **expStrings = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 0);
+    VERIFY_FAILS_END
+}
+
 void testEqualMemory(void)
 {
     const char *testString = "whatever";
@@ -1516,6 +1540,13 @@ void testNotEqualMemory4(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualMemoryLengthZero(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 0);
+    VERIFY_FAILS_END
+}
+
 void testEqualIntArrays(void)
 {
     int p0[] = {1, 8, 987, -2};
@@ -1528,6 +1559,7 @@ void testEqualIntArrays(void)
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_INT_ARRAY(NULL, NULL, 1);
 }
 
 void testNotEqualIntArraysNullExpected(void)
@@ -1577,6 +1609,16 @@ void testNotEqualIntArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntArraysLengthZero(void)
+{
+    _UU32 p0[1] = {1};
+    _UU32 p1[1] = {1};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 0);
     VERIFY_FAILS_END
 }
 
@@ -2216,6 +2258,19 @@ int putcharSpy(int c)
         c = putchar(c);
 #endif
     return c;
+}
+
+void testFailureCountIncrementsAndIsReturnedAtEnd(void)
+{
+    Unity.CurrentTestFailed = 1;
+    startPutcharSpy(); // Suppress output
+    UnityConcludeTest();
+    TEST_ASSERT_EQUAL(1, Unity.TestFailures);
+
+    int failures = UnityEnd();
+    Unity.TestFailures--;
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL(1, failures);
 }
 
 #define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
@@ -3005,6 +3060,7 @@ void testEqualFloatArrays(void)
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(NULL, NULL, 1);
 #endif
 }
 
@@ -3144,6 +3200,20 @@ void testNotEqualFloatArraysInf(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatArraysLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[1] = {0.0f};
+    float p1[1] = {0.0f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 0);
     VERIFY_FAILS_END
 #endif
 }
@@ -3521,6 +3591,7 @@ void testEqualDoubleArrays(void)
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(NULL, NULL, 1);
 #endif
 }
 
@@ -3664,6 +3735,22 @@ void testNotEqualDoubleArraysInf(void)
 #endif
 }
 
+void testNotEqualDoubleArraysLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[1] = {0.0};
+    double p1[1] = {0.0};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 0);
+    VERIFY_FAILS_END
+#endif
+}
+
+// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DETAIL SUPPORT ==================
+
 void testThatDetailsCanBeHandleOneDetail(void)
 {
 #ifdef UNITY_EXCLUDE_DETAILS
@@ -3673,6 +3760,19 @@ void testThatDetailsCanBeHandleOneDetail(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_MESSAGE(5, 6, "Should Fail And Say Detail1");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanHandleTestFail(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAILS("Detail1","Detail2");
+
+    EXPECT_ABORT_BEGIN
+    TEST_FAIL_MESSAGE("Should Fail And Say Detail1 and Detail2");
     VERIFY_FAILS_END
 #endif
 }

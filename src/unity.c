@@ -164,12 +164,9 @@ void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T s
 }
 
 //-----------------------------------------------
-/// basically do an itoa using as little ram as possible
 void UnityPrintNumber(const _U_SINT number_to_print)
 {
-    _U_UINT divisor = 1;
-    _U_UINT next_divisor;
-    _U_UINT number;
+    _U_UINT number = (_U_UINT)number_to_print;
 
     if (number_to_print < 0)
     {
@@ -177,29 +174,7 @@ void UnityPrintNumber(const _U_SINT number_to_print)
         UNITY_OUTPUT_CHAR('-');
         number = (_U_UINT)(-number_to_print);
     }
-    else
-    {
-        //Non-negative number
-        number = (_U_UINT)number_to_print;
-    }
-
-    // figure out initial divisor
-    while (number / divisor > 9)
-    {
-        next_divisor = divisor * 10;
-        if (next_divisor > divisor)
-            divisor = next_divisor;
-        else
-            break;
-    }
-
-    // now mod and print, then divide divisor
-    do
-    {
-        UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));
-        divisor /= 10;
-    }
-    while (divisor > 0);
+    UnityPrintNumberUnsigned(number);
 }
 
 //-----------------------------------------------
@@ -207,16 +182,11 @@ void UnityPrintNumber(const _U_SINT number_to_print)
 void UnityPrintNumberUnsigned(const _U_UINT number)
 {
     _U_UINT divisor = 1;
-    _U_UINT next_divisor;
 
     // figure out initial divisor
     while (number / divisor > 9)
     {
-        next_divisor = divisor * 10;
-        if (next_divisor > divisor)
-            divisor = next_divisor;
-        else
-            break;
+        divisor *= 10;
     }
 
     // now mod and print, then divide divisor
@@ -521,6 +491,13 @@ void UnityAssertEqualNumber(const _U_SINT expected,
     }
 }
 
+#define UnityPrintPointlessAndBail()       \
+{                                          \
+    UnityTestResultsFailBegin(lineNumber); \
+    UnityPrint(UnityStrPointless);         \
+    UnityAddMsgIfSpecified(msg);           \
+    UNITY_FAIL_AND_BAIL; }
+
 //-----------------------------------------------
 void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                               UNITY_INTERNAL_PTR actual,
@@ -537,10 +514,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
     if (elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -655,10 +629,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
 
     if (elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -819,10 +790,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
 
     if (elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -1101,10 +1069,7 @@ void UnityAssertEqualStringArray( const char** expected,
     // if no elements, it's an error
     if (num_elements == 0)
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
@@ -1164,10 +1129,7 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
 
     if ((elements == 0) || (length == 0))
     {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrPointless);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintPointlessAndBail();
     }
 
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
