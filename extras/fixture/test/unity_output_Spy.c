@@ -33,7 +33,7 @@ void UnityOutputCharSpy_Destroy(void)
     free(buffer);
 }
 
-int UnityOutputCharSpy_OutputChar(int c)
+void UnityOutputCharSpy_OutputChar(int c)
 {
     if (spy_enable)
     {
@@ -44,7 +44,6 @@ int UnityOutputCharSpy_OutputChar(int c)
     {
         putchar(c);
     }
-    return c;
 }
 
 const char * UnityOutputCharSpy_Get(void)
