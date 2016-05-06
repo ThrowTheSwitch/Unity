@@ -2247,7 +2247,7 @@ char* getBufferPutcharSpy(void)
 #endif
 }
 
-int putcharSpy(int c)
+void putcharSpy(int c)
 {
 #ifdef USING_OUTPUT_SPY
     if (putcharSpyEnabled)
@@ -2257,7 +2257,6 @@ int putcharSpy(int c)
     } else
         c = putchar(c);
 #endif
-    return c;
 }
 
 void testFailureCountIncrementsAndIsReturnedAtEnd(void)

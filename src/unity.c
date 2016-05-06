@@ -7,11 +7,18 @@
 #include "unity.h"
 #include <stddef.h>
 
+//If omitted from header, declare overrideable prototypes here so they're ready for use
 #ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
-int UNITY_OUTPUT_CHAR(int); //If omitted from header, declare it here so it's ready for use
+int UNITY_OUTPUT_CHAR(int);
 #endif
+#ifdef UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
+int UNITY_OUTPUT_FLUSH(void);
+#endif
+
+//Helpful macros for us to use here
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
+
 /// return prematurely if we are already in failure or ignore state
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
 
@@ -331,6 +338,7 @@ void UnityConcludeTest(void)
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
     UNITY_PRINT_EOL();
+    UNITY_OUTPUT_FLUSH();
 }
 
 //-----------------------------------------------
@@ -1290,6 +1298,7 @@ int UnityEnd(void)
 #endif
     }
     UNITY_PRINT_EOL();
+    UNITY_OUTPUT_FLUSH();
     UNITY_OUTPUT_COMPLETE();
     return (int)(Unity.TestFailures);
 }
