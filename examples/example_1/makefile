@@ -26,7 +26,7 @@ endif
 UNITY_ROOT=../..
 C_COMPILER=gcc
 
-CFLAGS=-std=c99
+CFLAGS=-std=c89
 CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Werror 
