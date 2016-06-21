@@ -1300,4 +1300,120 @@ int UnityEnd(void)
     return (int)(Unity.TestFailures);
 }
 
+/*-----------------------------------------------
+ * Command Line Argument Support
+ *-----------------------------------------------*/
+#ifdef UNITY_PARSE_COMMAND_LINE_ARGS
+
+char* UnityOptionIncludeNamed = NULL;
+char* UnityOptionExcludeNamed = NULL;
+int   UnityVerbosity          = 1;
+
+int UnityParseOptions(int argc, char** argv)
+{
+    UnityOptionIncludeNamed = NULL;
+    UnityOptionExcludeNamed = NULL;
+
+    for (int i = 1; i < argc; i++)
+    {
+        if (argv[i][0] == '-')
+        {
+            switch(argv[i][1])
+            {
+                case 'l': /* list tests */
+                    break;
+                case 'n': /* include tests with name including this string */
+                    i++;
+                    if (i < argc)
+                        UnityOptionIncludeNamed = argv[i];
+                    else
+                    {
+                        UnityPrint("ERROR: No Test String to Include Matches For");
+                        UNITY_PRINT_EOL();
+                    }
+                    break;
+                case 'q': /* quiet */
+                    UnityVerbosity = 0;
+                    break;
+                case 'v': /* verbose */
+                    UnityVerbosity = 2;
+                    break;
+                case 'x': /* exclude tests with name including this string */
+                    i++;
+                    if (i < argc)
+                        UnityOptionExcludeNamed = argv[i];
+                    else
+                    {
+                        UnityPrint("ERROR: No Test String to Exclude Matches For");
+                        UNITY_PRINT_EOL();
+                    }
+                    break;
+                default:
+                    UnityPrint("ERROR: Unknown Option ");
+                    UNITY_PRINT_CHAR(argv[i][1]);
+                    UNITY_PRINT_EOL();
+                    return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+int UnityTestMatches(void)
+{
+    /* Check if this test name matches the included test pattern */
+    if (UnityOptionsIncludedNamed)
+        retval = UnityStringArgumentMatches(UnityOptionIncludedNamed);
+    else
+        retval = 1;
+
+
+    /* Check if this test name matches the excluded test pattern */
+    if (UnityOptionsExcludedNamed)
+        if (UnityStringArgumentMatches(UnityOptionExcludedNamed))
+            retval = 0;
+
+    return retval;
+}
+
+int UnityStringArgumentMatches(const char* str)
+{
+    char* ptr = (char*)str;
+    while (*ptr)
+    {
+        char *begin = ptr;
+        char *pattern = (char *)Unity.CurrentTestName;
+        char *prefix  = (char *)Unity.TestFile;
+
+        /* First, find out if this is the right test case */
+        while (*ptr && *prefix && (*prefix == *ptr || *prefix == '.'))
+        {
+            ptr++;
+            prefix++;
+            if (*ptr == '*')
+                return 1;
+
+        }
+        prefix++;
+        if (!*prefix)
+        {
+            while (*ptr && *pattern && *pattern == *ptr)
+            {
+                ptr++;
+                pattern++;
+                if (*ptr == '*')
+                    return 1;
+            }
+
+            /* If complete test name match, return true */
+            if (!*pattern)
+                return 1;
+        }
+
+        ptr = begin + 1;
+    }
+}
+
+#endif /* UNITY_PARSE_COMMAND_LINE_ARGS */
 /*-----------------------------------------------*/

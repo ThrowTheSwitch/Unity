@@ -28,7 +28,9 @@ class UnityTestRunnerGenerator
       :test_prefix   => "test|spec|should",
       :setup_name    => "setUp",
       :teardown_name => "tearDown",
-      :main_name     => "main",
+      :main_name     => "main", #set to nil to automatically generate each time
+      :cmdline_args  => false,
+
     }
   end
 
@@ -257,6 +259,7 @@ class UnityTestRunnerGenerator
     output.puts("{ \\")
     output.puts("  Unity.CurrentTestName = #TestFunc#{va_args2.empty? ? '' : " \"(\" ##{va_args2} \")\""}; \\")
     output.puts("  Unity.CurrentTestLineNumber = TestLineNum; \\")
+    output.puts("  if (UnityTestMatches()) { \\") if (@options[:cmdline_args])
     output.puts("  Unity.NumberOfTests++; \\")
     output.puts("  CMock_Init(); \\") unless (used_mocks.empty?)
     output.puts("  UNITY_CLR_DETAILS(); \\") unless (used_mocks.empty?)
@@ -275,6 +278,7 @@ class UnityTestRunnerGenerator
     output.puts("  } \\")
     output.puts("  CMock_Destroy(); \\") unless (used_mocks.empty?)
     output.puts("  UnityConcludeTest(); \\")
+    output.puts("  } \\")  if (@options[:cmdline_args])
     output.puts("}\n")
   end
 
@@ -293,11 +297,18 @@ class UnityTestRunnerGenerator
 
   def create_main(output, filename, tests, used_mocks)
     output.puts("\n\n/*=======MAIN=====*/")
-    if (@options[:main_name] != "main")
-      output.puts("int #{@options[:main_name]}(void);")
+    main_name = @options[:main_name].nil? ? "main_#{filename.gsub('.c','')}" : "#{@options[:main_name]}"
+    if (main_name != "main")
+      output.puts("int #{main_name}(void);")
     end
-    output.puts("int #{@options[:main_name]}(void)")
-    output.puts("{")
+    if (@options[:cmdline_args])
+      output.puts("int #{main_name}(int argc, char** argv)")
+      output.puts("{")
+      output.puts("  UnityParseOptions(argc, argv);")
+    else
+      output.puts("int #{main_name}(void)")
+      output.puts("{")
+    end
     output.puts("  suite_setup();") unless @options[:suite_setup].nil?
     output.puts("  UnityBegin(\"#{filename.gsub(/\\/,'\\\\')}\");")
     if (@options[:use_param_tests])

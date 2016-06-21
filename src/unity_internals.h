@@ -640,6 +640,15 @@ extern const char UnityStrErr64[];
 
 #define UNITY_UNUSED(x) (void)(sizeof(x))
 
+/*-----------------------------------------------
+ * Command Line Argument Support
+ *-----------------------------------------------*/
+
+#ifdef UNITY_PARSE_COMMAND_LINE_ARGS
+int UnityParseOptions(int argc, char** argv);
+int UnityTestMatches(void);
+#endif
+
 /*-------------------------------------------------------
  * Basic Fail and Ignore
  *-------------------------------------------------------*/
