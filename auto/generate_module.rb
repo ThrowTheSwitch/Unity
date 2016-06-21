@@ -2,7 +2,7 @@
 #   Unity Project - A Test Framework for C
 #   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
 #   [Released under MIT License. Please refer to license.txt for details]
-# ========================================== 
+# ==========================================
 
 # This script creates all the files with start code necessary for a new module.
 # A simple module only requires a source file, header file, and test file.
@@ -32,20 +32,20 @@ HELP_TEXT = [ "\nGENERATE MODULE\n-------- ------",
 
 #Built in patterns
 PATTERNS = { 'src' => {''         => { :inc => [] } },
-             'dh'  => {'Driver'   => { :inc => ['%1$sHardware.h'] }, 
-                       'Hardware' => { :inc => [] } 
+             'dh'  => {'Driver'   => { :inc => ['%1$sHardware.h'] },
+                       'Hardware' => { :inc => [] }
                       },
-             'dih' => {'Driver'   => { :inc => ['%1$sHardware.h', '%1$sInterrupt.h'] }, 
+             'dih' => {'Driver'   => { :inc => ['%1$sHardware.h', '%1$sInterrupt.h'] },
                        'Interrupt'=> { :inc => ['%1$sHardware.h'] },
-                       'Hardware' => { :inc => [] } 
+                       'Hardware' => { :inc => [] }
                       },
-             'mch' => {'Model'    => { :inc => [] }, 
+             'mch' => {'Model'    => { :inc => [] },
                        'Conductor'=> { :inc => ['%1$sModel.h', '%1$sHardware.h'] },
-                       'Hardware' => { :inc => [] } 
+                       'Hardware' => { :inc => [] }
                       },
-             'mvp' => {'Model'    => { :inc => [] }, 
+             'mvp' => {'Model'    => { :inc => [] },
                        'Presenter'=> { :inc => ['%1$sModel.h', '%1$sView.h'] },
-                       'View'     => { :inc => [] } 
+                       'View'     => { :inc => [] }
                       }
            }
 
@@ -63,7 +63,7 @@ void tearDown(void)
 
 void test_%1$s_NeedToImplement(void)
 {
-    TEST_IGNORE();
+    TEST_IGNORE_MESSAGE("Need to Implement %1$s");
 }
 ]
 
@@ -91,7 +91,7 @@ ARGV.each do |arg|
     when /^(\w+)/
       raise "ERROR: You can't have more than one Module name specified!" unless @module_name.nil?
       @module_name = arg
-    when /^-(h|-help)/ 
+    when /^-(h|-help)/
       puts HELP_TEXT
       exit
     else
@@ -126,7 +126,7 @@ end
 @includes.merge!(@extra_inc) unless @extra_inc.nil?
 
 #create triad definition
-TRIAD = [ { :ext => '.c', :path => @path_src,        :template => TEMPLATE_SRC, :inc => :src, :boilerplate => @boilerplates[:src] }, 
+TRIAD = [ { :ext => '.c', :path => @path_src,        :template => TEMPLATE_SRC, :inc => :src, :boilerplate => @boilerplates[:src] },
           { :ext => '.h', :path => @path_inc,        :template => TEMPLATE_INC, :inc => :inc, :boilerplate => @boilerplates[:inc] },
           { :ext => '.c', :path => @path_tst+'Test', :template => TEMPLATE_TST, :inc => :tst, :boilerplate => @boilerplates[:tst] },
         ]
@@ -159,7 +159,7 @@ if @destroy
     file = filespec[:path]
     if File.exist?(file)
       if @update_svn
-        `svn delete \"#{file}\" --force` 
+        `svn delete \"#{file}\" --force`
         puts "File #{file} deleted and removed from source control"
       else
         FileUtils.remove(file)
@@ -182,13 +182,13 @@ end
 files.each_with_index do |file, i|
   File.open(file[:path], 'w') do |f|
     f.write(file[:boilerplate] % [file[:name]]) unless file[:boilerplate].nil?
-    f.write(file[:template] % [ file[:name], 
-                                file[:includes].map{|f| "#include \"#{f}\"\n"}.join, 
+    f.write(file[:template] % [ file[:name],
+                                file[:includes].map{|f| "#include \"#{f}\"\n"}.join,
                                 file[:name].upcase ]
            )
   end
   if (@update_svn)
-    `svn add \"#{file[:path]}\"` 
+    `svn add \"#{file[:path]}\"`
     if $?.exitstatus == 0
       puts "File #{file[:path]} created and added to source control"
     else

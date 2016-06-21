@@ -9,10 +9,7 @@
 
 /* If omitted from header, declare overrideable prototypes here so they're ready for use */
 #ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
-int UNITY_OUTPUT_CHAR(int);
-#endif
-#ifdef UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
-int UNITY_OUTPUT_FLUSH(void);
+void UNITY_OUTPUT_CHAR(int);
 #endif
 
 /* Helpful macros for us to use here */
@@ -338,7 +335,7 @@ void UnityConcludeTest(void)
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
     UNITY_PRINT_EOL();
-    UNITY_OUTPUT_FLUSH();
+    UNITY_FLUSH_CALL();
 }
 
 /*-----------------------------------------------*/
@@ -1298,7 +1295,7 @@ int UnityEnd(void)
 #endif
     }
     UNITY_PRINT_EOL();
-    UNITY_OUTPUT_FLUSH();
+    UNITY_FLUSH_CALL();
     UNITY_OUTPUT_COMPLETE();
     return (int)(Unity.TestFailures);
 }
