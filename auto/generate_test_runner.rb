@@ -22,15 +22,16 @@ class UnityTestRunnerGenerator
 
   def self.default_options
     {
-      :includes      => [],
-      :plugins       => [],
-      :framework     => :unity,
-      :test_prefix   => "test|spec|should",
-      :setup_name    => "setUp",
-      :teardown_name => "tearDown",
-      :main_name     => "main", #set to nil to automatically generate each time
-      :cmdline_args  => false,
-
+      :includes         => [],
+      :plugins          => [],
+      :framework        => :unity,
+      :test_prefix      => "test|spec|should",
+      :setup_name       => "setUp",
+      :teardown_name    => "tearDown",
+      :main_name        => "main", #set to :auto to automatically generate each time
+      :main_export_decl => "",
+      :cmdline_args     => false,
+      :use_param_tests  => false,
     }
   end
 
@@ -235,7 +236,7 @@ class UnityTestRunnerGenerator
   def create_suite_setup_and_teardown(output)
     unless (@options[:suite_setup].nil?)
       output.puts("\n/*=======Suite Setup=====*/")
-      output.puts("static int suite_setup(void)")
+      output.puts("static void suite_setup(void)")
       output.puts("{")
       output.puts(@options[:suite_setup])
       output.puts("}")
@@ -297,14 +298,38 @@ class UnityTestRunnerGenerator
 
   def create_main(output, filename, tests, used_mocks)
     output.puts("\n\n/*=======MAIN=====*/")
-    main_name = @options[:main_name].nil? ? "main_#{filename.gsub('.c','')}" : "#{@options[:main_name]}"
+    main_name = (@options[:main_name].to_sym == :auto) ? "main_#{filename.gsub('.c','')}" : "#{@options[:main_name]}"
     if (main_name != "main")
-      output.puts("int #{main_name}(void);")
+      output.puts("#{@options[:main_export_decl]} int #{main_name}(void);")
     end
     if (@options[:cmdline_args])
-      output.puts("int #{main_name}(int argc, char** argv)")
+      output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv)")
       output.puts("{")
-      output.puts("  UnityParseOptions(argc, argv);")
+      output.puts("  int parse_status = UnityParseOptions(argc, argv);")
+      output.puts("  if (parse_status != 0)")
+      output.puts("  {")
+      output.puts("    if (parse_status < 0)")
+      output.puts("    {")
+      output.puts("      UnityPrint(\"#{filename.gsub('.c','')}.\");")
+      output.puts("      UNITY_PRINT_EOL();")
+      if (@options[:use_param_tests])
+        tests.each do |test|
+          if ((test[:args].nil?) or (test[:args].empty?))
+            output.puts("      UnityPrint(\"  #{test[:test]}(RUN_TEST_NO_ARGS)\");")
+            output.puts("      UNITY_PRINT_EOL();")
+          else
+            test[:args].each do |args|
+              output.puts("      UnityPrint(\"  #{test[:test]}(#{args})\");")
+              output.puts("      UNITY_PRINT_EOL();")
+            end
+          end
+        end
+      else
+        tests.each { |test| output.puts("      UnityPrint(\"  #{test[:test]}\");\n    UNITY_PRINT_EOL();")}
+      end
+      output.puts("    }")
+      output.puts("  return 0;")
+      output.puts("  }")
     else
       output.puts("int #{main_name}(void)")
       output.puts("{")

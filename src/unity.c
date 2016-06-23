@@ -1321,7 +1321,7 @@ int UnityParseOptions(int argc, char** argv)
             switch(argv[i][1])
             {
                 case 'l': /* list tests */
-                    break;
+                    return -1;
                 case 'n': /* include tests with name including this string */
                     i++;
                     if (i < argc)

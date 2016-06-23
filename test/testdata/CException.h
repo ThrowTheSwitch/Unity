@@ -1,0 +1,6 @@
+#ifndef CEXCEPTION_H
+#define CEXCEPTION_H
+
+#define CEXCEPTION_BEING_USED 1
+
+#endif //CEXCEPTION_H
