@@ -644,7 +644,7 @@ extern const char UnityStrErr64[];
  * Command Line Argument Support
  *-----------------------------------------------*/
 
-#ifdef UNITY_PARSE_COMMAND_LINE_ARGS
+#ifdef UNITY_USE_COMMAND_LINE_ARGS
 int UnityParseOptions(int argc, char** argv);
 int UnityTestMatches(void);
 #endif

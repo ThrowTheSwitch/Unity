@@ -1303,7 +1303,7 @@ int UnityEnd(void)
 /*-----------------------------------------------
  * Command Line Argument Support
  *-----------------------------------------------*/
-#ifdef UNITY_PARSE_COMMAND_LINE_ARGS
+#ifdef UNITY_USE_COMMAND_LINE_ARGS
 
 char* UnityOptionIncludeNamed = NULL;
 char* UnityOptionExcludeNamed = NULL;
@@ -1330,6 +1330,7 @@ int UnityParseOptions(int argc, char** argv)
                     {
                         UnityPrint("ERROR: No Test String to Include Matches For");
                         UNITY_PRINT_EOL();
+                        return 1;
                     }
                     break;
                 case 'q': /* quiet */
@@ -1346,11 +1347,12 @@ int UnityParseOptions(int argc, char** argv)
                     {
                         UnityPrint("ERROR: No Test String to Exclude Matches For");
                         UNITY_PRINT_EOL();
+                        return 1;
                     }
                     break;
                 default:
                     UnityPrint("ERROR: Unknown Option ");
-                    UNITY_PRINT_CHAR(argv[i][1]);
+                    UNITY_OUTPUT_CHAR(argv[i][1]);
                     UNITY_PRINT_EOL();
                     return 1;
             }
@@ -1360,60 +1362,65 @@ int UnityParseOptions(int argc, char** argv)
     return 0;
 }
 
-int UnityTestMatches(void)
+int IsStringInBiggerString(const char* longstring, const char* shortstring)
 {
-    /* Check if this test name matches the included test pattern */
-    if (UnityOptionsIncludedNamed)
-        retval = UnityStringArgumentMatches(UnityOptionIncludedNamed);
-    else
-        retval = 1;
+    char* lptr = (char*)longstring;
+    char* sptr = (char*)shortstring;
+    char* lnext = lptr;
 
+    while (*lptr)
+    {
+        lnext = lptr + 1;
 
-    /* Check if this test name matches the excluded test pattern */
-    if (UnityOptionsExcludedNamed)
-        if (UnityStringArgumentMatches(UnityOptionExcludedNamed))
-            retval = 0;
+        /* If they current bytes match, go on to the next bytes */
+        while (*lptr && *sptr && (*lptr == *sptr))
+        {
+            lptr++;
+            sptr++;
 
-    return retval;
+            /* We're done if we match the entire string or up to a wildcard */
+            if (*sptr == '*')
+                return 1;
+            if (*sptr == 0)
+                return 1;
+        }
+
+        /* Otherwise we start in the long pointer 1 character further and try again */
+        lptr = lnext;
+        sptr = (char*)shortstring;
+    }
+    return 0;
 }
 
 int UnityStringArgumentMatches(const char* str)
 {
-    char* ptr = (char*)str;
-    while (*ptr)
-    {
-        char *begin = ptr;
-        char *pattern = (char *)Unity.CurrentTestName;
-        char *prefix  = (char *)Unity.TestFile;
-
-        /* First, find out if this is the right test case */
-        while (*ptr && *prefix && (*prefix == *ptr || *prefix == '.'))
-        {
-            ptr++;
-            prefix++;
-            if (*ptr == '*')
-                return 1;
-
-        }
-        prefix++;
-        if (!*prefix)
-        {
-            while (*ptr && *pattern && *pattern == *ptr)
-            {
-                ptr++;
-                pattern++;
-                if (*ptr == '*')
-                    return 1;
-            }
-
-            /* If complete test name match, return true */
-            if (!*pattern)
-                return 1;
-        }
-
-        ptr = begin + 1;
-    }
+    if (IsStringInBiggerString(Unity.TestFile, str))
+        return 1;
+    else if (IsStringInBiggerString(Unity.CurrentTestName, str))
+        return 1;
+    else
+        return 0;
 }
 
-#endif /* UNITY_PARSE_COMMAND_LINE_ARGS */
+int UnityTestMatches(void)
+{
+    /* Check if this test name matches the included test pattern */
+    int retval;
+    if (UnityOptionIncludeNamed)
+    {
+        retval = UnityStringArgumentMatches(UnityOptionIncludeNamed);
+    }
+    else
+        retval = 1;
+
+    /* Check if this test name matches the excluded test pattern */
+    if (UnityOptionExcludeNamed)
+    {
+        if (UnityStringArgumentMatches(UnityOptionExcludeNamed))
+            retval = 0;
+    }
+    return retval;
+}
+
+#endif /* UNITY_USE_COMMAND_LINE_ARGS */
 /*-----------------------------------------------*/

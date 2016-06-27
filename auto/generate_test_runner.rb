@@ -327,8 +327,9 @@ class UnityTestRunnerGenerator
       else
         tests.each { |test| output.puts("      UnityPrint(\"  #{test[:test]}\");\n    UNITY_PRINT_EOL();")}
       end
+      output.puts("    return 0;")
       output.puts("    }")
-      output.puts("  return 0;")
+      output.puts("  return parse_status;")
       output.puts("  }")
     else
       output.puts("int #{main_name}(void)")

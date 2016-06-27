@@ -247,6 +247,7 @@ module RakefileHelpers
       if output.match(/OK$/m).nil?
         test_results += '.testfail'
       else
+        report output if (!$verbose) #verbose already prints this line, as does a failure
         test_results += '.testpass'
       end
       File.open(test_results, 'w') { |f| f.print output }
