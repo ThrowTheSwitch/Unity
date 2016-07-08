@@ -60,6 +60,9 @@ void tearDown(void);
  * Parameterized Tests
  *     - you'll want to create a define of TEST_CASE(...) which basically evaluates to nothing
 
+ * Tests with Arguments
+ *     - you'll want to define UNITY_USE_COMMAND_LINE_ARGS if you have the test runner passing arguments to Unity
+
  *-------------------------------------------------------
  * Basic Fail and Ignore
  *-------------------------------------------------------*/
