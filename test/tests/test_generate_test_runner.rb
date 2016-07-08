@@ -756,6 +756,24 @@ RUNNER_TESTS = [
     }
   },
 
+  { :name => 'ArgsNameFilterTestAndShould',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n should_,test_",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses',
+                    'test_NotBeConfusedByLongComplicatedStrings',
+                    'test_NotDisappearJustBecauseTheTestBeforeAndAfterHaveCrazyStrings',
+                    'test_StillNotBeConfusedByLongComplicatedStrings',
+                    'should_RunTestsStartingWithShouldByDefault' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
   { :name => 'ArgsExcludeFilterJustTest',
     :testfile => 'testdata/testRunnerGenerator.c',
     :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
@@ -802,6 +820,76 @@ RUNNER_TESTS = [
     :cmdline_args => "-n ThisTestAlwaysPasses",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsIncludeSingleTestInSpecificFile',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n testRunnerGenerator:ThisTestAlwaysPasses",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsIncludeTestFileWithExtension',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n testRunnerGenerator.c:ThisTestAlwaysPasses",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsIncludeDoubleQuotes',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n \"testRunnerGenerator:ThisTestAlwaysPasses,test_ThisTestAlwaysFails\"",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsIncludeSingleQuotes',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n 'testRunnerGenerator:ThisTestAlwaysPasses,test_ThisTestAlwaysFails'",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsIncludeAValidTestForADifferentFile',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n AnotherFile:ThisTestDoesNotExist",
+    :expected => {
+      :to_pass => [ ],
       :to_fail => [ ],
       :to_ignore => [ ],
     }
@@ -854,6 +942,20 @@ RUNNER_TESTS = [
                   ],
       :to_fail => [ 'test_ThisTestAlwaysFails' ],
       :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
+  { :name => 'ArgsIncludeWithAlternateFlag',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-f=\"testRunnerGenerator:ThisTestAlwaysPasses,test_ThisTestAlwaysFails\"",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ ],
     }
   },
 

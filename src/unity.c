@@ -1323,8 +1323,10 @@ int UnityParseOptions(int argc, char** argv)
                 case 'l': /* list tests */
                     return -1;
                 case 'n': /* include tests with name including this string */
-                    i++;
-                    if (i < argc)
+                case 'f': /* an alias for -n */
+                    if (argv[i][2] == '=')
+                        UnityOptionIncludeNamed = &argv[i][3];
+                    else if (++i < argc)
                         UnityOptionIncludeNamed = argv[i];
                     else
                     {
@@ -1340,8 +1342,9 @@ int UnityParseOptions(int argc, char** argv)
                     UnityVerbosity = 2;
                     break;
                 case 'x': /* exclude tests with name including this string */
-                    i++;
-                    if (i < argc)
+                    if (argv[i][2] == '=')
+                        UnityOptionExcludeNamed = &argv[i][3];
+                    else if (++i < argc)
                         UnityOptionExcludeNamed = argv[i];
                     else
                     {
@@ -1381,6 +1384,14 @@ int IsStringInBiggerString(const char* longstring, const char* shortstring)
             /* We're done if we match the entire string or up to a wildcard */
             if (*sptr == '*')
                 return 1;
+            if (*sptr == ',')
+                return 1;
+            if (*sptr == '"')
+                return 1;
+            if (*sptr == '\'')
+                return 1;
+            if (*sptr == ':')
+                return 2;
             if (*sptr == 0)
                 return 1;
         }
@@ -1394,12 +1405,46 @@ int IsStringInBiggerString(const char* longstring, const char* shortstring)
 
 int UnityStringArgumentMatches(const char* str)
 {
-    if (IsStringInBiggerString(Unity.TestFile, str))
-        return 1;
-    else if (IsStringInBiggerString(Unity.CurrentTestName, str))
-        return 1;
-    else
-        return 0;
+    int retval;
+    const char* ptr1;
+    const char* ptr2;
+
+    //Go through the options and get the substrings for matching one at a time
+    ptr1 = str;
+    while (ptr1[0] != 0)
+    {
+        if ((ptr1[0] == '"') || (ptr1[0] == '\''))
+            ptr1++;
+
+        //look for the start of the next partial
+        ptr2 = ptr1;
+        do {
+            ptr2++;
+        } while ((ptr2[0] != 0) && (ptr2[0] != ':') && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','));
+        while ((ptr2[0] == ':') || (ptr2[0] == '\'') || (ptr2[0] == '"') || (ptr2[0] == ','))
+            ptr2++;
+
+        //done if complete filename match
+        retval = IsStringInBiggerString(Unity.TestFile, ptr1);
+        if (retval == 1)
+            return retval;
+
+        //done if testname match after filename partial match
+        if (retval == 2)
+        {
+            if (IsStringInBiggerString(Unity.CurrentTestName, ptr2))
+                return 1;
+        }
+
+        //done if complete testname match
+        if (IsStringInBiggerString(Unity.CurrentTestName, ptr1) == 1)
+            return 1;
+
+        ptr1 = ptr2;
+    }
+
+    //we couldn't find a match for any substrings
+    return 0;
 }
 
 int UnityTestMatches(void)
