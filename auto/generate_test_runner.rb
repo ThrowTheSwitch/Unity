@@ -299,10 +299,10 @@ class UnityTestRunnerGenerator
   def create_main(output, filename, tests, used_mocks)
     output.puts("\n\n/*=======MAIN=====*/")
     main_name = (@options[:main_name].to_sym == :auto) ? "main_#{filename.gsub('.c','')}" : "#{@options[:main_name]}"
-    if (main_name != "main")
-      output.puts("#{@options[:main_export_decl]} int #{main_name}(void);")
-    end
     if (@options[:cmdline_args])
+      if (main_name != "main")
+        output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv);")
+      end
       output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv)")
       output.puts("{")
       output.puts("  int parse_status = UnityParseOptions(argc, argv);")
@@ -332,6 +332,9 @@ class UnityTestRunnerGenerator
       output.puts("  return parse_status;")
       output.puts("  }")
     else
+      if (main_name != "main")
+        output.puts("#{@options[:main_export_decl]} int #{main_name}(void);")
+      end
       output.puts("int #{main_name}(void)")
       output.puts("{")
     end
