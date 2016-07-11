@@ -36,12 +36,14 @@ static const char UnityStrDelta[]                  = " Values Not Within Delta "
 static const char UnityStrPointless[]              = " You Asked Me To Compare Nothing, Which Was Pointless.";
 static const char UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
 static const char UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
+#ifndef UNITY_EXCLUDE_FLOAT
 static const char UnityStrNot[]                    = "Not ";
 static const char UnityStrInf[]                    = "Infinity";
 static const char UnityStrNegInf[]                 = "Negative Infinity";
 static const char UnityStrNaN[]                    = "NaN";
 static const char UnityStrDet[]                    = "Determinate";
 static const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
+#endif
 const char UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
 const char UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
 const char UnityStrErr64[]                         = "Unity 64-bit Support Disabled";
