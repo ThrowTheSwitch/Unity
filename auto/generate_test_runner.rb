@@ -299,7 +299,7 @@ class UnityTestRunnerGenerator
     output.puts("int #{@options[:main_name]}(void)")
     output.puts("{")
     output.puts("  suite_setup();") unless @options[:suite_setup].nil?
-    output.puts("  UnityBegin(\"#{filename.gsub(/\\/,'\\\\')}\");")
+    output.puts("  UnityBegin(\"#{filename.gsub(/\\/,'\\\\\\')}\");")
     if (@options[:use_param_tests])
       tests.each do |test|
         if ((test[:args].nil?) or (test[:args].empty?))
