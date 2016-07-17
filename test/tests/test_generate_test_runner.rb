@@ -774,6 +774,82 @@ RUNNER_TESTS = [
     }
   },
 
+  { :name => 'ArgsNameFilterWithWildcardOnFile',
+    :testfile => 'testdata/testRunnerGeneratorSmall.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n testRunnerGeneratorSma*",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses',
+                    'spec_ThisTestPassesWhenNormalSetupRan',
+                    'spec_ThisTestPassesWhenNormalTeardownRan' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
+  { :name => 'ArgsNameFilterWithWildcardAsName',
+    :testfile => 'testdata/testRunnerGeneratorSmall.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n testRunnerGeneratorSmall:*",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses',
+                    'spec_ThisTestPassesWhenNormalSetupRan',
+                    'spec_ThisTestPassesWhenNormalTeardownRan' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
+  { :name => 'ArgsNameFilterWithWildcardOnName',
+    :testfile => 'testdata/testRunnerGeneratorSmall.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n testRunnerGeneratorSmall:test_*",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
+  { :name => 'ArgsNameFilterWithWildcardAndShortName',
+    :testfile => 'testdata/testRunnerGeneratorSmall.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n testRunnerGeneratorSmall:te*",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
+  { :name => 'ArgsNameFilterWithWildcardOnBoth',
+    :testfile => 'testdata/testRunnerGeneratorSmall.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n testRunnerGeneratorSm*:*",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses',
+                    'spec_ThisTestPassesWhenNormalSetupRan',
+                    'spec_ThisTestPassesWhenNormalTeardownRan' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
   { :name => 'ArgsExcludeFilterJustTest',
     :testfile => 'testdata/testRunnerGenerator.c',
     :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],

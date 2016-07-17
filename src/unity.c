@@ -1371,6 +1371,9 @@ int IsStringInBiggerString(const char* longstring, const char* shortstring)
     char* sptr = (char*)shortstring;
     char* lnext = lptr;
 
+    if (*sptr == '*')
+        return 1;
+
     while (*lptr)
     {
         lnext = lptr + 1;
@@ -1408,6 +1411,7 @@ int UnityStringArgumentMatches(const char* str)
     int retval;
     const char* ptr1;
     const char* ptr2;
+    const char* ptrf;
 
     //Go through the options and get the substrings for matching one at a time
     ptr1 = str;
@@ -1418,10 +1422,13 @@ int UnityStringArgumentMatches(const char* str)
 
         //look for the start of the next partial
         ptr2 = ptr1;
+        ptrf = 0;
         do {
             ptr2++;
-        } while ((ptr2[0] != 0) && (ptr2[0] != ':') && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','));
-        while ((ptr2[0] == ':') || (ptr2[0] == '\'') || (ptr2[0] == '"') || (ptr2[0] == ','))
+            if ((ptr2[0] == ':') && (ptr2[1] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','))
+                ptrf = &ptr2[1];
+        } while ((ptr2[0] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','));
+        while ((ptr2[0] != 0) && ((ptr2[0] == ':') || (ptr2[0] == '\'') || (ptr2[0] == '"') || (ptr2[0] == ',')))
             ptr2++;
 
         //done if complete filename match
@@ -1430,9 +1437,9 @@ int UnityStringArgumentMatches(const char* str)
             return retval;
 
         //done if testname match after filename partial match
-        if (retval == 2)
+        if ((retval == 2) && (ptrf != 0))
         {
-            if (IsStringInBiggerString(Unity.CurrentTestName, ptr2))
+            if (IsStringInBiggerString(Unity.CurrentTestName, ptrf))
                 return 1;
         }
 
