@@ -207,7 +207,9 @@ void* unity_malloc(size_t size)
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, sizeof(end));
 
+#ifndef UNITY_EXCLUDE_STDLIB_MALLOC
     free(guard);
+#endif
     return (void*)mem;
 }
 
