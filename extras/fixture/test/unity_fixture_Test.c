@@ -527,7 +527,6 @@ TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
     TEST_ASSERT_NULL(out_of_mem);
     TEST_ASSERT_NOT_EQUAL(n2, n1);
     free(n2);
-    free(n1);
     free(m);
 #endif
 }
