@@ -2275,6 +2275,14 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     TEST_ASSERT_EQUAL(1, failures);
 }
 
+void testCstringsEscapeSequence(void)
+{
+    startPutcharSpy();
+    UnityPrint("\x16\x10");
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL_STRING("\\x16\\x10", getBufferPutcharSpy());
+}
+
 #define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
         startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
