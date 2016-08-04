@@ -106,6 +106,7 @@ void UnityPrint(const char* string)
             else
             {
                 UNITY_OUTPUT_CHAR('\\');
+                UNITY_OUTPUT_CHAR('x');
                 UnityPrintNumberHex((_U_UINT)*pch, 2);
             }
             pch++;
@@ -143,6 +144,7 @@ void UnityPrintLen(const char* string, const _UU32 length)
             else
             {
                 UNITY_OUTPUT_CHAR('\\');
+                UNITY_OUTPUT_CHAR('x');
                 UnityPrintNumberHex((_U_UINT)*pch, 2);
             }
             pch++;
@@ -163,6 +165,8 @@ void UnityPrintNumberByStyle(const _U_SINT number, const UNITY_DISPLAY_STYLE_T s
     }
     else
     {
+        UNITY_OUTPUT_CHAR('0');
+        UNITY_OUTPUT_CHAR('x');
         UnityPrintNumberHex((_U_UINT)number, (char)((style & 0x000F) << 1));
     }
 }
@@ -207,8 +211,6 @@ void UnityPrintNumberHex(const _U_UINT number, const char nibbles_to_print)
 {
     _U_UINT nibble;
     char nibbles = nibbles_to_print;
-    UNITY_OUTPUT_CHAR('0');
-    UNITY_OUTPUT_CHAR('x');
 
     while (nibbles > 0)
     {
