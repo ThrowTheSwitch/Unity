@@ -92,12 +92,12 @@ module RakefileHelpers
     end
   end
 
-  def build_compiler_fields
+  def build_compiler_fields(inject_defines)
     command  = tackit($cfg['compiler']['path'])
     if $cfg['compiler']['defines']['items'].nil?
       defines  = ''
     else
-      defines  = squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=putcharSpy'])
+      defines  = squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=putcharSpy'] + inject_defines)
     end
     options  = squash('', $cfg['compiler']['options'])
     includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
@@ -106,7 +106,8 @@ module RakefileHelpers
   end
 
   def compile(file, defines=[])
-    compiler = build_compiler_fields
+    compiler = build_compiler_fields(defines)
+    defines  =
     cmd_str  = "#{compiler[:command]}#{compiler[:defines]}#{compiler[:options]}#{compiler[:includes]} #{file} " +
                "#{$cfg['compiler']['object_files']['prefix']}#{$cfg['compiler']['object_files']['destination']}"
     obj_file = "#{File.basename(file, C_EXTENSION)}#{$cfg['compiler']['object_files']['extension']}"
@@ -160,11 +161,11 @@ module RakefileHelpers
     return {:command => command, :pre_support => pre_support, :post_support => post_support}
   end
 
-  def execute(command_string, verbose=true)
-    report command_string
+  def execute(command_string, ok_to_fail=false)
+    report command_string if $verbose
     output = `#{command_string}`.chomp
-    report(output) if (verbose && !output.nil? && (output.length > 0))
-    if $?.exitstatus != 0
+    report(output) if ($verbose && !output.nil? && (output.length > 0))
+    if (($?.exitstatus != 0) && !ok_to_fail)
       raise "Command failed. (Returned #{$?.exitstatus})"
     end
     return output
@@ -246,6 +247,7 @@ module RakefileHelpers
       if output.match(/OK$/m).nil?
         test_results += '.testfail'
       else
+        report output if (!$verbose) #verbose already prints this line, as does a failure
         test_results += '.testpass'
       end
       File.open(test_results, 'w') { |f| f.print output }

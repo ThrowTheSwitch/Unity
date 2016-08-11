@@ -5,6 +5,7 @@
 # ==========================================
 
 UNITY_ROOT = File.expand_path(File.dirname(__FILE__)) + '/'
+$verbose = false
 
 require 'rake'
 require 'rake/clean'
@@ -57,4 +58,8 @@ end
 
 task :no_color do
   $colour_output = false
+end
+
+task :verbose do
+  $verbose = true
 end

@@ -22,13 +22,16 @@ class UnityTestRunnerGenerator
 
   def self.default_options
     {
-      :includes      => [],
-      :plugins       => [],
-      :framework     => :unity,
-      :test_prefix   => "test|spec|should",
-      :setup_name    => "setUp",
-      :teardown_name => "tearDown",
-      :main_name     => "main",
+      :includes         => [],
+      :plugins          => [],
+      :framework        => :unity,
+      :test_prefix      => "test|spec|should",
+      :setup_name       => "setUp",
+      :teardown_name    => "tearDown",
+      :main_name        => "main", #set to :auto to automatically generate each time
+      :main_export_decl => "",
+      :cmdline_args     => false,
+      :use_param_tests  => false,
     }
   end
 
@@ -233,7 +236,7 @@ class UnityTestRunnerGenerator
   def create_suite_setup_and_teardown(output)
     unless (@options[:suite_setup].nil?)
       output.puts("\n/*=======Suite Setup=====*/")
-      output.puts("static int suite_setup(void)")
+      output.puts("static void suite_setup(void)")
       output.puts("{")
       output.puts(@options[:suite_setup])
       output.puts("}")
@@ -257,6 +260,7 @@ class UnityTestRunnerGenerator
     output.puts("{ \\")
     output.puts("  Unity.CurrentTestName = #TestFunc#{va_args2.empty? ? '' : " \"(\" ##{va_args2} \")\""}; \\")
     output.puts("  Unity.CurrentTestLineNumber = TestLineNum; \\")
+    output.puts("  if (UnityTestMatches()) { \\") if (@options[:cmdline_args])
     output.puts("  Unity.NumberOfTests++; \\")
     output.puts("  CMock_Init(); \\") unless (used_mocks.empty?)
     output.puts("  UNITY_CLR_DETAILS(); \\") unless (used_mocks.empty?)
@@ -275,6 +279,7 @@ class UnityTestRunnerGenerator
     output.puts("  } \\")
     output.puts("  CMock_Destroy(); \\") unless (used_mocks.empty?)
     output.puts("  UnityConcludeTest(); \\")
+    output.puts("  } \\")  if (@options[:cmdline_args])
     output.puts("}\n")
   end
 
@@ -293,11 +298,46 @@ class UnityTestRunnerGenerator
 
   def create_main(output, filename, tests, used_mocks)
     output.puts("\n\n/*=======MAIN=====*/")
-    if (@options[:main_name] != "main")
-      output.puts("int #{@options[:main_name]}(void);")
+    main_name = (@options[:main_name].to_sym == :auto) ? "main_#{filename.gsub('.c','')}" : "#{@options[:main_name]}"
+    if (@options[:cmdline_args])
+      if (main_name != "main")
+        output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv);")
+      end
+      output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv)")
+      output.puts("{")
+      output.puts("  int parse_status = UnityParseOptions(argc, argv);")
+      output.puts("  if (parse_status != 0)")
+      output.puts("  {")
+      output.puts("    if (parse_status < 0)")
+      output.puts("    {")
+      output.puts("      UnityPrint(\"#{filename.gsub('.c','')}.\");")
+      output.puts("      UNITY_PRINT_EOL();")
+      if (@options[:use_param_tests])
+        tests.each do |test|
+          if ((test[:args].nil?) or (test[:args].empty?))
+            output.puts("      UnityPrint(\"  #{test[:test]}(RUN_TEST_NO_ARGS)\");")
+            output.puts("      UNITY_PRINT_EOL();")
+          else
+            test[:args].each do |args|
+              output.puts("      UnityPrint(\"  #{test[:test]}(#{args})\");")
+              output.puts("      UNITY_PRINT_EOL();")
+            end
+          end
+        end
+      else
+        tests.each { |test| output.puts("      UnityPrint(\"  #{test[:test]}\");\n    UNITY_PRINT_EOL();")}
+      end
+      output.puts("    return 0;")
+      output.puts("    }")
+      output.puts("  return parse_status;")
+      output.puts("  }")
+    else
+      if (main_name != "main")
+        output.puts("#{@options[:main_export_decl]} int #{main_name}(void);")
+      end
+      output.puts("int #{main_name}(void)")
+      output.puts("{")
     end
-    output.puts("int #{@options[:main_name]}(void)")
-    output.puts("{")
     output.puts("  suite_setup();") unless @options[:suite_setup].nil?
     output.puts("  UnityBegin(\"#{filename.gsub(/\\/,'\\\\\\')}\");")
     if (@options[:use_param_tests])
