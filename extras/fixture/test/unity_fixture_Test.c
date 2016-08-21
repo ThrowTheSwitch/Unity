@@ -523,14 +523,11 @@ TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
     void* n1 = malloc(10);
     void* out_of_mem = realloc(n1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
     void* n2 = malloc(10);
-    TEST_ASSERT_NOT_NULL(m);
-    if (out_of_mem == NULL)
-    {
-        free(n1);
-        TEST_ASSERT_NULL(out_of_mem);
-    }
-    TEST_ASSERT_NOT_EQUAL(n2, n1);
     free(n2);
+    if (out_of_mem == NULL) free(n1);
     free(m);
+    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT_NULL(out_of_mem);
+    TEST_ASSERT_NOT_EQUAL(n2, n1);
 #endif
 }
