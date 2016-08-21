@@ -207,9 +207,6 @@ void* unity_malloc(size_t size)
     mem = (char*)&(guard[1]);
     memcpy(&mem[size], end, sizeof(end));
 
-#ifndef UNITY_FIXTURE_MALLOC_OVERRIDES_H_
-    free(guard);
-#endif
     return (void*)mem;
 }
 
