@@ -488,9 +488,9 @@ TEST(InternalMalloc, MallocPastBufferFails)
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
     void* n = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    free(m);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
-    free(m);
 #endif
 }
 
@@ -499,9 +499,9 @@ TEST(InternalMalloc, CallocPastBufferFails)
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
     void* n = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    free(m);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
-    free(m);
 #endif
 }
 
@@ -510,9 +510,9 @@ TEST(InternalMalloc, MallocThenReallocGrowsMemoryInPlace)
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
     void* n = realloc(m, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 9);
+    free(n);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_EQUAL(m, n);
-    free(n);
 #endif
 }
 
@@ -526,8 +526,9 @@ TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
     free(n2);
     if (out_of_mem == NULL) free(n1);
     free(m);
-    TEST_ASSERT_NOT_NULL(m);
-    TEST_ASSERT_NULL(out_of_mem);
-    TEST_ASSERT_NOT_EQUAL(n2, n1);
+
+    TEST_ASSERT_NOT_NULL(m);       // Got a real memory location
+    TEST_ASSERT_NULL(out_of_mem);  // The realloc should have failed
+    TEST_ASSERT_NOT_EQUAL(n2, n1); // If n1 != n2 then realloc did not free n1
 #endif
 }
