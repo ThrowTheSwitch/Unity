@@ -1142,7 +1142,6 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
 
     while (elements--)
     {
-        /* /////////////////////////////////// */
         bytes = length;
         while (bytes--)
         {
@@ -1167,8 +1166,6 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
             ptr_exp = (UNITY_INTERNAL_PTR)((_UP)ptr_exp + 1);
             ptr_act = (UNITY_INTERNAL_PTR)((_UP)ptr_act + 1);
         }
-        /* /////////////////////////////////// */
-
     }
 }
 
@@ -1413,14 +1410,14 @@ int UnityStringArgumentMatches(const char* str)
     const char* ptr2;
     const char* ptrf;
 
-    //Go through the options and get the substrings for matching one at a time
+    /* Go through the options and get the substrings for matching one at a time */
     ptr1 = str;
     while (ptr1[0] != 0)
     {
         if ((ptr1[0] == '"') || (ptr1[0] == '\''))
             ptr1++;
 
-        //look for the start of the next partial
+        /* look for the start of the next partial */
         ptr2 = ptr1;
         ptrf = 0;
         do {
@@ -1431,26 +1428,26 @@ int UnityStringArgumentMatches(const char* str)
         while ((ptr2[0] != 0) && ((ptr2[0] == ':') || (ptr2[0] == '\'') || (ptr2[0] == '"') || (ptr2[0] == ',')))
             ptr2++;
 
-        //done if complete filename match
+        /* done if complete filename match */
         retval = IsStringInBiggerString(Unity.TestFile, ptr1);
         if (retval == 1)
             return retval;
 
-        //done if testname match after filename partial match
+        /* done if testname match after filename partial match */
         if ((retval == 2) && (ptrf != 0))
         {
             if (IsStringInBiggerString(Unity.CurrentTestName, ptrf))
                 return 1;
         }
 
-        //done if complete testname match
+        /* done if complete testname match */
         if (IsStringInBiggerString(Unity.CurrentTestName, ptr1) == 1)
             return 1;
 
         ptr1 = ptr2;
     }
 
-    //we couldn't find a match for any substrings
+    /* we couldn't find a match for any substrings */
     return 0;
 }
 
