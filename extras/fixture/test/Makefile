@@ -38,10 +38,10 @@ noStdlibMalloc: $(BUILD_DIR)
 	@ echo "build with noStdlibMalloc"
 	./$(TARGET)
 
-clang89: ../build/
-	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32 -std=c89 -Wno-comment
+C89: ../build/
+	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32 -std=c89
 	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32 \
-		-D UNITY_EXCLUDE_STDLIB_MALLOC -std=c89 -Wno-comment ; ./$(TARGET)
+		-D UNITY_EXCLUDE_STDLIB_MALLOC -std=c89 ; ./$(TARGET)
 
 clangEverything:
 	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -Weverything

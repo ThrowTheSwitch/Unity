@@ -1,9 +1,9 @@
-//- Copyright (c) 2010 James Grenning and Contributed to Unity Project
-/* ==========================================
-    Unity Project - A Test Framework for C
-    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
-    [Released under MIT License. Please refer to license.txt for details]
-========================================== */
+/* Copyright (c) 2010 James Grenning and Contributed to Unity Project
+ * ==========================================
+ *  Unity Project - A Test Framework for C
+ *  Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+ *  [Released under MIT License. Please refer to license.txt for details]
+ * ========================================== */
 
 #include <string.h>
 #include "unity_fixture.h"
@@ -11,9 +11,9 @@
 
 struct _UnityFixture UnityFixture;
 
-//If you decide to use the function pointer approach.
-//Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>
-//int (*outputChar)(int) = putchar;
+/* If you decide to use the function pointer approach.
+ * Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>
+ * int (*outputChar)(int) = putchar; */
 
 #if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
 void setUp(void)    { /*does nothing*/ }
@@ -123,9 +123,8 @@ void UnityIgnoreTest(const char* printableName, const char* group, const char* n
 }
 
 
-//-------------------------------------------------
-//Malloc and free stuff
-//
+/*------------------------------------------------- */
+/* Malloc and free stuff */
 #define MALLOC_DONT_FAIL -1
 static int malloc_count;
 static int malloc_fail_countdown = MALLOC_DONT_FAIL;
@@ -150,8 +149,8 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
     malloc_fail_countdown = countdown;
 }
 
-// These definitions are always included from unity_fixture_malloc_overrides.h
-// We undef to use them or avoid conflict with <stdlib.h> per the C standard
+/* These definitions are always included from unity_fixture_malloc_overrides.h */
+/* We undef to use them or avoid conflict with <stdlib.h> per the C standard */
 #undef malloc
 #undef free
 #undef calloc
@@ -282,24 +281,24 @@ void* unity_realloc(void* oldMem, size_t size)
 
     if (guard->size >= size) return oldMem;
 
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC // Optimization if memory is expandable
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC /* Optimization if memory is expandable */
     if (oldMem == unity_heap + heap_index - guard->size - sizeof(end) &&
         heap_index + size - guard->size <= UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
-        release_memory(oldMem); // Not thread-safe, like unity_heap generally
-        return unity_malloc(size); // No memcpy since data is in place
+        release_memory(oldMem); /* Not thread-safe, like unity_heap generally */
+        return unity_malloc(size); /* No memcpy since data is in place */
     }
 #endif
     newMem = unity_malloc(size);
-    if (newMem == NULL) return NULL; // Do not release old memory
+    if (newMem == NULL) return NULL; /* Do not release old memory */
     memcpy(newMem, oldMem, guard->size);
     release_memory(oldMem);
     return newMem;
 }
 
 
-//--------------------------------------------------------
-//Automatic pointer restoration functions
+/*-------------------------------------------------------- */
+/*Automatic pointer restoration functions */
 struct PointerPair
 {
     void** pointer;
@@ -393,7 +392,7 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
                 }
             }
         } else {
-            // ignore unknown parameter
+            /* ignore unknown parameter */
             i++;
         }
     }
@@ -415,7 +414,7 @@ void UnityConcludeFixtureTest(void)
             UNITY_PRINT_EOL();
         }
     }
-    else // Unity.CurrentTestFailed
+    else /* Unity.CurrentTestFailed */
     {
         Unity.TestFailures++;
         UNITY_PRINT_EOL();
