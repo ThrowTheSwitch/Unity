@@ -2838,9 +2838,7 @@ void testFloatsNotEqualBothInf(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 1.0f / f_zero);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -3370,9 +3368,7 @@ void testDoublesNotEqualBothInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
-    VERIFY_FAILS_END
 #endif
 }
 

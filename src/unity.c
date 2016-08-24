@@ -683,6 +683,8 @@ void UnityAssertFloatsWithin(const _UF delta,
 
     UNITY_SKIP_EXECUTION;
 
+    if (expected == actual) return;
+
     if (diff < 0.0f)
     {
         diff = 0.0f - diff;
@@ -843,6 +845,8 @@ void UnityAssertDoublesWithin(const _UD delta,
     _UD pos_delta = delta;
 
     UNITY_SKIP_EXECUTION;
+
+    if (expected == actual) return;
 
     if (diff < 0.0)
     {
