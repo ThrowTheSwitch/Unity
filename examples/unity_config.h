@@ -1,5 +1,6 @@
 /* Unity Configuration
  * As of May 11th, 2016 at ThrowTheSwitch/Unity commit 837c529
+ * Update: August 25th, 2016
  * See Also: Unity/docs/UnityConfigurationGuide.pdf
  *
  * Unity is designed to run on almost anything that is targeted by a C compiler.
@@ -53,30 +54,21 @@ extern "C"
  * automatically.
  **************************************************************************** */
 
-/* The first thing that Unity does to guess your types is check `stdint.h`. This
- * file includes defines like `UINT_MAX` that Unity can make use of to learn a
- * lot about your system. It's possible you don't want it to do this or it's
+/* The first attempt to guess your types is to check `limits.h`. Some compilers
+ * that don't support `stdint.h` could include `limits.h`. If you don't
+ * want Unity to check this file, define this to make it skip the inclusion.
+ * Unity looks at UINT_MAX & ULONG_MAX, which were available since C89.
+ */
+/* #define UNITY_EXCLUDE_LIMITS_H */
+
+/* The second thing that Unity does to guess your types is check `stdint.h`.
+ * This file defines `UINTPTR_MAX`, since C99, that Unity can make use of to
+ * learn about your system. It's possible you don't want it to do this or it's
  * possible that your system doesn't support `stdint.h`. If that's the case,
  * you're going to want to define this. That way, Unity will know to skip the
  * inclusion of this file and you won't be left with a compiler error.
  */
 /* #define UNITY_EXCLUDE_STDINT_H */
-
-/* The second attempt to guess your types is to check `limits.h`. Some compilers
- * that don't support `stdint.h` could include `limits.h` instead. If you don't
- * want Unity to check this file either, define this to make it skip the
- * inclusion.
- */
-/* #define UNITY_EXCLUDE_LIMITS_H */
-
-/* The third and final attempt to guess your types is to use the `sizeof()`
- * operator. Even if the first two options don't work, this one covers most
- * cases. There _is_ a rare compiler or two out there that doesn't support
- * `sizeof()` in the preprocessing stage, though. For these, you have the
- * ability to disable this feature as well.
- */
-/* #define UNITY_EXCLUDE_SIZEOF */
-
 
 /* ********************** MANUAL INTEGER TYPE DEFINITION ***********************
  * If you've disabled all of the automatic options above, you're going to have

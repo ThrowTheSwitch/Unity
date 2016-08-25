@@ -34,7 +34,7 @@
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
 
-/* Determine the size of an int, if not already specificied.
+/* Determine the size of an int, if not already specified.
  * We cannot use sizeof(int), because it is not yet defined
  * at this stage in the translation of the C program.
  * Therefore, infer it from UINT_MAX if possible. */
@@ -440,7 +440,7 @@ void UnityPrintFloat(const _UF number);
 #endif
 
 /*-------------------------------------------------------
- * Test Assertion Fuctions
+ * Test Assertion Functions
  *-------------------------------------------------------
  *  Use the macros below this section instead of calling
  *  these directly. The macros have a consistent naming
