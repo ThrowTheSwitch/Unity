@@ -1,9 +1,9 @@
-CC ?= gcc
+CC = gcc
 ifeq ($(shell uname -s), Darwin)
-CC ?= clang
+CC = clang
 endif
 #DEBUG = -O0 -g
-CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror -Wredundant-decls
+CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 CFLAGS += $(DEBUG)
 DEFINES =  -D UNITY_OUTPUT_CHAR=putcharSpy
 DEFINES += -D UNITY_SUPPORT_64 -D UNITY_INCLUDE_DOUBLE -D UNITY_NO_WEAK
@@ -14,10 +14,9 @@ BUILD_DIR = build
 TARGET = build/testunity-cov.exe
 
 # To generate coverage, call 'make -s', the default target runs.
-# To see missing coverage, follow up with 'make uncovered'.
 # For verbose output of all the tests, run 'make test'.
 default: coverage
-.PHONY: default coverage uncovered test clean
+.PHONY: default coverage test clean
 coverage: $(BUILD_DIR)/testunityRunner.c
 	cd $(BUILD_DIR) && \
 	$(CC) $(CFLAGS) $(DEFINES) $(foreach i,$(SRC), ../$i) $(COV_FLAGS) -o ../$(TARGET)
@@ -28,8 +27,8 @@ coverage: $(BUILD_DIR)/testunityRunner.c
 	grep '###' $(BUILD_DIR)/unity.c.gcov -C2 || true
 
 test: CFLAGS += -Wbad-function-cast -Wcast-qual -Wconversion -Wformat=2 -Wold-style-definition \
--Wpointer-arith -Wshadow -Wstrict-overflow=5 -Wstrict-prototypes -Wswitch-default -Wundef      \
--Wunreachable-code -Wunused -fstrict-aliasing
+-Wpointer-arith -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wstrict-prototypes             \
+-Wswitch-default -Wundef -Wunreachable-code -Wunused -fstrict-aliasing
 test: $(BUILD_DIR)/testunityRunner.c
 	$(CC) $(CFLAGS) $(DEFINES) $(INC_DIR) $(SRC) -o $(TARGET)
 	./$(TARGET)
