@@ -27,12 +27,11 @@ void tearDown(void);
  *     - Unity attempts to automatically discover your integer sizes
  *       - define UNITY_EXCLUDE_STDINT_H to stop attempting to look in <stdint.h>
  *       - define UNITY_EXCLUDE_LIMITS_H to stop attempting to look in <limits.h>
- *       - define UNITY_EXCLUDE_SIZEOF to stop attempting to use sizeof in macros
  *     - If you cannot use the automatic methods above, you can force Unity by using these options:
  *       - define UNITY_SUPPORT_64
- *       - define UNITY_INT_WIDTH
- *       - UNITY_LONG_WIDTH
- *       - UNITY_POINTER_WIDTH
+ *       - set UNITY_INT_WIDTH
+ *       - set UNITY_LONG_WIDTH
+ *       - set UNITY_POINTER_WIDTH
 
  * Floats
  *     - define UNITY_EXCLUDE_FLOAT to disallow floating point comparisons
