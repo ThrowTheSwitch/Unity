@@ -257,7 +257,7 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 # endif
 #endif
 
-void UnityPrintFloat(_UF number)
+void UnityPrintFloat(_UD number)
 {
     char TempBuffer[UNITY_VERBOSE_NUMBER_MAX_LENGTH + 1];
     snprintf(TempBuffer, sizeof(TempBuffer), "%.6f", number);
