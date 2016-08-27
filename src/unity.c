@@ -52,12 +52,6 @@ static const char UnityStrResultsIgnored[]         = " Ignored ";
 static const char UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
 static const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
 
-#ifdef UNITY_FLOAT_NEEDS_ZERO
-/* Dividing by these constants produces +/- infinity.
- * The rationale is given in UnityAssertFloatIsInf's body. */
-static const _UF f_zero = 0.0f;
-#endif
-
 /* compiler-generic print formatting masks */
 static const _U_UINT UnitySizeMask[] =
 {
@@ -718,8 +712,6 @@ void UnityAssertFloatSpecial(const _UF actual,
 
     switch(style)
     {
-        /* To determine Inf / Neg Inf, we compare to an Inf / Neg Inf value we create on the fly
-         * We are using a variable to hold the zero value because some compilers complain about dividing by zero otherwise */
         case UNITY_FLOAT_IS_INF:
         case UNITY_FLOAT_IS_NOT_INF:
             is_trait = isinf(actual) & ispos(actual);
@@ -729,7 +721,6 @@ void UnityAssertFloatSpecial(const _UF actual,
             is_trait = isinf(actual) & isneg(actual);
             break;
 
-        /* NaN is the only floating point value that does NOT equal itself. Therefore if Actual == Actual, then it is NOT NaN. */
         case UNITY_FLOAT_IS_NAN:
         case UNITY_FLOAT_IS_NOT_NAN:
             is_trait = isnan(actual);
@@ -864,8 +855,6 @@ void UnityAssertDoubleSpecial(const _UD actual,
 
      switch(style)
     {
-        /* To determine Inf / Neg Inf, we compare to an Inf / Neg Inf value we create on the fly
-         * We are using a variable to hold the zero value because some compilers complain about dividing by zero otherwise */
         case UNITY_FLOAT_IS_INF:
         case UNITY_FLOAT_IS_NOT_INF:
             is_trait = isinf(actual) & ispos(actual);
@@ -875,7 +864,6 @@ void UnityAssertDoubleSpecial(const _UD actual,
             is_trait = isinf(actual) & isneg(actual);
             break;
 
-        /* NaN is the only floating point value that does NOT equal itself. Therefore if Actual == Actual, then it is NOT NaN. */
         case UNITY_FLOAT_IS_NAN:
         case UNITY_FLOAT_IS_NOT_NAN:
             is_trait = isnan(actual);

@@ -225,11 +225,13 @@ typedef _US64 _U_SINT;
 typedef UNITY_FLOAT_TYPE _UF;
 
 #ifndef isinf
-#define isinf(n) (((1.0f / f_zero) == n) ? 1 : 0) || (((-1.0f / f_zero) == n) ? 1 : 0)
-#define UNITY_FLOAT_NEEDS_ZERO
+/* The value of Inf - Inf is NaN */
+#define isinf(n) (isnan((n) - (n)) && !isnan(n))
 #endif
 
 #ifndef isnan
+/* NaN is the only floating point value that does NOT equal itself.
+ * Therefore if n != n, then it is NaN. */
 #define isnan(n) ((n != n) ? 1 : 0)
 #endif
 
