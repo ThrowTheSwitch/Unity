@@ -4,8 +4,8 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
-#include <setjmp.h>
 #include "unity.h"
+#include <setjmp.h>
 #include <string.h>
 
 // Dividing by these constants produces +/- infinity.
@@ -2833,7 +2833,7 @@ void testFloatsNotEqualExpectedInf(void)
 #endif
 }
 
-void testFloatsNotEqualBothInf(void)
+void testFloatsEqualBothInf(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -3187,7 +3187,7 @@ void testNotEqualFloatArraysNaN(void)
 #endif
 }
 
-void testNotEqualFloatArraysInf(void)
+void testEqualFloatArraysInf(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -3195,9 +3195,7 @@ void testNotEqualFloatArraysInf(void)
     float p0[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -3363,7 +3361,7 @@ void testDoublesNotEqualExpectedInf(void)
 #endif
 }
 
-void testDoublesNotEqualBothInf(void)
+void testDoublesEqualBothInf(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
@@ -3716,7 +3714,7 @@ void testNotEqualDoubleArraysNaN(void)
 #endif
 }
 
-void testNotEqualDoubleArraysInf(void)
+void testEqualDoubleArraysInf(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
@@ -3724,9 +3722,7 @@ void testNotEqualDoubleArraysInf(void)
     double p0[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
 #endif
 }
 

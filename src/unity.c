@@ -618,7 +618,22 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 }
 
 /*-----------------------------------------------*/
+/* Wrap this define in a function with variable types as float or double */
+#define UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff) \
+    if (expected == actual) return 1;       \
+    diff = actual - expected;               \
+    if (diff < 0.0f) diff = 0.0f - diff;    \
+    if (delta < 0.0f) delta = 0.0f - delta; \
+    return !(isnan(diff) || isinf(diff) || (delta < diff));
+    /* This first part of this condition will catch any NaN or Infinite values */
+
 #ifndef UNITY_EXCLUDE_FLOAT
+static int UnityFloatsWithin(_UF delta, _UF expected, _UF actual)
+{
+    _UF diff;
+    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);
+}
+
 void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
                                 UNITY_PTR_ATTRIBUTE const _UF* actual,
                                 const _UU32 num_elements,
@@ -628,7 +643,6 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
     _UU32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const _UF* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const _UF* ptr_actual = actual;
-    _UF diff, tol;
 
     UNITY_SKIP_EXECUTION;
 
@@ -642,15 +656,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
 
     while (elements--)
     {
-        diff = *ptr_expected - *ptr_actual;
-        if (diff < 0.0f)
-            diff = 0.0f - diff;
-        tol = UNITY_FLOAT_PRECISION * *ptr_expected;
-        if (tol < 0.0f)
-            tol = 0.0f - tol;
-
-        /* This first part of this condition will catch any NaN or Infinite values */
-        if (isnan(diff) || isinf(diff) || (diff > tol))
+        if (!UnityFloatsWithin(*ptr_expected * UNITY_FLOAT_PRECISION, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -678,24 +684,10 @@ void UnityAssertFloatsWithin(const _UF delta,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber)
 {
-    _UF diff = actual - expected;
-    _UF pos_delta = delta;
-
     UNITY_SKIP_EXECUTION;
 
-    if (expected == actual) return;
 
-    if (diff < 0.0f)
-    {
-        diff = 0.0f - diff;
-    }
-    if (pos_delta < 0.0f)
-    {
-        pos_delta = 0.0f - pos_delta;
-    }
-
-    /* This first part of this condition will catch any NaN or Infinite values */
-    if (isnan(diff) || isinf(diff) || (pos_delta < diff))
+    if (!UnityFloatsWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_FLOAT_VERBOSE
@@ -782,6 +774,12 @@ void UnityAssertFloatSpecial(const _UF actual,
 
 /*-----------------------------------------------*/
 #ifndef UNITY_EXCLUDE_DOUBLE
+static int UnityDoublesWithin(_UD delta, _UD expected, _UD actual)
+{
+    _UD diff;
+    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);
+}
+
 void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
                                  UNITY_PTR_ATTRIBUTE const _UD* actual,
                                  const _UU32 num_elements,
@@ -791,7 +789,6 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
     _UU32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const _UD* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const _UD* ptr_actual = actual;
-    _UD diff, tol;
 
     UNITY_SKIP_EXECUTION;
 
@@ -805,15 +802,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
 
     while (elements--)
     {
-        diff = *ptr_expected - *ptr_actual;
-        if (diff < 0.0)
-          diff = 0.0 - diff;
-        tol = UNITY_DOUBLE_PRECISION * *ptr_expected;
-        if (tol < 0.0)
-            tol = 0.0 - tol;
-
-        /* This first part of this condition will catch any NaN or Infinite values */
-        if (isnan(diff) || isinf(diff) || (diff > tol))
+        if (!UnityDoublesWithin(*ptr_expected * UNITY_DOUBLE_PRECISION, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -841,24 +830,9 @@ void UnityAssertDoublesWithin(const _UD delta,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber)
 {
-    _UD diff = actual - expected;
-    _UD pos_delta = delta;
-
     UNITY_SKIP_EXECUTION;
 
-    if (expected == actual) return;
-
-    if (diff < 0.0)
-    {
-        diff = 0.0 - diff;
-    }
-    if (pos_delta < 0.0)
-    {
-        pos_delta = 0.0 - pos_delta;
-    }
-
-    /* This first part of this condition will catch any NaN or Infinite values */
-    if (isnan(diff) || isinf(diff) || (pos_delta < diff))
+    if (!UnityDoublesWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
 #ifdef UNITY_DOUBLE_VERBOSE
