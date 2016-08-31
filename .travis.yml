@@ -7,3 +7,4 @@ script:
   - make -s
   - cd ../extras/fixture/test && rake ci
   - make -s default noStdlibMalloc
+  - make -s C89

@@ -38,10 +38,11 @@ noStdlibMalloc: $(BUILD_DIR)
 	@ echo "build with noStdlibMalloc"
 	./$(TARGET)
 
-clang89: ../build/
-	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32 -std=c89 -Wno-comment
-	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -m32 \
-		-D UNITY_EXCLUDE_STDLIB_MALLOC -std=c89 -Wno-comment ; ./$(TARGET)
+C89: CFLAGS += -D UNITY_EXCLUDE_STDINT_H # C89 did not have type 'long long', <stdint.h>
+C89: $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -std=c89 && ./$(TARGET)
+	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -D UNITY_EXCLUDE_STDLIB_MALLOC -std=c89
+	./$(TARGET)
 
 clangEverything:
 	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -Weverything

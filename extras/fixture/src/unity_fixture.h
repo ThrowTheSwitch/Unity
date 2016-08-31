@@ -1,9 +1,9 @@
-//- Copyright (c) 2010 James Grenning and Contributed to Unity Project
-/* ==========================================
-    Unity Project - A Test Framework for C
-    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
-    [Released under MIT License. Please refer to license.txt for details]
-========================================== */
+/* Copyright (c) 2010 James Grenning and Contributed to Unity Project
+ * ==========================================
+ *  Unity Project - A Test Framework for C
+ *  Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+ *  [Released under MIT License. Please refer to license.txt for details]
+ * ========================================== */
 
 #ifndef UNITY_FIXTURE_H_
 #define UNITY_FIXTURE_H_
@@ -53,17 +53,17 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
     { void TEST_##group##_##name##_run(void);\
       TEST_##group##_##name##_run(); }
 
-//This goes at the bottom of each test file or in a separate c file
+/* This goes at the bottom of each test file or in a separate c file */
 #define TEST_GROUP_RUNNER(group)\
     void TEST_##group##_GROUP_RUNNER(void);\
     void TEST_##group##_GROUP_RUNNER(void)
 
-//Call this from main
+/* Call this from main */
 #define RUN_TEST_GROUP(group)\
     { void TEST_##group##_GROUP_RUNNER(void);\
       TEST_##group##_GROUP_RUNNER(); }
 
-//CppUTest Compatibility Macros
+/* CppUTest Compatibility Macros */
 #define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&(ptr), (void*)(newPointerValue), __LINE__)
 #define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT_EQUAL_PTR((expected), (actual))
 #define TEST_ASSERT_BYTES_EQUAL(expected, actual)      TEST_ASSERT_EQUAL_HEX8(0xff & (expected), 0xff & (actual))
