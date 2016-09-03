@@ -754,6 +754,12 @@ void UnityAssertFloatSpecial(const _UF actual,
             trait_index = 0;
             trait_names[0] = UnityStrInvalidFloatTrait;
             break;
+
+        default:
+           /* A value outside the enum was used for style so
+             just fail because something has gone wrong. */
+            UNITY_FAIL_AND_BAIL;
+
     }
 
     if (is_trait != should_be_trait)
@@ -884,7 +890,7 @@ void UnityAssertDoubleSpecial(const _UD actual,
 
     UNITY_SKIP_EXECUTION;
 
-     switch(style)
+    switch(style)
     {
         /* To determine Inf / Neg Inf, we compare to an Inf / Neg Inf value we create on the fly
          * We are using a variable to hold the zero value because some compilers complain about dividing by zero otherwise */
