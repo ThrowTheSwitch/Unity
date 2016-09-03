@@ -750,7 +750,7 @@ void UnityAssertFloatSpecial(const _UF actual,
                 is_trait = 1;
             break;
 
-        default:
+        case UNITY_FLOAT_INVALID_TRAIT:
             trait_index = 0;
             trait_names[0] = UnityStrInvalidFloatTrait;
             break;
