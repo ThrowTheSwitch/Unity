@@ -7,6 +7,7 @@ CFLAGS += -Wno-padded -Wno-double-promotion -Wno-missing-noreturn -Wno-unused-fu
 endif
 ifeq ($(shell uname -s), Linux)
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
+CFLAGS += -Wno-unused-function
 endif
 #DEBUG = -O0 -g
 CFLAGS += $(DEBUG)
