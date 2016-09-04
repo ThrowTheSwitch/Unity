@@ -6,7 +6,6 @@ matrix:
       compiler: clang
       osx_image: xcode7.3
     - os: linux
-      sudo: required
       dist: trusty
       compiler: gcc
 
