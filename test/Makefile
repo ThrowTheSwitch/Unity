@@ -3,7 +3,8 @@ ifeq ($(shell uname -s), Darwin)
 CC = clang
 CFLAGS += -std=c99 -pedantic -Wall -Weverything -Werror
 CFLAGS += -Wno-unknown-warning-option -Wno-switch-enum
-CFLAGS += -Wno-padded -Wno-double-promotion -Wno-missing-noreturn -Wno-unused-function
+CFLAGS += -Wno-padded -Wno-double-promotion -Wno-missing-noreturn
+CFLAGS += -Wno-missing-prototypes
 endif
 ifeq ($(shell uname -s), Linux)
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
