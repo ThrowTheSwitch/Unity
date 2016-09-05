@@ -277,47 +277,38 @@ void UnityPrintFloat(_UD number)
         UNITY_OUTPUT_CHAR('-');
         number = -number;
     }
-
     if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
-    else
+    else /* Small numbers as "%.6f" format string, but uses scientific notation for larger numbers */
     {
-        _UD divisor = 1;
+        _UD divisor = 1.0f;
         _U_UINT exponent = 0;
+        int scifmt;
+        _U_UINT i;
+
         while (number / divisor >= 10.0f)
         {
             divisor *= 10;
             exponent++;
         }
-        /* 10000000 < 2^24, max integer cast to a float without truncation */
-    #define FLOAT_SCI_FORMAT_MINIMUM 10000000
-        if (number >= FLOAT_SCI_FORMAT_MINIMUM)
-        {   /* Print in scientific format: 1.123456e38 */
-            int i;
-            for (i = 0; i < 7; i++)
-            {
-                UNITY_OUTPUT_CHAR('0' + (int)(number / divisor) % 10);
-                if (i == 0) UNITY_OUTPUT_CHAR('.');
-                divisor /= 10.0f;
-            }
-            UNITY_OUTPUT_CHAR('e');
-            UnityPrintNumberUnsigned(exponent);
+
+        number = number + 0.5f/(1000000/divisor); /* Rounding to 6 figures */
+        /* Print in scientific format: 1.123456e38 */
+        scifmt = exponent > 3;
+        for (i = 0; i < 7; i++) /* Always print 7 digits total */
+        {
+            UNITY_OUTPUT_CHAR('0' + (int)(number / divisor) % 10);
+            if ((scifmt && i == 0) || (!scifmt && i == exponent)) UNITY_OUTPUT_CHAR('.');
+            divisor /= 10.0f;
         }
-        else
-        { /* Print up to 9 characters, 6 after the decimal max */
-            _UD decimals = FLOAT_SCI_FORMAT_MINIMUM/divisor;
-            if (decimals > 1000000) decimals = 1000000;
-            number = number + 0.5f/decimals; /* Rounding */
-            while (decimals >= 1)
-            {
-                UNITY_OUTPUT_CHAR('0' + (int)(number / divisor) % 10);
-                if (divisor == 1.0f) UNITY_OUTPUT_CHAR('.');
-                if (divisor <= 1.0f) decimals /= 10;
-                divisor /= 10;
-            }
+        if (scifmt)
+        {
+            UNITY_OUTPUT_CHAR('e');
+            UNITY_OUTPUT_CHAR('+');
+            UnityPrintNumberUnsigned(exponent);
         }
     }
 }
-#endif
+#endif /* UNITY_FLOAT_VERBOSE */
 
 /*-----------------------------------------------*/
 
