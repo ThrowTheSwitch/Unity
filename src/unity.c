@@ -263,9 +263,59 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 
 void UnityPrintFloat(_UD number)
 {
-    char TempBuffer[UNITY_VERBOSE_NUMBER_MAX_LENGTH + 1];
-    snprintf(TempBuffer, sizeof(TempBuffer), "%.6f", number);
-    UnityPrint(TempBuffer);
+    // char TempBuffer[UNITY_VERBOSE_NUMBER_MAX_LENGTH + 1];
+    // snprintf(TempBuffer, sizeof(TempBuffer), "%.6f", number);
+    // UnityPrint(TempBuffer);
+    if (isnan(number))
+    {
+        UnityPrint(UnityStrNaN);
+        return;
+    }
+
+    if (number < 0)
+    {
+        UNITY_OUTPUT_CHAR('-');
+        number = -number;
+    }
+
+    if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
+    else
+    {
+        _UD divisor = 1;
+        _U_UINT exponent = 0;
+        while (number / divisor >= 10.0f)
+        {
+            divisor *= 10;
+            exponent++;
+        }
+        /* 10000000 < 2^24, max integer cast to a float without truncation */
+    #define FLOAT_SCI_FORMAT_MINIMUM 10000000
+        if (number >= FLOAT_SCI_FORMAT_MINIMUM)
+        {   /* Print in scientific format: 1.123456e38 */
+            int i;
+            for (i = 0; i < 7; i++)
+            {
+                UNITY_OUTPUT_CHAR('0' + (int)(number / divisor) % 10);
+                if (i == 0) UNITY_OUTPUT_CHAR('.');
+                divisor /= 10.0f;
+            }
+            UNITY_OUTPUT_CHAR('e');
+            UnityPrintNumberUnsigned(exponent);
+        }
+        else
+        { /* Print up to 9 characters, 6 after the decimal max */
+            _UD decimals = FLOAT_SCI_FORMAT_MINIMUM/divisor;
+            if (decimals > 1000000) decimals = 1000000;
+            number = number + 0.5f/decimals; /* Rounding */
+            while (decimals >= 1)
+            {
+                UNITY_OUTPUT_CHAR('0' + (int)(number / divisor) % 10);
+                if (divisor == 1.0f) UNITY_OUTPUT_CHAR('.');
+                if (divisor <= 1.0f) decimals /= 10;
+                divisor /= 10;
+            }
+        }
+    }
 }
 #endif
 
