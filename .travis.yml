@@ -1,7 +1,16 @@
-language: ruby
-rvm:
-  - "1.9.3"
-  - "2.0.0"
+language: c
+
+matrix:
+ include:
+    - os: osx
+      compiler: clang
+      osx_image: xcode7.3
+    - os: linux
+      dist: trusty
+      compiler: gcc
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then rvm install 2.1 && rvm use 2.1 && ruby -v; fi
 script:
   - cd test && rake ci
   - make -s

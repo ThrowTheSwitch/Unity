@@ -1,9 +1,15 @@
 CC = gcc
 ifeq ($(shell uname -s), Darwin)
 CC = clang
+CFLAGS += -std=c99 -pedantic -Wall -Weverything -Werror
+CFLAGS += -Wno-unknown-warning-option -Wno-switch-enum
+CFLAGS += -Wno-padded -Wno-double-promotion -Wno-missing-noreturn
+CFLAGS += -Wno-missing-prototypes
+endif
+ifeq ($(shell uname -s), Linux)
+CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 endif
 #DEBUG = -O0 -g
-CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 CFLAGS += $(DEBUG)
 DEFINES =  -D UNITY_OUTPUT_CHAR=putcharSpy
 DEFINES += -D UNITY_SUPPORT_64 -D UNITY_INCLUDE_DOUBLE -D UNITY_NO_WEAK
