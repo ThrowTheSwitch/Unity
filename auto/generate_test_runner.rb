@@ -95,7 +95,7 @@ class UnityTestRunnerGenerator
     tests_and_line_numbers = []
 
     source_scrubbed = source.clone
-    source_scrubbed = source_scrubbed.gsub(/"[^"]*"/, '')      # remove things in strings
+    source_scrubbed = source_scrubbed.gsub(/"[^"\n]*"/, '')      # remove things in strings
     source_scrubbed = source_scrubbed.gsub(/\/\/.*$/, '')      # remove line comments
     source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '') # remove block comments
     lines = source_scrubbed.split(/(^\s*\#.*$)                 # Treat preprocessor directives as a logical line
