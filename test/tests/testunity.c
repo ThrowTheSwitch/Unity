@@ -2797,14 +2797,12 @@ void testFloatsNotEqualExpectedNaN(void)
 #endif
 }
 
-void testFloatsNotEqualBothNaN(void)
+void testFloatsEqualBothNaN(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 0.0f / f_zero);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -3192,7 +3190,7 @@ void testNotEqualFloatArraysNegative3(void)
 #endif
 }
 
-void testNotEqualFloatArraysNaN(void)
+void testEqualFloatArraysNaN(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -3200,9 +3198,7 @@ void testNotEqualFloatArraysNaN(void)
     float p0[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -3325,14 +3321,12 @@ void testDoublesNotEqualExpectedNaN(void)
 #endif
 }
 
-void testDoublesNotEqualBothNaN(void)
+void testDoublesEqualBothNaN(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -3727,9 +3721,7 @@ void testNotEqualDoubleArraysNaN(void)
     double p0[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
 #endif
 }
 

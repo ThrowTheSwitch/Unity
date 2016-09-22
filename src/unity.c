@@ -617,11 +617,12 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
 /*-----------------------------------------------*/
 /* Wrap this define in a function with variable types as float or double */
-#define UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff) \
-    if (expected == actual) return 1;       \
-    diff = actual - expected;               \
-    if (diff < 0.0f) diff = 0.0f - diff;    \
-    if (delta < 0.0f) delta = 0.0f - delta; \
+#define UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff)                       \
+    if (isinf(expected) && isinf(actual) && (isneg(expected) == isneg(actual))) return 1; \
+    if (isnan(expected) && isnan(actual)) return 1;                                       \
+    diff = actual - expected;                                                             \
+    if (diff < 0.0f) diff = 0.0f - diff;                                                  \
+    if (delta < 0.0f) delta = 0.0f - delta;                                               \
     return !(isnan(diff) || isinf(diff) || (delta < diff));
     /* This first part of this condition will catch any NaN or Infinite values */
 

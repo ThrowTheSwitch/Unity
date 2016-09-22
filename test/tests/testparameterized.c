@@ -18,20 +18,26 @@ void putcharSpy(int c) { (void)putchar(c);} // include passthrough for linking t
 
 #define VERIFY_FAILS_END                                                       \
     }                                                                          \
-    Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
+    Unity.CurrentTestFailed = (Unity.CurrentTestFailed != 0) ? 0 : 1;          \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
+      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
+      UNITY_OUTPUT_CHAR(':');                                                  \
+      UnityPrint(Unity.CurrentTestName);                                       \
+      UnityPrint(":FAIL: [[[[ Test Should Have Failed But Did Not ]]]]");      \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
 #define VERIFY_IGNORES_END                                                     \
     }                                                                          \
-    Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
+    Unity.CurrentTestFailed = (Unity.CurrentTestIgnored != 0) ? 0 : 1;         \
     Unity.CurrentTestIgnored = 0;                                              \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Ignored But Did Not ]]]]");   \
+      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
+      UNITY_OUTPUT_CHAR(':');                                                  \
+      UnityPrint(Unity.CurrentTestName);                                       \
+      UnityPrint(":FAIL: [[[[ Test Should Have Ignored But Did Not ]]]]");     \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
@@ -50,7 +56,7 @@ void tearDown(void)
     TEST_FAIL_MESSAGE("<= Failed in tearDown");
   if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
   {
-    UnityPrint("[[[[ Previous Test Should Have Passed But Did Not ]]]]");
+    UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
     UNITY_OUTPUT_CHAR('\n');
   }
 }
