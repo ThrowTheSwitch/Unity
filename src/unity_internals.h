@@ -189,11 +189,13 @@
 typedef UNITY_FLOAT_TYPE _UF;
 
 #ifndef isinf
-#define isinf(n) (((1.0f / f_zero) == n) ? 1 : 0) || (((-1.0f / f_zero) == n) ? 1 : 0)
-#define UNITY_FLOAT_NEEDS_ZERO
+/* The value of Inf - Inf is NaN */
+#define isinf(n) (isnan((n) - (n)) && !isnan(n))
 #endif
 
 #ifndef isnan
+/* NaN is the only floating point value that does NOT equal itself.
+ * Therefore if n != n, then it is NaN. */
 #define isnan(n) ((n != n) ? 1 : 0)
 #endif
 
@@ -213,32 +215,38 @@ typedef UNITY_FLOAT_TYPE _UF;
 
 /* unlike FLOAT, we DON'T include by default */
 #ifndef UNITY_EXCLUDE_DOUBLE
-#ifndef UNITY_INCLUDE_DOUBLE
-#define UNITY_EXCLUDE_DOUBLE
-#endif
+  #ifndef UNITY_INCLUDE_DOUBLE
+  #define UNITY_EXCLUDE_DOUBLE
+  #endif
 #endif
 
 #ifdef UNITY_EXCLUDE_DOUBLE
 
-/* No Floating Point Support */
-#undef UNITY_DOUBLE_PRECISION
-#undef UNITY_DOUBLE_TYPE
-#undef UNITY_DOUBLE_VERBOSE
+  /* No Floating Point Support */
+  #undef UNITY_DOUBLE_PRECISION
+  #undef UNITY_DOUBLE_TYPE
+  #undef UNITY_DOUBLE_VERBOSE
 
-#ifdef UNITY_INCLUDE_DOUBLE
-#undef UNITY_INCLUDE_DOUBLE
-#endif
+  #ifdef UNITY_INCLUDE_DOUBLE
+    #undef UNITY_INCLUDE_DOUBLE
+  #endif
+
+  #ifdef UNITY_FLOAT_VERBOSE
+    typedef _UF _UD;
+    /* For parameter in UnityPrintFloat, double promotion required */
+  #endif
 
 #else
 
-/* Double Floating Point Support */
-#ifndef UNITY_DOUBLE_PRECISION
-#define UNITY_DOUBLE_PRECISION (1e-12f)
-#endif
-#ifndef UNITY_DOUBLE_TYPE
-#define UNITY_DOUBLE_TYPE double
-#endif
-typedef UNITY_DOUBLE_TYPE _UD;
+  /* Double Floating Point Support */
+  #ifndef UNITY_DOUBLE_PRECISION
+  #define UNITY_DOUBLE_PRECISION (1e-12f)
+  #endif
+
+  #ifndef UNITY_DOUBLE_TYPE
+  #define UNITY_DOUBLE_TYPE double
+  #endif
+  typedef UNITY_DOUBLE_TYPE _UD;
 
 #endif
 
@@ -436,7 +444,7 @@ void UnityPrintNumberUnsigned(const _U_UINT number);
 void UnityPrintNumberHex(const _U_UINT number, const char nibbles);
 
 #ifdef UNITY_FLOAT_VERBOSE
-void UnityPrintFloat(const _UF number);
+void UnityPrintFloat(const _UD number);
 #endif
 
 /*-------------------------------------------------------
