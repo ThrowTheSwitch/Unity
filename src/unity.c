@@ -284,6 +284,33 @@ void UnityPrintFloat(_UD number)
         _U_UINT exponent = 0;
         int scifmt;
         _U_UINT i;
+        _UU32 integer_part;
+        _UD fraction_part;
+        // if (number <= 0xFFFFFFFF) /* Fits in an integer */
+        {
+            integer_part = (_UU32)number;
+            fraction_part = number - integer_part;
+        }
+
+        _U_UINT fraction_bits = (_U_UINT)(fraction_part * 1000000.0f + 0.5f);
+        if (fraction_bits == 1000000)
+        {
+            fraction_bits = 0;
+            integer_part += 1;
+        }
+        _U_UINT divisor_int = 100000;
+
+        UnityPrintNumberUnsigned(integer_part);
+        UNITY_OUTPUT_CHAR('.');
+        /* now mod and print, then divide divisor */
+        do
+        {
+            UNITY_OUTPUT_CHAR((char)('0' + (fraction_bits / divisor_int)));
+            fraction_bits %= divisor_int;
+            if (fraction_bits == 0) break; // Truncate trailing 0's
+            divisor_int /= 10;
+        } while (divisor_int > 0);
+        UNITY_OUTPUT_CHAR(' ');
 
         while (number / divisor >= 10.0f)
         {
