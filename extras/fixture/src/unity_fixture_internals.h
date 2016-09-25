@@ -8,6 +8,11 @@
 #ifndef UNITY_FIXTURE_INTERNALS_H_
 #define UNITY_FIXTURE_INTERNALS_H_
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 struct _UnityFixture
 {
     int Verbose;
@@ -35,5 +40,9 @@ void UnityConcludeFixtureTest(void);
 void UnityPointer_Set(void** ptr, void* newValue, UNITY_LINE_TYPE line);
 void UnityPointer_UndoAllSets(void);
 void UnityPointer_Init(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* UNITY_FIXTURE_INTERNALS_H_ */
