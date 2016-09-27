@@ -1004,7 +1004,7 @@ void UnityAssertEqualStringLen(const char* expected,
     /* if both pointers not null compare the strings */
     if (expected && actual)
     {
-        for (i = 0; (expected[i] || actual[i]) && i < length; i++)
+        for (i = 0; (i < length) && (expected[i] || actual[i]); i++)
         {
             if (expected[i] != actual[i])
             {
