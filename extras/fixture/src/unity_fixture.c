@@ -41,7 +41,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
         UnityBegin(argv[0]);
         announceTestRun(r);
         runAllTests();
-        UNITY_PRINT_EOL();
+        if (!UnityFixture.Verbose) UNITY_PRINT_EOL();
         UnityEnd();
     }
 
