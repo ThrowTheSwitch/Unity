@@ -3713,7 +3713,7 @@ void testNotEqualDoubleArraysNegative3(void)
 #endif
 }
 
-void testNotEqualDoubleArraysNaN(void)
+void testEqualDoubleArraysNaN(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
