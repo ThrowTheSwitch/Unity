@@ -278,19 +278,10 @@ void UnityPrintFloat(_UD number)
         number = -number;
     }
     if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
-    else /* Small numbers as "%.6f" format string, but uses scientific notation for larger numbers */
+    else if (number < 4294967296.0f) /* Fits in an integer */
     {
-        _UD divisor = 1.0f;
-        _U_UINT exponent = 0;
-        int scifmt;
-        _U_UINT i;
-        _UU32 integer_part;
-        _UD fraction_part;
-        // if (number <= 0xFFFFFFFF) /* Fits in an integer */
-        {
-            integer_part = (_UU32)number;
-            fraction_part = number - integer_part;
-        }
+        _UU32 integer_part = (_UU32)number;
+        _UD fraction_part = number - integer_part;
 
         _U_UINT fraction_bits = (_U_UINT)(fraction_part * 1000000.0f + 0.5f);
         if (fraction_bits == 1000000)
@@ -310,29 +301,33 @@ void UnityPrintFloat(_UD number)
             if (fraction_bits == 0) break; // Truncate trailing 0's
             divisor_int /= 10;
         } while (divisor_int > 0);
-        UNITY_OUTPUT_CHAR(' ');
 
-        while (number / divisor >= 10.0f)
+
+    }
+    else /* Won't fit in an integer type */
+    {
+        _UU32 integer_part;
+        _UD divide = 10.0f;
+        _U_UINT exponent = 7;
+
+        while (number / divide >= 10000000.0f)
         {
-            divisor *= 10;
+            divide *= 10;
             exponent++;
         }
+        integer_part = (_UU32)(number / divide + 0.5f);
+        _UU32 divisor_int = 1000000;
+        do
+        {
+            UNITY_OUTPUT_CHAR((char)('0' + (integer_part / divisor_int)));
 
-        number = number + 0.5f/(1000000/divisor); /* Rounding to 6 figures */
-        /* Print in scientific format: 1.123456e38 */
-        scifmt = exponent > 3;
-        for (i = 0; i < 7; i++) /* Always print 7 digits total */
-        {
-            UNITY_OUTPUT_CHAR('0' + (int)(number / divisor) % 10);
-            if ((scifmt && i == 0) || (!scifmt && i == exponent)) UNITY_OUTPUT_CHAR('.');
-            divisor /= 10.0f;
-        }
-        if (scifmt)
-        {
-            UNITY_OUTPUT_CHAR('e');
-            UNITY_OUTPUT_CHAR('+');
-            UnityPrintNumberUnsigned(exponent);
-        }
+            integer_part %= divisor_int;
+            divisor_int /= 10;
+            if (divisor_int == 100000) UNITY_OUTPUT_CHAR('.');
+        } while (divisor_int > 0);
+        UNITY_OUTPUT_CHAR('e');
+        UNITY_OUTPUT_CHAR('+');
+        UnityPrintNumberUnsigned(exponent);
     }
 }
 #endif /* UNITY_FLOAT_VERBOSE */
