@@ -10,7 +10,7 @@ ifeq ($(OSTYPE),cygwin)
 	MKDIR = mkdir -p
 	TARGET_EXTENSION=.out
 elseifeq ($(OSTYPE),msys)
-    CLEANUP = rm -f
+	CLEANUP = rm -f
 	MKDIR = mkdir -p
 	TARGET_EXTENSION=.exe
 elseifeq ($(OS),Windows_NT)
