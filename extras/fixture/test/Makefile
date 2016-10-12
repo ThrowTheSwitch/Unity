@@ -3,11 +3,7 @@ ifeq ($(shell uname -s), Darwin)
 CC = clang
 endif
 #DEBUG = -O0 -g
-CFLAGS += -std=c99
-CFLAGS += -pedantic
-CFLAGS += -Wall
-CFLAGS += -Wextra
-CFLAGS += -Werror
+CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 CFLAGS += $(DEBUG)
 DEFINES = -D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar
 SRC = ../src/unity_fixture.c \
@@ -44,16 +40,13 @@ C89: $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -D UNITY_EXCLUDE_STDLIB_MALLOC -std=c89
 	./$(TARGET)
 
-clangEverything:
-	clang $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -Weverything
-
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 clean:
 	rm -f $(TARGET) $(BUILD_DIR)/*.gc*
 
-coverage: $(BUILD_DIR)
+cov: $(BUILD_DIR)
 	cd $(BUILD_DIR) && \
 	$(CC) $(DEFINES) $(foreach i, $(SRC), ../test/$(i)) $(INC_DIR) -o $(TARGET) -fprofile-arcs -ftest-coverage
 	rm -f $(BUILD_DIR)/*.gcda
