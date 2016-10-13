@@ -3228,6 +3228,18 @@ void testNotEqualFloatArraysLengthZero(void)
 #endif
 }
 
+void testFloatVerbosePrinting(void)
+{
+#ifdef UNITY_FLOAT_VERBOSE
+    UnityPrintFloat(123456789.0f);
+    UnityPrintFloat(100000000.0f);
+    UnityPrintFloat(65536.0f*65536.0f);
+    UnityPrintFloat(1000000000.0f);
+    UnityPrintFloat(10000000000.0f);
+    UnityPrintFloat(9999999000.0f);
+#endif
+}
+
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DOUBLE SUPPORT ==================
 
 void testDoublesWithinDelta(void)
