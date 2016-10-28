@@ -128,9 +128,6 @@ class UnityModuleGenerator
     files = []
     triad.each do |triad|
       patterns.each_pair do |pattern_file, pattern_traits|
-          puts @options.inspect
-          puts pattern_traits.inspect
-          puts module_name.inspect
         files << {
           :path => "#{triad[:path]}#{module_name}#{pattern_file}#{triad[:ext]}",
           :name => "#{module_name}#{pattern_file}",
