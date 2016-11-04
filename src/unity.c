@@ -255,7 +255,7 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 /*
  *  char buffer[19];
  *  if (number > 4294967296.0 || -number > 4294967296.0)
- *      snprintf(buffer, sizeof buffer, "%.6e", number);
+ *      snprintf(buffer, sizeof buffer, "%.8e", number);
  *  else
  *      snprintf(buffer, sizeof buffer, "%.6f", number);
  *  UnityPrint(buffer);
@@ -276,7 +276,8 @@ void UnityPrintFloat(_UD number)
         _UU32 integer_part = (_UU32)number;
         _UD fraction_part = number - integer_part;
 
-        _U_UINT fraction_bits = (_U_UINT)(fraction_part * 1000000.0f + 0.5f);
+        _U_UINT fraction_bits = (_U_UINT)(fraction_part * 1000000.0 + 0.5);
+        /* Double precision calculation gives best performance for six rounded decimal places */
 
         if (fraction_bits == 1000000)
         {
@@ -299,24 +300,25 @@ void UnityPrintFloat(_UD number)
     else /* Won't fit in an integer type */
     {
         _UU32 integer_part;
-        _UD divide = 10.0f;
-        _U_UINT exponent = 7;
+        double divide = 10.0;
+        _U_UINT exponent = 9;
 
-        while (number / divide >= 10000000.0f)
+        while (number / divide >= 1000000000.0)
         {
             divide *= 10;
             exponent++;
         }
-        integer_part = (_UU32)(number / divide + 0.5f);
+        integer_part = (_UU32)(number / divide + 0.5);
+        /* Double precision calculation required for float, to produce 9 rounded digits */
 
-        _UU32 divisor = 1000000;
+        _UU32 divisor = 100000000;
         do
         {
             UNITY_OUTPUT_CHAR((char)('0' + (integer_part / divisor)));
 
             integer_part %= divisor;
             divisor /= 10;
-            if (divisor == 100000) UNITY_OUTPUT_CHAR('.');
+            if (divisor == 10000000) UNITY_OUTPUT_CHAR('.');
         } while (divisor > 0);
         UNITY_OUTPUT_CHAR('e');
         UNITY_OUTPUT_CHAR('+');
