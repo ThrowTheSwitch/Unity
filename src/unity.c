@@ -251,6 +251,17 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 
 /*-----------------------------------------------*/
 #ifdef UNITY_FLOAT_VERBOSE
+static void UnityPrintDecimalAndNumberWithLeadingZeros(_US32 fraction_part, _US32 divisor)
+{
+    UNITY_OUTPUT_CHAR('.');
+    while (divisor > 0)
+    {
+        UNITY_OUTPUT_CHAR('0' + fraction_part / divisor);
+        fraction_part %= divisor;
+        divisor /= 10;
+        if (fraction_part == 0) break; /* Truncate trailing 0's */
+    }
+}
 
 /*
  *  char buffer[19];
@@ -270,60 +281,46 @@ void UnityPrintFloat(_UD number)
 
     if (isnan(number)) UnityPrint(UnityStrNaN);
     else if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
-    else if (number < 0.0000005 && number > 0) UnityPrint("0.000000..."); /* Small number format */
-    else if (number < 4294967296.0f) /* Fits in an integer */
+    else if (number < 0.0000005 && number > 0) UnityPrint("0.000000..."); /* Small numbers */
+    else if (number < 4294967296.0f) /* Rounded result fits in 32 bits, "%.6f" format */
     {
+        _US32 divisor = (1000000/10);
         _UU32 integer_part = (_UU32)number;
-        _UD fraction_part = number - integer_part;
-
-        _U_UINT fraction_bits = (_U_UINT)(fraction_part * 1000000.0 + 0.5);
+        _US32 fraction_part = (_US32)((number - integer_part)*1000000.0 + 0.5);
         /* Double precision calculation gives best performance for six rounded decimal places */
 
-        if (fraction_bits == 1000000)
+        if (fraction_part == 1000000)
         {
-            fraction_bits = 0;
+            fraction_part = 0;
             integer_part += 1;
         }
-        _U_UINT divisor = 100000;
 
         UnityPrintNumberUnsigned(integer_part);
-        UNITY_OUTPUT_CHAR('.');
-        /* now mod and print, then divide divisor */
-        do
-        {
-            UNITY_OUTPUT_CHAR((char)('0' + (fraction_bits / divisor)));
-            fraction_bits %= divisor;
-            if (fraction_bits == 0) break; // Truncate trailing 0's
-            divisor /= 10;
-        } while (divisor > 0);
+        UnityPrintDecimalAndNumberWithLeadingZeros(fraction_part, divisor);
     }
-    else /* Won't fit in an integer type */
+    else /* Number is larger, use exponential format of 9 digits, "%.8e" */
     {
-        _UU32 integer_part;
+        _US32 divisor = (1000000000/10);
+        _US32 integer_part;
         double divide = 10.0;
-        _U_UINT exponent = 9;
+        int exponent = 9;
 
         while (number / divide >= 1000000000.0)
         {
             divide *= 10;
             exponent++;
         }
-        integer_part = (_UU32)(number / divide + 0.5);
+        integer_part = (_US32)(number / divide + 0.5);
         /* Double precision calculation required for float, to produce 9 rounded digits */
 
-        _UU32 divisor = 100000000;
-        do
-        {
-            UNITY_OUTPUT_CHAR((char)('0' + (integer_part / divisor)));
-
-            integer_part %= divisor;
-            divisor /= 10;
-            if (divisor == 10000000) UNITY_OUTPUT_CHAR('.');
-        } while (divisor > 0);
+        UNITY_OUTPUT_CHAR('0' + integer_part / divisor);
+        integer_part %= divisor;
+        divisor /= 10;
+        UnityPrintDecimalAndNumberWithLeadingZeros(integer_part, divisor);
         UNITY_OUTPUT_CHAR('e');
         UNITY_OUTPUT_CHAR('+');
         if (exponent < 10) UNITY_OUTPUT_CHAR('0');
-        UnityPrintNumberUnsigned(exponent);
+        UnityPrintNumber(exponent);
     }
 }
 #endif /* UNITY_FLOAT_VERBOSE */
