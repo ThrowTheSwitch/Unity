@@ -284,7 +284,7 @@ void UnityPrintFloat(_UD number)
     else if (number < 0.0000005 && number > 0) UnityPrint("0.000000..."); /* Small numbers */
     else if (number < 4294967296.0f) /* Rounded result fits in 32 bits, "%.6f" format */
     {
-        _US32 divisor = (1000000/10);
+        const _US32 divisor = (1000000/10);
         _UU32 integer_part = (_UU32)number;
         _US32 fraction_part = (_US32)((number - integer_part)*1000000.0 + 0.5);
         /* Double precision calculation gives best performance for six rounded decimal places */
@@ -300,7 +300,7 @@ void UnityPrintFloat(_UD number)
     }
     else /* Number is larger, use exponential format of 9 digits, "%.8e" */
     {
-        _US32 divisor = (1000000000/10);
+        const _US32 divisor = (1000000000/10);
         _US32 integer_part;
         double divide = 10.0;
         int exponent = 9;
@@ -314,9 +314,7 @@ void UnityPrintFloat(_UD number)
         /* Double precision calculation required for float, to produce 9 rounded digits */
 
         UNITY_OUTPUT_CHAR('0' + integer_part / divisor);
-        integer_part %= divisor;
-        divisor /= 10;
-        UnityPrintDecimalAndNumberWithLeadingZeros(integer_part, divisor);
+        UnityPrintDecimalAndNumberWithLeadingZeros(integer_part % divisor, divisor / 10);
         UNITY_OUTPUT_CHAR('e');
         UNITY_OUTPUT_CHAR('+');
         if (exponent < 10) UNITY_OUTPUT_CHAR('0');
