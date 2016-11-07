@@ -281,8 +281,8 @@ void UnityPrintFloat(_UD number)
 
     if (isnan(number)) UnityPrint(UnityStrNaN);
     else if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
-    else if (number < 0.0000005 && number > 0) UnityPrint("0.000000..."); /* Small numbers */
-    else if (number < 4294967296.0f) /* Rounded result fits in 32 bits, "%.6f" format */
+    else if (number <= 0.0000005 && number > 0) UnityPrint("0.000000..."); /* Small number */
+    else if (number < 4294967295.9999995) /* Rounded result fits in 32 bits, "%.6f" format */
     {
         const _US32 divisor = (1000000/10);
         _UU32 integer_part = (_UU32)number;
@@ -305,7 +305,7 @@ void UnityPrintFloat(_UD number)
         double divide = 10.0;
         int exponent = 9;
 
-        while (number / divide >= 1000000000.0)
+        while (number / divide >= 1000000000.0 - 0.5)
         {
             divide *= 10;
             exponent++;
