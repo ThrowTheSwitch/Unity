@@ -23,6 +23,7 @@ class UnityTestRunnerGenerator
   def self.default_options
     {
       :includes         => [],
+      :defines          => [],
       :plugins          => [],
       :framework        => :unity,
       :test_prefix      => "test|spec|should",
@@ -167,6 +168,9 @@ class UnityTestRunnerGenerator
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
     output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
+    if (@options[:defines] && !@options[:defines].empty?)
+      @options[:defines].each {|d| output.puts("#define #{d}")}
+    end
     if (@options[:header_file] && !@options[:header_file].empty?)
       output.puts("#include \"#{File.basename(@options[:header_file])}\"")
     else
