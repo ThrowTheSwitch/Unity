@@ -262,6 +262,9 @@ static void UnityPrintDecimalAndNumberWithLeadingZeros(_US32 fraction_part, _US3
         if (fraction_part == 0) break; /* Truncate trailing 0's */
     }
 }
+#define ROUND_TIES_TO_EVEN(num_int, num)                                  \
+  if ((num_int & 1) == 1 && num_int > (num)) /* Odd and was rounded up */ \
+    if ((num) - (_US32)(num) <= 0.5) num_int -= 1 /* and remainder was 0.5, a tie */
 
 /*
  *  char buffer[19];
@@ -288,6 +291,7 @@ void UnityPrintFloat(_UD number)
         _UU32 integer_part = (_UU32)number;
         _US32 fraction_part = (_US32)((number - integer_part)*1000000.0 + 0.5);
         /* Double precision calculation gives best performance for six rounded decimal places */
+        ROUND_TIES_TO_EVEN(fraction_part, (number - integer_part)*1000000.0);
 
         if (fraction_part == 1000000)
         {
@@ -312,6 +316,7 @@ void UnityPrintFloat(_UD number)
         }
         integer_part = (_US32)(number / divide + 0.5);
         /* Double precision calculation required for float, to produce 9 rounded digits */
+        ROUND_TIES_TO_EVEN(integer_part, number / divide);
 
         UNITY_OUTPUT_CHAR('0' + integer_part / divisor);
         UnityPrintDecimalAndNumberWithLeadingZeros(integer_part % divisor, divisor / 10);
