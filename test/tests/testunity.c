@@ -2285,10 +2285,14 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 
 void testCstringsEscapeSequence(void)
 {
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+#else
     startPutcharSpy();
     UnityPrint("\x16\x10");
     endPutcharSpy();
     TEST_ASSERT_EQUAL_STRING("\\x16\\x10", getBufferPutcharSpy());
+#endif
 }
 
 #define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
@@ -3228,16 +3232,14 @@ void testNotEqualFloatArraysLengthZero(void)
 #endif
 }
 
-#ifdef UNITY_FLOAT_VERBOSE
 #define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) {            \
         startPutcharSpy(); UnityPrintFloat((actual)); endPutcharSpy();  \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
         }
-#endif
 
 void testFloatVerbosePrinting(void)
 {
-#ifdef UNITY_FLOAT_VERBOSE
+#if !defined(UNITY_EXCLUDE_FLOAT_PRINT) && defined(USING_OUTPUT_SPY)
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.0",          0.0f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.000000...",  0.000000499f);
     float smallest = 0.0000005f;

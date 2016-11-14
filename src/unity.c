@@ -250,7 +250,7 @@ void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 }
 
 /*-----------------------------------------------*/
-#ifdef UNITY_FLOAT_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
 static void UnityPrintDecimalAndNumberWithLeadingZeros(_US32 fraction_part, _US32 divisor)
 {
     UNITY_OUTPUT_CHAR('.');
@@ -262,9 +262,13 @@ static void UnityPrintDecimalAndNumberWithLeadingZeros(_US32 fraction_part, _US3
         if (fraction_part == 0) break; /* Truncate trailing 0's */
     }
 }
-#define ROUND_TIES_TO_EVEN(num_int, num)                                  \
+#ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
+  #define ROUND_TIES_TO_EVEN(num_int, num)                                \
   if ((num_int & 1) == 1 && num_int > (num)) /* Odd and was rounded up */ \
     if ((num) - (_US32)(num) <= 0.5) num_int -= 1 /* and remainder was 0.5, a tie */
+#else
+  #define ROUND_TIES_TO_EVEN(num_int, num)
+#endif
 
 /*
  *  char buffer[19];
@@ -326,7 +330,7 @@ void UnityPrintFloat(_UD number)
         UnityPrintNumber(exponent);
     }
 }
-#endif /* UNITY_FLOAT_VERBOSE */
+#endif /* ! UNITY_EXCLUDE_FLOAT_PRINT */
 
 /*-----------------------------------------------*/
 
@@ -691,6 +695,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 #endif
 
 #ifndef UNITY_EXCLUDE_FLOAT
+
 static int UnityFloatsWithin(_UF delta, _UF expected, _UF actual)
 {
     _UF diff;
@@ -753,7 +758,7 @@ void UnityAssertFloatsWithin(const _UF delta,
     if (!UnityFloatsWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
-#ifdef UNITY_FLOAT_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrint(UnityStrExpected);
         UnityPrintFloat(expected);
         UnityPrint(UnityStrWas);
@@ -818,7 +823,7 @@ void UnityAssertFloatSpecial(const _UF actual,
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
         UnityPrint(UnityStrWas);
-#ifdef UNITY_FLOAT_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrintFloat(actual);
 #else
         if (should_be_trait)
@@ -867,11 +872,11 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
-#ifdef UNITY_DOUBLE_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
             UnityPrint(UnityStrExpected);
-            UnityPrintFloat((float)(*ptr_expected));
+            UnityPrintFloat(*ptr_expected);
             UnityPrint(UnityStrWas);
-            UnityPrintFloat((float)(*ptr_actual));
+            UnityPrintFloat(*ptr_actual);
 #else
             UnityPrint(UnityStrDelta);
 #endif
@@ -895,11 +900,11 @@ void UnityAssertDoublesWithin(const _UD delta,
     if (!UnityDoublesWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
-#ifdef UNITY_DOUBLE_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrint(UnityStrExpected);
-        UnityPrintFloat((float)expected);
+        UnityPrintFloat(expected);
         UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
+        UnityPrintFloat(actual);
 #else
         UnityPrint(UnityStrDelta);
 #endif
@@ -961,7 +966,7 @@ void UnityAssertDoubleSpecial(const _UD actual,
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
         UnityPrint(UnityStrWas);
-#ifdef UNITY_DOUBLE_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrintFloat(actual);
 #else
         if (should_be_trait)
