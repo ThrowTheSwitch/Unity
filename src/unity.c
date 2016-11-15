@@ -694,6 +694,19 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
   #define UNITY_NAN_CHECK 0
 #endif
 
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
+  #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
+    do {                                                          \
+    UnityPrint(UnityStrExpected);                                 \
+    UnityPrintFloat(expected);                                    \
+    UnityPrint(UnityStrWas);                                      \
+    UnityPrintFloat(actual);                                      \
+    } while(0)
+#else
+  #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
+    UnityPrint(UnityStrDelta)
+#endif /* UNITY_EXCLUDE_FLOAT_PRINT */
+
 #ifndef UNITY_EXCLUDE_FLOAT
 
 static int UnityFloatsWithin(_UF delta, _UF expected, _UF actual)
@@ -729,14 +742,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const _UF* expected,
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
-#ifdef UNITY_FLOAT_VERBOSE
-            UnityPrint(UnityStrExpected);
-            UnityPrintFloat(*ptr_expected);
-            UnityPrint(UnityStrWas);
-            UnityPrintFloat(*ptr_actual);
-#else
-            UnityPrint(UnityStrDelta);
-#endif
+            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
@@ -758,14 +764,7 @@ void UnityAssertFloatsWithin(const _UF delta,
     if (!UnityFloatsWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
-#ifndef UNITY_EXCLUDE_FLOAT_PRINT
-        UnityPrint(UnityStrExpected);
-        UnityPrintFloat(expected);
-        UnityPrint(UnityStrWas);
-        UnityPrintFloat(actual);
-#else
-        UnityPrint(UnityStrDelta);
-#endif
+        UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
@@ -872,14 +871,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const _UD* expected,
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
-#ifndef UNITY_EXCLUDE_FLOAT_PRINT
-            UnityPrint(UnityStrExpected);
-            UnityPrintFloat(*ptr_expected);
-            UnityPrint(UnityStrWas);
-            UnityPrintFloat(*ptr_actual);
-#else
-            UnityPrint(UnityStrDelta);
-#endif
+            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
@@ -900,14 +892,7 @@ void UnityAssertDoublesWithin(const _UD delta,
     if (!UnityDoublesWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
-#ifndef UNITY_EXCLUDE_FLOAT_PRINT
-        UnityPrint(UnityStrExpected);
-        UnityPrintFloat(expected);
-        UnityPrint(UnityStrWas);
-        UnityPrintFloat(actual);
-#else
-        UnityPrint(UnityStrDelta);
-#endif
+        UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
