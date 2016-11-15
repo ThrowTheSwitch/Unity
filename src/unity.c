@@ -733,13 +733,13 @@ void UnityAssertFloatSpecial(const _UF actual,
 
         case UNITY_FLOAT_IS_NAN:
         case UNITY_FLOAT_IS_NOT_NAN:
-            is_trait = isnan(actual);
+            is_trait = isnan(actual) ? 1 : 0;
             break;
 
         /* A determinate number is non infinite and not NaN. (therefore the opposite of the two above) */
         case UNITY_FLOAT_IS_DET:
         case UNITY_FLOAT_IS_NOT_DET:
-            if (isinf(actual) | isnan(actual))
+            if (isinf(actual) || isnan(actual))
                 is_trait = 0;
             else
                 is_trait = 1;
@@ -876,13 +876,13 @@ void UnityAssertDoubleSpecial(const _UD actual,
 
         case UNITY_FLOAT_IS_NAN:
         case UNITY_FLOAT_IS_NOT_NAN:
-            is_trait = isnan(actual);
+            is_trait = isnan(actual) ? 1 : 0;
             break;
 
         /* A determinate number is non infinite and not NaN. (therefore the opposite of the two above) */
         case UNITY_FLOAT_IS_DET:
         case UNITY_FLOAT_IS_NOT_DET:
-            if (isinf(actual) | isnan(actual))
+            if (isinf(actual) || isnan(actual))
                 is_trait = 0;
             else
                 is_trait = 1;
