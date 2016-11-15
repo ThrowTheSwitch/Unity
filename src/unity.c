@@ -297,7 +297,7 @@ void UnityPrintFloat(_UD number)
         /* Double precision calculation gives best performance for six rounded decimal places */
         ROUND_TIES_TO_EVEN(fraction_part, (number - integer_part)*1000000.0);
 
-        if (fraction_part == 1000000)
+        if (fraction_part == 1000000) /* Carry across the decimal point */
         {
             fraction_part = 0;
             integer_part += 1;
