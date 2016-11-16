@@ -53,7 +53,6 @@ static const _UD d_zero = 0.0;
 void startPutcharSpy(void);
 void endPutcharSpy(void);
 char* getBufferPutcharSpy(void);
-void putcharSpy(int c);
 
 static int SetToOneToFailInTearDown;
 static int SetToOneMeanWeAlreadyCheckedThisGuy;
