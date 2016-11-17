@@ -263,20 +263,27 @@ static void UnityPrintDecimalAndNumberWithLeadingZeros(_US32 fraction_part, _US3
     }
 }
 #ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
-  #define ROUND_TIES_TO_EVEN(num_int, num)                                \
-  if ((num_int & 1) == 1 && num_int > (num)) /* Odd and was rounded up */ \
-    if ((num) - (_US32)(num) <= 0.5) num_int -= 1 /* and remainder was 0.5, a tie */
+/* If rounds up && remainder 0.5 && result odd && below cutoff for double precision issues */
+  #define ROUND_TIES_TO_EVEN(orig, num_int, num)                                          \
+  if (num_int > (num) && (num) - (num_int-1) <= 0.5 && (num_int & 1) == 1 && orig < 1e22) \
+    num_int -= 1 /* => a tie to round down to even */
 #else
-  #define ROUND_TIES_TO_EVEN(num_int, num)
+  #define ROUND_TIES_TO_EVEN(orig, num_int, num) /* Remove macro */
 #endif
 
-/*
- *  char buffer[19];
- *  if (number > 4294967296.0 || -number > 4294967296.0)
- *      snprintf(buffer, sizeof buffer, "%.8e", number);
- *  else
- *      snprintf(buffer, sizeof buffer, "%.6f", number);
- *  UnityPrint(buffer);
+/* Printing floating point numbers is hard. Some goals of this implementation: works for embedded
+ * systems, floats or doubles, and has a reasonable format. The key paper in this area,
+ * 'How to Print Floating-Point Numbers Accurately' by Steele & White, shows an approximation by
+ * scaling called Dragon 2. This code uses a similar idea. The other core algorithm uses casts and
+ * floating subtraction to give exact remainders after the decimal, to be scaled into an integer.
+ * Extra trailing 0's are excluded. The output defaults to rounding to nearest, ties to even. You
+ * can enable rounding ties away from zero. Note: the _UD parameter can typedef to float or double.
+
+ * The old version required compiling in snprintf. For reference, with a similar format as now:
+ *  char buf[19];
+ *  if (number > 4294967296.0 || -number > 4294967296.0) snprintf(buf, sizeof buf, "%.8e", number);
+ *  else                                                 snprintf(buf, sizeof buf, "%.6f", number);
+ *  UnityPrint(buf);
  */
 void UnityPrintFloat(_UD number)
 {
@@ -293,9 +300,9 @@ void UnityPrintFloat(_UD number)
     {
         const _US32 divisor = (1000000/10);
         _UU32 integer_part = (_UU32)number;
-        _US32 fraction_part = (_US32)((number - integer_part)*1000000.0 + 0.5);
+        _US32 fraction_part = (_US32)((number - (_UD)integer_part)*1000000.0 + 0.5);
         /* Double precision calculation gives best performance for six rounded decimal places */
-        ROUND_TIES_TO_EVEN(fraction_part, (number - integer_part)*1000000.0);
+        ROUND_TIES_TO_EVEN(number, fraction_part, (number - (_UD)integer_part)*1000000.0);
 
         if (fraction_part == 1000000) /* Carry across the decimal point */
         {
@@ -320,7 +327,7 @@ void UnityPrintFloat(_UD number)
         }
         integer_part = (_US32)(number / divide + 0.5);
         /* Double precision calculation required for float, to produce 9 rounded digits */
-        ROUND_TIES_TO_EVEN(integer_part, number / divide);
+        ROUND_TIES_TO_EVEN(number, integer_part, number / divide);
 
         UNITY_OUTPUT_CHAR('0' + integer_part / divisor);
         UnityPrintDecimalAndNumberWithLeadingZeros(integer_part % divisor, divisor / 10);

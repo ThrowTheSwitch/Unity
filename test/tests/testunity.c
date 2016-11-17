@@ -5,7 +5,6 @@
 ========================================== */
 
 #include "unity.h"
-#include <setjmp.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -61,19 +60,20 @@ static int SetToOneMeanWeAlreadyCheckedThisGuy;
 
 void setUp(void)
 {
-  SetToOneToFailInTearDown = 0;
-  SetToOneMeanWeAlreadyCheckedThisGuy = 0;
+    SetToOneToFailInTearDown = 0;
+    SetToOneMeanWeAlreadyCheckedThisGuy = 0;
 }
 
 void tearDown(void)
 {
-  if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL_MESSAGE("<= Failed in tearDown");
-  if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
-  {
-    UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
-    UNITY_OUTPUT_CHAR('\n');
-  }
+    endPutcharSpy(); /* Stop suppressing test output */
+    if (SetToOneToFailInTearDown == 1)
+        TEST_FAIL_MESSAGE("<= Failed in tearDown");
+    if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
+    {
+        UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
+        UNITY_OUTPUT_CHAR('\n');
+    }
 }
 
 void testUnitySizeInitializationReminder(void)
@@ -2238,7 +2238,7 @@ void testIgnoredAndThenFailInTearDown(void)
 #endif
 
 #ifdef USING_OUTPUT_SPY
-int putchar(int);
+#include <stdio.h>
 #define SPY_BUFFER_MAX 40
 static char putcharSpyBuffer[SPY_BUFFER_MAX];
 #endif
@@ -2267,7 +2267,7 @@ void putcharSpy(int c)
         if (indexSpyBuffer < SPY_BUFFER_MAX - 1)
             putcharSpyBuffer[indexSpyBuffer++] = (char)c;
     } else
-        c = putchar(c);
+        putchar((char)c);
 #endif
 }
 
@@ -3305,11 +3305,105 @@ void testFloatPrintingInfinityAndNaN(void)
 #if defined(UNITY_EXCLUDE_FLOAT) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("Inf",   3.40282346638e38f*2.0f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("Inf",   1.0f / f_zero);
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("-Inf", -3.40282346638e38f*2.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-Inf", -1.0f / f_zero);
 
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("NaN",  -3.40282346638e38f*2.0f * f_zero);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("NaN",   0.0f / f_zero);
+#endif
+}
+
+#if defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) && defined(USING_OUTPUT_SPY)
+static void AllFloatPrinting_LessThan32Bits(void)
+{
+    char expected[18];
+    union { float f_value; int32_t int_value; } u;
+    /* Float representations are laid out in integer order, walk up the list */
+    for (u.f_value = 0.00000050000005f; u.f_value <= 4294967040.0f; u.int_value += 1)
+    {
+        startPutcharSpy();
+
+        UnityPrintFloat(u.f_value); /*1.5x as fast as sprintf 5e-7f - 0.01f, 20s vs 30s*/
+        int len = sprintf(expected, "%.6f", u.f_value);
+
+        while (expected[len - 1] == '0' && expected[len - 2] != '.') { len--; }
+        expected[len] = '\0'; /* delete trailing 0's */
+
+        if (strcmp(expected, getBufferPutcharSpy()) != 0)
+        {
+            double six_digits = ((double)u.f_value - (uint32_t)u.f_value)*1000000.0;
+            /* Not a tie (remainder != 0.5) => Can't explain the different strings */
+            if (six_digits - (uint32_t)six_digits != 0.5)
+            {
+                /* Fail with diagnostic printing */
+                TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, u.f_value);
+            }
+        }
+    }
+}
+
+/* Compared to perfect, floats are occasionally rounded wrong. It doesn't affect
+ * correctness, though. Two examples (of 13 total found during testing):
+ * Printed: 6.19256349e+20, Exact: 619256348499999981568.0f <= Eliminated by ROUND_TIES_TO_EVEN
+ * Printed: 2.19012272e+35, Exact: 219012271499999993621766990196637696.0f */
+static void AllFloatPrinting_Larger(const float start, const float end)
+{
+    unsigned int wrong = 0;
+    char expected[18];
+    union { float f_value; int32_t int_value; } u;
+    for (u.f_value = start; u.f_value <= end; u.int_value += 1)
+    {
+        startPutcharSpy();
+
+        UnityPrintFloat(u.f_value); /*Twice as fast as sprintf 2**32-1e12, 10s vs 21s*/
+        sprintf(expected, "%.8e", u.f_value);
+
+        int len = 11 - 1; /* 11th char is 'e' in exponential format */
+        while (expected[len - 1] == '0' && expected[len - 2] != '.') { len --; }
+        if (expected[14] != '\0') memmove(&expected[12], &expected[13], 3); /* Two char exponent */
+        memmove(&expected[len], &expected[11 - 1], sizeof "e+09"); /* 5 char length */
+
+        if (strcmp(expected, getBufferPutcharSpy()) != 0)
+        {
+            wrong++;
+            /* endPutcharSpy(); UnityPrint("Expected "); UnityPrint(expected);
+            UnityPrint(" Was "); UnityPrint(getBufferPutcharSpy()); UNITY_OUTPUT_CHAR('\n'); */
+
+            if (wrong > 10 || (wrong > 3 && end <= 1e25f))
+                TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, u.f_value);
+            /* Empirical values from the current routine, don't be worse when making changes */
+        }
+    }
+}
+#endif
+
+/* Exhaustive testing of all float values we differentiate when printing. Doubles
+ * are not explored here -- too many. These tests confirm that the routine works
+ * for all floats > 5e-7, positives only. Off by default due to test time.
+ * Compares Unity's routine to your sprintf() C lib, tested to pass on 3 platforms.
+ * Part1 takes a long time, around 3 minutes compiled with -O2
+ * Runs through all floats from 0.000001 - 2**32, ~300 million values */
+void testAllFloatPrintingPart1_LessThan32Bits(void)
+{
+#if defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) && defined(USING_OUTPUT_SPY)
+    AllFloatPrinting_LessThan32Bits();
+#else
+    TEST_IGNORE(); /* Ignore one of three */
+#endif
+}
+
+/* Test takes a long time, around 3.5 minutes compiled with -O2, try ~500 million values */
+void testAllFloatPrintingPart2_Larger(void)
+{
+#if defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) && defined(USING_OUTPUT_SPY)
+    AllFloatPrinting_Larger(4294967296.0f, 1e25f);
+#endif
+}
+
+/* Test takes a long time, around 3.5 minutes compiled with -O2, try ~500 million values */
+void testAllFloatPrintingPart3_LargerStill(void)
+{
+#if defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) && defined(USING_OUTPUT_SPY)
+    AllFloatPrinting_Larger(1e25f, 3.40282347e+38f);
 #endif
 }
 
@@ -3878,11 +3972,10 @@ void testDoublePrintingInfinityAndNaN(void)
 #if defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("Inf",   1.7976931348623157e308*10.0);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("Inf",   1.0 / d_zero);
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("-Inf", -1.7976931348623157e308*10.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-Inf", -1.0 / d_zero);
 
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("NaN",  -1.7976931348623157e308*10.0 * d_zero);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("NaN",   0.0 / d_zero);
 #endif
 }
 
