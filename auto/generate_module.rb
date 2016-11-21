@@ -96,6 +96,7 @@ class UnityModuleGenerator
       :update_svn      => false,
       :boilerplates    => {},
       :test_prefix     => 'Test',
+      :mock_prefix     => 'Mock',
     }
   end
 
@@ -136,7 +137,7 @@ class UnityModuleGenerator
           :includes => case(triad[:inc])
                          when :src then @options[:includes][:src] | pattern_traits[:inc].map{|f| f % [module_name]}
                          when :inc then @options[:includes][:inc]
-                         when :tst then @options[:includes][:tst] | pattern_traits[:inc].map{|f| "Mock#{f}"% [module_name]}
+                         when :tst then @options[:includes][:tst] | pattern_traits[:inc].map{|f| "#{@options[:mock_prefix]}#{f}"% [module_name]}
                        end
         }
       end
