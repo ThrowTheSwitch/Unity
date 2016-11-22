@@ -35,7 +35,8 @@ TEMPLATE_SRC ||= %q[%2$s#include "%1$s.h"
 
 #TEMPLATE_INC
 TEMPLATE_INC ||= %q[#ifndef _%3$s_H
-#define _%3$s_H%2$s
+#define _%3$s_H
+%2$s
 
 #endif // _%3$s_H
 ]
@@ -65,19 +66,20 @@ class UnityModuleGenerator
 
     #Built in patterns
     @patterns = { 'src' => {''         => { :inc => [] } },
-                  'dh'  => {'Driver'   => { :inc => ['%1$sHardware.h'] },
+                  'test'=> {''         => { :inc => [] } },
+                  'dh'  => {'Driver'   => { :inc => [create_filename('%1$s','Hardware.h')] },
                             'Hardware' => { :inc => [] }
                            },
-                  'dih' => {'Driver'   => { :inc => ['%1$sHardware.h', '%1$sInterrupt.h'] },
-                            'Interrupt'=> { :inc => ['%1$sHardware.h'] },
+                  'dih' => {'Driver'   => { :inc => [create_filename('%1$s','Hardware.h'), create_filename('%1$s','Interrupt.h')] },
+                            'Interrupt'=> { :inc => [create_filename('%1$s','Hardware.h')] },
                             'Hardware' => { :inc => [] }
                            },
                   'mch' => {'Model'    => { :inc => [] },
-                            'Conductor'=> { :inc => ['%1$sModel.h', '%1$sHardware.h'] },
+                            'Conductor'=> { :inc => [create_filename('%1$s','Model.h'), create_filename('%1$s','Hardware.h')] },
                             'Hardware' => { :inc => [] }
                            },
                   'mvp' => {'Model'    => { :inc => [] },
-                            'Presenter'=> { :inc => ['%1$sModel.h', '%1$sView.h'] },
+                            'Presenter'=> { :inc => [create_filename('%1$s','Model.h'), create_filename('%1$s','View.h')] },
                             'View'     => { :inc => [] }
                            }
                 }
@@ -122,28 +124,56 @@ class UnityModuleGenerator
             ]
 
     #prepare the pattern for use
-    patterns = @patterns[(pattern || @options[:pattern] || 'src').downcase]
+    pattern = (pattern || @options[:pattern] || 'src').downcase
+    patterns = @patterns[pattern]
     raise "ERROR: The design pattern '#{pattern}' specified isn't one that I recognize!" if patterns.nil?
+
+    #single file patterns (currently just 'test') can reject the other parts of the triad
+    if (pattern == 'test')
+      triad.reject!{|v| v[:inc] != :tst }
+    end
 
     # Assemble the path/names of the files we need to work with.
     files = []
-    triad.each do |triad|
+    triad.each do |cfg|
       patterns.each_pair do |pattern_file, pattern_traits|
+        submodule_name = create_filename(module_name, pattern_file)
         files << {
-          :path => "#{triad[:path]}#{module_name}#{pattern_file}#{triad[:ext]}",
-          :name => "#{module_name}#{pattern_file}",
-          :template => triad[:template],
-          :boilerplate => triad[:boilerplate],
-          :includes => case(triad[:inc])
-                         when :src then @options[:includes][:src] | pattern_traits[:inc].map{|f| f % [module_name]}
-                         when :inc then @options[:includes][:inc]
-                         when :tst then @options[:includes][:tst] | pattern_traits[:inc].map{|f| "#{@options[:mock_prefix]}#{f}"% [module_name]}
+          :path => "#{cfg[:path]}#{submodule_name}#{cfg[:ext]}",
+          :name => submodule_name,
+          :template => cfg[:template],
+          :boilerplate => cfg[:boilerplate],
+          :includes => case(cfg[:inc])
+                         when :src then (@options[:includes][:src] || []) | pattern_traits[:inc].map{|f| f % [module_name]}
+                         when :inc then (@options[:includes][:inc] || [])
+                         when :tst then (@options[:includes][:tst] || []) | pattern_traits[:inc].map{|f| "#{@options[:mock_prefix]}#{f}" % [module_name]}
                        end
         }
       end
     end
 
     return files
+  end
+
+  ############################
+  def create_filename(part1, part2="")
+    if part2.empty?
+      case(@options[:naming])
+      when 'bumpy' then part1
+      when 'camel' then part1
+      when 'snake' then part1.downcase
+      when 'caps'  then part1.upcase
+      else              part1.downcase
+      end
+    else
+      case(@options[:naming])
+      when 'bumpy' then part1 + part2
+      when 'camel' then part1 + part2
+      when 'snake' then part1.downcase + "_" + part2.downcase
+      when 'caps'  then part1.upcase + "_" + part2.upcase
+      else              part1.downcase + "_" + part2.downcase
+      end
+    end
   end
 
   ############################
@@ -159,7 +189,7 @@ class UnityModuleGenerator
     # Create Source Modules
     files.each_with_index do |file, i|
       File.open(file[:path], 'w') do |f|
-        f.write(file[:boilerplate] % [file[:name]]) unless file[:boilerplate].nil?
+        f.write("#{file[:boilerplate]}\n" % [file[:name]]) unless file[:boilerplate].nil?
         f.write(file[:template] % [ file[:name],
                                     file[:includes].map{|f| "#include \"#{f}\"\n"}.join,
                                     file[:name].upcase ]
@@ -211,13 +241,14 @@ if ($0 == __FILE__)
   # Parse the command line parameters.
   ARGV.each do |arg|
     case(arg)
-      when /^-d/      then destroy = true
-      when /^-u/      then options[:update_svn] = true
-      when /^-p(\w+)/ then options[:pattern] = $1
-      when /^-s(.+)/  then options[:path_src] = $1
-      when /^-i(.+)/  then options[:path_inc] = $1
-      when /^-t(.+)/  then options[:path_tst] = $1
-      when /^-y(.+)/  then options = UnityModuleGenerator.grab_config($1)
+      when /^-d/            then destroy = true
+      when /^-u/            then options[:update_svn] = true
+      when /^-p\"?(\w+)\"?/ then options[:pattern] = $1
+      when /^-s\"?(.+)\"?/  then options[:path_src] = $1
+      when /^-i\"?(.+)\"?/  then options[:path_inc] = $1
+      when /^-t\"?(.+)\"?/  then options[:path_tst] = $1
+      when /^-n\"?(.+)\"?/  then options[:naming] = $1
+      when /^-y\"?(.+)\"?/  then options = UnityModuleGenerator.grab_config($1)
       when /^(\w+)/
         raise "ERROR: You can't have more than one Module name specified!" unless module_name.nil?
         module_name = arg
@@ -235,12 +266,18 @@ if ($0 == __FILE__)
            "  -s\"../src\"  sets the path to output source to '../src'   (DEFAULT ../src)",
            "  -t\"C:/test\" sets the path to output source to 'C:/test'  (DEFAULT ../test)",
            "  -p\"MCH\"     sets the output pattern to MCH.",
-           "              dh  - driver hardware.",
-           "              dih - driver interrupt hardware.",
-           "              mch - model conductor hardware.",
-           "              mvp - model view presenter.",
-           "              src - just a single source module. (DEFAULT)",
+           "              dh   - driver hardware.",
+           "              dih  - driver interrupt hardware.",
+           "              mch  - model conductor hardware.",
+           "              mvp  - model view presenter.",
+           "              src  - just a source module, header and test. (DEFAULT)",
+           "              test - just a test file.",
            "  -d          destroy module instead of creating it.",
+           "  -n\"camel\"   sets the file naming convention.",
+           "              bumpy - BumpyCaseFilenames.",
+           "              camel - camelCaseFilenames.",
+           "              snake - snake_case_filenames. (DEFAULT)",
+           "              caps  - CAPS_CASE_FILENAMES.",
            "  -u          update subversion too (requires subversion command line)",
            "  -y\"my.yml\"  selects a different yaml config file for module generation",
            "" ].join("\n")
