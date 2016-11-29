@@ -138,8 +138,8 @@ TEST(UnityFixture, FreeNULLSafety)
 
 TEST(UnityFixture, ConcludeTestIncrementsFailCount)
 {
-    _U_UINT savedFails = Unity.TestFailures;
-    _U_UINT savedIgnores = Unity.TestIgnores;
+    UNITY_UINT savedFails = Unity.TestFailures;
+    UNITY_UINT savedIgnores = Unity.TestIgnores;
     UnityOutputCharSpy_Enable(1);
     Unity.CurrentTestFailed = 1;
     UnityConcludeFixtureTest(); /* Resets TestFailed for this test to pass */
@@ -301,7 +301,7 @@ TEST(UnityCommandOptions, GroupOrNameFilterWithoutStringFails)
 
 TEST(UnityCommandOptions, GroupFilterReallyFilters)
 {
-    _U_UINT saved = Unity.NumberOfTests;
+    UNITY_UINT saved = Unity.NumberOfTests;
     TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(4, unknownCommand));
     UnityIgnoreTest(NULL, "non-matching", NULL);
     TEST_ASSERT_EQUAL(saved, Unity.NumberOfTests);

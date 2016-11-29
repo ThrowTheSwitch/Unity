@@ -9,7 +9,7 @@
 #include "unity_fixture.h"
 #include "unity_internals.h"
 
-struct _UnityFixture UnityFixture;
+struct UNITY_FIXTURE_T UnityFixture;
 
 /* If you decide to use the function pointer approach.
  * Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>

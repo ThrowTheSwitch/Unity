@@ -13,14 +13,14 @@ extern "C"
 {
 #endif
 
-struct _UnityFixture
+struct UNITY_FIXTURE_T
 {
     int Verbose;
     unsigned int RepeatCount;
     const char* NameFilter;
     const char* GroupFilter;
 };
-extern struct _UnityFixture UnityFixture;
+extern struct UNITY_FIXTURE_T UnityFixture;
 
 typedef void unityfunction(void);
 void UnityTestRunner(unityfunction* setup,
