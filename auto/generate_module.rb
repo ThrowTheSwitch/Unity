@@ -10,6 +10,7 @@
 
 require 'rubygems'
 require 'fileutils'
+require 'pathname'
 
 #TEMPLATE_TST
 TEMPLATE_TST ||= %q[#include "unity.h"
@@ -116,11 +117,15 @@ class UnityModuleGenerator
 
   ############################
   def files_to_operate_on(module_name, pattern=nil)
+    #strip any leading path information from the module name and save for later
+    subfolder = File.dirname(module_name)
+    module_name = File.basename(module_name)
+
     #create triad definition
     prefix = @options[:test_prefix] || 'Test'
-    triad = [ { :ext => '.c', :path => @options[:path_src],        :template => TEMPLATE_SRC, :inc => :src, :boilerplate => @options[:boilerplates][:src] },
-              { :ext => '.h', :path => @options[:path_inc],        :template => TEMPLATE_INC, :inc => :inc, :boilerplate => @options[:boilerplates][:inc] },
-              { :ext => '.c', :path => @options[:path_tst]+prefix, :template => TEMPLATE_TST, :inc => :tst, :boilerplate => @options[:boilerplates][:tst] },
+    triad = [ { :ext => '.c', :path => @options[:path_src], :prefix => "",     :template => TEMPLATE_SRC, :inc => :src, :boilerplate => @options[:boilerplates][:src] },
+              { :ext => '.h', :path => @options[:path_inc], :prefix => "",     :template => TEMPLATE_INC, :inc => :inc, :boilerplate => @options[:boilerplates][:inc] },
+              { :ext => '.c', :path => @options[:path_tst], :prefix => prefix, :template => TEMPLATE_TST, :inc => :tst, :boilerplate => @options[:boilerplates][:tst] },
             ]
 
     #prepare the pattern for use
@@ -138,8 +143,9 @@ class UnityModuleGenerator
     triad.each do |cfg|
       patterns.each_pair do |pattern_file, pattern_traits|
         submodule_name = create_filename(module_name, pattern_file)
+        filename = cfg[:prefix] + submodule_name + cfg[:ext]
         files << {
-          :path => "#{cfg[:path]}#{submodule_name}#{cfg[:ext]}",
+          :path => (Pathname.new("#{cfg[:path]}#{subfolder}") + filename).cleanpath,
           :name => submodule_name,
           :template => cfg[:template],
           :boilerplate => cfg[:boilerplate],
@@ -188,6 +194,7 @@ class UnityModuleGenerator
 
     # Create Source Modules
     files.each_with_index do |file, i|
+      FileUtils.mkdir_p(File.dirname(file[:path]), :verbose => false) # Create the path first if necessary.
       File.open(file[:path], 'w') do |f|
         f.write("#{file[:boilerplate]}\n" % [file[:name]]) unless file[:boilerplate].nil?
         f.write(file[:template] % [ file[:name],
@@ -292,5 +299,3 @@ if ($0 == __FILE__)
   end
 
 end
-
-
