@@ -620,6 +620,13 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
         if (expect_val != actual_val)
         {
+            if (style & UNITY_DISPLAY_RANGE_UINT && length < sizeof expect_val)
+            {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */
+                UNITY_INT mask = 1;
+                mask = (mask << 8 * length) - 1;
+                expect_val &= mask;
+                actual_val &= mask;
+            }
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
