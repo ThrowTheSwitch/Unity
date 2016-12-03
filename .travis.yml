@@ -11,6 +11,7 @@ matrix:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then rvm install 2.1 && rvm use 2.1 && ruby -v; fi
+install: gem install rspec
 script:
   - cd test && rake ci
   - make -s
