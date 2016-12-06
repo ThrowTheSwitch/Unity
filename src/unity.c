@@ -1275,7 +1275,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
         setUp();
         Func();
     }
-    if (TEST_PROTECT() && !(Unity.CurrentTestIgnored))
+    if (TEST_PROTECT())
     {
         tearDown();
     }

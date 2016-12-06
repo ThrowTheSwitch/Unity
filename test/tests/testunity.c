@@ -67,7 +67,11 @@ void tearDown(void)
 {
     endPutcharSpy(); /* Stop suppressing test output */
     if (SetToOneToFailInTearDown == 1)
+    {
+        /* These will be skipped internally if already failed/ignored */
         TEST_FAIL_MESSAGE("<= Failed in tearDown");
+        TEST_IGNORE_MESSAGE("<= Ignored in tearDown");
+    }
     if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
     {
         UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
