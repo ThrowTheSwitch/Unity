@@ -10,9 +10,11 @@ $verbose = false
 require 'rake'
 require 'rake/clean'
 require UNITY_ROOT + 'rakefile_helper'
+require 'rspec/core/rake_task'
 
 TEMP_DIRS = [
-	File.join(UNITY_ROOT, 'build')
+	File.join(UNITY_ROOT, 'build'),
+	File.join(UNITY_ROOT, 'sandbox')
 ]
 
 TEMP_DIRS.each do |dir|
@@ -38,6 +40,11 @@ task :scripts => [:prepare_for_tests] do
   Dir['tests/test_*.rb'].each do |scriptfile|
     require "./"+scriptfile
   end
+end
+
+desc "Run all rspecs"
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = 'spec/**/*_spec.rb'
 end
 
 desc "Generate test summary"

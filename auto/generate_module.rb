@@ -187,14 +187,24 @@ class UnityModuleGenerator
 
     files = files_to_operate_on(module_name, pattern)
 
-    #Abort if any module already exists
+    #Abort if all of the module files already exist
+    all_files_exist = true
     files.each do |file|
-      raise "ERROR: File #{file[:name]} already exists. Exiting." if File.exist?(file[:path])
+      if not File.exist?(file[:path])
+        all_files_exist = false
+      end
     end
+    raise "ERROR: File #{files[0][:name]} already exists. Exiting." if all_files_exist
 
     # Create Source Modules
     files.each_with_index do |file, i|
-      FileUtils.mkdir_p(File.dirname(file[:path]), :verbose => false) # Create the path first if necessary.
+      # If this file already exists, don't overwrite it.
+      if File.exist?(file[:path])
+        puts "File #{file[:path]} already exists!"
+        next
+      end
+      # Create the path first if necessary.
+      FileUtils.mkdir_p(File.dirname(file[:path]), :verbose => false)
       File.open(file[:path], 'w') do |f|
         f.write("#{file[:boilerplate]}\n" % [file[:name]]) unless file[:boilerplate].nil?
         f.write(file[:template] % [ file[:name],

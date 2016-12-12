@@ -1,4 +1,5 @@
 build/
+test/sandbox
 .DS_Store
 examples/example_1/test1.out
 examples/example_1/test2.out
