@@ -171,7 +171,6 @@
 #undef UNITY_INCLUDE_FLOAT
 #undef UNITY_FLOAT_PRECISION
 #undef UNITY_FLOAT_TYPE
-#undef UNITY_FLOAT_VERBOSE
 
 #else
 
@@ -225,15 +224,19 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
   /* No Floating Point Support */
   #undef UNITY_DOUBLE_PRECISION
   #undef UNITY_DOUBLE_TYPE
-  #undef UNITY_DOUBLE_VERBOSE
 
   #ifdef UNITY_INCLUDE_DOUBLE
     #undef UNITY_INCLUDE_DOUBLE
   #endif
 
-  #ifdef UNITY_FLOAT_VERBOSE
-    typedef UNITY_FLOAT UNITY_DOUBLE;
-    /* For parameter in UnityPrintFloat, double promotion required */
+  #ifdef UNITY_EXCLUDE_FLOAT
+  #define UNITY_EXCLUDE_FLOAT_PRINT
+  #else
+  #ifndef UNITY_DOUBLE_TYPE
+  #define UNITY_DOUBLE_TYPE double
+  #endif
+  typedef UNITY_FLOAT UNITY_DOUBLE;
+  /* For parameter in UnityPrintFloat(UNITY_DOUBLE), which aliases to double or float */
   #endif
 
 #else
@@ -248,12 +251,6 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
   #endif
   typedef UNITY_DOUBLE_TYPE UNITY_DOUBLE;
 
-#endif
-
-#ifdef UNITY_DOUBLE_VERBOSE
-#ifndef UNITY_FLOAT_VERBOSE
-#define UNITY_FLOAT_VERBOSE
-#endif
 #endif
 
 /*-------------------------------------------------------
@@ -443,7 +440,7 @@ void UnityPrintNumber(const UNITY_INT number);
 void UnityPrintNumberUnsigned(const UNITY_UINT number);
 void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles);
 
-#ifdef UNITY_FLOAT_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
 void UnityPrintFloat(const UNITY_DOUBLE number);
 #endif
 
