@@ -37,13 +37,11 @@ void tearDown(void);
  *     - define UNITY_EXCLUDE_FLOAT to disallow floating point comparisons
  *     - define UNITY_FLOAT_PRECISION to specify the precision to use when doing TEST_ASSERT_EQUAL_FLOAT
  *     - define UNITY_FLOAT_TYPE to specify doubles instead of single precision floats
- *     - define UNITY_FLOAT_VERBOSE to print floating point values in errors (uses sprintf)
  *     - define UNITY_INCLUDE_DOUBLE to allow double floating point comparisons
  *     - define UNITY_EXCLUDE_DOUBLE to disallow double floating point comparisons (default)
  *     - define UNITY_DOUBLE_PRECISION to specify the precision to use when doing TEST_ASSERT_EQUAL_DOUBLE
  *     - define UNITY_DOUBLE_TYPE to specify something other than double
- *     - define UNITY_DOUBLE_VERBOSE to print floating point values in errors (uses sprintf)
- *     - define UNITY_VERBOSE_NUMBER_MAX_LENGTH to change maximum length of printed numbers (used by sprintf)
+ *     - define UNITY_EXCLUDE_FLOAT_PRINT to trim binary size, won't print floating point values in errors
 
  * Output
  *     - by default, Unity prints to standard out with putchar.  define UNITY_OUTPUT_CHAR(a) with a different function if desired

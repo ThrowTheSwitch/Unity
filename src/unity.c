@@ -250,24 +250,94 @@ void UnityPrintMask(const UNITY_UINT mask, const UNITY_UINT number)
 }
 
 /*-----------------------------------------------*/
-#ifdef UNITY_FLOAT_VERBOSE
-#include <stdio.h>
-
-#ifndef UNITY_VERBOSE_NUMBER_MAX_LENGTH
-# ifdef UNITY_DOUBLE_VERBOSE
-#  define UNITY_VERBOSE_NUMBER_MAX_LENGTH 317
-# else
-#  define UNITY_VERBOSE_NUMBER_MAX_LENGTH 47
-# endif
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
+static void UnityPrintDecimalAndNumberWithLeadingZeros(UNITY_INT32 fraction_part, UNITY_INT32 divisor)
+{
+    UNITY_OUTPUT_CHAR('.');
+    while (divisor > 0)
+    {
+        UNITY_OUTPUT_CHAR('0' + fraction_part / divisor);
+        fraction_part %= divisor;
+        divisor /= 10;
+        if (fraction_part == 0) break; /* Truncate trailing 0's */
+    }
+}
+#ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
+/* If rounds up && remainder 0.5 && result odd && below cutoff for double precision issues */
+  #define ROUND_TIES_TO_EVEN(orig, num_int, num)                                          \
+  if (num_int > (num) && (num) - (num_int-1) <= 0.5 && (num_int & 1) == 1 && orig < 1e22) \
+    num_int -= 1 /* => a tie to round down to even */
+#else
+  #define ROUND_TIES_TO_EVEN(orig, num_int, num) /* Remove macro */
 #endif
 
+/* Printing floating point numbers is hard. Some goals of this implementation: works for embedded
+ * systems, floats or doubles, and has a reasonable format. The key paper in this area,
+ * 'How to Print Floating-Point Numbers Accurately' by Steele & White, shows an approximation by
+ * scaling called Dragon 2. This code uses a similar idea. The other core algorithm uses casts and
+ * floating subtraction to give exact remainders after the decimal, to be scaled into an integer.
+ * Extra trailing 0's are excluded. The output defaults to rounding to nearest, ties to even. You
+ * can enable rounding ties away from zero. Note: UNITY_DOUBLE param can typedef to float or double
+
+ * The old version required compiling in snprintf. For reference, with a similar format as now:
+ *  char buf[19];
+ *  if (number > 4294967296.0 || -number > 4294967296.0) snprintf(buf, sizeof buf, "%.8e", number);
+ *  else                                                 snprintf(buf, sizeof buf, "%.6f", number);
+ *  UnityPrint(buf);
+ */
 void UnityPrintFloat(UNITY_DOUBLE number)
 {
-    char TempBuffer[UNITY_VERBOSE_NUMBER_MAX_LENGTH + 1];
-    snprintf(TempBuffer, sizeof(TempBuffer), "%.6f", number);
-    UnityPrint(TempBuffer);
+    if (number < 0)
+    {
+        UNITY_OUTPUT_CHAR('-');
+        number = -number;
+    }
+
+    if (isnan(number)) UnityPrint(UnityStrNaN);
+    else if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
+    else if (number <= 0.0000005 && number > 0) UnityPrint("0.000000..."); /* Small number */
+    else if (number < 4294967295.9999995) /* Rounded result fits in 32 bits, "%.6f" format */
+    {
+        const UNITY_INT32 divisor = 1000000/10;
+        UNITY_UINT32 integer_part = (UNITY_UINT32)number;
+        UNITY_INT32 fraction_part = (UNITY_INT32)((number - (UNITY_DOUBLE)integer_part)*1000000.0 + 0.5);
+        /* Double precision calculation gives best performance for six rounded decimal places */
+        ROUND_TIES_TO_EVEN(number, fraction_part, (number - (UNITY_DOUBLE)integer_part)*1000000.0);
+
+        if (fraction_part == 1000000) /* Carry across the decimal point */
+        {
+            fraction_part = 0;
+            integer_part += 1;
+        }
+
+        UnityPrintNumberUnsigned(integer_part);
+        UnityPrintDecimalAndNumberWithLeadingZeros(fraction_part, divisor);
+    }
+    else /* Number is larger, use exponential format of 9 digits, "%.8e" */
+    {
+        const UNITY_INT32 divisor = 1000000000/10;
+        UNITY_INT32 integer_part;
+        UNITY_DOUBLE_TYPE divide = 10.0;
+        int exponent = 9;
+
+        while (number / divide >= 1000000000.0 - 0.5)
+        {
+            divide *= 10;
+            exponent++;
+        }
+        integer_part = (UNITY_INT32)(number / divide + 0.5);
+        /* Double precision calculation required for float, to produce 9 rounded digits */
+        ROUND_TIES_TO_EVEN(number, integer_part, number / divide);
+
+        UNITY_OUTPUT_CHAR('0' + integer_part / divisor);
+        UnityPrintDecimalAndNumberWithLeadingZeros(integer_part % divisor, divisor / 10);
+        UNITY_OUTPUT_CHAR('e');
+        UNITY_OUTPUT_CHAR('+');
+        if (exponent < 10) UNITY_OUTPUT_CHAR('0');
+        UnityPrintNumber(exponent);
+    }
 }
-#endif
+#endif /* ! UNITY_EXCLUDE_FLOAT_PRINT */
 
 /*-----------------------------------------------*/
 
@@ -631,6 +701,19 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
   #define UNITY_NAN_CHECK 0
 #endif
 
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
+  #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
+    do {                                                          \
+    UnityPrint(UnityStrExpected);                                 \
+    UnityPrintFloat(expected);                                    \
+    UnityPrint(UnityStrWas);                                      \
+    UnityPrintFloat(actual);                                      \
+    } while(0)
+#else
+  #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
+    UnityPrint(UnityStrDelta)
+#endif /* UNITY_EXCLUDE_FLOAT_PRINT */
+
 #ifndef UNITY_EXCLUDE_FLOAT
 static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOAT actual)
 {
@@ -665,14 +748,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
-#ifdef UNITY_FLOAT_VERBOSE
-            UnityPrint(UnityStrExpected);
-            UnityPrintFloat(*ptr_expected);
-            UnityPrint(UnityStrWas);
-            UnityPrintFloat(*ptr_actual);
-#else
-            UnityPrint(UnityStrDelta);
-#endif
+            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
@@ -694,14 +770,7 @@ void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
     if (!UnityFloatsWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
-#ifdef UNITY_FLOAT_VERBOSE
-        UnityPrint(UnityStrExpected);
-        UnityPrintFloat(expected);
-        UnityPrint(UnityStrWas);
-        UnityPrintFloat(actual);
-#else
-        UnityPrint(UnityStrDelta);
-#endif
+        UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
@@ -759,7 +828,7 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
         UnityPrint(UnityStrWas);
-#ifdef UNITY_FLOAT_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrintFloat(actual);
 #else
         if (should_be_trait)
@@ -808,14 +877,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
-#ifdef UNITY_DOUBLE_VERBOSE
-            UnityPrint(UnityStrExpected);
-            UnityPrintFloat((float)(*ptr_expected));
-            UnityPrint(UnityStrWas);
-            UnityPrintFloat((float)(*ptr_actual));
-#else
-            UnityPrint(UnityStrDelta);
-#endif
+            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
@@ -836,14 +898,7 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
     if (!UnityDoublesWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
-#ifdef UNITY_DOUBLE_VERBOSE
-        UnityPrint(UnityStrExpected);
-        UnityPrintFloat((float)expected);
-        UnityPrint(UnityStrWas);
-        UnityPrintFloat((float)actual);
-#else
-        UnityPrint(UnityStrDelta);
-#endif
+        UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
@@ -902,7 +957,7 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
         UnityPrint(UnityStrWas);
-#ifdef UNITY_DOUBLE_VERBOSE
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrintFloat(actual);
 #else
         if (should_be_trait)
