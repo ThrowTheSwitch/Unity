@@ -305,8 +305,7 @@ struct PointerPair
     void* old_value;
 };
 
-enum { MAX_POINTERS = 50 };
-static struct PointerPair pointer_store[MAX_POINTERS];
+static struct PointerPair pointer_store[UNITY_MAX_POINTERS];
 static int pointer_index = 0;
 
 void UnityPointer_Init(void)
@@ -316,7 +315,7 @@ void UnityPointer_Init(void)
 
 void UnityPointer_Set(void** pointer, void* newValue, UNITY_LINE_TYPE line)
 {
-    if (pointer_index >= MAX_POINTERS)
+    if (pointer_index >= UNITY_MAX_POINTERS)
     {
         UNITY_TEST_FAIL(line, "Too many pointers set");
     }

@@ -465,7 +465,7 @@ TEST(LeakDetection, PointerSettingMax)
     TEST_IGNORE();
 #else
     int i;
-    for (i = 0; i < 50; i++) UT_PTR_SET(pointer1, &int1);
+    for (i = 0; i < UNITY_MAX_POINTERS; i++) UT_PTR_SET(pointer1, &int1);
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     UT_PTR_SET(pointer1, &int1);

@@ -40,6 +40,9 @@ void UnityConcludeFixtureTest(void);
 void UnityPointer_Set(void** ptr, void* newValue, UNITY_LINE_TYPE line);
 void UnityPointer_UndoAllSets(void);
 void UnityPointer_Init(void);
+#ifndef UNITY_MAX_POINTERS
+#define UNITY_MAX_POINTERS 5
+#endif
 
 #ifdef __cplusplus
 }
