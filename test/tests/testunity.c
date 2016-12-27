@@ -2272,15 +2272,18 @@ void putcharSpy(int c)
 
 void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 {
+    UNITY_UINT savedFailures = Unity.TestFailures;
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); // Suppress output
     UnityConcludeTest();
-    TEST_ASSERT_EQUAL(1, Unity.TestFailures);
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
 
+    startPutcharSpy(); // Suppress output
     int failures = UnityEnd();
     Unity.TestFailures--;
     endPutcharSpy();
-    TEST_ASSERT_EQUAL(1, failures);
+    TEST_ASSERT_EQUAL(savedFailures + 1, failures);
 }
 
 void testCstringsEscapeSequence(void)
