@@ -168,15 +168,14 @@
 #ifdef UNITY_EXCLUDE_FLOAT
 
 /* No Floating Point Support */
-#undef UNITY_INCLUDE_FLOAT
-#undef UNITY_FLOAT_PRECISION
-#undef UNITY_FLOAT_TYPE
+#ifndef UNITY_EXCLUDE_DOUBLE
+#define UNITY_EXCLUDE_DOUBLE /* Remove double when excluding float support */
+#endif
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
+#define UNITY_EXCLUDE_FLOAT_PRINT
+#endif
 
 #else
-
-#ifndef UNITY_INCLUDE_FLOAT
-#define UNITY_INCLUDE_FLOAT
-#endif
 
 /* Floating Point Support */
 #ifndef UNITY_FLOAT_PRECISION
@@ -212,30 +211,20 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
  * Double Float Support
  *-------------------------------------------------------*/
 
-/* unlike FLOAT, we DON'T include by default */
-#ifndef UNITY_EXCLUDE_DOUBLE
-  #ifndef UNITY_INCLUDE_DOUBLE
-  #define UNITY_EXCLUDE_DOUBLE
-  #endif
-#endif
-
-#ifdef UNITY_EXCLUDE_DOUBLE
+/* unlike float, we DON'T include by default */
+#if defined(UNITY_EXCLUDE_DOUBLE) || !defined(UNITY_INCLUDE_DOUBLE)
 
   /* No Floating Point Support */
-  #undef UNITY_DOUBLE_PRECISION
-  #undef UNITY_DOUBLE_TYPE
-
-  #ifdef UNITY_INCLUDE_DOUBLE
+  #ifndef UNITY_EXCLUDE_DOUBLE
+  #define UNITY_EXCLUDE_DOUBLE
+  #else
     #undef UNITY_INCLUDE_DOUBLE
   #endif
 
-  #ifdef UNITY_EXCLUDE_FLOAT
-  #undef UNITY_EXCLUDE_FLOAT_PRINT
-  #define UNITY_EXCLUDE_FLOAT_PRINT
-  #else
-  #ifndef UNITY_DOUBLE_TYPE
-  #define UNITY_DOUBLE_TYPE double
-  #endif
+  #ifndef UNITY_EXCLUDE_FLOAT
+    #ifndef UNITY_DOUBLE_TYPE
+    #define UNITY_DOUBLE_TYPE double
+    #endif
   typedef UNITY_FLOAT UNITY_DOUBLE;
   /* For parameter in UnityPrintFloat(UNITY_DOUBLE), which aliases to double or float */
   #endif

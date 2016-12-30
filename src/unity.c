@@ -686,6 +686,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 }
 
 /*-----------------------------------------------*/
+#ifndef UNITY_EXCLUDE_FLOAT
 /* Wrap this define in a function with variable types as float or double */
 #define UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff)                       \
     if (isinf(expected) && isinf(actual) && (isneg(expected) == isneg(actual))) return 1; \
@@ -714,7 +715,6 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
     UnityPrint(UnityStrDelta)
 #endif /* UNITY_EXCLUDE_FLOAT_PRINT */
 
-#ifndef UNITY_EXCLUDE_FLOAT
 static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOAT actual)
 {
     UNITY_FLOAT diff;
