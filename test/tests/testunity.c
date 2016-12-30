@@ -3286,7 +3286,7 @@ void testFloatPrinting(void)
 
 void testFloatPrintingRoundTiesToEven(void)
 {
-#if defined(UNITY_EXCLUDE_FLOAT) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
   #ifdef UNITY_ROUND_TIES_AWAY_FROM_ZERO
@@ -3301,7 +3301,7 @@ void testFloatPrintingRoundTiesToEven(void)
 
 void testFloatPrintingInfinityAndNaN(void)
 {
-#if defined(UNITY_EXCLUDE_FLOAT) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("Inf",   1.0f / f_zero);
@@ -3931,7 +3931,7 @@ void testNotEqualDoubleArraysLengthZero(void)
 
 void testDoublePrinting(void)
 {
-#if defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.100469",         0.10046949999999999);
@@ -3953,7 +3953,7 @@ void testDoublePrinting(void)
 
 void testDoublePrintingRoundTiesToEven(void)
 {
-#if defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
   #ifdef UNITY_ROUND_TIES_AWAY_FROM_ZERO
@@ -3968,7 +3968,7 @@ void testDoublePrintingRoundTiesToEven(void)
 
 void testDoublePrintingInfinityAndNaN(void)
 {
-#if defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("Inf",   1.0 / d_zero);
