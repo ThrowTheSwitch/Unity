@@ -29,7 +29,6 @@ C_COMPILER=gcc
 CFLAGS=-std=c89
 CFLAGS += -Wall
 CFLAGS += -Wextra
-CFLAGS += -Werror 
 CFLAGS += -Wpointer-arith
 CFLAGS += -Wcast-align
 CFLAGS += -Wwrite-strings
@@ -53,14 +52,17 @@ SYMBOLS=-DTEST
 
 all: clean default
 
-default:
-	ruby $(UNITY_ROOT)/auto/generate_test_runner.rb test/TestProductionCode.c  test/test_runners/TestProductionCode_Runner.c
-	ruby $(UNITY_ROOT)/auto/generate_test_runner.rb test/TestProductionCode2.c test/test_runners/TestProductionCode2_Runner.c
+default: $(SRC_FILES1) $(SRC_FILES2)
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES2) -o $(TARGET2)
-	./$(TARGET1)
+	- ./$(TARGET1)
 	./$(TARGET2)
 
+test/test_runners/TestProductionCode_Runner.c: test/TestProductionCode.c
+	ruby $(UNITY_ROOT)/auto/generate_test_runner.rb test/TestProductionCode.c  test/test_runners/TestProductionCode_Runner.c
+test/test_runners/TestProductionCode2_Runner.c: test/TestProductionCode2.c
+	ruby $(UNITY_ROOT)/auto/generate_test_runner.rb test/TestProductionCode2.c test/test_runners/TestProductionCode2_Runner.c
+
 clean:
-	$(CLEANUP)
+	$(CLEANUP) $(TARGET1) $(TARGET2)
 
