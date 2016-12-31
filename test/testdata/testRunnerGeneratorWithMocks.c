@@ -183,9 +183,9 @@ void suitetest_ThisTestPassesWhenCustomSuiteSetupAndTeardownRan(void)
 
 void test_ShouldCallMockInitAndVerifyFunctionsForEachTest(void)
 {
-    int passes = (int)(Unity.NumberOfTests - Unity.TestFailures - Unity.TestIgnores);
+    int passesOrIgnores = (int)(Unity.NumberOfTests - Unity.TestFailures);
     TEST_ASSERT_EQUAL_MESSAGE(Unity.NumberOfTests,     mockMock_Init_Counter,    "Mock Init Should Be Called Once Per Test Started");
-    TEST_ASSERT_EQUAL_MESSAGE(passes,                  mockMock_Verify_Counter,  "Mock Verify Should Be Called Once Per Test Passed");
+    TEST_ASSERT_EQUAL_MESSAGE(passesOrIgnores,         mockMock_Verify_Counter,  "Mock Verify Should Be Called Once Per Test Passed");
     TEST_ASSERT_EQUAL_MESSAGE(Unity.NumberOfTests - 1, mockMock_Destroy_Counter, "Mock Destroy Should Be Called Once Per Test Completed");
     TEST_ASSERT_EQUAL_MESSAGE(0,                       CMockMemFreeFinalCounter, "Mock MemFreeFinal Should Not Be Called Until End");
 }
