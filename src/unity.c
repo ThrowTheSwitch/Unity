@@ -580,9 +580,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                               const UNITY_DISPLAY_STYLE_T style)
 {
     UNITY_UINT32 elements = num_elements;
-    const unsigned int length = style & 0xF;
-    UNITY_INT expect_val = 0;
-    UNITY_INT actual_val = 0;
+    unsigned int length   = style & 0xF;
 
     UNITY_SKIP_EXECUTION;
 
@@ -596,6 +594,8 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
     while (elements--)
     {
+        UNITY_INT expect_val;
+        UNITY_INT actual_val;
         switch (length)
         {
             case 1:
@@ -609,6 +609,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             default: /* length 4 bytes */
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                length = 4;
                 break;
 #ifdef UNITY_SUPPORT_64
             case 8:
@@ -637,8 +638,8 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
-        expected = length + (const char*)expected;
-        actual   = length + (const char*)actual;
+        expected = (UNITY_INTERNAL_PTR)(length + (const char*)expected);
+        actual   = (UNITY_INTERNAL_PTR)(length + (const char*)actual);
     }
 }
 
