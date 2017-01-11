@@ -580,12 +580,11 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                               const UNITY_DISPLAY_STYLE_T style)
 {
     UNITY_UINT32 elements = num_elements;
-    UNITY_INTERNAL_PTR ptr_exp = (UNITY_INTERNAL_PTR)expected;
-    UNITY_INTERNAL_PTR ptr_act = (UNITY_INTERNAL_PTR)actual;
+    unsigned int length   = style & 0xF;
 
     UNITY_SKIP_EXECUTION;
 
-    if (elements == 0)
+    if (num_elements == 0)
     {
         UnityPrintPointlessAndBail();
     }
@@ -593,95 +592,54 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
     if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
         return;
 
-    /* If style is UNITY_DISPLAY_STYLE_INT, we'll fall into the default case rather than the INT16 or INT32 (etc) case
-     * as UNITY_DISPLAY_STYLE_INT includes a flag for UNITY_DISPLAY_RANGE_AUTO, which the width-specific
-     * variants do not. Therefore remove this flag. */
-    switch(style & (UNITY_DISPLAY_STYLE_T)(~UNITY_DISPLAY_RANGE_AUTO))
+    while (elements--)
     {
-        case UNITY_DISPLAY_STYLE_HEX8:
-        case UNITY_DISPLAY_STYLE_INT8:
-        case UNITY_DISPLAY_STYLE_UINT8:
-            while (elements--)
-            {
-                if (*(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)ptr_act)
-                {
-                    UnityTestResultsFailBegin(lineNumber);
-                    UnityPrint(UnityStrElement);
-                    UnityPrintNumberUnsigned(num_elements - elements - 1);
-                    UnityPrint(UnityStrExpected);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)ptr_exp, style);
-                    UnityPrint(UnityStrWas);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)ptr_act, style);
-                    UnityAddMsgIfSpecified(msg);
-                    UNITY_FAIL_AND_BAIL;
-                }
-                ptr_exp = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_exp + 1);
-                ptr_act = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_act + 1);
-            }
-            break;
-        case UNITY_DISPLAY_STYLE_HEX16:
-        case UNITY_DISPLAY_STYLE_INT16:
-        case UNITY_DISPLAY_STYLE_UINT16:
-            while (elements--)
-            {
-                if (*(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)ptr_act)
-                {
-                    UnityTestResultsFailBegin(lineNumber);
-                    UnityPrint(UnityStrElement);
-                    UnityPrintNumberUnsigned(num_elements - elements - 1);
-                    UnityPrint(UnityStrExpected);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)ptr_exp, style);
-                    UnityPrint(UnityStrWas);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)ptr_act, style);
-                    UnityAddMsgIfSpecified(msg);
-                    UNITY_FAIL_AND_BAIL;
-                }
-                ptr_exp = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_exp + 2);
-                ptr_act = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_act + 2);
-            }
-            break;
+        UNITY_INT expect_val;
+        UNITY_INT actual_val;
+        switch (length)
+        {
+            case 1:
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
+                break;
+            case 2:
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
+                break;
+            default: /* length 4 bytes */
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                length = 4;
+                break;
 #ifdef UNITY_SUPPORT_64
-        case UNITY_DISPLAY_STYLE_HEX64:
-        case UNITY_DISPLAY_STYLE_INT64:
-        case UNITY_DISPLAY_STYLE_UINT64:
-            while (elements--)
-            {
-                if (*(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)ptr_act)
-                {
-                    UnityTestResultsFailBegin(lineNumber);
-                    UnityPrint(UnityStrElement);
-                    UnityPrintNumberUnsigned(num_elements - elements - 1);
-                    UnityPrint(UnityStrExpected);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)ptr_exp, style);
-                    UnityPrint(UnityStrWas);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)ptr_act, style);
-                    UnityAddMsgIfSpecified(msg);
-                    UNITY_FAIL_AND_BAIL;
-                }
-                ptr_exp = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_exp + 8);
-                ptr_act = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_act + 8);
-            }
-            break;
+            case 8:
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
+                break;
 #endif
-        default:
-            while (elements--)
-            {
-                if (*(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)ptr_exp != *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)ptr_act)
-                {
-                    UnityTestResultsFailBegin(lineNumber);
-                    UnityPrint(UnityStrElement);
-                    UnityPrintNumberUnsigned(num_elements - elements - 1);
-                    UnityPrint(UnityStrExpected);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)ptr_exp, style);
-                    UnityPrint(UnityStrWas);
-                    UnityPrintNumberByStyle(*(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)ptr_act, style);
-                    UnityAddMsgIfSpecified(msg);
-                    UNITY_FAIL_AND_BAIL;
-                }
-                ptr_exp = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_exp + 4);
-                ptr_act = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_act + 4);
+        }
+
+        if (expect_val != actual_val)
+        {
+            if (style & UNITY_DISPLAY_RANGE_UINT && length < sizeof expect_val)
+            {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */
+                UNITY_INT mask = 1;
+                mask = (mask << 8 * length) - 1;
+                expect_val &= mask;
+                actual_val &= mask;
             }
-            break;
+            UnityTestResultsFailBegin(lineNumber);
+            UnityPrint(UnityStrElement);
+            UnityPrintNumberUnsigned(num_elements - elements - 1);
+            UnityPrint(UnityStrExpected);
+            UnityPrintNumberByStyle(expect_val, style);
+            UnityPrint(UnityStrWas);
+            UnityPrintNumberByStyle(actual_val, style);
+            UnityAddMsgIfSpecified(msg);
+            UNITY_FAIL_AND_BAIL;
+        }
+        expected = (UNITY_INTERNAL_PTR)(length + (const char*)expected);
+        actual   = (UNITY_INTERNAL_PTR)(length + (const char*)actual);
     }
 }
 
@@ -1194,8 +1152,8 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
                 UnityAddMsgIfSpecified(msg);
                 UNITY_FAIL_AND_BAIL;
             }
-            ptr_exp = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_exp + 1);
-            ptr_act = (UNITY_INTERNAL_PTR)((UNITY_PTR)ptr_act + 1);
+            ptr_exp++;
+            ptr_act++;
         }
     }
 }
