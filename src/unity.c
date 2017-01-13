@@ -12,12 +12,10 @@
 void UNITY_OUTPUT_CHAR(int);
 #endif
 
-/* Helpful macros for us to use here */
+/* Helpful macros for us to use here in Assert functions */
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
-
-/* return prematurely if we are already in failure or ignore state */
-#define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
+#define RETURN_IF_FAIL_OR_IGNORE if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) return
 
 struct UNITY_STORAGE_T Unity;
 
@@ -529,7 +527,7 @@ void UnityAssertBits(const UNITY_INT mask,
                      const char* msg,
                      const UNITY_LINE_TYPE lineNumber)
 {
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if ((mask & expected) != (mask & actual))
     {
@@ -550,7 +548,7 @@ void UnityAssertEqualNumber(const UNITY_INT expected,
                             const UNITY_LINE_TYPE lineNumber,
                             const UNITY_DISPLAY_STYLE_T style)
 {
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if (expected != actual)
     {
@@ -582,7 +580,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
     UNITY_UINT32 elements = num_elements;
     unsigned int length   = style & 0xF;
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if (num_elements == 0)
     {
@@ -689,7 +687,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_actual = actual;
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if (elements == 0)
     {
@@ -722,7 +720,7 @@ void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber)
 {
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
 
     if (!UnityFloatsWithin(delta, expected, actual))
@@ -745,7 +743,7 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
     UNITY_INT is_trait          = !should_be_trait;
     UNITY_INT trait_index       = (UNITY_INT)(style >> 1);
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     switch(style)
     {
@@ -818,7 +816,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_actual = actual;
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if (elements == 0)
     {
@@ -851,7 +849,7 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber)
 {
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if (!UnityDoublesWithin(delta, expected, actual))
     {
@@ -874,7 +872,7 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
     UNITY_INT is_trait          = !should_be_trait;
     UNITY_INT trait_index       = (UNITY_INT)(style >> 1);
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
      switch(style)
     {
@@ -938,7 +936,7 @@ void UnityAssertNumbersWithin( const UNITY_UINT delta,
                                const UNITY_LINE_TYPE lineNumber,
                                const UNITY_DISPLAY_STYLE_T style)
 {
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
     {
@@ -977,7 +975,7 @@ void UnityAssertEqualString(const char* expected,
 {
     UNITY_UINT32 i;
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     /* if both pointers not null compare the strings */
     if (expected && actual)
@@ -1017,7 +1015,7 @@ void UnityAssertEqualStringLen(const char* expected,
 {
     UNITY_UINT32 i;
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     /* if both pointers not null compare the strings */
     if (expected && actual)
@@ -1058,7 +1056,7 @@ void UnityAssertEqualStringArray( const char** expected,
 {
     UNITY_UINT32 i, j = 0;
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     /* if no elements, it's an error */
     if (num_elements == 0)
@@ -1119,7 +1117,7 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
     UNITY_UINT32 elements = num_elements;
     UNITY_UINT32 bytes;
 
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     if ((elements == 0) || (length == 0))
     {
@@ -1164,7 +1162,7 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
 
 void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrintFail();
@@ -1198,7 +1196,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 /*-----------------------------------------------*/
 void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 {
-    UNITY_SKIP_EXECUTION;
+    RETURN_IF_FAIL_OR_IGNORE;
 
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrIgnore);
