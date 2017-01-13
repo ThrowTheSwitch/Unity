@@ -182,6 +182,7 @@
 #endif
 typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 
+/* isinf & isnan macros should be provided by math.h */
 #ifndef isinf
 /* The value of Inf - Inf is NaN */
 #define isinf(n) (isnan((n) - (n)) && !isnan(n))
@@ -191,14 +192,6 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 /* NaN is the only floating point value that does NOT equal itself.
  * Therefore if n != n, then it is NaN. */
 #define isnan(n) ((n != n) ? 1 : 0)
-#endif
-
-#ifndef isneg
-#define isneg(n) ((n < 0.0f) ? 1 : 0)
-#endif
-
-#ifndef ispos
-#define ispos(n) ((n > 0.0f) ? 1 : 0)
 #endif
 
 #endif
@@ -229,7 +222,7 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 
   /* Double Floating Point Support */
   #ifndef UNITY_DOUBLE_PRECISION
-  #define UNITY_DOUBLE_PRECISION (1e-12f)
+  #define UNITY_DOUBLE_PRECISION (1e-12)
   #endif
 
   #ifndef UNITY_DOUBLE_TYPE
