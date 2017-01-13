@@ -81,7 +81,12 @@ void UnityTestRunner(unityfunction* setup,
         if (!UnityFixture.Verbose)
             UNITY_OUTPUT_CHAR('.');
         else
+        {
             UnityPrint(printableName);
+        #ifndef UNITY_REPEAT_TEST_NAME
+            Unity.CurrentTestName = NULL;
+        #endif
+        }
 
         Unity.NumberOfTests++;
         UnityMalloc_StartTest();

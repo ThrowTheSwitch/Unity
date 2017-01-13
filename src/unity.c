@@ -355,28 +355,19 @@ void UnityPrintOk(void)
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line);
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
-#ifndef UNITY_FIXTURES
     UnityPrint(file);
     UNITY_OUTPUT_CHAR(':');
     UnityPrintNumber((UNITY_INT)line);
     UNITY_OUTPUT_CHAR(':');
     UnityPrint(Unity.CurrentTestName);
     UNITY_OUTPUT_CHAR(':');
-#else
-    UNITY_UNUSED(file);
-    UNITY_UNUSED(line);
-#endif
 }
 
 /*-----------------------------------------------*/
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line);
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
-#ifndef UNITY_FIXTURES
     UnityTestResultsBegin(Unity.TestFile, line);
-#else
-    UNITY_UNUSED(line);
-#endif
     UnityPrint(UnityStrFail);
     UNITY_OUTPUT_CHAR(':');
 }
