@@ -276,7 +276,7 @@ class UnityTestRunnerGenerator
     output.puts("      TestFunc(#{va_args2}); \\")
     output.puts("    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\"); } \\") if cexception
     output.puts("  } \\")
-    output.puts("  if (TEST_PROTECT() && !TEST_IS_IGNORED) \\")
+    output.puts("  if (TEST_PROTECT()) \\")
     output.puts("  { \\")
     output.puts("    #{@options[:teardown_name]}(); \\")
     output.puts("    CMock_Verify(); \\") unless (used_mocks.empty?)
