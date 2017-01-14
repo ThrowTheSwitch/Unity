@@ -573,10 +573,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (num_elements == 0)
-    {
-        UnityPrintPointlessAndBail();
-    }
+    if (num_elements == 0) UnityPrintPointlessAndBail();
 
     if (expected == actual) return; /* Both are NULL or same pointer */
     if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))
@@ -676,15 +673,10 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
                                 const UNITY_LINE_TYPE lineNumber)
 {
     UNITY_UINT32 elements = num_elements;
-    UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;
-    UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_actual = actual;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (elements == 0)
-    {
-        UnityPrintPointlessAndBail();
-    }
+    if (num_elements == 0) UnityPrintPointlessAndBail();
 
     if (expected == actual) return; /* Both are NULL or same pointer */
     if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))
@@ -692,17 +684,17 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
 
     while (elements--)
     {
-        if (!UnityFloatsWithin(*ptr_expected * UNITY_FLOAT_PRECISION, *ptr_expected, *ptr_actual))
+        if (!UnityFloatsWithin(*expected * UNITY_FLOAT_PRECISION, *expected, *actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
-            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);
+            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*expected, *actual);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
-        ptr_expected++;
-        ptr_actual++;
+        expected++;
+        actual++;
     }
 }
 
@@ -802,15 +794,10 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
                                  const UNITY_LINE_TYPE lineNumber)
 {
     UNITY_UINT32 elements = num_elements;
-    UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;
-    UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_actual = actual;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (elements == 0)
-    {
-        UnityPrintPointlessAndBail();
-    }
+    if (num_elements == 0) UnityPrintPointlessAndBail();
 
     if (expected == actual) return; /* Both are NULL or same pointer */
     if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))
@@ -818,17 +805,17 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
 
     while (elements--)
     {
-        if (!UnityDoublesWithin(*ptr_expected * UNITY_DOUBLE_PRECISION, *ptr_expected, *ptr_actual))
+        if (!UnityDoublesWithin(*expected * UNITY_DOUBLE_PRECISION, *expected, *actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
-            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);
+            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*expected, *actual);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
-        ptr_expected++;
-        ptr_actual++;
+        expected++;
+        actual++;
     }
 }
 
@@ -1045,10 +1032,7 @@ void UnityAssertEqualStringArray( const char** expected,
     RETURN_IF_FAIL_OR_IGNORE;
 
     /* if no elements, it's an error */
-    if (num_elements == 0)
-    {
-        UnityPrintPointlessAndBail();
-    }
+    if (num_elements == 0) UnityPrintPointlessAndBail();
 
     if (expected == actual) return; /* Both are NULL or same pointer */
     if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))
@@ -1106,10 +1090,7 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if ((elements == 0) || (length == 0))
-    {
-        UnityPrintPointlessAndBail();
-    }
+    if (num_elements == 0 || length == 0) UnityPrintPointlessAndBail();
 
     if (expected == actual) return; /* Both are NULL or same pointer */
     if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))
