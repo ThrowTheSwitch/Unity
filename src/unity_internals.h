@@ -536,7 +536,7 @@ extern const char UnityStrErr64[];
 
 #define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
 
-#define TEST_ABORT() {longjmp(Unity.AbortFrame, 1);}
+#define TEST_ABORT() longjmp(Unity.AbortFrame, 1)
 
 /* This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__) */
 #ifndef RUN_TEST
