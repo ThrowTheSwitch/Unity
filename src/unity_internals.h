@@ -11,7 +11,9 @@
 #include "unity_config.h"
 #endif
 
+#ifndef UNITY_EXCLUDE_SETJMP_H
 #include <setjmp.h>
+#endif
 
 #ifndef UNITY_EXCLUDE_MATH_H
 #include <math.h>
@@ -371,7 +373,9 @@ struct UNITY_STORAGE_T
     UNITY_COUNTER_TYPE TestIgnores;
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifndef UNITY_EXCLUDE_SETJMP_H
     jmp_buf AbortFrame;
+#endif
 };
 
 extern struct UNITY_STORAGE_T Unity;
@@ -534,9 +538,13 @@ extern const char UnityStrErr64[];
  * Test Running Macros
  *-------------------------------------------------------*/
 
+#ifndef UNITY_EXCLUDE_SETJMP_H
 #define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
-
 #define TEST_ABORT() longjmp(Unity.AbortFrame, 1)
+#else
+#define TEST_PROTECT() 1
+#define TEST_ABORT() return
+#endif
 
 /* This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__) */
 #ifndef RUN_TEST

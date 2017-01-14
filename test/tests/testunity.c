@@ -99,7 +99,9 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
+#endif
     } _Expected_Unity;
 #else
     struct {
@@ -113,7 +115,9 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
+#endif
     } _Expected_Unity;
 #endif
 
