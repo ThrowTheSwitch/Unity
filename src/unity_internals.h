@@ -140,10 +140,13 @@
  *-------------------------------------------------------*/
 
 #if (UNITY_POINTER_WIDTH == 32)
+#define UNITY_PTR_TO_INT UNITY_INT32
 #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX32
 #elif (UNITY_POINTER_WIDTH == 64)
+#define UNITY_PTR_TO_INT UNITY_INT64
 #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX64
 #elif (UNITY_POINTER_WIDTH == 16)
+#define UNITY_PTR_TO_INT UNITY_INT16
 #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX16
 #else
     #error Invalid UNITY_POINTER_WIDTH specified! (16, 32 or 64 are supported)
@@ -624,7 +627,7 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_HEX16_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((UNITY_UINT16)(delta), (UNITY_INT)(UNITY_UINT)(UNITY_UINT16)(expected), (UNITY_INT)(UNITY_UINT)(UNITY_UINT16)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX16)
 #define UNITY_TEST_ASSERT_HEX32_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((UNITY_UINT32)(delta), (UNITY_INT)(UNITY_UINT)(UNITY_UINT32)(expected), (UNITY_INT)(UNITY_UINT)(UNITY_UINT32)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX32)
 
-#define UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, line, message)                             UnityAssertEqualNumber((UNITY_INT)(expected), (UNITY_INT)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_POINTER)
+#define UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, line, message)                             UnityAssertEqualNumber((UNITY_PTR_TO_INT)(expected), (UNITY_PTR_TO_INT)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_POINTER)
 #define UNITY_TEST_ASSERT_EQUAL_STRING(expected, actual, line, message)                          UnityAssertEqualString((const char*)(expected), (const char*)(actual), (message), (UNITY_LINE_TYPE)(line))
 #define UNITY_TEST_ASSERT_EQUAL_STRING_LEN(expected, actual, len, line, message)                 UnityAssertEqualStringLen((const char*)(expected), (const char*)(actual), (UNITY_UINT32)(len), (message), (UNITY_LINE_TYPE)(line))
 #define UNITY_TEST_ASSERT_EQUAL_MEMORY(expected, actual, len, line, message)                     UnityAssertEqualMemory((UNITY_INTERNAL_PTR)(expected), (UNITY_INTERNAL_PTR)(actual), (UNITY_UINT32)(len), 1, (message), (UNITY_LINE_TYPE)(line))
