@@ -5,17 +5,14 @@
 # ==========================================
 
 #We try to detect the OS we are running on, and adjust commands as needed
-ifeq ($(OSTYPE),cygwin)
-	CLEANUP = rm -f
-	MKDIR = mkdir -p
-	TARGET_EXTENSION=.out
-elseifeq ($(OSTYPE),msys)
-	CLEANUP = rm -f
-	MKDIR = mkdir -p
-	TARGET_EXTENSION=.exe
-elseifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT)
+  ifeq ($(shell uname -s),) # not in a bash-like shell
 	CLEANUP = del /F /Q
 	MKDIR = mkdir
+  else # in a bash-like shell, like msys
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+  endif
 	TARGET_EXTENSION=.exe
 else
 	CLEANUP = rm -f
@@ -23,13 +20,16 @@ else
 	TARGET_EXTENSION=.out
 endif
 
-UNITY_ROOT=../..
 C_COMPILER=gcc
+ifeq ($(shell uname -s), Darwin)
+C_COMPILER=clang
+endif
 
-CFLAGS = -std=c99
+UNITY_ROOT=../..
+
+CFLAGS=-std=c99
 CFLAGS += -Wall
 CFLAGS += -Wextra
-CFLAGS += -Werror 
 CFLAGS += -Wpointer-arith
 CFLAGS += -Wcast-align
 CFLAGS += -Wwrite-strings
@@ -41,8 +41,6 @@ CFLAGS += -Wno-unknown-pragmas
 CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wundef
 CFLAGS += -Wold-style-definition
-CFLAGS += -Wmissing-prototypes
-CFLAGS += -Wmissing-declarations
 
 TARGET_BASE1=all_tests
 TARGET1 = $(TARGET_BASE1)$(TARGET_EXTENSION)
@@ -63,8 +61,8 @@ all: clean default
 
 default:
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
-	./$(TARGET1) -v
+	- ./$(TARGET1) -v
 
 clean:
-	$(CLEANUP)
+	$(CLEANUP) $(TARGET1)
 

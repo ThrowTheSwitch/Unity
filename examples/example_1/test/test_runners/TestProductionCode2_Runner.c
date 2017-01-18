@@ -11,7 +11,7 @@
       setUp(); \
       TestFunc(); \
   } \
-  if (TEST_PROTECT() && !TEST_IS_IGNORED) \
+  if (TEST_PROTECT()) \
   { \
     tearDown(); \
   } \
