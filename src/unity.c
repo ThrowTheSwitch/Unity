@@ -190,7 +190,8 @@ void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print)
 {
     int nibble;
     char nibbles = nibbles_to_print;
-    if ((unsigned)nibbles > 2 * sizeof number) nibbles = 2 * sizeof number;
+    if ((unsigned)nibbles > (2 * sizeof(number)))
+        nibbles = 2 * sizeof(number);
 
     while (nibbles > 0)
     {
@@ -198,11 +199,11 @@ void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print)
         nibble = (number >> (nibbles * 4)) & 0x0F;
         if (nibble <= 9)
         {
-            UNITY_OUTPUT_CHAR('0' + nibble);
+            UNITY_OUTPUT_CHAR((char)('0' + nibble));
         }
         else
         {
-            UNITY_OUTPUT_CHAR('A' - 10 + nibble);
+            UNITY_OUTPUT_CHAR((char)('A' - 10 + nibble));
         }
     }
 }
