@@ -52,21 +52,6 @@ static const char UnityStrResultsIgnored[]         = " Ignored ";
 static const char UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
 static const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
 
-/* compiler-generic print formatting masks */
-static const UNITY_UINT UnitySizeMask[] =
-{
-    255u,         /* 0xFF */
-    65535u,       /* 0xFFFF */
-    65535u,
-    4294967295u,  /* 0xFFFFFFFF */
-    4294967295u,
-    4294967295u,
-    4294967295u
-#ifdef UNITY_SUPPORT_64
-    ,0xFFFFFFFFFFFFFFFF
-#endif
-};
-
 /*-----------------------------------------------
  * Pretty Printers & Test Result Output Handlers
  *-----------------------------------------------*/
@@ -155,13 +140,13 @@ void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T
     }
     else if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
     {
-        UnityPrintNumberUnsigned(  (UNITY_UINT)number  &  UnitySizeMask[((UNITY_UINT)style & (UNITY_UINT)0x0F) - 1]  );
+        UnityPrintNumberUnsigned((UNITY_UINT)number);
     }
     else
     {
         UNITY_OUTPUT_CHAR('0');
         UNITY_OUTPUT_CHAR('x');
-        UnityPrintNumberHex((UNITY_UINT)number, (char)((style & 0x000F) << 1));
+        UnityPrintNumberHex((UNITY_UINT)number, (char)((style & 0xF) * 2));
     }
 }
 
@@ -203,12 +188,15 @@ void UnityPrintNumberUnsigned(const UNITY_UINT number)
 /*-----------------------------------------------*/
 void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print)
 {
-    UNITY_UINT nibble;
+    int nibble;
     char nibbles = nibbles_to_print;
+    if ((unsigned)nibbles > (2 * sizeof(number)))
+        nibbles = 2 * sizeof(number);
 
     while (nibbles > 0)
     {
-        nibble = (number >> (--nibbles << 2)) & 0x0000000F;
+        nibbles--;
+        nibble = (number >> (nibbles * 4)) & 0x0F;
         if (nibble <= 9)
         {
             UNITY_OUTPUT_CHAR((char)('0' + nibble));
