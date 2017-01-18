@@ -747,10 +747,16 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
             is_trait = !isinf(actual) && !isnan(actual);
             break;
 
-        default:
+        case UNITY_FLOAT_INVALID_TRAIT:
             trait_index = 0;
             trait_names[0] = UnityStrInvalidFloatTrait;
             break;
+
+        default:
+           /* A value outside the enum was used for style so
+             just fail because something has gone wrong. */
+            UNITY_FAIL_AND_BAIL;
+
     }
 
     if (is_trait != should_be_trait)
@@ -852,7 +858,7 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-     switch(style)
+    switch(style)
     {
         case UNITY_FLOAT_IS_INF:
         case UNITY_FLOAT_IS_NOT_INF:
