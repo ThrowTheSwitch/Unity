@@ -13,8 +13,8 @@ void UNITY_OUTPUT_CHAR(int);
 #endif
 
 /* Helpful macros for us to use here in Assert functions */
-#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; longjmp(Unity.AbortFrame, 1); }
-#define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
+#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; TEST_ABORT(); }
+#define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; TEST_ABORT(); }
 #define RETURN_IF_FAIL_OR_IGNORE if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) return
 
 struct UNITY_STORAGE_T Unity;
@@ -480,32 +480,32 @@ static void UnityPrintExpectedAndActualStringsLen(const char* expected, const ch
  * Assertion & Control Helpers
  *-----------------------------------------------*/
 
-static int UnityCheckArraysForNull(UNITY_INTERNAL_PTR expected, UNITY_INTERNAL_PTR actual, const UNITY_LINE_TYPE lineNumber, const char* msg)
+static int UnityIsOneArrayNull(UNITY_INTERNAL_PTR expected,
+                               UNITY_INTERNAL_PTR actual,
+                               const UNITY_LINE_TYPE lineNumber,
+                               const char* msg)
 {
-    /* return true if they are both NULL */
-    if ((expected == NULL) && (actual == NULL))
-        return 1;
+    if (expected == actual) return 0; /* Both are NULL or same pointer */
 
-    /* throw error if just expected is NULL */
+    /* print and return true if just expected is NULL */
     if (expected == NULL)
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrNullPointerForExpected);
         UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        return 1;
     }
 
-    /* throw error if just actual is NULL */
+    /* print and return true if just actual is NULL */
     if (actual == NULL)
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrNullPointerForActual);
         UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        return 1;
     }
 
-    /* return false if neither is NULL */
-    return 0;
+    return 0; /* return false if neither is NULL */
 }
 
 /*-----------------------------------------------
@@ -578,8 +578,9 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
         UnityPrintPointlessAndBail();
     }
 
-    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
-        return;
+    if (expected == actual) return; /* Both are NULL or same pointer */
+    if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))
+        UNITY_FAIL_AND_BAIL;
 
     while (elements--)
     {
@@ -685,8 +686,9 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
         UnityPrintPointlessAndBail();
     }
 
-    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
-        return;
+    if (expected == actual) return; /* Both are NULL or same pointer */
+    if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))
+        UNITY_FAIL_AND_BAIL;
 
     while (elements--)
     {
@@ -810,8 +812,9 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
         UnityPrintPointlessAndBail();
     }
 
-    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
-        return;
+    if (expected == actual) return; /* Both are NULL or same pointer */
+    if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))
+        UNITY_FAIL_AND_BAIL;
 
     while (elements--)
     {
@@ -1047,8 +1050,9 @@ void UnityAssertEqualStringArray( const char** expected,
         UnityPrintPointlessAndBail();
     }
 
-    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
-        return;
+    if (expected == actual) return; /* Both are NULL or same pointer */
+    if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))
+        UNITY_FAIL_AND_BAIL;
 
     do
     {
@@ -1107,8 +1111,9 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
         UnityPrintPointlessAndBail();
     }
 
-    if (UnityCheckArraysForNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg) == 1)
-        return;
+    if (expected == actual) return; /* Both are NULL or same pointer */
+    if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))
+        UNITY_FAIL_AND_BAIL;
 
     while (elements--)
     {

@@ -72,7 +72,7 @@ void tearDown(void);
 
 /* It is not necessary for you to call PASS. A PASS condition is assumed if nothing fails.
  * This method allows you to abort a test immediately with a PASS state, ignoring the remainder of the test. */
-#define TEST_PASS()                                                                                longjmp(Unity.AbortFrame, 1)
+#define TEST_PASS()                                                                                TEST_ABORT()
 
 /*-------------------------------------------------------
  * Test Asserts (simple)
