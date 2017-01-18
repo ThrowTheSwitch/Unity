@@ -15,6 +15,10 @@ install: gem install rspec
 script:
   - cd test && rake ci
   - make -s
+  - make -s DEBUG=-m32
   - cd ../extras/fixture/test && rake ci
   - make -s default noStdlibMalloc
   - make -s C89
+  - cd ../../../examples/example_1 && make -s
+  - cd ../example_2 && make -s
+  - cd ../example_3 && rake
