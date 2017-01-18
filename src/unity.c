@@ -93,7 +93,6 @@ void UnityPrint(const char* string)
     }
 }
 
-void UnityPrintLen(const char* string, const UNITY_UINT32 length);
 void UnityPrintLen(const char* string, const UNITY_UINT32 length)
 {
     const char* pch = string;
@@ -326,21 +325,6 @@ void UnityPrintFloat(UNITY_DOUBLE number)
 #endif /* ! UNITY_EXCLUDE_FLOAT_PRINT */
 
 /*-----------------------------------------------*/
-
-void UnityPrintFail(void);
-void UnityPrintFail(void)
-{
-    UnityPrint(UnityStrFail);
-}
-
-void UnityPrintOk(void);
-void UnityPrintOk(void)
-{
-    UnityPrint(UnityStrOk);
-}
-
-/*-----------------------------------------------*/
-static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line);
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
     UnityPrint(file);
@@ -352,7 +336,6 @@ static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 }
 
 /*-----------------------------------------------*/
-static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line);
 static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
@@ -384,7 +367,6 @@ void UnityConcludeTest(void)
 }
 
 /*-----------------------------------------------*/
-static void UnityAddMsgIfSpecified(const char* msg);
 static void UnityAddMsgIfSpecified(const char* msg)
 {
     if (msg)
@@ -408,7 +390,6 @@ static void UnityAddMsgIfSpecified(const char* msg)
 }
 
 /*-----------------------------------------------*/
-static void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual);
 static void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual)
 {
     UnityPrint(UnityStrExpected);
@@ -1141,7 +1122,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     RETURN_IF_FAIL_OR_IGNORE;
 
     UnityTestResultsBegin(Unity.TestFile, line);
-    UnityPrintFail();
+    UnityPrint(UnityStrFail);
     if (msg != NULL)
     {
         UNITY_OUTPUT_CHAR(':');
@@ -1245,11 +1226,11 @@ int UnityEnd(void)
     UNITY_PRINT_EOL();
     if (Unity.TestFailures == 0U)
     {
-        UnityPrintOk();
+        UnityPrint(UnityStrOk);
     }
     else
     {
-        UnityPrintFail();
+        UnityPrint(UnityStrFail);
 #ifdef UNITY_DIFFERENTIATE_FINAL_FAIL
         UNITY_OUTPUT_CHAR('E'); UNITY_OUTPUT_CHAR('D');
 #endif
