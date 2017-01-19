@@ -181,8 +181,7 @@ void UnityPrintNumberUnsigned(const UNITY_UINT number)
     {
         UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));
         divisor /= 10;
-    }
-    while (divisor > 0);
+    } while (divisor > 0);
 }
 
 /*-----------------------------------------------*/
@@ -420,7 +419,7 @@ static void UnityPrintExpectedAndActualStrings(const char* expected, const char*
     }
     else
     {
-      UnityPrint(UnityStrNull);
+        UnityPrint(UnityStrNull);
     }
     UnityPrint(UnityStrWas);
     if (actual != NULL)
@@ -431,12 +430,14 @@ static void UnityPrintExpectedAndActualStrings(const char* expected, const char*
     }
     else
     {
-      UnityPrint(UnityStrNull);
+        UnityPrint(UnityStrNull);
     }
 }
 
 /*-----------------------------------------------*/
-static void UnityPrintExpectedAndActualStringsLen(const char* expected, const char* actual, const UNITY_UINT32 length)
+static void UnityPrintExpectedAndActualStringsLen(const char* expected,
+                                                  const char* actual,
+                                                  const UNITY_UINT32 length)
 {
     UnityPrint(UnityStrExpected);
     if (expected != NULL)
@@ -447,7 +448,7 @@ static void UnityPrintExpectedAndActualStringsLen(const char* expected, const ch
     }
     else
     {
-      UnityPrint(UnityStrNull);
+        UnityPrint(UnityStrNull);
     }
     UnityPrint(UnityStrWas);
     if (actual != NULL)
@@ -458,11 +459,9 @@ static void UnityPrintExpectedAndActualStringsLen(const char* expected, const ch
     }
     else
     {
-      UnityPrint(UnityStrNull);
+        UnityPrint(UnityStrNull);
     }
 }
-
-
 
 /*-----------------------------------------------
  * Assertion & Control Helpers
@@ -599,7 +598,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
         if (expect_val != actual_val)
         {
-            if (style & UNITY_DISPLAY_RANGE_UINT && length < sizeof expect_val)
+            if (style & UNITY_DISPLAY_RANGE_UINT && length < sizeof(expect_val))
             {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */
                 UNITY_INT mask = 1;
                 mask = (mask << 8 * length) - 1;
@@ -640,12 +639,11 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
   #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
-    do {                                                          \
+  {                                                               \
     UnityPrint(UnityStrExpected);                                 \
     UnityPrintFloat(expected);                                    \
     UnityPrint(UnityStrWas);                                      \
-    UnityPrintFloat(actual);                                      \
-    } while(0)
+    UnityPrintFloat(actual); }
 #else
   #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
     UnityPrint(UnityStrDelta)
@@ -719,14 +717,14 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
                              const UNITY_LINE_TYPE lineNumber,
                              const UNITY_FLOAT_TRAIT_T style)
 {
-    const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
-    UNITY_INT should_be_trait   = ((UNITY_INT)style & 1);
-    UNITY_INT is_trait          = !should_be_trait;
-    UNITY_INT trait_index       = (UNITY_INT)(style >> 1);
+    const char* trait_names[] = {UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet};
+    UNITY_INT should_be_trait = ((UNITY_INT)style & 1);
+    UNITY_INT is_trait        = !should_be_trait;
+    UNITY_INT trait_index     = (UNITY_INT)(style >> 1);
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-    switch(style)
+    switch (style)
     {
         case UNITY_FLOAT_IS_INF:
         case UNITY_FLOAT_IS_NOT_INF:
@@ -845,14 +843,14 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_FLOAT_TRAIT_T style)
 {
-    const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
-    UNITY_INT should_be_trait   = ((UNITY_INT)style & 1);
-    UNITY_INT is_trait          = !should_be_trait;
-    UNITY_INT trait_index       = (UNITY_INT)(style >> 1);
+    const char* trait_names[] = {UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet};
+    UNITY_INT should_be_trait = ((UNITY_INT)style & 1);
+    UNITY_INT is_trait        = !should_be_trait;
+    UNITY_INT trait_index     = (UNITY_INT)(style >> 1);
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-     switch(style)
+    switch (style)
     {
         case UNITY_FLOAT_IS_INF:
         case UNITY_FLOAT_IS_NOT_INF:
@@ -899,16 +897,15 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
     }
 }
 
-
 #endif /* not UNITY_EXCLUDE_DOUBLE */
 
 /*-----------------------------------------------*/
-void UnityAssertNumbersWithin( const UNITY_UINT delta,
-                               const UNITY_INT expected,
-                               const UNITY_INT actual,
-                               const char* msg,
-                               const UNITY_LINE_TYPE lineNumber,
-                               const UNITY_DISPLAY_STYLE_T style)
+void UnityAssertNumbersWithin(const UNITY_UINT delta,
+                              const UNITY_INT expected,
+                              const UNITY_INT actual,
+                              const char* msg,
+                              const UNITY_LINE_TYPE lineNumber,
+                              const UNITY_DISPLAY_STYLE_T style)
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -973,19 +970,19 @@ void UnityAssertEqualString(const char* expected,
 
     if (Unity.CurrentTestFailed)
     {
-      UnityTestResultsFailBegin(lineNumber);
-      UnityPrintExpectedAndActualStrings(expected, actual);
-      UnityAddMsgIfSpecified(msg);
-      UNITY_FAIL_AND_BAIL;
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrintExpectedAndActualStrings(expected, actual);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
     }
 }
 
 /*-----------------------------------------------*/
 void UnityAssertEqualStringLen(const char* expected,
-                            const char* actual,
-                            const UNITY_UINT32 length,
-                            const char* msg,
-                            const UNITY_LINE_TYPE lineNumber)
+                               const char* actual,
+                               const UNITY_UINT32 length,
+                               const char* msg,
+                               const UNITY_LINE_TYPE lineNumber)
 {
     UNITY_UINT32 i;
 
@@ -1013,20 +1010,19 @@ void UnityAssertEqualStringLen(const char* expected,
 
     if (Unity.CurrentTestFailed)
     {
-      UnityTestResultsFailBegin(lineNumber);
-      UnityPrintExpectedAndActualStringsLen(expected, actual, length);
-      UnityAddMsgIfSpecified(msg);
-      UNITY_FAIL_AND_BAIL;
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrintExpectedAndActualStringsLen(expected, actual, length);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
     }
 }
 
-
 /*-----------------------------------------------*/
-void UnityAssertEqualStringArray( const char** expected,
-                                  const char** actual,
-                                  const UNITY_UINT32 num_elements,
-                                  const char* msg,
-                                  const UNITY_LINE_TYPE lineNumber)
+void UnityAssertEqualStringArray(const char** expected,
+                                 const char** actual,
+                                 const UNITY_UINT32 num_elements,
+                                 const char* msg,
+                                 const UNITY_LINE_TYPE lineNumber)
 {
     UNITY_UINT32 i, j = 0;
 
@@ -1080,12 +1076,12 @@ void UnityAssertEqualStringArray( const char** expected,
 }
 
 /*-----------------------------------------------*/
-void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
-                             UNITY_INTERNAL_PTR actual,
-                             const UNITY_UINT32 length,
-                             const UNITY_UINT32 num_elements,
-                             const char* msg,
-                             const UNITY_LINE_TYPE lineNumber)
+void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
+                            UNITY_INTERNAL_PTR actual,
+                            const UNITY_UINT32 length,
+                            const UNITY_UINT32 num_elements,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber)
 {
     UNITY_PTR_ATTRIBUTE const unsigned char* ptr_exp = (UNITY_PTR_ATTRIBUTE const unsigned char*)expected;
     UNITY_PTR_ATTRIBUTE const unsigned char* ptr_act = (UNITY_PTR_ATTRIBUTE const unsigned char*)actual;
@@ -1178,22 +1174,22 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     UnityPrint(UnityStrIgnore);
     if (msg != NULL)
     {
-      UNITY_OUTPUT_CHAR(':');
-      UNITY_OUTPUT_CHAR(' ');
-      UnityPrint(msg);
+        UNITY_OUTPUT_CHAR(':');
+        UNITY_OUTPUT_CHAR(' ');
+        UnityPrint(msg);
     }
     UNITY_IGNORE_AND_BAIL;
 }
 
 /*-----------------------------------------------*/
 #if defined(UNITY_WEAK_ATTRIBUTE)
-    UNITY_WEAK_ATTRIBUTE void setUp(void) { }
-    UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
+  UNITY_WEAK_ATTRIBUTE void setUp(void) { }
+  UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
 #elif defined(UNITY_WEAK_PRAGMA)
-#   pragma weak setUp
-    void setUp(void) { }
-#   pragma weak tearDown
-    void tearDown(void) { }
+  #pragma weak setUp
+  void setUp(void) { }
+  #pragma weak tearDown
+  void tearDown(void) { }
 #endif
 /*-----------------------------------------------*/
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
@@ -1267,7 +1263,7 @@ int UnityEnd(void)
 
 char* UnityOptionIncludeNamed = NULL;
 char* UnityOptionExcludeNamed = NULL;
-int   UnityVerbosity          = 1;
+int UnityVerbosity            = 1;
 
 int UnityParseOptions(int argc, char** argv)
 {
@@ -1278,7 +1274,7 @@ int UnityParseOptions(int argc, char** argv)
     {
         if (argv[i][0] == '-')
         {
-            switch(argv[i][1])
+            switch (argv[i][1])
             {
                 case 'l': /* list tests */
                     return -1;
@@ -1383,7 +1379,8 @@ int UnityStringArgumentMatches(const char* str)
         /* look for the start of the next partial */
         ptr2 = ptr1;
         ptrf = 0;
-        do {
+        do
+        {
             ptr2++;
             if ((ptr2[0] == ':') && (ptr2[1] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','))
                 ptrf = &ptr2[1];
