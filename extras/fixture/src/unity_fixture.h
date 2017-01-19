@@ -65,6 +65,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
       TEST_##group##_GROUP_RUNNER(); }
 
 /* CppUTest Compatibility Macros */
+#ifndef UNITY_EXCLUDE_CPPUTEST_ASSERTS
 /* Sets a pointer and automatically restores it to its old value after teardown */
 #define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&(ptr), (void*)(newPointerValue), __LINE__)
 #define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT_EQUAL_PTR((expected), (actual))
@@ -74,6 +75,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 #define LONGS_EQUAL(expected, actual)                  TEST_ASSERT_EQUAL_INT((expected), (actual))
 #define STRCMP_EQUAL(expected, actual)                 TEST_ASSERT_EQUAL_STRING((expected), (actual))
 #define DOUBLES_EQUAL(expected, actual, delta)         TEST_ASSERT_DOUBLE_WITHIN((delta), (expected), (actual))
+#endif
 
 /* You must compile with malloc replacement, as defined in unity_fixture_malloc_overrides.h */
 void UnityMalloc_MakeMallocFailAfterCount(int count);
