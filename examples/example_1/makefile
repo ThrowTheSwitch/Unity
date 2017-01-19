@@ -67,3 +67,5 @@ test/test_runners/TestProductionCode2_Runner.c: test/TestProductionCode2.c
 clean:
 	$(CLEANUP) $(TARGET1) $(TARGET2)
 
+ci: CFLAGS += -Werror
+ci: default
