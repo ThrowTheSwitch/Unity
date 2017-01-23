@@ -30,7 +30,7 @@ coverage: $(BUILD_DIR)/testunityRunner.c
 	cd $(BUILD_DIR) && \
 	$(CC) $(CFLAGS) $(DEFINES) $(foreach i,$(SRC), ../$i) $(COV_FLAGS) -o ../$(TARGET)
 	rm -f $(BUILD_DIR)/*.gcda
-	./$(TARGET) | grep Tests -A1
+	./$(TARGET) | grep 'Tests\|]]]' -A1
 	cd $(BUILD_DIR) && \
 	gcov unity.c | head -3
 	grep '###' $(BUILD_DIR)/unity.c.gcov -C2 || true
@@ -60,4 +60,4 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -f $(BUILD_DIR)/$(TARGET) $(BUILD_DIR)/*.gc* $(BUILD_DIR)/testunityRunner.c
+	rm -f $(TARGET) $(BUILD_DIR)/*.gc* $(BUILD_DIR)/testunityRunner.c
