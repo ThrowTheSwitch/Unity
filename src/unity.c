@@ -269,12 +269,17 @@ static void UnityPrintDecimalAndNumberWithLeadingZeros(UNITY_INT32 fraction_part
  *  else                                                 snprintf(buf, sizeof buf, "%.6f", number);
  *  UnityPrint(buf);
  */
-void UnityPrintFloat(UNITY_DOUBLE number)
+void UnityPrintFloat(const UNITY_DOUBLE input_number)
 {
-    if (number < 0)
+    UNITY_DOUBLE number;
+
+    if (input_number < 0)
     {
         UNITY_OUTPUT_CHAR('-');
-        number = -number;
+        number = -input_number;
+    } else
+    {
+        number = input_number;
     }
 
     if (isnan(number)) UnityPrint(UnityStrNaN);

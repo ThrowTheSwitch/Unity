@@ -427,7 +427,7 @@ void UnityPrintNumberUnsigned(const UNITY_UINT number);
 void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles);
 
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
-void UnityPrintFloat(const UNITY_DOUBLE number);
+void UnityPrintFloat(const UNITY_DOUBLE input_number);
 #endif
 
 /*-------------------------------------------------------
