@@ -2306,6 +2306,18 @@ void testCstringsEscapeSequence(void)
 #endif
 }
 
+void testHexPrintsUpToMaxNumberOfNibbles(void)
+{
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+#else
+    startPutcharSpy();
+    UnityPrintNumberHex(0xBEE, 21);
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL_INT(sizeof(UNITY_INT)*2, strlen(getBufferPutcharSpy()));
+#endif
+}
+
 #define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
         startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
