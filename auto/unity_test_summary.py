@@ -86,9 +86,13 @@ class UnityTestSummary:
         results = { 'failures': [], 'ignores': [], 'successes': [] }
         for line in lines:
             parts = line.split(':')
-            if len(parts) != 5:
+            if len(parts) == 5:
+                src_file,src_line,test_name,status,msg = parts
+            elif len(parts) == 4:
+                src_file,src_line,test_name,status = parts
+                msg = ''
+            else:
                 continue
-            src_file,src_line,test_name,status,msg = parts
             if len(self.root) > 0:
                 line_out = "%s%s" % (self.root, line)
             else:
