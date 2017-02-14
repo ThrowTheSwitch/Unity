@@ -47,7 +47,7 @@ Example:
         }
     }
 
-If MyTest calls `TEST_ABORT`, program control will immediately return to `TEST_PROTECT` with a non-zero return value.
+If MyTest calls `TEST_ABORT`, program control will immediately return to `TEST_PROTECT` with a return value of zero.
 
 
 Unity Assertion Summary
