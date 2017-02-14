@@ -41,7 +41,7 @@ Example:
 
     main()
     {
-        if (TEST_PROTECT() == 0)
+        if (TEST_PROTECT())
         {
             MyTest();
         }
