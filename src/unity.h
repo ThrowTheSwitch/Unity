@@ -109,6 +109,9 @@ void tearDown(void);
 #define TEST_ASSERT_BITS_LOW(mask, actual)                                                         UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(0), (actual), __LINE__, NULL)
 #define TEST_ASSERT_BIT_HIGH(bit, actual)                                                          UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(-1), (actual), __LINE__, NULL)
 #define TEST_ASSERT_BIT_LOW(bit, actual)                                                           UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(0), (actual), __LINE__, NULL)
+#define TEST_ASSERT_GREATER_THAN_INT(shouldBeGreater, actual)                                      UNITY_TEST_ASSERT_GREATER_THAN_INT((shouldBeGreater), (actual), __LINE__, NULL)
+#define TEST_ASSERT_LESS_THAN_INT(shouldBeSmaller, actual)                                         UNITY_TEST_ASSERT_SMALLER_THAN_INT((shouldBeSmaller), (actual), __LINE__, NULL)
+
 
 /* Integer Ranges (of all sizes) */
 #define TEST_ASSERT_INT_WITHIN(delta, expected, actual)                                            UNITY_TEST_ASSERT_INT_WITHIN((delta), (expected), (actual), __LINE__, NULL)
