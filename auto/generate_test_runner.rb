@@ -73,6 +73,7 @@ class UnityTestRunnerGenerator
     all_files_used = [input_file, output_file]
     all_files_used += testfile_includes.map {|filename| filename + '.c'} unless testfile_includes.empty?
     all_files_used += @options[:includes] unless @options[:includes].empty?
+    all_files_used += headers[:linkonly] unless headers[:linkonly].empty?
     return all_files_used.uniq
   end
 
@@ -146,7 +147,8 @@ class UnityTestRunnerGenerator
     #parse out includes
     includes = {
       :local => source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten,
-      :system => source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" }
+      :system => source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" },
+      :linkonly => source.scan(/^TEST_FILE\(\s*\"\s*(.+)\.[cC]\w*\s*\"/).flatten
     }
     return includes
   end
