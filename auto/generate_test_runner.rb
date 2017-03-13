@@ -27,6 +27,7 @@ class UnityTestRunnerGenerator
       :plugins          => [],
       :framework        => :unity,
       :test_prefix      => "test|spec|should",
+      :mock_prefix      => "Mock",
       :setup_name       => "setUp",
       :teardown_name    => "tearDown",
       :main_name        => "main", #set to :auto to automatically generate each time

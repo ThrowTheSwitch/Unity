@@ -74,6 +74,10 @@ void tearDown(void);
  * This method allows you to abort a test immediately with a PASS state, ignoring the remainder of the test. */
 #define TEST_PASS()                                                                                TEST_ABORT()
 
+/* This macro does nothing, but it is useful for build tools (like Ceedling) to make use of this to figure out
+ * which files should be linked to in order to perform a test. Use it like TEST_FILE("sandwiches.c") */
+#define TEST_FILE(a)
+
 /*-------------------------------------------------------
  * Test Asserts (simple)
  *-------------------------------------------------------*/
