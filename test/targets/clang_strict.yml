@@ -55,8 +55,6 @@ compiler:
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
       - UNITY_SUPPORT_64
-      - UNITY_OUTPUT_FLUSH
-      - UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
   object_files:
     prefix: '-o'
     extension: '.o'

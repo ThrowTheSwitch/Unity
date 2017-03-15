@@ -252,14 +252,19 @@ extern void UNITY_OUTPUT_CHAR(int);
 #endif
 
 #ifndef UNITY_OUTPUT_FLUSH
-/* Default to using fflush, which is defined in stdio.h */
+#ifdef UNITY_USE_FLUSH_STDOUT
+/* We want to use the stdout flush utility */
 #include <stdio.h>
 #define UNITY_OUTPUT_FLUSH (void)fflush(stdout)
 #else
-  /* If defined as something else, make sure we declare it here so it's ready for use */
-  #ifndef UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
+/* We've specified nothing, therefore flush should just be ignored */
+#define UNITY_OUTPUT_FLUSH
+#endif
+#else
+/* We've defined flush as something else, so make sure we declare it here so it's ready for use */
+#ifndef UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
 extern void UNITY_OUTPUT_FLUSH(void);
-  #endif
+#endif
 #endif
 
 #ifndef UNITY_OUTPUT_FLUSH
