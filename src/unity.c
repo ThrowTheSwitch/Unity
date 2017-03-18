@@ -898,16 +898,16 @@ void UnityAssertNumbersWithin(const UNITY_UINT delta,
     if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
     {
         if (actual > expected)
-            Unity.CurrentTestFailed = ((UNITY_UINT)(actual - expected) > delta);
+          Unity.CurrentTestFailed = (UNITY_UINT)((UNITY_UINT)(actual - expected) > delta);
         else
-            Unity.CurrentTestFailed = ((UNITY_UINT)(expected - actual) > delta);
+            Unity.CurrentTestFailed = (UNITY_UINT)((UNITY_UINT)(expected - actual) > delta);
     }
     else
     {
         if ((UNITY_UINT)actual > (UNITY_UINT)expected)
-            Unity.CurrentTestFailed = ((UNITY_UINT)(actual - expected) > delta);
+            Unity.CurrentTestFailed = (UNITY_UINT)((UNITY_UINT)(actual - expected) > delta);
         else
-            Unity.CurrentTestFailed = ((UNITY_UINT)(expected - actual) > delta);
+            Unity.CurrentTestFailed = (UNITY_UINT)((UNITY_UINT)(expected - actual) > delta);
     }
 
     if (Unity.CurrentTestFailed)
