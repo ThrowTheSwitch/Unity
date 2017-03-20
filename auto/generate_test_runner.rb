@@ -170,7 +170,6 @@ class UnityTestRunnerGenerator
     output.puts('#include "cmock.h"') unless (mocks.empty?)
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
-    output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
     if (@options[:defines] && !@options[:defines].empty?)
       @options[:defines].each {|d| output.puts("#define #{d}")}
     end
@@ -187,6 +186,7 @@ class UnityTestRunnerGenerator
     mocks.each do |mock|
       output.puts("#include \"#{mock.gsub('.h','')}.h\"")
     end
+    output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
     if @options[:enforce_strict_ordering]
       output.puts('')
       output.puts('int GlobalExpectCount;')
