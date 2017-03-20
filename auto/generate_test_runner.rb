@@ -4,7 +4,6 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
-$QUICK_RUBY_VERSION = RUBY_VERSION.split('.').inject(0){|vv,v| vv * 100 + v.to_i }
 File.expand_path(File.join(File.dirname(__FILE__),'colour_prompt'))
 
 class UnityTestRunnerGenerator
@@ -58,7 +57,7 @@ class UnityTestRunnerGenerator
 
     #pull required data from source file
     source = File.read(input_file)
-    source = source.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil) if ($QUICK_RUBY_VERSION > 10900)
+    source = source.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil)
     tests               = find_tests(source)
     headers             = find_includes(source)
     testfile_includes   = (headers[:local] + headers[:system])
