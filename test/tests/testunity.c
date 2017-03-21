@@ -2737,6 +2737,71 @@ void testNotEqualMemoryArrays3(void)
     VERIFY_FAILS_END
 }
 
+void testEqualMemoryEachEqual(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2, 1, 8, 987, -2};
+    int p2[] = {8, 8, 8, 2};
+    int p3[] = {8, 500, 600, 700};
+    int v = 8;
+
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p0, sizeof(int)*4, 1);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 2);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 1);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(&v, p2, sizeof(int), 3);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(&v, p3, sizeof(int), 1);
+}
+
+void testNotEqualMemoryEachEqualExpectedNull(void)
+{
+    int* p0 = NULL;
+    int p1[] = {1, 8, 987, 2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int), 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqualActualNull(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int* p1 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int), 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqual1(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {9, 8, 987, -2, 1, 8, 987, -2, 1, 8, 987, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 3);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqual2(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2, 1, 8, 987, -2, 1, 8, 987, 9};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 3);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqual3(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2, 1, 9, 987, -2, 1, 8, 987, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 3);
+    VERIFY_FAILS_END
+}
+
 void testProtection(void)
 {
     volatile int mask = 0;
