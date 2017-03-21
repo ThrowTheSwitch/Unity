@@ -649,7 +649,8 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
                                 UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* actual,
                                 const UNITY_UINT32 num_elements,
                                 const char* msg,
-                                const UNITY_LINE_TYPE lineNumber)
+                                const UNITY_LINE_TYPE lineNumber,
+                                const UNITY_FLAGS_T flags)
 {
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;
@@ -677,7 +678,10 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
-        ptr_expected++;
+        if (flags == UNITY_ARRAY_TO_ARRAY)
+        {
+            ptr_expected++;
+        }
         ptr_actual++;
     }
 }
@@ -775,7 +779,8 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
                                  UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* actual,
                                  const UNITY_UINT32 num_elements,
                                  const char* msg,
-                                 const UNITY_LINE_TYPE lineNumber)
+                                 const UNITY_LINE_TYPE lineNumber,
+                                 const UNITY_FLAGS_T flags)
 {
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;
@@ -803,7 +808,10 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
-        ptr_expected++;
+        if (flags == UNITY_ARRAY_TO_ARRAY)
+        {
+            ptr_expected++;
+        }
         ptr_actual++;
     }
 }
@@ -1128,6 +1136,12 @@ static union
 #ifdef UNITY_SUPPORT_64
     UNITY_INT64 i64;
 #endif
+#ifndef UNITY_EXCLUDE_FLOAT
+    float f;
+#endif
+#ifndef UNITY_EXCLUDE_DOUBLE
+    double d;
+#endif
 } UnityQuickCompare;
 
 UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
@@ -1152,6 +1166,22 @@ UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
           return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i32);
     }
 }
+
+#ifndef UNITY_EXCLUDE_FLOAT
+UNITY_INTERNAL_PTR UnityFloatToPtr(const float num)
+{
+    UnityQuickCompare.f = num;
+    return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.f);
+}
+#endif
+
+#ifndef UNITY_EXCLUDE_DOUBLE
+UNITY_INTERNAL_PTR UnityDoubleToPtr(const double num)
+{
+    UnityQuickCompare.d = num;
+    return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.d);
+}
+#endif
 
 /*-----------------------------------------------
  * Control Functions
