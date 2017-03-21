@@ -1875,6 +1875,29 @@ void testNotEqualInt8Arrays(void)
     VERIFY_FAILS_END
 }
 
+void testEqualInt8EachEqual(void)
+{
+    UNITY_INT8 p0[] = {1, 1, 1, 1};
+    UNITY_INT8 p1[] = {117, 117, 117, -2};
+    UNITY_INT8 p2[] = {-1, -1, 117, 2};
+    UNITY_INT8 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT8(117, p1, 3);
+    TEST_ASSERT_EACH_EQUAL_INT8(-1, p2, 2);
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p3, 1);
+}
+
+void testNotEqualInt8EachEqual(void)
+{
+    UNITY_INT8 p0[] = {1, 8, 36, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p0, 2);
+    VERIFY_FAILS_END
+}
+
 void testEqualUIntArrays(void)
 {
     unsigned int p0[] = {1, 8, 987, 65132u};
@@ -1919,6 +1942,47 @@ void testNotEqualUIntArrays3(void)
     VERIFY_FAILS_END
 }
 
+void testEqualUIntEachEqual(void)
+{
+    unsigned int p0[] = {1, 1, 1, 1};
+    unsigned int p1[] = {65132u, 65132u, 65132u, 65132u};
+    unsigned int p2[] = {8, 8, 987, 2};
+    unsigned int p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT(65132u, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT(8, p2, 2);
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p3, 1);
+}
+
+void testNotEqualUIntEachEqual1(void)
+{
+    unsigned int p0[] = {1, 65132u, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUIntEachEqual2(void)
+{
+    unsigned int p0[] = {987, 8, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUIntEachEqual3(void)
+{
+    unsigned int p0[] = {1, 1, 1, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
 void testEqualInt16Arrays(void)
 {
     UNITY_INT16 p0[] = {1, 8, 117, 3};
@@ -1943,6 +2007,29 @@ void testNotEqualInt16Arrays(void)
     VERIFY_FAILS_END
 }
 
+void testEqualInt16EachEqual(void)
+{
+    UNITY_INT16 p0[] = {1, 1, 1, 1};
+    UNITY_INT16 p1[] = {32111, 32111, 32111, 3};
+    UNITY_INT16 p2[] = {-1, -1, -1, 2};
+    UNITY_INT16 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EACH_EQUAL_INT16(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT16(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT16(32111, p1, 3);
+    TEST_ASSERT_EACH_EQUAL_INT16(-1, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_INT16(1, p3, 1);
+}
+
+void testNotEqualInt16EachEqual(void)
+{
+    UNITY_INT16 p0[] = {127, 127, 127, 3};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT16(127, p0, 4);
+    VERIFY_FAILS_END
+}
+
 void testEqualInt32Arrays(void)
 {
     UNITY_INT32 p0[] = {1, 8, 117, 3};
@@ -1964,6 +2051,29 @@ void testNotEqualInt32Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT32_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualInt32EachEqual(void)
+{
+    UNITY_INT32 p0[] = {8, 8, 8, 8};
+    UNITY_INT32 p1[] = {65537, 65537, 65537, 65537};
+    UNITY_INT32 p2[] = {-3, -3, -3, 2};
+    UNITY_INT32 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EACH_EQUAL_INT32(8, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT32(8, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT32(65537, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_INT32(-3, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_INT32(1, p3, 1);
+}
+
+void testNotEqualInt32EachEqual(void)
+{
+    UNITY_INT32 p0[] = {127, 8, 127, 127};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT32(127, p0, 4);
     VERIFY_FAILS_END
 }
 
@@ -2234,10 +2344,10 @@ void testNotEqualHEX16Arrays3(void)
 
 void testEqualHEX8Arrays(void)
 {
-    unsigned short p0[] = {1, 8, 254u, 123};
-    unsigned short p1[] = {1, 8, 254u, 123};
-    unsigned short p2[] = {1, 8, 254u, 2};
-    unsigned short p3[] = {1, 23, 25, 26};
+    unsigned char p0[] = {1, 8, 254u, 123};
+    unsigned char p1[] = {1, 8, 254u, 123};
+    unsigned char p2[] = {1, 8, 254u, 2};
+    unsigned char p3[] = {1, 23, 25, 26};
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p0, 4);
@@ -2273,6 +2383,293 @@ void testNotEqualHEX8Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualUINT8EachEqual(void)
+{
+    UNITY_UINT8 p0[] = {127u, 127u, 127u, 127u};
+    UNITY_UINT8 p1[] = {1u, 1u, 1u, 1u};
+    UNITY_UINT8 p2[] = {128u, 128u, 128u, 2u};
+    UNITY_UINT8 p3[] = {1u, 50u, 60u, 70u};
+
+    TEST_ASSERT_EACH_EQUAL_UINT8(127u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT8(127u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT8(1u, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT8(128u, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_UINT8(1u, p3, 1);
+}
+
+void testNotEqualUINT8EachEqual1(void)
+{
+    unsigned char p0[] = {127u, 127u, 128u, 127u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT8(127u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT8EachEqual2(void)
+{
+    unsigned char p0[] = {1, 1, 1, 127u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT8(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT8EachEqual3(void)
+{
+    unsigned char p0[] = {54u, 55u, 55u, 55u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT8(55u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualUINT16EachEqual(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 65132u, 65132u};
+    unsigned short p1[] = {987, 987, 987, 987};
+    unsigned short p2[] = {1, 1, 1, 2};
+    unsigned short p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT16(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT16(1, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_UINT16(1, p3, 1);
+}
+
+void testNotEqualUINT16EachEqual1(void)
+{
+    unsigned short p0[] = {1, 65132u, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT16EachEqual2(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT16EachEqual3(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 65132u, 65133u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualUINT32EachEqual(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT32 p1[] = {987, 987, 987, 987};
+    UNITY_UINT32 p2[] = {8, 8, 8, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_UINT32(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT32(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT32(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT32(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_UINT32(1, p3, 1);
+}
+
+void testNotEqualUINT32EachEqual1(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT32(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT32EachEqual2(void)
+{
+    UNITY_UINT32 p0[] = {1, 987, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT32(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT32EachEqual3(void)
+{
+    UNITY_UINT32 p0[] = {1, 1, 1, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT32(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEXEachEqual(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT32 p1[] = {987, 987, 987, 987};
+    UNITY_UINT32 p2[] = {8, 8, 8, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_HEX(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX(1, p3, 1);
+}
+
+void testNotEqualHEXEachEqual1(void)
+{
+    UNITY_UINT32 p0[] = {1, 65132u, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEXEachEqual2(void)
+{
+    UNITY_UINT32 p0[] = {987, 987, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEXEachEqual3(void)
+{
+    UNITY_UINT32 p0[] = {8, 8, 987, 8};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX(8, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEX32EachEqual(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT32 p1[] = {987, 987, 987, 987};
+    UNITY_UINT32 p2[] = {8, 8, 8, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX32(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX32(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX32(1, p3, 1);
+}
+
+void testNotEqualHEX32EachEqual1(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 8, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX32EachEqual2(void)
+{
+    UNITY_UINT32 p0[] = {1, 987, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX32EachEqual3(void)
+{
+    UNITY_UINT32 p0[] = {8, 8, 8, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(8, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEX16EachEqual(void)
+{
+    UNITY_UINT16 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT16 p1[] = {987, 987, 987, 987};
+    UNITY_UINT16 p2[] = {8, 8, 8, 2};
+    UNITY_UINT16 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_HEX16(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX16(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX16(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX16(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX16(1, p3, 1);
+}
+
+void testNotEqualHEX16EachEqual1(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX16EachEqual2(void)
+{
+    unsigned short p0[] = {1, 987, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX16(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX16EachEqual3(void)
+{
+    unsigned short p0[] = {8, 8, 8, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX16(8, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEX8EachEqual(void)
+{
+    unsigned char p0[] = {254u, 254u, 254u, 254u};
+    unsigned char p1[] = {123, 123, 123, 123};
+    unsigned char p2[] = {8, 8, 8, 2};
+    unsigned char p3[] = {1, 23, 25, 26};
+
+    TEST_ASSERT_EACH_EQUAL_HEX8(254u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX8(254u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX8(123, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX8(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX8(1, p3, 1);
+}
+
+void testNotEqualHEX8EachEqual1(void)
+{
+    unsigned char p0[] = {253u, 253u, 254u, 253u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX8(253u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX8EachEqual2(void)
+{
+    unsigned char p0[] = {254u, 254u, 254u, 253u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX8(254u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX8EachEqual3(void)
+{
+    unsigned char p0[] = {1, 8, 8, 8};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX8(8, p0, 4);
     VERIFY_FAILS_END
 }
 
