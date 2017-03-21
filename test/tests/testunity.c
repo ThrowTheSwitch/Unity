@@ -1641,6 +1641,65 @@ void testNotEqualIntArraysLengthZero(void)
     VERIFY_FAILS_END
 }
 
+void testEqualIntEachEqual(void)
+{
+    int p0[] = {1, 1, 1, 1};
+    int p1[] = {987, 987, 987, 987};
+    int p2[] = {-2, -2, -2, -3};
+    int p3[] = {1, 5, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_INT(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_INT(-2, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_INT(1, p3, 1);
+}
+
+void testNotEqualIntEachEqualNullActual(void)
+{
+    int* p1 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(1, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntEachEqual1(void)
+{
+    int p0[] = {1, 1, 1, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntEachEqual2(void)
+{
+    int p0[] = {-5, -5, -1, -5};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(-5, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntEachEqual3(void)
+{
+    int p0[] = {1, 88, 88, 88};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(88, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualEachEqualLengthZero(void)
+{
+    UNITY_UINT32 p0[1] = {1};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(0, p0, 0);
+    VERIFY_FAILS_END
+}
+
 void testEqualPtrArrays(void)
 {
     char A = 1;
@@ -1718,6 +1777,77 @@ void testNotEqualPtrArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_PTR_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualPtrEachEqual(void)
+{
+    char A = 1;
+    char B = 2;
+    char C = 3;
+    char* p0[] = {&A, &A, &A};
+    char* p1[] = {&A, &B, &C, &A};
+    char* p2[] = {&B, &B};
+    char* p3[] = {&C};
+
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 3);
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p1, 1);
+    TEST_ASSERT_EACH_EQUAL_PTR(&B, p2, 2);
+    TEST_ASSERT_EACH_EQUAL_PTR(&C, p3, 1);
+}
+
+void testNotEqualPtrEachEqualNullExpected(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 2);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqualNullActual(void)
+{
+    char A = 1;
+    char** p0 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 2);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqual1(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&A, &A, &A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqual2(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&B, &B, &A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&B, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqual3(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&A, &B, &B, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&B, p0, 4);
     VERIFY_FAILS_END
 }
 

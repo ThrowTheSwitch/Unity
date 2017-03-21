@@ -570,17 +570,17 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
                 break;
-            default: /* length 4 bytes */
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
-                length = 4;
-                break;
 #ifdef UNITY_SUPPORT_64
             case 8:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
                 break;
 #endif
+            default: /* length 4 bytes */
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                length = 4;
+                break;
         }
 
         if (expect_val != actual_val)
@@ -1118,6 +1118,41 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
     }
 }
 
+/*-----------------------------------------------*/
+
+static union
+{
+    UNITY_INT8 i8;
+    UNITY_INT16 i16;
+    UNITY_INT32 i32;
+#ifdef UNITY_SUPPORT_64
+    UNITY_INT64 i64;
+#endif
+} UnityQuickCompare;
+
+UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
+{
+    switch(size)
+    {
+        case 1:
+          UnityQuickCompare.i8 = num;
+          return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i8);
+
+        case 2:
+          UnityQuickCompare.i16 = num;
+          return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i16);
+
+#ifdef UNITY_SUPPORT_64
+        case 8:
+          UnityQuickCompare.i64 = num;
+          return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i64);
+#endif
+        default: //4 bytes
+          UnityQuickCompare.i32 = num;
+          return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i32);
+    }
+}
+
 /*-----------------------------------------------
  * Control Functions
  *-----------------------------------------------*/
@@ -1181,6 +1216,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
   #pragma weak tearDown
   void tearDown(void) { }
 #endif
+
 /*-----------------------------------------------*/
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
 {
