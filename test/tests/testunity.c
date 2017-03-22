@@ -1519,6 +1519,61 @@ void testNotEqualStringArrayLengthZero(void)
     VERIFY_FAILS_END
 }
 
+void testEqualStringEachEqual(void)
+{
+    const char *testStrings1[] = { "foo", "foo", "foo", "foo" };
+    const char *testStrings2[] = { "boo", "boo", "boo", "zoo" };
+    const char *testStrings3[] = { "", "", "", "" };
+
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings1, 4);
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings1, 1);
+    TEST_ASSERT_EACH_EQUAL_STRING("boo", testStrings2, 3);
+    TEST_ASSERT_EACH_EQUAL_STRING("", testStrings3, 4);
+}
+
+void testNotEqualStringEachEqual1(void)
+{
+    const char *testStrings[] = { "foo", "foo", "foo", "moo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual2(void)
+{
+    const char *testStrings[] = { "boo", "foo", "foo", "foo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual3(void)
+{
+    const char *testStrings[] = { "foo", "foo", "foo", NULL };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual4(void)
+{
+    const char *testStrings[] = { "foo", "foo", "woo", "foo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual5(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", NULL, 1);
+    VERIFY_FAILS_END
+}
+
 void testEqualMemory(void)
 {
     const char *testString = "whatever";

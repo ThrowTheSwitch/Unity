@@ -1016,13 +1016,17 @@ void UnityAssertEqualStringLen(const char* expected,
 }
 
 /*-----------------------------------------------*/
-void UnityAssertEqualStringArray(const char** expected,
+void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
                                  const char** actual,
                                  const UNITY_UINT32 num_elements,
                                  const char* msg,
-                                 const UNITY_LINE_TYPE lineNumber)
+                                 const UNITY_LINE_TYPE lineNumber,
+                                 const UNITY_FLAGS_T flags)
 {
-    UNITY_UINT32 i, j = 0;
+    UNITY_UINT32 i = 0;
+    UNITY_UINT32 j = 0;
+    const char* exp;
+    const char* act;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1032,18 +1036,35 @@ void UnityAssertEqualStringArray(const char** expected,
         UnityPrintPointlessAndBail();
     }
 
-    if (expected == actual) return; /* Both are NULL or same pointer */
+    if ((const char**)expected == actual)
+    {
+        return; /* Both are NULL or same pointer */
+    }
+
     if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))
+    {
         UNITY_FAIL_AND_BAIL;
+    }
+
+    if (flags != UNITY_ARRAY_TO_ARRAY)
+    {
+        exp = (const char*)expected;
+    }
 
     do
     {
-        /* if both pointers not null compare the strings */
-        if (expected[j] && actual[j])
+        act = actual[j];
+        if (flags == UNITY_ARRAY_TO_ARRAY)
         {
-            for (i = 0; expected[j][i] || actual[j][i]; i++)
+            exp = ((const char**)expected)[j];
+        }
+
+        /* if both pointers not null compare the strings */
+        if (exp && act)
+        {
+            for (i = 0; exp[i] || act[i]; i++)
             {
-                if (expected[j][i] != actual[j][i])
+                if (exp[i] != act[i])
                 {
                     Unity.CurrentTestFailed = 1;
                     break;
@@ -1052,7 +1073,7 @@ void UnityAssertEqualStringArray(const char** expected,
         }
         else
         { /* handle case of one pointers being null (if both null, test should pass) */
-            if (expected[j] != actual[j])
+            if (exp != act)
             {
                 Unity.CurrentTestFailed = 1;
             }
@@ -1066,7 +1087,7 @@ void UnityAssertEqualStringArray(const char** expected,
                 UnityPrint(UnityStrElement);
                 UnityPrintNumberUnsigned(j);
             }
-            UnityPrintExpectedAndActualStrings((const char*)(expected[j]), (const char*)(actual[j]));
+            UnityPrintExpectedAndActualStrings(exp, act);
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
