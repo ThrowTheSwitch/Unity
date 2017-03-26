@@ -1187,7 +1187,7 @@ UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
           UnityQuickCompare.i64 = (UNITY_INT64)num;
           return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i64);
 #endif
-        default: //4 bytes
+        default: /* 4 bytes */
           UnityQuickCompare.i32 = (UNITY_INT32)num;
           return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i32);
     }
