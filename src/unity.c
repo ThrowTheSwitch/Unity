@@ -1025,8 +1025,8 @@ void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
 {
     UNITY_UINT32 i = 0;
     UNITY_UINT32 j = 0;
-    const char* exp;
-    const char* act;
+    const char* exp = NULL;
+    const char* act = NULL;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1036,7 +1036,7 @@ void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
         UnityPrintPointlessAndBail();
     }
 
-    if ((const char**)expected == actual)
+    if ((const void*)expected == (const void*)actual)
     {
         return; /* Both are NULL or same pointer */
     }
@@ -1056,7 +1056,7 @@ void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
         act = actual[j];
         if (flags == UNITY_ARRAY_TO_ARRAY)
         {
-            exp = ((const char**)expected)[j];
+            exp = ((const char* const*)expected)[j];
         }
 
         /* if both pointers not null compare the strings */
@@ -1175,20 +1175,20 @@ UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
     switch(size)
     {
         case 1:
-          UnityQuickCompare.i8 = num;
+          UnityQuickCompare.i8 = (UNITY_INT8)num;
           return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i8);
 
         case 2:
-          UnityQuickCompare.i16 = num;
+          UnityQuickCompare.i16 = (UNITY_INT16)num;
           return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i16);
 
 #ifdef UNITY_SUPPORT_64
         case 8:
-          UnityQuickCompare.i64 = num;
+          UnityQuickCompare.i64 = (UNITY_INT64)num;
           return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i64);
 #endif
         default: //4 bytes
-          UnityQuickCompare.i32 = num;
+          UnityQuickCompare.i32 = (UNITY_INT32)num;
           return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i32);
     }
 }
@@ -1405,9 +1405,9 @@ int UnityParseOptions(int argc, char** argv)
 
 int IsStringInBiggerString(const char* longstring, const char* shortstring)
 {
-    char* lptr = (char*)longstring;
-    char* sptr = (char*)shortstring;
-    char* lnext = lptr;
+    const char* lptr = longstring;
+    const char* sptr = shortstring;
+    const char* lnext = lptr;
 
     if (*sptr == '*')
         return 1;
@@ -1439,7 +1439,7 @@ int IsStringInBiggerString(const char* longstring, const char* shortstring)
 
         /* Otherwise we start in the long pointer 1 character further and try again */
         lptr = lnext;
-        sptr = (char*)shortstring;
+        sptr = shortstring;
     }
     return 0;
 }
