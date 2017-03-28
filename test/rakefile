@@ -53,7 +53,7 @@ task :summary do
 end
 
 desc "Build and test Unity"
-task :all => [:clean, :prepare_for_tests, :scripts, :unit, :summary]
+task :all => [:clean, :prepare_for_tests, :scripts, :unit, :style, :summary]
 task :default => [:clobber, :all]
 task :ci => [:no_color, :default]
 task :cruise => [:no_color, :default]
@@ -70,3 +70,25 @@ end
 task :verbose do
   $verbose = true
 end
+
+namespace :style do
+  desc "Check style"
+  task :check do
+    `rubocop ../`
+    report "Style Checked."
+  end
+
+  desc "Attempt to Autocorrect style"
+  task :auto do
+    `rubocop ../ --auto-correct`
+    report "Autocorrected What We Could."
+  end
+
+  desc "Update style todo list"
+  task :todo do
+    `rubocop ../ --auto-gen-config`
+    report "Updated Style TODO List."
+  end
+end
+
+task :style => ['style:check']
