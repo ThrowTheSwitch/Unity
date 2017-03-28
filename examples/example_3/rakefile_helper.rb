@@ -9,7 +9,7 @@ module RakefileHelpers
 
   def load_configuration(config_file)
     $cfg_file = config_file
-    $cfg = YAML.safe_load(File.read($cfg_file))
+    $cfg = YAML.load(File.read($cfg_file))
   end
 
   def configure_clean
@@ -139,8 +139,8 @@ module RakefileHelpers
     report command_string
     output = `#{command_string}`.chomp
     report(output) if verbose && !output.nil? && !output.empty?
-    if ($CHILD_STATUS.exitstatus != 0) && raise_on_fail
-      raise "Command failed. (Returned #{$CHILD_STATUS.exitstatus})"
+    if ($?.exitstatus != 0) && raise_on_fail
+      raise "Command failed. (Returned #{$?.exitstatus})"
     end
     output
   end
