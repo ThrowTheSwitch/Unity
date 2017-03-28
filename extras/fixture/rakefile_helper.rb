@@ -16,7 +16,7 @@ module RakefileHelpers
   def load_configuration(config_file)
     unless $configured
       $cfg_file = HERE + "../../test/targets/#{config_file}" unless config_file =~ /[\\|\/]/
-      $cfg = YAML.safe_load(File.read($cfg_file))
+      $cfg = YAML.load(File.read($cfg_file))
       $colour_output = false unless $cfg['colour']
       $configured = true if config_file != DEFAULT_CONFIG_FILE
     end
@@ -120,7 +120,7 @@ module RakefileHelpers
     report command_string
     output = `#{command_string}`.chomp
     report(output) if verbose && !output.nil? && !output.empty?
-    raise "Command failed. (Returned #{$CHILD_STATUS.exitstatus})" if $CHILD_STATUS.exitstatus != 0
+    raise "Command failed. (Returned #{$?.exitstatus})" if $?.exitstatus != 0
     output
   end
 
