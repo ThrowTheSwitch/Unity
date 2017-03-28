@@ -64,26 +64,40 @@ class UnityModuleGenerator
     @options[:path_tst] += '/'                unless @options[:path_tst][-1] == 47
 
     # Built in patterns
-    @patterns = { 'src' => { '' => { inc: [] } },
-                  'test' => { '' => { inc: [] } },
-                  'dh'  => { 'Driver'   => { inc: [create_filename('%1$s', 'Hardware.h')] },
-                             'Hardware' => { inc: [] } },
-                  'dih' => { 'Driver'   => { inc: [create_filename('%1$s', 'Hardware.h'), create_filename('%1$s', 'Interrupt.h')] },
-                             'Interrupt' => { inc: [create_filename('%1$s', 'Hardware.h')] },
-                             'Hardware' => { inc: [] } },
-                  'mch' => { 'Model'    => { inc: [] },
-                             'Conductor' => { inc: [create_filename('%1$s', 'Model.h'), create_filename('%1$s', 'Hardware.h')] },
-                             'Hardware' => { inc: [] } },
-                  'mvp' => { 'Model'    => { inc: [] },
-                             'Presenter' => { inc: [create_filename('%1$s', 'Model.h'), create_filename('%1$s', 'View.h')] },
-                             'View' => { inc: [] } } }
+    @patterns = {
+      'src'  =>  {
+        '' =>  { inc: [] }
+      },
+      'test' =>  {
+        '' =>  { inc: [] }
+      },
+      'dh'   =>  {
+        'Driver'    =>  { inc: [create_filename('%1$s', 'Hardware.h')] },
+        'Hardware'  =>  { inc: [] }
+      },
+      'dih'  =>  {
+        'Driver'    =>  { inc: [create_filename('%1$s', 'Hardware.h'), create_filename('%1$s', 'Interrupt.h')] },
+        'Interrupt' =>  { inc: [create_filename('%1$s', 'Hardware.h')] },
+        'Hardware'  =>  { inc: [] }
+      },
+      'mch'  =>  {
+        'Model'     =>  { inc: [] },
+        'Conductor' =>  { inc: [create_filename('%1$s', 'Model.h'), create_filename('%1$s', 'Hardware.h')] },
+        'Hardware'  =>  { inc: [] }
+      },
+      'mvp'  =>  {
+        'Model'     =>  { inc: [] },
+        'Presenter' =>  { inc: [create_filename('%1$s', 'Model.h'), create_filename('%1$s', 'View.h')] },
+        'View'      =>  { inc: [] }
+      }
+    }
   end
 
   ############################
   def self.default_options
     {
       pattern: 'src',
-      includes:       {
+      includes: {
         src: [],
         inc: [],
         tst: []
@@ -139,10 +153,10 @@ class UnityModuleGenerator
           template: cfg[:template],
           boilerplate: cfg[:boilerplate],
           includes: case (cfg[:inc])
-                    when :src then (@options[:includes][:src] || []) | pattern_traits[:inc].map { |f| f % [module_name] }
+                    when :src then (@options[:includes][:src] || []) | (pattern_traits[:inc].map { |f| format(f, module_name) })
                     when :inc then (@options[:includes][:inc] || [])
-                    when :tst then (@options[:includes][:tst] || []) | pattern_traits[:inc].map { |f| "#{@options[:mock_prefix]}#{f}" % [module_name] }
-                       end
+                    when :tst then (@options[:includes][:tst] || []) | (pattern_traits[:inc].map { |f| format("#{@options[:mock_prefix]}#{f}", module_name) })
+                    end
         }
       end
     end
@@ -194,12 +208,12 @@ class UnityModuleGenerator
       File.open(file[:path], 'w') do |f|
         f.write("#{file[:boilerplate]}\n" % [file[:name]]) unless file[:boilerplate].nil?
         f.write(file[:template] % [file[:name],
-                                   file[:includes].map { |f| "#include \"#{f}\"\n" }.join,
+                                   file[:includes].map { |ff| "#include \"#{ff}\"\n" }.join,
                                    file[:name].upcase])
       end
       if @options[:update_svn]
         `svn add \"#{file[:path]}\"`
-        if $CHILD_STATUS.exitstatus == 0
+        if $!.exitstatus.zero?
           puts "File #{file[:path]} created and added to source control"
         else
           puts "File #{file[:path]} created but FAILED adding to source control!"
@@ -233,7 +247,7 @@ end
 
 ############################
 # Handle As Command Line If Called That Way
-if $PROGRAM_NAME == __FILE__
+if $0 == __FILE__
   destroy = false
   options = {}
   module_name = nil

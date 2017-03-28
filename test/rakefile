@@ -74,19 +74,30 @@ end
 namespace :style do
   desc "Check style"
   task :check do
-    `rubocop ../`
+    report execute("rubocop ../ --config .rubocop.yml", true)
     report "Style Checked."
+  end
+
+  namespace :check do
+    Dir['../**/*.rb'].each do |f|
+      task File.basename(f, '.rb').to_sym do
+        report execute("rubocop #{f} --color --config .rubocop.yml", true)
+        report "Style Checked."
+      end
+    end
   end
 
   desc "Attempt to Autocorrect style"
   task :auto do
-    `rubocop ../ --auto-correct`
+    File.delete(".rubocop_todo.yml")
+    execute("rubocop ../ --auto-correct --config .rubocop.yml")
     report "Autocorrected What We Could."
   end
 
   desc "Update style todo list"
   task :todo do
-    `rubocop ../ --auto-gen-config`
+    File.delete(".rubocop_todo.yml")
+    execute("rubocop ../ --auto-gen-config --config .rubocop.yml")
     report "Updated Style TODO List."
   end
 end
