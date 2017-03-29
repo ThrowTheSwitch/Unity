@@ -23,37 +23,37 @@ class ArgvParser
     options.root_path = '.'
     options.out_file = 'results.xml'
 
-    opts = OptionParser.new do |opts|
-      opts.banner = 'Usage: unity_to_junit.rb [options]'
+    opts = OptionParser.new do |o|
+      o.banner = 'Usage: unity_to_junit.rb [options]'
 
-      opts.separator ''
-      opts.separator 'Specific options:'
+      o.separator ''
+      o.separator 'Specific options:'
 
-      opts.on('-r', '--results <dir>', 'Look for Unity Results files here.') do |results|
+      o.on('-r', '--results <dir>', 'Look for Unity Results files here.') do |results|
         # puts "results #{results}"
         options.results_dir = results
       end
 
-      opts.on('-p', '--root_path <path>', 'Prepend this path to files in results.') do |root_path|
+      o.on('-p', '--root_path <path>', 'Prepend this path to files in results.') do |root_path|
         options.root_path = root_path
       end
 
-      opts.on('-o', '--output <filename>', 'XML file to generate.') do |out_file|
+      o.on('-o', '--output <filename>', 'XML file to generate.') do |out_file|
         # puts "out_file: #{out_file}"
         options.out_file = out_file
       end
 
-      opts.separator ''
-      opts.separator 'Common options:'
+      o.separator ''
+      o.separator 'Common options:'
 
       # No argument, shows at tail.  This will print an options summary.
-      opts.on_tail('-h', '--help', 'Show this message') do
-        puts opts
+      o.on_tail('-h', '--help', 'Show this message') do
+        puts o
         exit
       end
 
       # Another typical switch to print the version.
-      opts.on_tail('--version', 'Show version') do
+      o.on_tail('--version', 'Show version') do
         puts "unity_to_junit.rb version #{VERSION}"
         exit
       end
@@ -67,6 +67,7 @@ end # class OptparseExample
 class UnityToJUnit
   include FileUtils::Verbose
   attr_reader :report, :total_tests, :failures, :ignored
+  attr_writer :targets, :root, :out_file
 
   def initialize
     @report = ''
@@ -82,16 +83,16 @@ class UnityToJUnit
     write_suites_header(f)
     results.each do |result_file|
       lines = File.readlines(result_file).map(&:chomp)
-      if lines.empty?
-        raise "Empty test result file: #{result_file}"
-      else
-        result_output = get_details(result_file, lines)
-        tests, failures, ignored = parse_test_summary(lines)
-        result_output[:counts][:total] = tests
-        result_output[:counts][:failed] = failures
-        result_output[:counts][:ignored] = ignored
-        result_output[:counts][:passed] = (result_output[:counts][:total] - result_output[:counts][:failed] - result_output[:counts][:ignored])
-      end
+
+      raise "Empty test result file: #{result_file}" if lines.empty?
+
+      result_output = get_details(result_file, lines)
+      tests, failures, ignored = parse_test_summary(lines)
+      result_output[:counts][:total] = tests
+      result_output[:counts][:failed] = failures
+      result_output[:counts][:ignored] = ignored
+      result_output[:counts][:passed] = (result_output[:counts][:total] - result_output[:counts][:failed] - result_output[:counts][:ignored])
+
       # use line[0] from the test output to get the test_file path and name
       test_file_str = lines[0].tr('\\', '/')
       test_file_str = test_file_str.split(':')
@@ -99,7 +100,7 @@ class UnityToJUnit
                     result_file
                   else
                     test_file_str[0] + ':' + test_file_str[1]
-      end
+                  end
       result_output[:source][:path] = File.dirname(test_file)
       result_output[:source][:file] = File.basename(test_file)
 
@@ -114,18 +115,6 @@ class UnityToJUnit
     end
     write_suites_footer(f)
     f.close
-  end
-
-  def set_targets(target_array)
-    @targets = target_array
-  end
-
-  def set_root_path(path)
-    @root = path
-  end
-
-  def set_out_file(filename)
-    @out_file = filename
   end
 
   def usage(err_msg = nil)
@@ -148,11 +137,10 @@ class UnityToJUnit
   protected
 
   def get_details(_result_file, lines)
-    results = get_results_structure
+    results = results_structure
     lines.each do |line|
       line = line.tr('\\', '/')
-      src_file, src_line, test_name, status, msg = line.split(/:/)
-      line_out = (@root && (@root != 0) ? "#{@root}#{line}" : line).gsub(/\//, '\\')
+      _src_file, src_line, test_name, status, msg = line.split(/:/)
       case status
       when 'IGNORE' then results[:ignores] << { test: test_name, line: src_line, message: msg }
       when 'FAIL'   then results[:failures] << { test: test_name, line: src_line, message: msg }
@@ -163,11 +151,8 @@ class UnityToJUnit
   end
 
   def parse_test_summary(summary)
-    if summary.find { |v| v =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/ }
-      [Regexp.last_match(1).to_i, Regexp.last_match(2).to_i, Regexp.last_match(3).to_i]
-    else
-      raise "Couldn't parse test results: #{summary}"
-    end
+    raise "Couldn't parse test results: #{summary}" unless summary.find { |v| v =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/ }
+    [Regexp.last_match(1).to_i, Regexp.last_match(2).to_i, Regexp.last_match(3).to_i]
   end
 
   def here
@@ -176,7 +161,7 @@ class UnityToJUnit
 
   private
 
-  def get_results_structure
+  def results_structure
     {
       source: { path: '', file: '' },
       successes: [],
@@ -213,7 +198,6 @@ class UnityToJUnit
   def write_tests(results, stream)
     result = results[:successes]
     result.each do |item|
-      filename = File.join(results[:source][:path], File.basename(results[:source][:file], '.*'))
       stream.puts "\t\t<testcase classname=\"#{@unit_name}\" name=\"#{item[:test]}\" time=\"0\" />"
     end
   end
@@ -239,7 +223,7 @@ class UnityToJUnit
   end
 end # UnityToJUnit
 
-if __FILE__ == $PROGRAM_NAME
+if __FILE__ == $0
   # parse out the command options
   options = ArgvParser.parse(ARGV)
 
@@ -251,18 +235,18 @@ if __FILE__ == $PROGRAM_NAME
 
     results = Dir[targets]
     raise "No *.testpass, *.testfail, or *.testresults files found in '#{targets}'" if results.empty?
-    utj.set_targets(results)
+    utj.targets = results
 
     # set the root path
-    utj.set_root_path(options.root_path)
+    utj.root = options.root_path
 
     # set the output XML file name
     # puts "Output File from options: #{options.out_file}"
-    utj.set_out_file(options.out_file)
+    utj.out_file = options.out_file
 
     # run the summarizer
     puts utj.run
-  rescue Exception => e
+  rescue StandardError => e
     utj.usage e.message
   end
 end

@@ -15,6 +15,7 @@ class UnityTestSummary
   include FileUtils::Verbose
 
   attr_reader :report, :total_tests, :failures, :ignored
+  attr_writer :targets, :root
 
   def initialize(_opts = {})
     @report = ''
@@ -33,17 +34,16 @@ class UnityTestSummary
 
     results.each do |result_file|
       lines = File.readlines(result_file).map(&:chomp)
-      if lines.empty?
-        raise "Empty test result file: #{result_file}"
-      else
-        output = get_details(result_file, lines)
-        failure_output << output[:failures] unless output[:failures].empty?
-        ignore_output  << output[:ignores]  unless output[:ignores].empty?
-        tests, failures, ignored = parse_test_summary(lines)
-        @total_tests += tests
-        @failures += failures
-        @ignored += ignored
-      end
+
+      raise "Empty test result file: #{result_file}" if lines.empty?
+
+      output = get_details(result_file, lines)
+      failure_output << output[:failures] unless output[:failures].empty?
+      ignore_output  << output[:ignores]  unless output[:ignores].empty?
+      tests, failures, ignored = parse_test_summary(lines)
+      @total_tests += tests
+      @failures += failures
+      @ignored += ignored
     end
 
     if @ignored > 0
@@ -70,14 +70,6 @@ class UnityTestSummary
     @report += "\n"
   end
 
-  def set_targets(target_array)
-    @targets = target_array
-  end
-
-  def set_root_path(path)
-    @root = path
-  end
-
   def usage(err_msg = nil)
     puts "\nERROR: "
     puts err_msg if err_msg
@@ -94,7 +86,7 @@ class UnityTestSummary
   def get_details(_result_file, lines)
     results = { failures: [], ignores: [], successes: [] }
     lines.each do |line|
-      src_file, src_line, test_name, status, msg = line.split(/:/)
+      _src_file, _src_line, _test_name, status, _msg = line.split(/:/)
       line_out = (@root && (@root != 0) ? "#{@root}#{line}" : line).gsub(/\//, '\\')
       case status
       when 'IGNORE' then results[:ignores]   << line_out
@@ -106,11 +98,8 @@ class UnityTestSummary
   end
 
   def parse_test_summary(summary)
-    if summary.find { |v| v =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/ }
-      [Regexp.last_match(1).to_i, Regexp.last_match(2).to_i, Regexp.last_match(3).to_i]
-    else
-      raise "Couldn't parse test results: #{summary}"
-    end
+    raise "Couldn't parse test results: #{summary}" unless summary.find { |v| v =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/ }
+    [Regexp.last_match(1).to_i, Regexp.last_match(2).to_i, Regexp.last_match(3).to_i]
   end
 
   def here
@@ -118,7 +107,7 @@ class UnityTestSummary
   end
 end
 
-if $PROGRAM_NAME == __FILE__
+if $0 == __FILE__
 
   # parse out the command options
   opts, args = ARGV.partition { |v| v =~ /^--\w+/ }
@@ -133,15 +122,15 @@ if $PROGRAM_NAME == __FILE__
     targets = "#{ARGV[0].tr('\\', '/')}**/*.test*"
     results = Dir[targets]
     raise "No *.testpass, *.testfail, or *.testresults files found in '#{targets}'" if results.empty?
-    uts.set_targets(results)
+    uts.targets = results
 
     # set the root path
     args[1] ||= Dir.pwd + '/'
-    uts.set_root_path(ARGV[1])
+    uts.root = ARGV[1]
 
     # run the summarizer
     puts uts.run
-  rescue Exception => e
+  rescue StandardError => e
     uts.usage e.message
   end
 end

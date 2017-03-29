@@ -9,11 +9,11 @@ File.expand_path(File.join(File.dirname(__FILE__), 'colour_prompt'))
 class UnityTestRunnerGenerator
   def initialize(options = nil)
     @options = UnityTestRunnerGenerator.default_options
-    case (options)
+    case options
     when NilClass then @options
     when String   then @options.merge!(UnityTestRunnerGenerator.grab_config(options))
     when Hash     then @options.merge!(options)
-      else          raise 'If you specify arguments, it should be a filename or a hash of options'
+    else raise 'If you specify arguments, it should be a filename or a hash of options'
     end
     require "#{File.expand_path(File.dirname(__FILE__))}/type_sanitizer"
   end
@@ -43,16 +43,11 @@ class UnityTestRunnerGenerator
       options.merge!(yaml_guts[:unity] || yaml_guts[:cmock])
       raise "No :unity or :cmock section found in #{config_file}" unless options
     end
-    (options)
+    options
   end
 
   def run(input_file, output_file, options = nil)
-    tests = []
-    testfile_includes = []
-    used_mocks = []
-
     @options.merge!(options) unless options.nil?
-    module_name = File.basename(input_file)
 
     # pull required data from source file
     source = File.read(input_file)
@@ -80,15 +75,16 @@ class UnityTestRunnerGenerator
       create_header(output, used_mocks, testfile_includes)
       create_externs(output, tests, used_mocks)
       create_mock_management(output, used_mocks)
-      create_suite_setup_and_teardown(output)
+      create_suite_setup(output)
+      create_suite_teardown(output)
       create_reset(output, used_mocks)
       create_main(output, input_file, tests, used_mocks)
     end
 
-    if @options[:header_file] && !@options[:header_file].empty?
-      File.open(@options[:header_file], 'w') do |output|
-        create_h_file(output, @options[:header_file], tests, testfile_includes, used_mocks)
-      end
+    return unless @options[:header_file] && !@options[:header_file].empty?
+
+    File.open(@options[:header_file], 'w') do |output|
+      create_h_file(output, @options[:header_file], tests, testfile_includes, used_mocks)
     end
   end
 
@@ -123,7 +119,7 @@ class UnityTestRunnerGenerator
     source_index = 0
     tests_and_line_numbers.size.times do |i|
       source_lines[source_index..-1].each_with_index do |line, index|
-        next unless (line =~ /#{tests_and_line_numbers[i][:test]}/)
+        next unless line =~ /#{tests_and_line_numbers[i][:test]}/
         source_index += index
         tests_and_line_numbers[i][:line_number] = source_index + 1
         break
@@ -182,12 +178,13 @@ class UnityTestRunnerGenerator
       output.puts("#include \"#{mock.gsub('.h', '')}.h\"")
     end
     output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
-    if @options[:enforce_strict_ordering]
-      output.puts('')
-      output.puts('int GlobalExpectCount;')
-      output.puts('int GlobalVerifyOrder;')
-      output.puts('char* GlobalOrderError;')
-    end
+
+    return unless @options[:enforce_strict_ordering]
+
+    output.puts('')
+    output.puts('int GlobalExpectCount;')
+    output.puts('int GlobalVerifyOrder;')
+    output.puts('char* GlobalOrderError;')
   end
 
   def create_externs(output, tests, _mocks)
@@ -201,55 +198,60 @@ class UnityTestRunnerGenerator
   end
 
   def create_mock_management(output, mock_headers)
-    unless mock_headers.empty?
-      output.puts("\n/*=======Mock Management=====*/")
-      output.puts('static void CMock_Init(void)')
-      output.puts('{')
-      if @options[:enforce_strict_ordering]
-        output.puts('  GlobalExpectCount = 0;')
-        output.puts('  GlobalVerifyOrder = 0;')
-        output.puts('  GlobalOrderError = NULL;')
-      end
-      mocks = mock_headers.map { |mock| File.basename(mock) }
-      mocks.each do |mock|
-        mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
-        output.puts("  #{mock_clean}_Init();")
-      end
-      output.puts("}\n")
+    return if mock_headers.empty?
 
-      output.puts('static void CMock_Verify(void)')
-      output.puts('{')
-      mocks.each do |mock|
-        mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
-        output.puts("  #{mock_clean}_Verify();")
-      end
-      output.puts("}\n")
+    output.puts("\n/*=======Mock Management=====*/")
+    output.puts('static void CMock_Init(void)')
+    output.puts('{')
 
-      output.puts('static void CMock_Destroy(void)')
-      output.puts('{')
-      mocks.each do |mock|
-        mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
-        output.puts("  #{mock_clean}_Destroy();")
-      end
-      output.puts("}\n")
+    if @options[:enforce_strict_ordering]
+      output.puts('  GlobalExpectCount = 0;')
+      output.puts('  GlobalVerifyOrder = 0;')
+      output.puts('  GlobalOrderError = NULL;')
     end
+
+    mocks = mock_headers.map { |mock| File.basename(mock) }
+    mocks.each do |mock|
+      mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
+      output.puts("  #{mock_clean}_Init();")
+    end
+    output.puts("}\n")
+
+    output.puts('static void CMock_Verify(void)')
+    output.puts('{')
+    mocks.each do |mock|
+      mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
+      output.puts("  #{mock_clean}_Verify();")
+    end
+    output.puts("}\n")
+
+    output.puts('static void CMock_Destroy(void)')
+    output.puts('{')
+    mocks.each do |mock|
+      mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
+      output.puts("  #{mock_clean}_Destroy();")
+    end
+    output.puts("}\n")
   end
 
-  def create_suite_setup_and_teardown(output)
-    unless @options[:suite_setup].nil?
-      output.puts("\n/*=======Suite Setup=====*/")
-      output.puts('static void suite_setup(void)')
-      output.puts('{')
-      output.puts(@options[:suite_setup])
-      output.puts('}')
-    end
-    unless @options[:suite_teardown].nil?
-      output.puts("\n/*=======Suite Teardown=====*/")
-      output.puts('static int suite_teardown(int num_failures)')
-      output.puts('{')
-      output.puts(@options[:suite_teardown])
-      output.puts('}')
-    end
+  def create_suite_setup(output)
+    return if @options[:suite_setup].nil?
+
+    output.puts("\n/*=======Suite Setup=====*/")
+    output.puts('static void suite_setup(void)')
+    output.puts('{')
+    output.puts(@options[:suite_setup])
+    output.puts('}')
+  end
+
+  def create_suite_teardown(output)
+    return if @options[:suite_teardown].nil?
+
+    output.puts("\n/*=======Suite Teardown=====*/")
+    output.puts('static int suite_teardown(int num_failures)')
+    output.puts('{')
+    output.puts(@options[:suite_teardown])
+    output.puts('}')
   end
 
   def create_runtest(output, used_mocks)
@@ -384,22 +386,25 @@ class UnityTestRunnerGenerator
   end
 end
 
-if $PROGRAM_NAME == __FILE__
+if $0 == __FILE__
   options = { includes: [] }
-  yaml_file = nil
 
   # parse out all the options first (these will all be removed as we go)
   ARGV.reject! do |arg|
-    case (arg)
+    case arg
     when '-cexception'
-        options[:plugins] = [:cexception]; true
+      options[:plugins] = [:cexception]
+      true
     when /\.*\.ya?ml/
-        options = UnityTestRunnerGenerator.grab_config(arg); true
+      options = UnityTestRunnerGenerator.grab_config(arg)
+      true
     when /--(\w+)=\"?(.*)\"?/
-        options[Regexp.last_match(1).to_sym] = Regexp.last_match(2); true
+      options[Regexp.last_match(1).to_sym] = Regexp.last_match(2)
+      true
     when /\.*\.h/
-        options[:includes] << arg; true
-      else false
+      options[:includes] << arg
+      true
+    else false
     end
   end
 

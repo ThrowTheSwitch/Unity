@@ -1,19 +1,21 @@
 # This is the configuration used to check the rubocop source code.
 
-inherit_from: .rubocop_todo.yml
+#inherit_from: .rubocop_todo.yml
 
 AllCops:
   TargetRubyVersion: 2.1
 
 # These are areas where ThrowTheSwitch's coding style diverges from the Ruby standard
-# (Maybe we will make these conform over time)
 Style/SpecialGlobalVars:
-  SupportedStyles:
-    - use_perl_names
-    - use_english_names
   EnforcedStyle: use_perl_names
 Style/FormatString:
   Enabled: false
+Style/GlobalVars:
+  Enabled: false
+Style/RegexpLiteral:
+  AllowInnerSlashes: true
+Style/HashSyntax:
+  EnforcedStyle: no_mixed_keys
 
 # This is disabled because it seems to get confused over nested hashes
 Style/AlignHash:
@@ -47,6 +49,8 @@ Metrics/CyclomaticComplexity:
 Metrics/LineLength:
   Enabled: false
 Metrics/MethodLength:
+  Enabled: false
+Metrics/ModuleLength:
   Enabled: false
 Metrics/ParameterLists:
   Enabled: false

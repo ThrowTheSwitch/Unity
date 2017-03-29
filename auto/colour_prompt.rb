@@ -21,12 +21,11 @@ end
 
 class ColourCommandLine
   def initialize
-    if RUBY_PLATFORM =~ /(win|w)32$/
-      get_std_handle = Win32API.new('kernel32', 'GetStdHandle', ['L'], 'L')
-      @set_console_txt_attrb =
-        Win32API.new('kernel32', 'SetConsoleTextAttribute', %w(L N), 'I')
-      @hout = get_std_handle.call(-11)
-    end
+    return unless RUBY_PLATFORM =~ /(win|w)32$/
+    get_std_handle = Win32API.new('kernel32', 'GetStdHandle', ['L'], 'L')
+    @set_console_txt_attrb =
+      Win32API.new('kernel32', 'SetConsoleTextAttribute', %w(L N), 'I')
+    @hout = get_std_handle.call(-11)
   end
 
   def change_to(new_colour)
@@ -34,7 +33,7 @@ class ColourCommandLine
       @set_console_txt_attrb.call(@hout, win32_colour(new_colour))
     else
       "\033[30;#{posix_colour(new_colour)};22m"
-     end
+    end
   end
 
   def win32_colour(colour)

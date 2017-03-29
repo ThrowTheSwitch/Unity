@@ -17,7 +17,7 @@ def report(message)
       line.chomp!
       colour = case line
                when /(?:total\s+)?tests:?\s+(\d+)\s+(?:total\s+)?failures:?\s+\d+\s+Ignored:?/i
-                 Regexp.last_match(1).to_i == 0 ? :green : :red
+                 Regexp.last_match(1).to_i.zero? ? :green : :red
                when /PASS/
                  :green
                when /^OK$/
@@ -30,7 +30,7 @@ def report(message)
                  :white
                else
                  :silver
-      end
+               end
       colour_puts(colour, line)
     end
   end

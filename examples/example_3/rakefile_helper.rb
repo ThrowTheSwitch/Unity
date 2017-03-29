@@ -22,13 +22,13 @@ module RakefileHelpers
     configure_clean
   end
 
-  def get_unit_test_files
+  def unit_test_files
     path = $cfg['compiler']['unit_tests_path'] + 'Test*' + C_EXTENSION
     path.tr!('\\', '/')
     FileList.new(path)
   end
 
-  def get_local_include_dirs
+  def local_include_dirs
     include_dirs = $cfg['compiler']['includes']['items'].dup
     include_dirs.delete_if { |dir| dir.is_a?(Array) }
     include_dirs
@@ -69,14 +69,15 @@ module RakefileHelpers
 
   def build_compiler_fields
     command = tackit($cfg['compiler']['path'])
-    if $cfg['compiler']['defines']['items'].nil?
-      defines  = ''
-    else
-      defines  = squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'])
-    end
+    defines = if $cfg['compiler']['defines']['items'].nil?
+                ''
+              else
+                squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'])
+              end
     options  = squash('', $cfg['compiler']['options'])
     includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
     includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+
     { command: command, defines: defines, options: options, includes: includes }
   end
 
@@ -96,12 +97,12 @@ module RakefileHelpers
               else
                 squash('', $cfg['linker']['options'])
               end
-    if $cfg['linker']['includes'].nil? || $cfg['linker']['includes']['items'].nil?
-      includes = ''
-    else
-      includes = squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
-    end
-    includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+    includes = if $cfg['linker']['includes'].nil? || $cfg['linker']['includes']['items'].nil?
+                 ''
+               else
+                 squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
+               end.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+
     { command: command, options: options, includes: includes }
   end
 
@@ -127,11 +128,12 @@ module RakefileHelpers
                   else
                     squash('', $cfg['simulator']['pre_support'])
                   end
-    if $cfg['simulator']['post_support'].nil?
-      post_support = ''
-    else
-      post_support = squash('', $cfg['simulator']['post_support'])
-    end
+    post_support = if $cfg['simulator']['post_support'].nil?
+                     ''
+                   else
+                     squash('', $cfg['simulator']['post_support'])
+                   end
+
     { command: command, pre_support: pre_support, post_support: post_support }
   end
 
@@ -139,7 +141,7 @@ module RakefileHelpers
     report command_string
     output = `#{command_string}`.chomp
     report(output) if verbose && !output.nil? && !output.empty?
-    if ($?.exitstatus != 0) && raise_on_fail
+    if !$?.exitstatus.zero? && raise_on_fail
       raise "Command failed. (Returned #{$?.exitstatus})"
     end
     output
@@ -147,11 +149,11 @@ module RakefileHelpers
 
   def report_summary
     summary = UnityTestSummary.new
-    summary.set_root_path(HERE)
+    summary.root = HERE
     results_glob = "#{$cfg['compiler']['build_path']}*.test*"
     results_glob.tr!('\\', '/')
     results = Dir[results_glob]
-    summary.set_targets(results)
+    summary.targets = results
     summary.run
     fail_out 'FAIL: There were failures' if summary.failures > 0
   end
@@ -165,7 +167,7 @@ module RakefileHelpers
     $cfg['compiler']['defines']['items'] = [] if $cfg['compiler']['defines']['items'].nil?
     $cfg['compiler']['defines']['items'] << 'TEST'
 
-    include_dirs = get_local_include_dirs
+    include_dirs = local_include_dirs
 
     # Build and execute each unit test
     test_files.each do |test|
@@ -200,11 +202,11 @@ module RakefileHelpers
       # Execute unit test and generate results file
       simulator = build_simulator_fields
       executable = $cfg['linker']['bin_files']['destination'] + test_base + $cfg['linker']['bin_files']['extension']
-      if simulator.nil?
-        cmd_str = executable
-      else
-        cmd_str = "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
-      end
+      cmd_str = if simulator.nil?
+                  executable
+                else
+                  "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
+                end
       output = execute(cmd_str, true, false)
       test_results = $cfg['compiler']['build_path'] + test_base
       test_results += if output.match(/OK$/m).nil?

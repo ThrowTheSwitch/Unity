@@ -10,15 +10,16 @@ module RakefileHelpers
   class TestFileFilter
     def initialize(all_files = false)
       @all_files = all_files
-      if @all_files != true
-        if File.exist?('test_file_filter.yml')
-          filters = YAML.load_file('test_file_filter.yml')
-          @all_files = filters[:all_files]
-          @only_files = filters[:only_files]
-          @exclude_files = filters[:exclude_files]
-        end
-      end
+
+      return false unless @all_files
+      return false unless File.exist?('test_file_filter.yml')
+
+      filters = YAML.load_file('test_file_filter.yml')
+      @all_files = filters[:all_files]
+      @only_files = filters[:only_files]
+      @exclude_files = filters[:exclude_files]
     end
+
     attr_accessor :all_files, :only_files, :exclude_files
   end
 end

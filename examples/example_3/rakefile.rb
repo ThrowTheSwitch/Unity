@@ -23,7 +23,7 @@ DEFAULT_CONFIG_FILE = 'target_gcc_32.yml'.freeze
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
 task unit: [:prepare_for_tests] do
-  run_tests get_unit_test_files
+  run_tests unit_test_files
 end
 
 desc 'Generate test summary'

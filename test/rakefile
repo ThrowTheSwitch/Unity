@@ -32,7 +32,7 @@ configure_toolchain(DEFAULT_CONFIG_FILE)
 
 desc "Test unity with its own unit tests"
 task :unit => [:prepare_for_tests] do
-  run_tests get_unit_test_files
+  run_tests unit_test_files
 end
 
 desc "Test unity's helper scripts"
@@ -74,31 +74,34 @@ end
 namespace :style do
   desc "Check style"
   task :check do
-    report execute("rubocop ../ --config .rubocop.yml", true)
-    report "Style Checked."
+    report "\nVERIFYING RUBY STYLE"
+    report execute("rubocop ../auto ../examples ../extras --config .rubocop.yml", true)
+    report "Style PASSED."
   end
 
   namespace :check do
     Dir['../**/*.rb'].each do |f|
-      task File.basename(f, '.rb').to_sym do
+      task File.basename(f, '.rb').to_sym => ['style:clean'] do
         report execute("rubocop #{f} --color --config .rubocop.yml", true)
-        report "Style Checked."
+        report "Style Checked for #{f}"
       end
     end
   end
 
   desc "Attempt to Autocorrect style"
-  task :auto do
-    File.delete(".rubocop_todo.yml")
-    execute("rubocop ../ --auto-correct --config .rubocop.yml")
+  task :auto  => ['style:clean'] do
+    execute("rubocop ../auto ../examples ../extras --auto-correct --config .rubocop.yml")
     report "Autocorrected What We Could."
   end
 
   desc "Update style todo list"
-  task :todo do
-    File.delete(".rubocop_todo.yml")
-    execute("rubocop ../ --auto-gen-config --config .rubocop.yml")
+  task :todo  => ['style:clean'] do
+    execute("rubocop ../auto ../examples ../extras --auto-gen-config --config .rubocop.yml")
     report "Updated Style TODO List."
+  end
+
+  task :clean do
+    File.delete(".rubocop_todo.yml") if File.exists?(".rubocop_todo.yml")
   end
 end
 

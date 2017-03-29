@@ -14,12 +14,12 @@ module RakefileHelpers
   C_EXTENSION = '.c'.freeze
 
   def load_configuration(config_file)
-    unless $configured
-      $cfg_file = HERE + "../../test/targets/#{config_file}" unless config_file =~ /[\\|\/]/
-      $cfg = YAML.load(File.read($cfg_file))
-      $colour_output = false unless $cfg['colour']
-      $configured = true if config_file != DEFAULT_CONFIG_FILE
-    end
+    return if $configured
+
+    $cfg_file = HERE + "../../test/targets/#{config_file}" unless config_file =~ /[\\|\/]/
+    $cfg = YAML.load(File.read($cfg_file))
+    $colour_output = false unless $cfg['colour']
+    $configured = true if config_file != DEFAULT_CONFIG_FILE
   end
 
   def configure_clean
@@ -50,14 +50,15 @@ module RakefileHelpers
 
   def build_compiler_fields
     command = tackit($cfg['compiler']['path'])
-    if $cfg['compiler']['defines']['items'].nil?
-      defines  = ''
-    else
-      defines  = squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'])
-    end
+    defines = if $cfg['compiler']['defines']['items'].nil?
+                ''
+              else
+                squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'])
+              end
     options  = squash('', $cfg['compiler']['options'])
     includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
     includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+
     { command: command, defines: defines, options: options, includes: includes }
   end
 
@@ -67,6 +68,7 @@ module RakefileHelpers
     cmd_str = "#{compiler[:command]}#{compiler[:defines]}#{compiler[:options]}#{compiler[:includes]} #{unity_include} #{file} " \
               "#{$cfg['compiler']['object_files']['prefix']}#{$cfg['compiler']['object_files']['destination']}" \
               "#{File.basename(file, C_EXTENSION)}#{$cfg['compiler']['object_files']['extension']}"
+
     execute(cmd_str)
   end
 
@@ -77,12 +79,12 @@ module RakefileHelpers
               else
                 squash('', $cfg['linker']['options'])
               end
-    if $cfg['linker']['includes'].nil? || $cfg['linker']['includes']['items'].nil?
-      includes = ''
-    else
-      includes = squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
-    end
-    includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+    includes = if $cfg['linker']['includes'].nil? || $cfg['linker']['includes']['items'].nil?
+                 ''
+               else
+                 squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
+               end.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+
     { command: command, options: options, includes: includes }
   end
 
@@ -108,11 +110,11 @@ module RakefileHelpers
                   else
                     squash('', $cfg['simulator']['pre_support'])
                   end
-    if $cfg['simulator']['post_support'].nil?
-      post_support = ''
-    else
-      post_support = squash('', $cfg['simulator']['post_support'])
-    end
+    post_support = if $cfg['simulator']['post_support'].nil?
+                     ''
+                   else
+                     squash('', $cfg['simulator']['post_support'])
+                   end
     { command: command, pre_support: pre_support, post_support: post_support }
   end
 
@@ -126,11 +128,11 @@ module RakefileHelpers
 
   def report_summary
     summary = UnityTestSummary.new
-    summary.set_root_path(HERE)
+    summary.root = HERE
     results_glob = "#{$cfg['compiler']['build_path']}*.test*"
     results_glob.tr!('\\', '/')
     results = Dir[results_glob]
-    summary.set_targets(results)
+    summary.targets = results
     summary.run
   end
 
@@ -159,11 +161,11 @@ module RakefileHelpers
     # Execute unit test and generate results file
     simulator = build_simulator_fields
     executable = $cfg['linker']['bin_files']['destination'] + test_base + $cfg['linker']['bin_files']['extension']
-    if simulator.nil?
-      cmd_str = executable + ' -v -r'
-    else
-      cmd_str = "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
-    end
+    cmd_str = if simulator.nil?
+                executable + ' -v -r'
+              else
+                "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
+              end
     output = execute(cmd_str)
     test_results = $cfg['compiler']['build_path'] + test_base
     test_results += if output.match(/OK$/m).nil?
