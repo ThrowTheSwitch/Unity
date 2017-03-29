@@ -76,14 +76,31 @@ namespace :style do
   task :check do
     report "\nVERIFYING RUBY STYLE"
     report execute("rubocop ../auto ../examples ../extras --config .rubocop.yml", true)
-    report "Style PASSED."
+    report "Styling Ruby:PASS"
   end
 
   namespace :check do
     Dir['../**/*.rb'].each do |f|
-      task File.basename(f, '.rb').to_sym => ['style:clean'] do
+      filename = File.basename(f, '.rb')
+      desc "Check Style of #{filename}"
+      task filename.to_sym => ['style:clean'] do
         report execute("rubocop #{f} --color --config .rubocop.yml", true)
         report "Style Checked for #{f}"
+      end
+    end
+  end
+
+  desc "Fix Style of all C Code"
+  task :c do
+    run_astyle("../src/*.* ../extras/fixture/src/*.*")
+  end
+
+  namespace :c do
+    Dir['../{src,extras/**}/*.{c,h}'].each do |f|
+      filename = File.basename(f)[0..-3]
+      desc "Check Style of #{filename}"
+      task filename.to_sym do
+        run_astyle f
       end
     end
   end

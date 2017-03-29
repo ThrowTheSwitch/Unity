@@ -157,6 +157,18 @@ module RakefileHelpers
     { :command => command, :pre_support => pre_support, :post_support => post_support }
   end
 
+  def run_astyle(style_what)
+    report "Styling C Code..."
+    command = "AStyle " \
+              "--style=allman --indent=spaces=4 --indent-switches --indent-preproc-define --indent-preproc-block " \
+              "--pad-oper --pad-comma --unpad-paren --pad-header " \
+              "--align-pointer=type --align-reference=name " \
+              "--add-brackets --mode=c --suffix=none " \
+              "#{style_what}"
+    execute(command, false)
+    report "Styling C:PASS"
+  end
+
   def execute(command_string, ok_to_fail = false)
     report command_string if $verbose
     output = `#{command_string}`.chomp
