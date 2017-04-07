@@ -129,9 +129,9 @@ and double assertions (see immediately following section).
 
 ### TEST_ASSERT_EACH_EQUAL_X Variants
 
-Unity provides a collection of assertions for arrays containing a variety of 
-types which can be compared to a single value as well. These are documented in 
-the Each Equal section below. these are almost on par with the `_MESSAGE` 
+Unity provides a collection of assertions for arrays containing a variety of
+types which can be compared to a single value as well. These are documented in
+the Each Equal section below. these are almost on par with the `_MESSAGE`
 variants of Unity's Asserts in that for pretty much any Unity type assertion you
 can inject _EACH_EQUAL and run assertions on an entire block of memory.
 
@@ -139,12 +139,12 @@ can inject _EACH_EQUAL and run assertions on an entire block of memory.
 
 "Expected" is a single value to compare to.
 "Actual" is an array where each element will be compared to the expected value.
-"Size/count" is one of two parameters necessary to establish the number of array 
+"Size/count" is one of two parameters necessary to establish the number of array
 elements and perhaps the length of elements within the array.
 
 Notes:
 - The `_MESSAGE` variant convention still applies here to Each Equal assertions.
-- Assertions for handling Each Equal of floating point values are grouped with 
+- Assertions for handling Each Equal of floating point values are grouped with
 float and double assertions (see immediately following section).
 
 
@@ -409,10 +409,10 @@ match. Failure messages specify the array index of the failed comparison.
 `expected` are single values and `actual` are arrays. `num_elements` specifies
 the number of elements in the arrays to compare.
 
-`_HEX` assertions produce failure messages with expected and actual array 
+`_HEX` assertions produce failure messages with expected and actual array
 contents formatted in hexadecimal.
 
-Assertions fail upon the first element in the compared arrays found not to 
+Assertions fail upon the first element in the compared arrays found not to
 match. Failure messages specify the array index of the failed comparison.
 
 #### `TEST_ASSERT_EACH_EQUAL_INT (expected, actual, num_elements)`
@@ -711,3 +711,6 @@ with zeros.
 operations, particularly `TEST_ASSERT_INT_WITHIN`.Such assertions might wrap
 your `int` in the wrong place, and you could experience false failures. You can
 always back down to a simple `TEST_ASSERT` and do the operations yourself.
+
+
+*Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*

@@ -3,8 +3,9 @@
 Hi. Welcome to the coding standard for ThrowTheSwitch.org. For the most part,
 we try to follow these standards to unify our contributors' code into a cohesive
 unit (puns intended). You might find places where these standards aren't
-followed. We're not perfect. Please be polite where
-you notice these discrepancies and we'll try to be polite when we notice yours.
+followed. We're not perfect. Please be polite where you notice these discrepancies
+and we'll try to be polite when we notice yours.
+
 ;)
 
 
@@ -201,3 +202,6 @@ that happens, we like to indent further to line things up in nice tidy columns.
 
 Egad. Really? We use markdown and we like pdf files because they can be made to
 look nice while still being portable. Good enough?
+
+
+*Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*
