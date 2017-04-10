@@ -32,6 +32,10 @@
 #include <limits.h>
 #endif
 
+#ifndef UNITY_EXCLUDE_TIME_H
+#include <time.h>
+#endif
+
 /*-------------------------------------------------------
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
@@ -285,6 +289,44 @@ extern void UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION;
 #define UNITY_OUTPUT_COMPLETE()
 #endif
 
+#ifndef UNITY_EXEC_TIME_RESET
+#ifdef UNITY_INCLUDE_EXEC_TIME
+#define UNITY_EXEC_TIME_RESET()\
+    Unity.CurrentTestStartTime = 0;\
+    Unity.CurrentTestStopTime = 0;
+#else
+#define UNITY_EXEC_TIME_RESET()
+#endif
+#endif
+
+#ifndef UNITY_EXEC_TIME_START
+#ifdef UNITY_INCLUDE_EXEC_TIME
+#define UNITY_EXEC_TIME_START() Unity.CurrentTestStartTime = UNITY_CLOCK_MS();
+#else
+#define UNITY_EXEC_TIME_START()
+#endif
+#endif
+
+#ifndef UNITY_EXEC_TIME_START
+#ifdef UNITY_INCLUDE_EXEC_TIME
+#define UNITY_EXEC_TIME_STOP() Unity.CurrentTestStopTime = UNITY_CLOCK_MS();
+#else
+#define UNITY_EXEC_TIME_STOP()
+#endif
+#endif
+
+#ifndef UNITY_PRINT_EXEC_TIME
+#ifdef UNITY_INCLUDE_EXEC_TIME
+#define UNITY_PRINT_EXEC_TIME() \
+	UnityPrint(" (");\
+	UNITY_COUNTER_TYPE execTimeMs = (Unity.CurrentTestStopTime - Unity.CurrentTestStartTime);
+    UnityPrintNumberUnsigned(execTimeMs);\
+    UnityPrint(" ms)");
+#else
+#define UNITY_PRINT_EXEC_TIME()
+#endif
+#endif
+
 /*-------------------------------------------------------
  * Footprint
  *-------------------------------------------------------*/
@@ -387,6 +429,10 @@ struct UNITY_STORAGE_T
     UNITY_COUNTER_TYPE TestIgnores;
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifdef UNITY_INCLUDE_EXEC_TIME
+    UNITY_COUNTER_TYPE CurrentTestStartTime;
+    UNITY_COUNTER_TYPE CurrentTestStopTime;
+#endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
     jmp_buf AbortFrame;
 #endif
@@ -588,6 +634,12 @@ extern const char UnityStrErr64[];
 #else
 #define TEST_PROTECT() 1
 #define TEST_ABORT() return
+#endif
+
+#ifndef UNITY_EXCLUDE_TIME_H
+#define UNITY_CLOCK_MS() (UNITY_COUNTER_TYPE)((clock() * 1000) / CLOCKS_PER_SEC)
+#else
+#define UNITY_CLOCK_MS()
 #endif
 
 /* This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__) */

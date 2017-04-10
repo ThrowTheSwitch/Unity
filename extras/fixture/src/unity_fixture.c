@@ -93,6 +93,8 @@ void UnityTestRunner(unityfunction* setup,
         UnityMalloc_StartTest();
         UnityPointer_Init();
 
+        UNITY_EXEC_TIME_START();
+
         if (TEST_PROTECT())
         {
             setup();
@@ -418,6 +420,8 @@ void UnityConcludeFixtureTest(void)
         if (UnityFixture.Verbose)
         {
             UnityPrint(" PASS");
+            UNITY_EXEC_TIME_STOP();
+            UNITY_PRINT_EXEC_TIME();
             UNITY_PRINT_EOL();
         }
     }
