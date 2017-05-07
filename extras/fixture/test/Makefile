@@ -35,7 +35,7 @@ noStdlibMalloc: $(BUILD_DIR)
 	@ echo "build with noStdlibMalloc"
 	./$(TARGET)
 
-C89: CFLAGS += -D UNITY_EXCLUDE_STDINT_H # C89 did not have type 'long long', <stdint.h>
+C89: CFLAGS += -D UNITY_EXCLUDE_STDINT_H -D UNITY_EXCLUDE_STDIO_H -D UNITY_EXCLUDE_STDLIB_H -D UNITY_EXCLUDE_FILE# C89 did not have type 'long long', <stdint.h>
 C89: $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -std=c89 && ./$(TARGET)
 	$(CC) $(CFLAGS) $(DEFINES) $(SRC) $(INC_DIR) -o $(TARGET) -D UNITY_EXCLUDE_STDLIB_MALLOC -std=c89

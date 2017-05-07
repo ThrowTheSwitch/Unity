@@ -53,8 +53,12 @@ static const char UnityStrNaN[]                    = "NaN";
 static const char UnityStrDet[]                    = "Determinate";
 static const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
 #endif
+#ifndef UNITY_EXCLUDE_FILE
+/* static const char UnityStrErrFileCmp[]             = "Files not equal."; */
+#endif
 const char UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
 const char UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
+const char UnityStrErrFile[]                       = "Unity File Comparison Disabled";
 const char UnityStrErr64[]                         = "Unity 64-bit Support Disabled";
 static const char UnityStrBreaker[]                = "-----------------------";
 static const char UnityStrResultsTests[]           = " Tests ";
@@ -1468,6 +1472,53 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
         }
     }
 }
+
+/*-----------------------------------------------*/
+#ifndef UNITY_EXCLUDE_FILE
+void UnityAssertEqualBinaryFile(const char* expected,
+                                const char* actual,
+                                const char* msg,
+                                const UNITY_LINE_TYPE lineNumber,
+                                const UNITY_FLAGS_T flags)
+{
+    FILE* expectedFile = NULL;
+    FILE* actualFile = NULL;
+    UNITY_UINT32 expectedSz, actualSz;
+    UNITY_PTR_ATTRIBUTE unsigned char* ptr_exp = NULL;
+    UNITY_PTR_ATTRIBUTE unsigned char* ptr_act = NULL;
+
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    expectedFile = fopen(expected, "rb");
+
+    if (expectedFile == NULL)
+        UNITY_FAIL_AND_BAIL;
+    fseek(expectedFile, 0, SEEK_END);
+    expectedSz = (UNITY_UINT32) ftell(expectedFile);
+    fseek(expectedFile, 0, SEEK_SET);
+    ptr_exp = malloc(expectedSz);
+    fread(ptr_exp, 1, expectedSz, expectedFile);
+    fclose(expectedFile);
+
+    actualFile = fopen(actual, "rb");
+    if (actualFile == NULL)
+    {
+        free(ptr_exp);
+        UNITY_FAIL_AND_BAIL;
+    }
+    fseek(actualFile, 0, SEEK_END);
+    actualSz = (UNITY_UINT32) ftell(actualFile);
+    fseek(actualFile, 0, SEEK_SET);
+    ptr_act = malloc(actualSz);
+    fread(ptr_act, 1, actualSz, actualFile);
+    fclose(actualFile);
+
+    UnityAssertEqualMemory(ptr_exp, ptr_act, expectedSz, 1, msg, lineNumber, flags);
+
+    free(ptr_exp);
+    free(ptr_act);
+}
+#endif
 
 /*-----------------------------------------------*/
 

@@ -304,6 +304,12 @@ int suiteTearDown(int num_failures);
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual)                                                      UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN((actual), __LINE__, NULL)
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual)                                              UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE((actual), __LINE__, NULL)
 
+/* File (If Enabled) */
+#define TEST_ASSERT_BINARY_FILE(expected, actual)                                                  UNITY_TEST_ASSERT_BINARY_FILE((expected), (actual), __LINE__, NULL)
+/*
+#define TEST_ASSERT_TEXT_FILE(expected, actual)                                                    UNITY_TEST_ASSERT_BINARY_TEXT((expected), (actual), __LINE__, NULL)
+*/
+
 /*-------------------------------------------------------
  * Test Asserts (with additional messages)
  *-------------------------------------------------------*/
@@ -495,6 +501,11 @@ int suiteTearDown(int num_failures);
 #define TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF_MESSAGE(actual, message)                                 UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF((actual), __LINE__, (message))
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(actual, message)                                     UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN((actual), __LINE__, (message))
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE((actual), __LINE__, (message))
+
+/* File (If Enabled) */
+#define TEST_ASSERT_BINARY_FILE_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_BINARY_FILE((expected), (actual), __LINE__, (message))
+#define TEST_ASSERT_TEXT_FILE_MESSAGE(expected, actual, message)                                   UNITY_TEST_ASSERT_BINARY_TEXT((expected), (actual), __LINE__, (message))
+
 
 /* end of UNITY_FRAMEWORK_H */
 #ifdef __cplusplus

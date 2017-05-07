@@ -44,6 +44,14 @@
 #include <time.h>
 #endif
 
+#ifndef UNITY_EXCLUDE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+#ifndef UNITY_EXCLUDE_STDIO_H
+#include <stdio.h>
+#endif
+
 /*-------------------------------------------------------
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
@@ -623,6 +631,12 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
                               const UNITY_FLOAT_TRAIT_T style);
 #endif
 
+void UnityAssertEqualBinaryFile(const char* expected,
+                                const char* actual,
+                                const char* msg,
+                                const UNITY_LINE_TYPE lineNumber,
+                                const UNITY_FLAGS_T flags);
+
 /*-------------------------------------------------------
  * Helpers
  *-------------------------------------------------------*/
@@ -639,6 +653,7 @@ UNITY_INTERNAL_PTR UnityDoubleToPtr(const double num);
  * Error Strings We Might Need
  *-------------------------------------------------------*/
 
+extern const char UnityStrErrFile[];
 extern const char UnityStrErrFloat[];
 extern const char UnityStrErrDouble[];
 extern const char UnityStrErr64[];
@@ -933,6 +948,14 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(actual, line, message)                           UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_NEG_INF)
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, line, message)                               UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_NAN)
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, line, message)                       UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_DET)
+#endif
+
+#ifdef UNITY_EXCLUDE_FILE
+#define UNITY_TEST_ASSERT_BINARY_FILE(expected, actual, line, message)                           UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFile)
+#define UNITY_TEST_ASSERT_TEXT_FILE(expected, actual, line, message)                             UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFile)
+#else
+#define UNITY_TEST_ASSERT_BINARY_FILE(expected, actual, line, message)                           UnityAssertEqualBinaryFile((const char*)(expected), (const char*)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_ARRAY_TO_ARRAY)
+#define UNITY_TEST_ASSERT_TEXT_FILE(expected, actual, line, message)                             UnityAssertEqualBinaryFile((expected), (actual), (UNITY_LINE_TYPE)(line), (message), UNITY_ARRAY_TO_ARRAY)
 #endif
 
 /* End of UNITY_INTERNALS_H */

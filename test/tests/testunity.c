@@ -5421,6 +5421,50 @@ void testDoublePrintingInfinityAndNaN(void)
     TEST_ASSERT_EQUAL_PRINT_FLOATING("nan",   0.0 / d_zero);
 #endif
 }
+// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES FILE SUPPORT   ==================
+
+void testBinrayFileCompare(void)
+{
+#if defined(UNITY_EXCLUDE_FILE)
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_BINARY_FILE("expectdata/sample_file.bin", "expectdata/sample_file.bin");
+#endif
+}
+
+void testBinrayFileCompareExpectedFileNull(void)
+{
+#if defined(UNITY_EXCLUDE_FILE)
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_BINARY_FILE(NULL, "expectdata/sample_file.bin");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testBinrayFileCompareActualFileNull(void)
+{
+#if defined(UNITY_EXCLUDE_FILE)
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_BINARY_FILE("expectdata/sample_file.bin", NULL);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testBinrayFileCompareFailsOnDifferentFiles(void)
+{
+#if defined(UNITY_EXCLUDE_FILE)
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_BINARY_FILE("expectdata/sample_file.bin", "expectdata/sample_file2.bin");
+    VERIFY_FAILS_END
+#endif
+}
+
 
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DETAIL SUPPORT ==================
 
