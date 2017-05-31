@@ -423,6 +423,10 @@ void UnityConcludeFixtureTest(void)
     }
     else /* Unity.CurrentTestFailed */
     {
+        if (UnityFixture.Verbose)
+        {
+            UNITY_OUTPUT_CHAR('\n');
+        }
         Unity.TestFailures++;
         UNITY_PRINT_EOL();
     }
