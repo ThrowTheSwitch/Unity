@@ -33,10 +33,10 @@ task unit: [:prepare_for_tests] do
 end
 
 desc 'Build and test Unity Framework'
-task all: %i(clean unit)
-task default: %i(clobber all)
-task ci: %i(no_color default)
-task cruise: %i(no_color default)
+task all: %i[clean unit]
+task default: %i[clobber all]
+task ci: %i[no_color default]
+task cruise: %i[no_color default]
 
 desc 'Load configuration'
 task :config, :config_file do |_t, args|

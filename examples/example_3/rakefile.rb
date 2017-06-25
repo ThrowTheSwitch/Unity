@@ -32,8 +32,8 @@ task :summary do
 end
 
 desc 'Build and test Unity'
-task all: %i(clean unit summary)
-task default: %i(clobber all)
+task all: %i[clean unit summary]
+task default: %i[clobber all]
 task ci: [:default]
 task cruise: [:default]
 
