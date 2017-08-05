@@ -2898,8 +2898,9 @@ static char putcharSpyBuffer[SPY_BUFFER_MAX];
 #endif
 static int indexSpyBuffer;
 static int putcharSpyEnabled;
+static int putcharFlushCounter;
 
-void startPutcharSpy(void) {indexSpyBuffer = 0; putcharSpyEnabled = 1;}
+void startPutcharSpy(void) {indexSpyBuffer = 0; putcharSpyEnabled = 1; putcharFlushCounter = 0;}
 
 void endPutcharSpy(void) {putcharSpyEnabled = 0;}
 
@@ -2925,6 +2926,25 @@ void putcharSpy(int c)
 #endif
 }
 
+int getPutcharFlushCounter(void)
+{
+#ifdef USING_OUTPUT_SPY
+    return putcharFlushCounter;
+#else
+    return -1;
+#endif
+}
+
+void putcharFlush(void)
+{
+#ifdef USING_OUTPUT_SPY
+    if (putcharSpyEnabled)
+        putcharFlushCounter += 1;
+    else
+        fflush(stdout);
+#endif
+}
+
 void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 {
     UNITY_UINT savedFailures = Unity.TestFailures;
@@ -2933,12 +2953,14 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     UnityConcludeTest();
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
+    TEST_ASSERT_EQUAL_INT(1, getPutcharFlushCounter());
 
     startPutcharSpy(); // Suppress output
     int failures = UnityEnd();
     Unity.TestFailures--;
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, failures);
+    TEST_ASSERT_EQUAL_INT(1, getPutcharFlushCounter());
 }
 
 void testCstringsEscapeSequence(void)
