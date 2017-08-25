@@ -4142,9 +4142,13 @@ static void printFloatValue(float f)
         TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, f);
     }
 }
+#endif
 
 void testFloatPrintingRandomSamples(void)
 {
+#if !defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
     union { float f_value; uint32_t int_value; } u;
 
     /* These values are not covered by the MINSTD generator */
@@ -4163,8 +4167,8 @@ void testFloatPrintingRandomSamples(void)
         u.int_value = a;              printFloatValue(u.f_value);
         u.int_value = a | 0x80000000; printFloatValue(u.f_value);
     }
-}
 #endif
+}
 
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DOUBLE SUPPORT ==================
 
