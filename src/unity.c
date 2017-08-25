@@ -258,6 +258,9 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     else
     {
         int exponent = 0;
+        int decimals, digits;
+        UNITY_INT32 n;
+        char buf[16];
 
         /* scale up or down by powers of 10 */
         while (number < 100000.0f / 1e6f)  { number *= 1e6f; exponent -= 6; }
@@ -266,7 +269,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         while (number > 1000000.0f)        { number /= 10.0f; exponent++; }
 
         /* round to nearest integer */
-        UNITY_INT32 n = ((UNITY_INT32)(number + number) + 1) / 2;
+        n = ((UNITY_INT32)(number + number) + 1) / 2;
         if (n > 999999)
         {
             n = 100000;
@@ -274,8 +277,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         }
 
         /* determine where to place decimal point */
-        int decimals = (exponent <= 0 && exponent >= -9) ? -exponent : 5;
-
+        decimals = (exponent <= 0 && exponent >= -9) ? -exponent : 5;
         exponent += decimals;
 
         /* truncate trailing zeroes after decimal point */
@@ -286,8 +288,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         }
 
         /* build up buffer in reverse order */
-        char buf[16];
-        int digits = 0;
+        digits = 0;
         while (n != 0 || digits < decimals + 1)
         {
             buf[digits++] = (char)('0' + n % 10);
