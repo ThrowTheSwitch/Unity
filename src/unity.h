@@ -332,6 +332,8 @@ void tearDown(void);
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(actual, message)                                     UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN((actual), __LINE__, (message))
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE((actual), __LINE__, (message))
 
+#define TEST_ASSERT_EXPECTATIONS_MET()                                                             do { UNITY_LINE_TYPE _old_line = Unity.CurrentTestLineNumber; Unity.CurrentTestLineNumber = __LINE__; CMock_Verify(); Unity.CurrentTestLineNumber = _old_line;} while (0)
+
 /* end of UNITY_FRAMEWORK_H */
 #ifdef __cplusplus
 }
