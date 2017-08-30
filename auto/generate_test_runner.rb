@@ -217,7 +217,7 @@ class UnityTestRunnerGenerator
     end
     output.puts("}\n")
 
-    output.puts('static void CMock_Verify(void)')
+    output.puts('void CMock_Verify(void)')
     output.puts('{')
     mocks.each do |mock|
       mock_clean = TypeSanitizer.sanitize_c_identifier(mock)

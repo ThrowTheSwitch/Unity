@@ -402,6 +402,7 @@ void UnityBegin(const char* filename);
 int  UnityEnd(void);
 void UnityConcludeTest(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
+void CMock_Verify(void);
 
 /*-------------------------------------------------------
  * Details Support
