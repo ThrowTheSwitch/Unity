@@ -27,6 +27,8 @@ static const char UnityStrNull[]                   = "NULL";
 static const char UnityStrSpacer[]                 = ". ";
 static const char UnityStrExpected[]               = " Expected ";
 static const char UnityStrWas[]                    = " Was ";
+static const char UnityStrGt[]                     = " to be greater than ";
+static const char UnityStrLt[]                     = " to be less than ";
 static const char UnityStrElement[]                = " Element ";
 static const char UnityStrByte[]                   = " Byte ";
 static const char UnityStrMemory[]                 = " Memory Mismatch.";
@@ -527,6 +529,50 @@ void UnityAssertEqualNumber(const UNITY_INT expected,
         UNITY_FAIL_AND_BAIL;
     }
 }
+
+/*-----------------------------------------------*/
+void UnityAssertGreaterNumber(const UNITY_INT threshold,
+                              const UNITY_INT actual,
+                              const char *msg,
+                              const UNITY_LINE_TYPE lineNumber,
+                              const UNITY_DISPLAY_STYLE_T style)
+{
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (!(actual > threshold))
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintNumberByStyle(actual, style);
+        UnityPrint(UnityStrGt);
+        UnityPrintNumberByStyle(threshold, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
+void UnityAssertSmallerNumber(const UNITY_INT threshold,
+                              const UNITY_INT actual,
+                              const char *msg,
+                              const UNITY_LINE_TYPE lineNumber,
+                              const UNITY_DISPLAY_STYLE_T style)
+{
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (!(actual < threshold))
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintNumberByStyle(actual, style);
+        UnityPrint(UnityStrLt);
+        UnityPrintNumberByStyle(threshold, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+
 
 #define UnityPrintPointlessAndBail()       \
 {                                          \
