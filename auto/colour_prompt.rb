@@ -24,7 +24,7 @@ class ColourCommandLine
     return unless RUBY_PLATFORM =~ /(win|w)32$/
     get_std_handle = Win32API.new('kernel32', 'GetStdHandle', ['L'], 'L')
     @set_console_txt_attrb =
-      Win32API.new('kernel32', 'SetConsoleTextAttribute', %w[L N], 'I')
+      Win32API.new('kernel32', 'SetConsoleTextAttribute', %w(L N), 'I')
     @hout = get_std_handle.call(-11)
   end
 
