@@ -235,22 +235,36 @@ class UnityTestRunnerGenerator
   end
 
   def create_suite_setup(output)
-    return if @options[:suite_setup].nil?
-
     output.puts("\n/*=======Suite Setup=====*/")
     output.puts('static void suite_setup(void)')
     output.puts('{')
-    output.puts(@options[:suite_setup])
+    if @options[:suite_setup].nil?
+      # New style, call suiteSetUp() if we can use weak symbols
+      output.puts('#if defined(UNITY_WEAK_ATTRIBUTE) || defined(UNITY_WEAK_PRAGMA)')
+      output.puts('  suiteSetUp();')
+      output.puts('#endif')
+    else
+      # Old style, C code embedded in the :suite_setup option
+      output.puts(@options[:suite_setup])
+    end
     output.puts('}')
   end
 
   def create_suite_teardown(output)
-    return if @options[:suite_teardown].nil?
-
     output.puts("\n/*=======Suite Teardown=====*/")
     output.puts('static int suite_teardown(int num_failures)')
     output.puts('{')
-    output.puts(@options[:suite_teardown])
+    if @options[:suite_teardown].nil?
+      # New style, call suiteTearDown() if we can use weak symbols
+      output.puts('#if defined(UNITY_WEAK_ATTRIBUTE) || defined(UNITY_WEAK_PRAGMA)')
+      output.puts('  return suiteTearDown(num_failures);')
+      output.puts('#else')
+      output.puts('  return num_failures;')
+      output.puts('#endif')
+    else
+      # Old style, C code embedded in the :suite_teardown option
+      output.puts(@options[:suite_teardown])
+    end
     output.puts('}')
   end
 
@@ -342,7 +356,7 @@ class UnityTestRunnerGenerator
       output.puts("int #{main_name}(void)")
       output.puts('{')
     end
-    output.puts('  suite_setup();') unless @options[:suite_setup].nil?
+    output.puts('  suite_setup();')
     output.puts("  UnityBegin(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
     if @options[:use_param_tests]
       tests.each do |test|
@@ -357,7 +371,7 @@ class UnityTestRunnerGenerator
     end
     output.puts
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
-    output.puts("  return #{@options[:suite_teardown].nil? ? '' : 'suite_teardown'}(UnityEnd());")
+    output.puts("  return suite_teardown(UnityEnd());")
     output.puts('}')
   end
 

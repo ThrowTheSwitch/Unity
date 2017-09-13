@@ -15,8 +15,19 @@ extern "C"
 
 #include "unity_internals.h"
 
+/* These functions are intended to be called before and after each test.  Unity
+ * provides stub implementations annotated as weak symbols (if supported by the
+ * compiler). */
 void setUp(void);
 void tearDown(void);
+
+/* These functions are intended to be called at the beginning and end of an
+ * entire test suite.  suiteTearDown() is passed the number of tests that
+ * failed, and its return value becomes the exit code of main().  Unity
+ * provides stub implementations annotated as weak symbols (if supported by the
+ * compiler). */
+void suiteSetUp(void);
+int suiteTearDown(int num_failures);
 
 /*-------------------------------------------------------
  * Configuration Options
