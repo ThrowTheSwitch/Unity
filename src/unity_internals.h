@@ -263,7 +263,7 @@ extern void UNITY_OUTPUT_CHAR_HEADER_DECLARATION;
 #else
 /* We've defined flush as something else, so make sure we declare it here so it's ready for use */
 #ifdef UNITY_OUTPUT_FLUSH_HEADER_DECLARATION
-extern void UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION;
+extern void UNITY_OUTPUT_FLUSH_HEADER_DECLARATION;
 #endif
 #endif
 

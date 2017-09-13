@@ -9,6 +9,7 @@
 #include "unity.h"
 
 void putcharSpy(int c) { (void)putchar(c);} // include passthrough for linking tests
+void putcharFlush(void) { (void)fflush(stdout); } // include passthrough for linking tests
 
 #define TEST_CASE(...)
 
