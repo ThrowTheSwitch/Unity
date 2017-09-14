@@ -283,9 +283,9 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     else if (isinf(number)) UnityPrint("inf");
     else
     {
+        UNITY_INT32 n = 0;
         int exponent = 0;
         int decimals, digits;
-        UNITY_INT32 n;
         char buf[16];
 
         /*
@@ -295,7 +295,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
          * (exactly) the remaining power of 10 and perform one more
          * multiplication or division.
          */
-        if(number < 1e6f)
+        if(number < 1.0f)
         {
             UNITY_DOUBLE factor = 1.0f;
 
@@ -313,9 +313,24 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
             number /= divisor;
         }
+        else
+        {
+            /*
+             * In this range, we can split off the integer part before
+             * doing any multiplications.  This reduces rounding error by
+             * freeing up significant bits in the fractional part.
+             */
+            UNITY_DOUBLE factor = 1.0f;
+            n = (UNITY_INT32)number;
+            number -= (UNITY_DOUBLE)n;
+
+            while(n < 1000000) { n *= 10; factor *= 10.0f; exponent--; }
+
+            number *= factor;
+        }
 
         /* round to nearest integer */
-        n = ((UNITY_INT32)(number + number) + 1) / 2;
+        n += ((UNITY_INT32)(number + number) + 1) / 2;
         if (n > 9999999)
         {
             n = 1000000;

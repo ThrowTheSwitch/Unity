@@ -4543,20 +4543,33 @@ static void printFloatValue(float f)
     /* We print all NaN's as "nan", not "-nan" */
     if(strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
 
-    /* Allow for relative error of +/-2.5e-7 */
-    double lower = (double)f * 0.99999995;
-    double lower2 = (double)f * 0.99999985;
-    double lower3 = (double)f * 0.99999975;
-    double higher = (double)f * 1.00000005;
-    double higher2 = (double)f * 1.00000015;
-    double higher3 = (double)f * 1.00000025;
+    strcpy(expected_lower, expected);
+    strcpy(expected_lower2, expected);
+    strcpy(expected_lower3, expected);
+    strcpy(expected_higher, expected);
+    strcpy(expected_higher2, expected);
+    strcpy(expected_higher3, expected);
 
-    if(isfinite(lower)) sprintf(expected_lower, "%.7g", lower); else strcpy(expected_lower, expected);
-    if(isfinite(lower2)) sprintf(expected_lower2, "%.7g", lower2); else strcpy(expected_lower2, expected);
-    if(isfinite(lower3)) sprintf(expected_lower3, "%.7g", lower3); else strcpy(expected_lower3, expected);
-    if(isfinite(higher)) sprintf(expected_higher, "%.7g", higher); else strcpy(expected_higher, expected);
-    if(isfinite(higher2)) sprintf(expected_higher2, "%.7g", higher2); else strcpy(expected_higher2, expected);
-    if(isfinite(higher3)) sprintf(expected_higher3, "%.7g", higher3); else strcpy(expected_higher3, expected);
+    /* Allow for rounding differences in the last digit */
+    double lower = (double)f * 0.99999995;
+    double higher = (double)f * 1.00000005;
+
+    if(isfinite(lower)) sprintf(expected_lower, "%.7g", lower);
+    if(isfinite(higher)) sprintf(expected_higher, "%.7g", higher);
+
+    /* Outside [1,10000000] allow for relative error of +/-2.5e-7 */
+    if(f < 1.0 || f > 10000000)
+    {
+        double lower2 = (double)f * 0.99999985;
+        double lower3 = (double)f * 0.99999975;
+        double higher2 = (double)f * 1.00000015;
+        double higher3 = (double)f * 1.00000025;
+
+        if(isfinite(lower2)) sprintf(expected_lower2, "%.7g", lower2);
+        if(isfinite(lower3)) sprintf(expected_lower3, "%.7g", lower3);
+        if(isfinite(higher2)) sprintf(expected_higher2, "%.7g", higher2);
+        if(isfinite(higher3)) sprintf(expected_higher3, "%.7g", higher3);
+    }
 
     if (strcmp(expected, getBufferPutcharSpy()) != 0 &&
         strcmp(expected_lower, getBufferPutcharSpy()) != 0 &&
