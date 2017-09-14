@@ -266,6 +266,7 @@ static void UnityPrintDecimalAndNumberWithLeadingZeros(UNITY_INT32 fraction_part
  * The old version required compiling in snprintf. For reference, with a similar format as now:
  *  char buf[19];
  *  if (number > 4294967296.0 || -number > 4294967296.0) snprintf(buf, sizeof buf, "%.8e", number);
+ *  else if (number < 0.1 && number > -0.1)              snprintf(buf, sizeof buf, "%.5e", number);
  *  else                                                 snprintf(buf, sizeof buf, "%.6f", number);
  *  UnityPrint(buf);
  */
@@ -282,78 +283,33 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
     if (isnan(number)) UnityPrint(UnityStrNaN);
     else if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
-    else if (number <= 0.0000005 && number > 0)
+    else if (number < 0.1 && number > 0)
     {
         /* Prints only 6 significant digits. */
         int exponent = 0;
-        int decimals, digits;
         UNITY_INT32 n;
-        char buf[16];
 
-        /* scale up or down by powers of 10 */
+        /* scale up by powers of 10 */
         while (number < 100000.0f / 1e6f)  { number *= 1e6f; exponent -= 6; }
         while (number < 100000.0f)         { number *= 10.0f; exponent--; }
-        while (number > 1000000.0f * 1e6f) { number /= 1e6f; exponent += 6; }
-        while (number > 1000000.0f)        { number /= 10.0f; exponent++; }
 
         /* round to nearest integer */
-        n = ((UNITY_INT32)(number + number) + 1) / 2;
+        n = (UNITY_INT32)(number + 0.5f);
         if (n > 999999)
         {
             n = 100000;
             exponent++;
         }
 
-        /* determine where to place decimal point */
-        decimals = (exponent <= 0 && exponent >= -9) ? -exponent : 5;
-        exponent += decimals;
+        exponent += 5; /* Correct for decimal place */
+        exponent = -exponent; /* Exponent is always negative in this scope */
 
-        /* truncate trailing zeroes after decimal point */
-        while (decimals > 0 && n % 10 == 0)
-        {
-            n /= 10;
-            decimals--;
-        }
-
-        /* build up buffer in reverse order */
-        digits = 0;
-        while (n != 0 || digits < decimals + 1)
-        {
-            buf[digits++] = (char)('0' + n % 10);
-            n /= 10;
-        }
-        while (digits > 0)
-        {
-            if(digits == decimals) UNITY_OUTPUT_CHAR('.');
-            UNITY_OUTPUT_CHAR(buf[--digits]);
-        }
-
-        /* print exponent if needed */
-        if (exponent != 0)
-        {
-            UNITY_OUTPUT_CHAR('e');
-
-            if(exponent < 0)
-            {
-                UNITY_OUTPUT_CHAR('-');
-                exponent = -exponent;
-            }
-            else
-            {
-                UNITY_OUTPUT_CHAR('+');
-            }
-
-            digits = 0;
-            while (exponent != 0 || digits < 2)
-            {
-                buf[digits++] = (char)('0' + exponent % 10);
-                exponent /= 10;
-            }
-            while (digits > 0)
-            {
-                UNITY_OUTPUT_CHAR(buf[--digits]);
-            }
-        }
+        UNITY_OUTPUT_CHAR('0' + n / 100000);
+        UnityPrintDecimalAndNumberWithLeadingZeros(n % 100000, 100000 / 10);
+        UNITY_OUTPUT_CHAR('e');
+        UNITY_OUTPUT_CHAR('-');
+        if (exponent < 10) UNITY_OUTPUT_CHAR('0');
+        UnityPrintNumber(exponent);
     }
     else if (number < 4294967295.9999995) /* Rounded result fits in 32 bits, "%.6f" format */
     {

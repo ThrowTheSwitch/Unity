@@ -4057,8 +4057,12 @@ void testFloatPrinting(void)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.0",          0.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.4013e-45",   1.401298464e-45f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.17549e-38",  1.175494351e-38f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("4.99e-07",     0.000000499f);
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.000001",     0.00000050000005f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("5.0e-07",      0.00000050000005f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("7.8125e-03",   0.0078125f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("7.1825e-03",   0.0071825f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.100469",     0.100469499f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("1.0",          0.9999995f); /*Rounding to int place*/
     TEST_ASSERT_EQUAL_PRINT_FLOATING("1.0",          1.0f);
@@ -4071,7 +4075,7 @@ void testFloatPrinting(void)
 
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-0.0",        -0.0f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.99e-07",   -0.000000499f);
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("-0.000001",   -0.00000050000005f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-5.0e-07",    -0.00000050000005f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-0.100469",   -0.100469499f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-1.0",        -0.9999995f); /*Rounding to int place*/
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-1.0",        -1.0f);
@@ -4105,10 +4109,8 @@ void testFloatPrintingRoundTiesToEven(void)
     TEST_IGNORE();
 #else
   #ifdef UNITY_ROUND_TIES_AWAY_FROM_ZERO
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.007813", 0.0078125f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.976563", 0.9765625f);
   #else /* Default to Round ties to even */
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.007182", 0.0071825f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.976562", 0.9765625f);
   #endif
 #endif
@@ -4132,7 +4134,7 @@ static void AllFloatPrinting_LessThan32Bits(void)
     char expected[18];
     union { float f_value; int32_t int_value; } u;
     /* Float representations are laid out in integer order, walk up the list */
-    for (u.f_value = 0.00000050000005f; u.f_value <= 4294967040.0f; u.int_value += 1)
+    for (u.f_value = 0.1f; u.f_value <= 4294967040.0f; u.int_value += 1)
     {
         startPutcharSpy();
 
@@ -4893,6 +4895,9 @@ void testDoublePrinting(void)
 #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("4.94066e-324",      5e-324); /* Smallest sub-normal double */
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("2.22507e-308",      2.2250738585072014e-308);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.1",               0.1);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.100469",         0.10046949999999999);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("4294967295.999999", 4294967295.999999);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("4.2949673e+09",     4294967295.9999995);
