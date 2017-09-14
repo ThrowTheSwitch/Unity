@@ -271,20 +271,90 @@ static void UnityPrintDecimalAndNumberWithLeadingZeros(UNITY_INT32 fraction_part
  */
 void UnityPrintFloat(const UNITY_DOUBLE input_number)
 {
-    UNITY_DOUBLE number;
+    UNITY_DOUBLE number = input_number;
 
-    if (input_number < 0)
+    /* print minus sign (including for negative zero) */
+    if (number < 0 || (number <= 0 && 1.0f / number < 0))
     {
         UNITY_OUTPUT_CHAR('-');
-        number = -input_number;
-    } else
-    {
-        number = input_number;
+        number = -number;
     }
 
     if (isnan(number)) UnityPrint(UnityStrNaN);
     else if (isinf(number)) UnityPrintLen(UnityStrInf, 3);
-    else if (number <= 0.0000005 && number > 0) UnityPrint("0.000000..."); /* Small number */
+    else if (number <= 0.0000005 && number > 0)
+    {
+        /* Prints only 6 significant digits. */
+        int exponent = 0;
+        int decimals, digits;
+        UNITY_INT32 n;
+        char buf[16];
+
+        /* scale up or down by powers of 10 */
+        while (number < 100000.0f / 1e6f)  { number *= 1e6f; exponent -= 6; }
+        while (number < 100000.0f)         { number *= 10.0f; exponent--; }
+        while (number > 1000000.0f * 1e6f) { number /= 1e6f; exponent += 6; }
+        while (number > 1000000.0f)        { number /= 10.0f; exponent++; }
+
+        /* round to nearest integer */
+        n = ((UNITY_INT32)(number + number) + 1) / 2;
+        if (n > 999999)
+        {
+            n = 100000;
+            exponent++;
+        }
+
+        /* determine where to place decimal point */
+        decimals = (exponent <= 0 && exponent >= -9) ? -exponent : 5;
+        exponent += decimals;
+
+        /* truncate trailing zeroes after decimal point */
+        while (decimals > 0 && n % 10 == 0)
+        {
+            n /= 10;
+            decimals--;
+        }
+
+        /* build up buffer in reverse order */
+        digits = 0;
+        while (n != 0 || digits < decimals + 1)
+        {
+            buf[digits++] = (char)('0' + n % 10);
+            n /= 10;
+        }
+        while (digits > 0)
+        {
+            if(digits == decimals) UNITY_OUTPUT_CHAR('.');
+            UNITY_OUTPUT_CHAR(buf[--digits]);
+        }
+
+        /* print exponent if needed */
+        if (exponent != 0)
+        {
+            UNITY_OUTPUT_CHAR('e');
+
+            if(exponent < 0)
+            {
+                UNITY_OUTPUT_CHAR('-');
+                exponent = -exponent;
+            }
+            else
+            {
+                UNITY_OUTPUT_CHAR('+');
+            }
+
+            digits = 0;
+            while (exponent != 0 || digits < 2)
+            {
+                buf[digits++] = (char)('0' + exponent % 10);
+                exponent /= 10;
+            }
+            while (digits > 0)
+            {
+                UNITY_OUTPUT_CHAR(buf[--digits]);
+            }
+        }
+    }
     else if (number < 4294967295.9999995) /* Rounded result fits in 32 bits, "%.6f" format */
     {
         const UNITY_INT32 divisor = 1000000/10;
