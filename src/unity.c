@@ -258,11 +258,14 @@ void UnityPrintMask(const UNITY_UINT mask, const UNITY_UINT number)
 
 /*-----------------------------------------------*/
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
-/* This function prints a floating-point value in a format similar to
- * printf("%.6g").  It can work with either single- or double-precision,
- * but for simplicity, it prints only 6 significant digits in either case.
- * Printing more than 6 digits accurately is hard (at least in the single-
- * precision case) and isn't attempted here. */
+/*
+ * This function prints a floating-point value in a format similar to
+ * printf("%.7g").  It can work with either single- or double-precision,
+ * but for simplicity, it prints only 7 significant digits in either case.
+ * The 7th digit won't always be totally correct in single-precision
+ * operation (for that level of accuracy, a more complicated algorithm
+ * would be needed).
+ */
 void UnityPrintFloat(const UNITY_DOUBLE input_number)
 {
     UNITY_DOUBLE number = input_number;
@@ -285,22 +288,42 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         UNITY_INT32 n;
         char buf[16];
 
-        /* scale up or down by powers of 10 */
-        while (number < 100000.0f / 1e6f)  { number *= 1e6f; exponent -= 6; }
-        while (number < 100000.0f)         { number *= 10.0f; exponent--; }
-        while (number > 1000000.0f * 1e6f) { number /= 1e6f; exponent += 6; }
-        while (number > 1000000.0f)        { number /= 10.0f; exponent++; }
+        /*
+         * Scale up or down by powers of 10.  To minimize rounding error,
+         * start with a factor/divisor of 10^10, which is the largest
+         * power of 10 that can be represented exactly.  Finally, compute
+         * (exactly) the remaining power of 10 and perform one more
+         * multiplication or division.
+         */
+        if(number < 1e6f)
+        {
+            UNITY_DOUBLE factor = 1.0f;
+
+            while(number < 1e7f / 1e10f) { number *= 1e10f; exponent -= 10; }
+            while(number * factor < 1e6f) { factor *= 10.0f; exponent--; }
+
+            number *= factor;
+        }
+        else if(number > 1e7f)
+        {
+            UNITY_DOUBLE divisor = 1.0f;
+
+            while(number > 1e6f * 1e10f) { number /= 1e10f; exponent += 10; }
+            while(number / divisor > 1e7f) { divisor *= 10.0f; exponent++; }
+
+            number /= divisor;
+        }
 
         /* round to nearest integer */
         n = ((UNITY_INT32)(number + number) + 1) / 2;
-        if (n > 999999)
+        if (n > 9999999)
         {
-            n = 100000;
+            n = 1000000;
             exponent++;
         }
 
         /* determine where to place decimal point */
-        decimals = (exponent <= 0 && exponent >= -9) ? -exponent : 5;
+        decimals = (exponent <= 0 && exponent >= -10) ? -exponent : 6;
         exponent += decimals;
 
         /* truncate trailing zeroes after decimal point */
