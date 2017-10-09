@@ -301,7 +301,7 @@ extern void UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION;
  * Language Features Available
  *-------------------------------------------------------*/
 #if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
-#   ifdef __GNUC__ /* includes clang */
+#   if defined(__GNUC__) || defined(__ghs__) /* __GNUC__ includes clang */
 #       if !(defined(__WIN32__) && defined(__clang__)) && !defined(__TMS470__)
 #           define UNITY_WEAK_ATTRIBUTE __attribute__((weak))
 #       endif
