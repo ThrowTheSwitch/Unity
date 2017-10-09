@@ -158,6 +158,7 @@ class UnityTestRunnerGenerator
     create_runtest(output, mocks)
     output.puts("\n/*=======Automagically Detected Files To Include=====*/")
     output.puts("#include \"#{@options[:framework]}.h\"")
+    output.puts("#include \"#{@options[:framework]}_setup.h\"")
     output.puts('#include "cmock.h"') unless mocks.empty?
     output.puts('#include <setjmp.h>')
     output.puts('#include <stdio.h>')
