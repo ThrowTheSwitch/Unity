@@ -29,6 +29,7 @@ static const char UnityStrExpected[]               = " Expected ";
 static const char UnityStrWas[]                    = " Was ";
 static const char UnityStrGt[]                     = " to be greater than ";
 static const char UnityStrLt[]                     = " to be less than ";
+static const char UnityStrOrEqual[]                = "or equal to ";
 static const char UnityStrElement[]                = " Element ";
 static const char UnityStrByte[]                   = " Byte ";
 static const char UnityStrMemory[]                 = " Memory Mismatch.";
@@ -531,48 +532,43 @@ void UnityAssertEqualNumber(const UNITY_INT expected,
 }
 
 /*-----------------------------------------------*/
-void UnityAssertGreaterNumber(const UNITY_INT threshold,
-                              const UNITY_INT actual,
-                              const char *msg,
-                              const UNITY_LINE_TYPE lineNumber,
-                              const UNITY_DISPLAY_STYLE_T style)
+void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
+                                           const UNITY_INT actual,
+                                           const UNITY_COMPARISON_T compare,
+                                           const char *msg,
+                                           const UNITY_LINE_TYPE lineNumber,
+                                           const UNITY_DISPLAY_STYLE_T style)
 {
+    int failed = 0;
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (!(actual > threshold))
+    if (threshold == actual && compare & UNITY_EQUAL_TO) return;
+    if (threshold == actual) failed = 1;
+
+    if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+    {
+        if (actual > threshold && compare & UNITY_SMALLER_THAN) failed = 1;
+        if (actual < threshold && compare & UNITY_GREATER_THAN) failed = 1;
+    }
+    else /* UINT or HEX */
+    {
+        if ((UNITY_UINT)actual > (UNITY_UINT)threshold && compare & UNITY_SMALLER_THAN) failed = 1;
+        if ((UNITY_UINT)actual < (UNITY_UINT)threshold && compare & UNITY_GREATER_THAN) failed = 1;
+    }
+
+    if (failed)
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
         UnityPrintNumberByStyle(actual, style);
-        UnityPrint(UnityStrGt);
+        if (compare & UNITY_GREATER_THAN) UnityPrint(UnityStrGt);
+        if (compare & UNITY_SMALLER_THAN) UnityPrint(UnityStrLt);
+        if (compare & UNITY_EQUAL_TO)     UnityPrint(UnityStrOrEqual);
         UnityPrintNumberByStyle(threshold, style);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
 }
-
-/*-----------------------------------------------*/
-void UnityAssertSmallerNumber(const UNITY_INT threshold,
-                              const UNITY_INT actual,
-                              const char *msg,
-                              const UNITY_LINE_TYPE lineNumber,
-                              const UNITY_DISPLAY_STYLE_T style)
-{
-    RETURN_IF_FAIL_OR_IGNORE;
-
-    if (!(actual < threshold))
-    {
-        UnityTestResultsFailBegin(lineNumber);
-        UnityPrint(UnityStrExpected);
-        UnityPrintNumberByStyle(actual, style);
-        UnityPrint(UnityStrLt);
-        UnityPrintNumberByStyle(threshold, style);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
-    }
-}
-
-
 
 #define UnityPrintPointlessAndBail()       \
 {                                          \
