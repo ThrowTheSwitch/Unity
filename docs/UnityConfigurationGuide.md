@@ -337,6 +337,13 @@ things anyway, though... so this option exists for those situations.
 _Example:_
         #define UNITY_EXCLUDE_SETJMP
 
+##### `UNITY_OUTPUT_COLOR`
+
+If you want to add color using ANSI escape codes you can use this define.
+t
+_Example:_
+        #define UNITY_OUTPUT_COLOR
+
 
 
 ## Getting Into The Guts
