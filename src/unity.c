@@ -19,10 +19,17 @@ void UNITY_OUTPUT_CHAR(int);
 
 struct UNITY_STORAGE_T Unity;
 
+#ifdef UNITY_OUTPUT_COLOR
+static const char UnityStrOk[]                     = "\033[42mOK\033[00m";
+static const char UnityStrPass[]                   = "\033[42mPASS\033[00m";
+static const char UnityStrFail[]                   = "\033[41mFAIL\033[00m";
+static const char UnityStrIgnore[]                 = "\033[43mIGNORE\033[00m";
+#else
 static const char UnityStrOk[]                     = "OK";
 static const char UnityStrPass[]                   = "PASS";
 static const char UnityStrFail[]                   = "FAIL";
 static const char UnityStrIgnore[]                 = "IGNORE";
+#endif
 static const char UnityStrNull[]                   = "NULL";
 static const char UnityStrSpacer[]                 = ". ";
 static const char UnityStrExpected[]               = " Expected ";
@@ -84,6 +91,18 @@ void UnityPrint(const char* string)
                 UNITY_OUTPUT_CHAR('\\');
                 UNITY_OUTPUT_CHAR('n');
             }
+#ifdef UNITY_OUTPUT_COLOR
+            /* print ANSI escape code */
+            else if (*pch == 27 && *(pch + 1) == '[')
+            {
+                while (*pch && *pch != 'm')
+                {
+                    UNITY_OUTPUT_CHAR(*pch);
+                    pch++;
+                }
+                UNITY_OUTPUT_CHAR('m');
+            }
+#endif
             /* unprintable characters are shown as codes */
             else
             {
