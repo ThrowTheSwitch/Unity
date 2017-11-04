@@ -4,6 +4,7 @@
     [Released under MIT License. Please refer to license.txt for details]
 ============================================================================ */
 
+#define UNITY_INCLUDE_SETUP_STUBS
 #include "unity.h"
 #include <stddef.h>
 
@@ -1324,17 +1325,6 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     }
     UNITY_IGNORE_AND_BAIL;
 }
-
-/*-----------------------------------------------*/
-#if defined(UNITY_WEAK_ATTRIBUTE)
-  UNITY_WEAK_ATTRIBUTE void setUp(void) { }
-  UNITY_WEAK_ATTRIBUTE void tearDown(void) { }
-#elif defined(UNITY_WEAK_PRAGMA)
-  #pragma weak setUp
-  void setUp(void) { }
-  #pragma weak tearDown
-  void tearDown(void) { }
-#endif
 
 /*-----------------------------------------------*/
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
