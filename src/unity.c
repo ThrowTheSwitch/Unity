@@ -260,14 +260,23 @@ void UnityPrintMask(const UNITY_UINT mask, const UNITY_UINT number)
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
 /*
  * This function prints a floating-point value in a format similar to
- * printf("%.7g").  It can work with either single- or double-precision,
- * but for simplicity, it prints only 7 significant digits in either case.
- * The 7th digit won't always be totally correct in single-precision
- * operation (for that level of accuracy, a more complicated algorithm
- * would be needed).
+ * printf("%.7g") on a single-precision machine or printf("%.9g") on a
+ * double-precision machine.  The 7th digit won't always be totally correct
+ * in single-precision operation (for that level of accuracy, a more
+ * complicated algorithm would be needed).
  */
 void UnityPrintFloat(const UNITY_DOUBLE input_number)
 {
+#ifdef UNITY_INCLUDE_DOUBLE
+    static const int sig_digits = 9;
+    static const UNITY_INT32 min_scaled = 100000000;
+    static const UNITY_INT32 max_scaled = 1000000000;
+#else
+    static const int sig_digits = 7;
+    static const UNITY_INT32 min_scaled = 1000000;
+    static const UNITY_INT32 max_scaled = 10000000;
+#endif
+
     UNITY_DOUBLE number = input_number;
 
     /* print minus sign (including for negative zero) */
@@ -295,21 +304,21 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
          * (exactly) the remaining power of 10 and perform one more
          * multiplication or division.
          */
-        if(number < 1.0f)
+        if (number < 1.0f)
         {
             UNITY_DOUBLE factor = 1.0f;
 
-            while(number < 1e7f / 1e10f) { number *= 1e10f; exponent -= 10; }
-            while(number * factor < 1e6f) { factor *= 10.0f; exponent--; }
+            while (number < (UNITY_DOUBLE)max_scaled / 1e10f) { number *= 1e10f; exponent -= 10; }
+            while (number * factor < (UNITY_DOUBLE)min_scaled) { factor *= 10.0f; exponent--; }
 
             number *= factor;
         }
-        else if(number > 1e7f)
+        else if (number > (UNITY_DOUBLE)max_scaled)
         {
             UNITY_DOUBLE divisor = 1.0f;
 
-            while(number > 1e6f * 1e10f) { number /= 1e10f; exponent += 10; }
-            while(number / divisor > 1e7f) { divisor *= 10.0f; exponent++; }
+            while (number > (UNITY_DOUBLE)min_scaled * 1e10f) { number /= 1e10f; exponent += 10; }
+            while (number / divisor > (UNITY_DOUBLE)max_scaled) { divisor *= 10.0f; exponent++; }
 
             number /= divisor;
         }
@@ -324,21 +333,21 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
             n = (UNITY_INT32)number;
             number -= (UNITY_DOUBLE)n;
 
-            while(n < 1000000) { n *= 10; factor *= 10.0f; exponent--; }
+            while (n < min_scaled) { n *= 10; factor *= 10.0f; exponent--; }
 
             number *= factor;
         }
 
         /* round to nearest integer */
         n += ((UNITY_INT32)(number + number) + 1) / 2;
-        if (n > 9999999)
+        if (n >= max_scaled)
         {
-            n = 1000000;
+            n = min_scaled;
             exponent++;
         }
 
         /* determine where to place decimal point */
-        decimals = (exponent <= 0 && exponent >= -10) ? -exponent : 6;
+        decimals = (exponent <= 0 && exponent >= -(sig_digits + 3)) ? -exponent : (sig_digits - 1);
         exponent += decimals;
 
         /* truncate trailing zeroes after decimal point */
