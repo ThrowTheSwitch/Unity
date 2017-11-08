@@ -4468,7 +4468,6 @@ void testFloatPrinting(void)
 #else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0",            0.0f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("4.99e-07",     0.000000499f);
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("5.000001e-07", 0.00000050000005f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.1004695",    0.100469499f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("2",            1.9999995f); /*Rounding to int place*/
     TEST_ASSERT_EQUAL_PRINT_FLOATING("1",            1.0f);
@@ -4481,7 +4480,6 @@ void testFloatPrinting(void)
 
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-0",            -0.0f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.99e-07",     -0.000000499f);
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("-5.000001e-07", -0.00000050000005f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-0.1004695",    -0.100469499f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-2",            -1.9999995f); /*Rounding to int place*/
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-1",            -1.0f);
@@ -4512,6 +4510,25 @@ void testFloatPrinting(void)
 #endif
 }
 
+void testFloatPrintingRoundTiesToEven(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+  #ifdef UNITY_ROUND_TIES_AWAY_FROM_ZERO
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.0004882813",  0.00048828125f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("488281.3",      488281.25f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("5.000001e-07",  0.00000050000005f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-5.000001e-07", -0.00000050000005f);
+  #else /* Default to Round ties to even */
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.0004882812",  0.00048828125f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("488281.2",      488281.25f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("5e-07",         0.00000050000005f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-5e-07",        -0.00000050000005f);
+  #endif
+#endif
+}
+
 void testFloatPrintingInfinityAndNaN(void)
 {
 #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
@@ -4529,31 +4546,15 @@ void testFloatPrintingInfinityAndNaN(void)
 static void printFloatValue(float f)
 {
     char expected[18];
-    char expected_lower[18];
-    char expected_higher[18];
 
     startPutcharSpy();
-
     UnityPrintFloat(f);
 
     sprintf(expected, "%.9g", f);
-
     /* We print all NaN's as "nan", not "-nan" */
-    if(strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
+    if (strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
 
-    strcpy(expected_lower, expected);
-    strcpy(expected_higher, expected);
-
-    /* Allow for rounding differences in the last digit */
-    double lower = (double)f * 0.9999999995;
-    double higher = (double)f * 1.0000000005;
-
-    if(isfinite(lower)) sprintf(expected_lower, "%.9g", lower);
-    if(isfinite(higher)) sprintf(expected_higher, "%.9g", higher);
-
-    if (strcmp(expected, getBufferPutcharSpy()) != 0 &&
-        strcmp(expected_lower, getBufferPutcharSpy()) != 0 &&
-        strcmp(expected_higher, getBufferPutcharSpy()) != 0)
+    if (strcmp(expected, getBufferPutcharSpy()))
     {
         /* Fail with diagnostic printing */
         TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, f);
@@ -4571,13 +4572,11 @@ static void printFloatValue(float f)
     char expected_higher3[18];
 
     startPutcharSpy();
-
     UnityPrintFloat(f);
 
     sprintf(expected, "%.7g", f);
-
     /* We print all NaN's as "nan", not "-nan" */
-    if(strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
+    if (strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
 
     strcpy(expected_lower, expected);
     strcpy(expected_lower2, expected);
@@ -4594,17 +4593,17 @@ static void printFloatValue(float f)
     if(isfinite(higher)) sprintf(expected_higher, "%.7g", higher);
 
     /* Outside [1,10000000] allow for relative error of +/-2.5e-7 */
-    if(f < 1.0 || f > 10000000)
+    if (f < 1.0 || f > 10000000)
     {
         double lower2 = (double)f * 0.99999985;
         double lower3 = (double)f * 0.99999975;
         double higher2 = (double)f * 1.00000015;
         double higher3 = (double)f * 1.00000025;
 
-        if(isfinite(lower2)) sprintf(expected_lower2, "%.7g", lower2);
-        if(isfinite(lower3)) sprintf(expected_lower3, "%.7g", lower3);
-        if(isfinite(higher2)) sprintf(expected_higher2, "%.7g", higher2);
-        if(isfinite(higher3)) sprintf(expected_higher3, "%.7g", higher3);
+        if (isfinite(lower2)) sprintf(expected_lower2, "%.7g", lower2);
+        if (isfinite(lower3)) sprintf(expected_lower3, "%.7g", lower3);
+        if (isfinite(higher2)) sprintf(expected_higher2, "%.7g", higher2);
+        if (isfinite(higher3)) sprintf(expected_higher3, "%.7g", higher3);
     }
 
     if (strcmp(expected, getBufferPutcharSpy()) != 0 &&
@@ -5359,6 +5358,21 @@ void testDoublePrinting(void)
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.2949673e+09", -4294967295.9);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.2949673e+09", -4294967296.0);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-7e+100",        -7.0e+100);
+#endif
+}
+
+void testDoublePrintingRoundTiesToEven(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+  #ifdef UNITY_ROUND_TIES_AWAY_FROM_ZERO
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.00000001e+10", 10000000050.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("9.00719925e+15", 9007199245000000.0);
+  #else /* Default to Round ties to even */
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1e+10",          10000000050.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("9.00719924e+15", 9007199245000000.0);
+  #endif
 #endif
 }
 

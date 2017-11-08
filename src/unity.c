@@ -292,7 +292,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     else if (isinf(number)) UnityPrint("inf");
     else
     {
-        UNITY_INT32 n = 0;
+        UNITY_INT32 n_int = 0, n;
         int exponent = 0;
         int decimals, digits;
         char buf[16];
@@ -330,16 +330,25 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
              * freeing up significant bits in the fractional part.
              */
             UNITY_DOUBLE factor = 1.0f;
-            n = (UNITY_INT32)number;
-            number -= (UNITY_DOUBLE)n;
+            n_int = (UNITY_INT32)number;
+            number -= (UNITY_DOUBLE)n_int;
 
-            while (n < min_scaled) { n *= 10; factor *= 10.0f; exponent--; }
+            while (n_int < min_scaled) { n_int *= 10; factor *= 10.0f; exponent--; }
 
             number *= factor;
         }
 
         /* round to nearest integer */
-        n += ((UNITY_INT32)(number + number) + 1) / 2;
+        n = ((UNITY_INT32)(number + number) + 1) / 2;
+
+#ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
+        /* round to even if exactly between two integers */
+        if ((n & 1) && ((UNITY_DOUBLE)n - number == 0.5f))
+            n--;
+#endif
+
+        n += n_int;
+
         if (n >= max_scaled)
         {
             n = min_scaled;
