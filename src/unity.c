@@ -556,7 +556,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
     if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))
         UNITY_FAIL_AND_BAIL;
 
-    while (elements--)
+    while ((elements > 0) && elements--)
     {
         UNITY_INT expect_val;
         UNITY_INT actual_val;
