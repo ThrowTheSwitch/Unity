@@ -100,10 +100,11 @@ find setUp or tearDown when it links, you'll know you need to at least include
 an empty function for these.
 
 The majority of the file will be a series of test functions. Test functions
-follow the convention of starting with the word "test" or "spec". You don't HAVE
+follow the convention of starting with the word "test_" or "spec_". You don't HAVE
 to name them this way, but it makes it clear what functions are tests for other
-developers.  Test functions take no arguments and return nothing. All test
-accounting is handled internally in Unity.
+developers.  Also, the automated scripts that come with Unity or Ceedling will default
+to looking for test functions to be prefixed this way. Test functions take no arguments 
+and return nothing. All test accounting is handled internally in Unity.
 
 Finally, at the bottom of your test file, you will write a `main()` function.
 This function will call `UNITY_BEGIN()`, then `RUN_TEST` for each test, and
