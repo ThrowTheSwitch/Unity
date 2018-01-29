@@ -47,7 +47,12 @@ class ParseOutput
 
     @test_flag = true
     # Split the path name
-    test_name = test_suite_name.split('/')
+    test_name = if @class_name == 1
+                  test_suite_name.split('\\') # Windows
+                else
+                  test_suite_name.split('/')  # Unix based
+                end
+
     # Remove the extension
     base_name = test_name[test_name.size - 1].split('.')
     @test_suite = 'test.' + base_name[0]
@@ -78,11 +83,11 @@ class ParseOutput
     @array_list.push '     <testcase classname="' + test_suite + '" name="' + test_name + '"/>'
   end
 
-  # Test was flagged as being ingored so format the output
+  # Test was flagged as being ignored so format the output
   def test_ignored(array)
     last_item = array.length - 1
     test_name = array[last_item - 2]
-    reason = array[last_item].chomp
+    reason = array[last_item].chomp.lstrip
     test_suite_verify(array[@class_name])
     printf "%-40s IGNORED\n", test_name
 
@@ -96,7 +101,7 @@ class ParseOutput
     return unless @xml_out
 
     @array_list.push '     <testcase classname="' + @test_suite + '" name="' + test_name + '">'
-    @array_list.push '            <skipped type="TEST IGNORED"> ' + reason + ' </skipped>'
+    @array_list.push '            <skipped type="TEST IGNORED">' + reason + '</skipped>'
     @array_list.push '     </testcase>'
   end
 
@@ -104,7 +109,7 @@ class ParseOutput
   def test_failed(array)
     last_item = array.length - 1
     test_name = array[last_item - 2]
-    reason = array[last_item].chomp + ' at line: ' + array[last_item - 3]
+    reason = array[last_item].chomp.lstrip + ' at line: ' + array[last_item - 3]
     test_suite_verify(array[@class_name])
     printf "%-40s FAILED\n", test_name
 
@@ -118,11 +123,11 @@ class ParseOutput
     return unless @xml_out
 
     @array_list.push '     <testcase classname="' + @test_suite + '" name="' + test_name + '">'
-    @array_list.push '            <failure type="ASSERT FAILED"> ' + reason + ' </failure>'
+    @array_list.push '            <failure type="ASSERT FAILED"> ' + reason + '</failure>'
     @array_list.push '     </testcase>'
   end
 
-  # Figure out what OS we are running on.   For now we are assuming if it's not Windows it must
+  # Figure out what OS we are running on. For now we are assuming if it's not Windows it must
   # be Unix based.
   def detect_os
     os = RUBY_PLATFORM.split('-')
@@ -168,10 +173,14 @@ class ParseOutput
         if line.include? ':PASS'
           test_passed(line_array)
           test_pass += 1
-        elsif line.include? ':FAIL:'
+        elsif line.include? ':FAIL'
           test_failed(line_array)
           test_fail += 1
         elsif line.include? ':IGNORE:'
+          test_ignored(line_array)
+          test_ignore += 1
+        elsif line.include? ':IGNORE'
+          line_array.push('No reason given')
           test_ignored(line_array)
           test_ignore += 1
         elsif line.start_with? 'TEST('
@@ -199,7 +208,7 @@ class ParseOutput
 
     return unless @xml_out
 
-    heading = '<testsuite tests="' + @total_tests.to_s + '" failures="' + test_fail.to_s + '"' + ' skips="' + test_ignore.to_s + '">'
+    heading = '<testsuite name="' + @test_suite + '" tests="' + @total_tests.to_s + '" failures="' + test_fail.to_s + '"' + ' skips="' + test_ignore.to_s + '">'
     @array_list.insert(0, heading)
     write_xml_output
   end
