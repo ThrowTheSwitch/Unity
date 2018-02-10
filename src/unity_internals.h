@@ -442,9 +442,9 @@ void UnityPrint(const char* string);
 void UnityPrintLen(const char* string, const UNITY_UINT32 length);
 void UnityPrintMask(const UNITY_UINT mask, const UNITY_UINT number);
 void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T style);
-void UnityPrintNumber(const UNITY_INT number);
+void UnityPrintNumber(const UNITY_INT number_to_print);
 void UnityPrintNumberUnsigned(const UNITY_UINT number);
-void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles);
+void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print);
 
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
 void UnityPrintFloat(const UNITY_DOUBLE input_number);
@@ -518,9 +518,9 @@ void UnityAssertNumbersWithin(const UNITY_UINT delta,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_DISPLAY_STYLE_T style);
 
-void UnityFail(const char* message, const UNITY_LINE_TYPE line);
+void UnityFail(const char* msg, const UNITY_LINE_TYPE line);
 
-void UnityIgnore(const char* message, const UNITY_LINE_TYPE line);
+void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line);
 
 #ifndef UNITY_EXCLUDE_FLOAT
 void UnityAssertFloatsWithin(const UNITY_FLOAT delta,

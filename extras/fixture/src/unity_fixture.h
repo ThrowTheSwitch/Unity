@@ -78,6 +78,6 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 #endif
 
 /* You must compile with malloc replacement, as defined in unity_fixture_malloc_overrides.h */
-void UnityMalloc_MakeMallocFailAfterCount(int count);
+void UnityMalloc_MakeMallocFailAfterCount(int countdown);
 
 #endif /* UNITY_FIXTURE_H_ */
