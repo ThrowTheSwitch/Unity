@@ -123,7 +123,7 @@ class ParseOutput
     return unless @xml_out
 
     @array_list.push '     <testcase classname="' + @test_suite + '" name="' + test_name + '">'
-    @array_list.push '            <failure type="ASSERT FAILED"> ' + reason + '</failure>'
+    @array_list.push '            <failure type="ASSERT FAILED">' + reason + '</failure>'
     @array_list.push '     </testcase>'
   end
 
