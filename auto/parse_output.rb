@@ -208,7 +208,7 @@ class ParseOutput
 
     return unless @xml_out
 
-    heading = '<testsuite name="' + @test_suite + '" tests="' + @total_tests.to_s + '" failures="' + test_fail.to_s + '"' + ' skips="' + test_ignore.to_s + '">'
+    heading = '<testsuite name="' + @test_suite.to_s + '" tests="' + @total_tests.to_s + '" failures="' + test_fail.to_s + '"' + ' skips="' + test_ignore.to_s + '">'
     @array_list.insert(0, heading)
     write_xml_output
   end
