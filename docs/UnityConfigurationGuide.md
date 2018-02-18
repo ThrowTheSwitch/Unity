@@ -248,7 +248,8 @@ _Example:_
 Say you are forced to run your test suite on an embedded processor with no
 `stdout` option. You decide to route your test result output to a custom serial
 `RS232_putc()` function you wrote like thus:
-
+        #include "RS232_header.h"
+        ...
         #define UNITY_OUTPUT_CHAR(a) RS232_putc(a)
         #define UNITY_OUTPUT_START() RS232_config(115200,1,8,0)
         #define UNITY_OUTPUT_FLUSH() RS232_flush()
@@ -256,10 +257,7 @@ Say you are forced to run your test suite on an embedded processor with no
 
 _Note:_
 `UNITY_OUTPUT_FLUSH()` can be set to the standard out flush function simply by
-specifying `UNITY_USE_FLUSH_STDOUT`. No other defines are required. If you
-specify a custom flush function instead with `UNITY_OUTPUT_FLUSH` directly, it
-will declare an instance of your function by default. If you want to disable
-this behavior, add `UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION`.
+specifying `UNITY_USE_FLUSH_STDOUT`. No other defines are required.
 
 
 ##### `UNITY_WEAK_ATTRIBUTE`
