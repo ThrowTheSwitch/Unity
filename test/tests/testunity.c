@@ -56,7 +56,7 @@ char* getBufferPutcharSpy(void);
 
 void startFlushSpy(void);
 void endFlushSpy(void);
-unsigned int getFlushSpyCalls(void);
+int getFlushSpyCalls(void);
 
 static int SetToOneToFailInTearDown;
 static int SetToOneMeanWeAlreadyCheckedThisGuy;
@@ -3341,11 +3341,11 @@ void putcharSpy(int c)
 
 /* This is for counting the calls to the flushSpy */
 static int flushSpyEnabled;
-static unsigned int flushSpyCalls = 0;
+static int flushSpyCalls = 0;
 
 void startFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 1; }
 void endFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 0; }
-unsigned int getFlushSpyCalls(void) { return flushSpyCalls; }
+int getFlushSpyCalls(void) { return flushSpyCalls; }
 
 void flushSpy(void)
 {
@@ -3357,9 +3357,13 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     UNITY_UINT savedFailures = Unity.TestFailures;
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); // Suppress output
+    startFlushSpy();
+    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
     UnityConcludeTest();
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
+    TEST_ASSERT_EQUAL(1, getFlushSpyCalls());
+    endFlushSpy();
 
     startPutcharSpy(); // Suppress output
     int failures = UnityEnd();
