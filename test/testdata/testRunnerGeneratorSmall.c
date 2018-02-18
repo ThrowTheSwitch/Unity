@@ -16,7 +16,7 @@ TEST_FILE("some_file.c")
 
 /* Include Passthroughs for Linking Tests */
 void putcharSpy(int c) { (void)putchar(c);}
-void flushSpy(int c) {}
+void flushSpy(void) {}
 
 /* Global Variables Used During These Tests */
 int CounterSetup = 0;

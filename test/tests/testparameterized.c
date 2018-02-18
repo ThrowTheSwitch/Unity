@@ -13,7 +13,7 @@
 
 /* Include Passthroughs for Linking Tests */
 void putcharSpy(int c) { (void)putchar(c);}
-void flushSpy(int c) {}
+void flushSpy(void) {}
 
 #define EXPECT_ABORT_BEGIN \
     if (TEST_PROTECT())    \
