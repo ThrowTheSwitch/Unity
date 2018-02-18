@@ -3335,6 +3335,14 @@ void putcharSpy(int c)
 #endif
 }
 
+#if 0
+void flushSpy(void)
+{
+    static unsigned int calls = 0;
+    calls++; // count every call
+}
+#endif
+
 void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 {
     UNITY_UINT savedFailures = Unity.TestFailures;

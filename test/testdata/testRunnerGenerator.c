@@ -21,7 +21,10 @@
 
 /* Support for Meta Test Rig */
 #define TEST_CASE(a)
-void putcharSpy(int c) { (void)putchar(c);} // include passthrough for linking tests
+
+/* Include Passthroughs for Linking Tests */
+void putcharSpy(int c) { (void)putchar(c);}
+void flushSpy(int c) {}
 
 /* Global Variables Used During These Tests */
 int CounterSetup = 0;

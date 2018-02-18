@@ -8,9 +8,12 @@
 #include <stdio.h>
 #include "unity.h"
 
-void putcharSpy(int c) { (void)putchar(c);} // include passthrough for linking tests
-
+/* Support for Meta Test Rig */
 #define TEST_CASE(...)
+
+/* Include Passthroughs for Linking Tests */
+void putcharSpy(int c) { (void)putchar(c);}
+void flushSpy(int c) {}
 
 #define EXPECT_ABORT_BEGIN \
     if (TEST_PROTECT())    \
