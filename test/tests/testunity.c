@@ -3357,17 +3357,17 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     UNITY_UINT savedFailures = Unity.TestFailures;
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); // Suppress output
-#ifdef USING_FLUSH_SPY
     startFlushSpy();
     TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
-#endif
     UnityConcludeTest();
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
-#ifdef USING_FLUSH_SPY
+#if defined(UNITY_OUTPUT_FLUSH) && defined(UNITY_OUTPUT_FLUSH_HEADER_DECLARATION)
     TEST_ASSERT_EQUAL(1, getFlushSpyCalls());
-    endFlushSpy();
+#else
+    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
 #endif
+    endFlushSpy();
 
     startPutcharSpy(); // Suppress output
     int failures = UnityEnd();
