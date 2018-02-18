@@ -54,6 +54,10 @@ void startPutcharSpy(void);
 void endPutcharSpy(void);
 char* getBufferPutcharSpy(void);
 
+void startFlushSpy(void);
+void endFlushSpy(void);
+unsigned int getFlushSpyCalls(void);
+
 static int SetToOneToFailInTearDown;
 static int SetToOneMeanWeAlreadyCheckedThisGuy;
 
@@ -3335,13 +3339,18 @@ void putcharSpy(int c)
 #endif
 }
 
-#if 0
+/* This is for counting the calls to the flushSpy */
+static int flushSpyEnabled;
+static unsigned int flushSpyCalls = 0;
+
+void startFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 1; }
+void endFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 0; }
+unsigned int getFlushSpyCalls(void) { return flushSpyCalls; }
+
 void flushSpy(void)
 {
-    static unsigned int calls = 0;
-    calls++; // count every call
+    if (flushSpyEnabled){ flushSpyCalls++; }
 }
-#endif
 
 void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 {
@@ -3418,6 +3427,20 @@ void testPrintNumbersUnsigned32(void)
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("2147483648", (UNITY_UINT32)0x80000000);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("4294967295", (UNITY_UINT32)0xFFFFFFFF);
 #endif
+}
+
+
+/* This is for counting the calls to the flushSpy */
+static int flushSpyEnabled;
+static unsigned int flushSpyCalls = 0;
+
+void startFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 1; }
+void endFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 0; }
+unsigned int getFlushSpyCalls(void) { return flushSpyCalls; }
+
+void flushSpy(void)
+{
+    if (flushSpyEnabled){ flushSpyCalls++; }
 }
 
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ==================
