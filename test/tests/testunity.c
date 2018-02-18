@@ -3430,19 +3430,6 @@ void testPrintNumbersUnsigned32(void)
 }
 
 
-/* This is for counting the calls to the flushSpy */
-static int flushSpyEnabled;
-static unsigned int flushSpyCalls = 0;
-
-void startFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 1; }
-void endFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 0; }
-unsigned int getFlushSpyCalls(void) { return flushSpyCalls; }
-
-void flushSpy(void)
-{
-    if (flushSpyEnabled){ flushSpyCalls++; }
-}
-
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ==================
 
 void testPrintNumbersInt64(void)
