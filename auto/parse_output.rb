@@ -23,6 +23,7 @@ class ParseOutput
     @class_name = 0
     @test_suite = nil
     @total_tests = false
+    @path_delim = nil
   end
 
   #   Set the flag to indicate if there will be an XML output file or not
@@ -45,11 +46,7 @@ class ParseOutput
   def test_suite_verify(test_suite_name)
 
     # Split the path name
-    test_name = if @class_name == 1
-                  test_suite_name.split('\\') # Windows
-                else
-                  test_suite_name.split('/')  # Unix based
-                end
+    test_name = test_suite_name.split(@path_delim)
 
     # Remove the extension and extract the base_name
     base_name = test_name[test_name.size - 1].split('.')[0]
@@ -59,7 +56,6 @@ class ParseOutput
       @test_suite = base_name
       printf "New Test: %s\n", @test_suite
     end
-
   end
 
   # Test was flagged as having passed so format the output
@@ -141,26 +137,23 @@ class ParseOutput
     @array_list.push '     </testcase>'
   end
 
-  # Figure out what OS we are running on. For now we are assuming if it's not Windows it must
-  # be Unix based.
-  def detect_os
-    os = RUBY_PLATFORM.split('-')
-    @class_name = if os.size == 2
-                    if os[1] == 'mingw32'
-                      1
-                    else
-                      0
-                    end
-                  else
-                    0
-                  end
+  # Adjusts the os specific members according to the current path style
+  # (Windows or Unix based)
+  def set_os_specifics(line)
+    if line.include? '\\'
+      # Windows X:\Y\Z
+      @class_name = 1
+      @path_delim = '\\'
+    else
+      # Unix Based /X/Y/Z
+      @class_name = 0
+      @path_delim = '/'
+    end
   end
 
   # Main function used to parse the file that was captured.
   def process(name)
     @array_list = []
-
-    detect_os
 
     puts 'Parsing file: ' + name
 
@@ -177,6 +170,7 @@ class ParseOutput
       # <path>/<test_file>.c:115:test_tc5100_initCanVoidPtrs:PASS
       #
       # where path is different on Unix vs Windows devices (Windows leads with a drive letter)
+      set_os_specifics(line)
       line_array = line.split(':')
 
       # If we were able to split the line then we can look to see if any of our target words
