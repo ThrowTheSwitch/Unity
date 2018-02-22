@@ -1,21 +1,22 @@
 #============================================================
 #  Author:   John Theofanopoulos
-#  A simple parser.   Takes the output files generated during the build process and
-# extracts information relating to the tests.
+#  A simple parser.  Takes the output files generated during the
+#  build process and extracts information relating to the tests.
 #
 #  Notes:
 #    To capture an output file under VS builds use the following:
 #      devenv [build instructions]  > Output.txt & type Output.txt
 #
-#    To capture an output file under GCC/Linux builds use the following:
+#    To capture an output file under Linux builds use the following:
 #      make | tee Output.txt
 #
 #    To use this parser use the following command
 #    ruby parseOutput.rb [options] [file]
 #        options:  -xml  : produce a JUnit compatible XML file
-#        file      :  file to scan for results
+#        file:  file to scan for results
 #============================================================
 
+# Parser class for handling the input file
 class ParseOutput
   def initialize
     @xml_out = false
@@ -26,12 +27,12 @@ class ParseOutput
     @path_delim = nil
   end
 
-  #   Set the flag to indicate if there will be an XML output file or not
+  # Set the flag to indicate if there will be an XML output file or not
   def set_xml_output
     @xml_out = true
   end
 
-  #  If write our output to XML
+  # If write our output to XML
   def write_xml_output
     output = File.open('report.xml', 'w')
     output << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -44,18 +45,17 @@ class ParseOutput
   # This function will try and determine when the suite is changed. This is
   # is the name that gets added to the classname parameter.
   def test_suite_verify(test_suite_name)
-
     # Split the path name
     test_name = test_suite_name.split(@path_delim)
 
     # Remove the extension and extract the base_name
     base_name = test_name[test_name.size - 1].split('.')[0]
 
-    # Is this a new test suite?
-    if base_name.to_s != @test_suite.to_s
-      @test_suite = base_name
-      printf "New Test: %s\n", @test_suite
-    end
+    # Return if the test suite hasn't changed
+    return unless base_name.to_s != @test_suite.to_s
+
+    @test_suite = base_name
+    printf "New Test: %s\n", @test_suite
   end
 
   # Test was flagged as having passed so format the output
@@ -78,6 +78,7 @@ class ParseOutput
     test_name = array[1].sub(')', '')
     test_suite_verify(array[@class_name])
     printf "%-40s PASS\n", test_name
+
     return unless @xml_out
 
     @array_list.push '     <testcase classname="' + test_suite + '" name="' + test_name + '"/>'
@@ -152,10 +153,10 @@ class ParseOutput
   end
 
   # Main function used to parse the file that was captured.
-  def process(name)
+  def process(file_name)
     @array_list = []
 
-    puts 'Parsing file: ' + name
+    puts 'Parsing file: ' + file_name
 
     test_pass = 0
     test_fail = 0
@@ -163,7 +164,7 @@ class ParseOutput
     puts ''
     puts '=================== RESULTS ====================='
     puts ''
-    File.open(name).each do |line|
+    File.open(file_name).each do |line|
       # Typical test lines look like this:
       # <path>/<test_file>.c:36:test_tc1000_opsys:FAIL: Expected 1 Was 0
       # <path>/<test_file>.c:112:test_tc5004_initCanChannel:IGNORE: Not Yet Implemented
@@ -219,11 +220,11 @@ end
 parse_my_file = ParseOutput.new
 
 if ARGV.size >= 1
-  ARGV.each do |a|
-    if a == '-xml'
+  ARGV.each do |arg|
+    if arg == '-xml'
       parse_my_file.set_xml_output
     else
-      parse_my_file.process(a)
+      parse_my_file.process(arg)
       break
     end
   end
