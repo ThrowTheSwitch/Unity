@@ -18,11 +18,11 @@
 
 class ParseOutput
   def initialize
-    @test_flag = false
     @xml_out = false
     @array_list = false
+    @class_name = 0
+    @test_suite = nil
     @total_tests = false
-    @class_index = false
   end
 
   #   Set the flag to indicate if there will be an XML output file or not
@@ -30,7 +30,7 @@ class ParseOutput
     @xml_out = true
   end
 
-  #  if write our output to XML
+  #  If write our output to XML
   def write_xml_output
     output = File.open('report.xml', 'w')
     output << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -40,12 +40,10 @@ class ParseOutput
     output << "</testsuite>\n"
   end
 
-  #  This function will try and determine when the suite is changed.   This is
+  # This function will try and determine when the suite is changed. This is
   # is the name that gets added to the classname parameter.
   def test_suite_verify(test_suite_name)
-    return if @test_flag
 
-    @test_flag = true
     # Split the path name
     test_name = if @class_name == 1
                   test_suite_name.split('\\') # Windows
@@ -53,10 +51,15 @@ class ParseOutput
                   test_suite_name.split('/')  # Unix based
                 end
 
-    # Remove the extension
-    base_name = test_name[test_name.size - 1].split('.')
-    @test_suite = 'test.' + base_name[0]
-    printf "New Test: %s\n", @test_suite
+    # Remove the extension and extract the base_name
+    base_name = test_name[test_name.size - 1].split('.')[0]
+
+    # Is this a new test suite?
+    if base_name.to_s != @test_suite.to_s
+      @test_suite = base_name
+      printf "New Test: %s\n", @test_suite
+    end
+
   end
 
   # Test was flagged as having passed so format the output
@@ -77,7 +80,8 @@ class ParseOutput
     test_suite = array[0].sub('TEST(', '')
     test_suite = test_suite.sub(',', '')
     test_name = array[1].sub(')', '')
-
+    test_suite_verify(array[@class_name])
+    printf "%-40s PASS\n", test_name
     return unless @xml_out
 
     @array_list.push '     <testcase classname="' + test_suite + '" name="' + test_name + '"/>'
@@ -88,15 +92,20 @@ class ParseOutput
     last_item = array.length - 1
     test_name = array[last_item - 2]
     reason = array[last_item].chomp.lstrip
-    test_suite_verify(array[@class_name])
-    printf "%-40s IGNORED\n", test_name
+    class_name = array[@class_name]
 
     if test_name.start_with? 'TEST('
       array2 = test_name.split(' ')
-      @test_suite = array2[0].sub('TEST(', '')
-      @test_suite = @test_suite.sub(',', '')
+
+      test_suite = array2[0].sub('TEST(', '')
+      test_suite = test_suite.sub(',', '')
+      class_name = test_suite
+
       test_name = array2[1].sub(')', '')
     end
+
+    test_suite_verify(class_name)
+    printf "%-40s IGNORED\n", test_name
 
     return unless @xml_out
 
@@ -110,15 +119,20 @@ class ParseOutput
     last_item = array.length - 1
     test_name = array[last_item - 2]
     reason = array[last_item].chomp.lstrip + ' at line: ' + array[last_item - 3]
-    test_suite_verify(array[@class_name])
-    printf "%-40s FAILED\n", test_name
+    class_name = array[@class_name]
 
     if test_name.start_with? 'TEST('
       array2 = test_name.split(' ')
-      @test_suite = array2[0].sub('TEST(', '')
-      @test_suite = @test_suite.sub(',', '')
+
+      test_suite = array2[0].sub('TEST(', '')
+      test_suite = test_suite.sub(',', '')
+      class_name = test_suite
+
       test_name = array2[1].sub(')', '')
     end
+
+    test_suite_verify(class_name)
+    printf "%-40s FAILED\n", test_name
 
     return unless @xml_out
 
@@ -144,7 +158,6 @@ class ParseOutput
 
   # Main function used to parse the file that was captured.
   def process(name)
-    @test_flag = false
     @array_list = []
 
     detect_os
@@ -189,13 +202,7 @@ class ParseOutput
             test_passed_unity_fixture(line_array)
             test_pass += 1
           end
-        # If none of the keywords are found there are no more tests for this suite so clear
-        # the test flag
-        else
-          @test_flag = false
         end
-      else
-        @test_flag = false
       end
     end
     puts ''
@@ -208,7 +215,7 @@ class ParseOutput
 
     return unless @xml_out
 
-    heading = '<testsuite name="' + @test_suite.to_s + '" tests="' + @total_tests.to_s + '" failures="' + test_fail.to_s + '"' + ' skips="' + test_ignore.to_s + '">'
+    heading = '<testsuite name="Unity" tests="' + @total_tests.to_s + '" failures="' + test_fail.to_s + '"' + ' skips="' + test_ignore.to_s + '">'
     @array_list.insert(0, heading)
     write_xml_output
   end
