@@ -1,30 +1,38 @@
 #============================================================
-#  Author:   John Theofanopoulos
-#  A simple parser.  Takes the output files generated during the
+#  Author: John Theofanopoulos
+#  A simple parser. Takes the output files generated during the
 #  build process and extracts information relating to the tests.
 #
 #  Notes:
 #    To capture an output file under VS builds use the following:
-#      devenv [build instructions]  > Output.txt & type Output.txt
+#      devenv [build instructions] > Output.txt & type Output.txt
 #
 #    To capture an output file under Linux builds use the following:
 #      make | tee Output.txt
 #
 #    To use this parser use the following command
 #    ruby parseOutput.rb [options] [file]
-#        options:  -xml  : produce a JUnit compatible XML file
-#        file:  file to scan for results
+#        options: -xml  : produce a JUnit compatible XML file
+#           file: file to scan for results
 #============================================================
 
 # Parser class for handling the input file
 class ParseOutput
   def initialize
+    # internal data
+    @class_name_idx = 0
+    @path_delim = nil
+
+    # xml output related
     @xml_out = false
     @array_list = false
-    @class_name = 0
+
+    # current suite name and statistics
     @test_suite = nil
-    @total_tests = false
-    @path_delim = nil
+    @total_tests  = 0
+    @test_passed  = 0
+    @test_failed  = 0
+    @test_ignored = 0
   end
 
   # Set the flag to indicate if there will be an XML output file or not
@@ -39,7 +47,34 @@ class ParseOutput
     @array_list.each do |item|
       output << item << "\n"
     end
-    output << "</testsuite>\n"
+  end
+
+  # Pushes the suite info as xml to the array list, which will be written later
+  def push_xml_output_suite_info
+    # Insert opening tag at front
+    heading = '<testsuite name="Unity" tests="' + @total_tests.to_s + '" failures="' + @test_failed.to_s + '"' + ' skips="' + @test_ignored.to_s + '">'
+    @array_list.insert(0, heading)
+    # Push back the closing tag
+    @array_list.push '</testsuite>'
+  end
+
+  # Pushes xml output data to the array list, which will be written later
+  def push_xml_output_passed(test_name)
+    @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '"/>'
+  end
+
+  # Pushes xml output data to the array list, which will be written later
+  def push_xml_output_failed(test_name, reason)
+    @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '">'
+    @array_list.push '        <failure type="ASSERT FAILED">' + reason + '</failure>'
+    @array_list.push '    </testcase>'
+  end
+
+  # Pushes xml output data to the array list, which will be written later
+  def push_xml_output_ignored(test_name, reason)
+    @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '">'
+    @array_list.push '        <skipped type="TEST IGNORED">' + reason + '</skipped>'
+    @array_list.push '    </testcase>'
   end
 
   # This function will try and determine when the suite is changed. This is
@@ -58,65 +93,76 @@ class ParseOutput
     printf "New Test: %s\n", @test_suite
   end
 
-  # Test was flagged as having passed so format the output
-  def test_passed(array)
-    last_item = array.length - 1
-    test_name = array[last_item - 1]
-    test_suite_verify(array[@class_name])
-    printf "%-40s PASS\n", test_name
-
-    return unless @xml_out
-
-    @array_list.push '     <testcase classname="' + @test_suite + '" name="' + test_name + '"/>'
+  # Prepares the line for verbose fixture output ("-v")
+  def prepare_fixture_line(line)
+    line = line.sub('IGNORE_TEST(', '')
+    line = line.sub('TEST(', '')
+    line = line.sub(')', ',')
+    line = line.chomp
+    array = line.split(',')
+    array.map { |x| x.to_s.lstrip.chomp }
   end
 
   # Test was flagged as having passed so format the output.
   # This is using the Unity fixture output and not the original Unity output.
   def test_passed_unity_fixture(array)
-    test_suite = array[0].sub('TEST(', '')
-    test_suite = test_suite.sub(',', '')
-    test_name = array[1].sub(')', '')
-    test_suite_verify(array[@class_name])
+    class_name = array[0]
+    test_name  = array[1]
+    test_suite_verify(class_name)
+    printf "%-40s PASS\n", test_name
+
+    push_xml_output_passed(test_name) if @xml_out
+  end
+
+  # Test was flagged as having failed so format the output.
+  # This is using the Unity fixture output and not the original Unity output.
+  def test_failed_unity_fixture(array)
+    class_name = array[0]
+    test_name  = array[1]
+    test_suite_verify(class_name)
+    reason_array = array[2].split(':')
+    reason = reason_array[-1].lstrip.chomp + ' at line: ' + reason_array[-4]
+
+    printf "%-40s FAILED\n", test_name
+
+    push_xml_output_failed(test_name, reason) if @xml_out
+  end
+
+  # Test was flagged as being ignored so format the output.
+  # This is using the Unity fixture output and not the original Unity output.
+  def test_ignored_unity_fixture(array)
+    class_name = array[0]
+    test_name  = array[1]
+    reason = 'No reason given'
+    if array.size > 2
+      reason_array = array[2].split(':')
+      tmp_reason = reason_array[-1].lstrip.chomp
+      reason = tmp_reason == 'IGNORE' ? 'No reason given' : tmp_reason
+    end
+    test_suite_verify(class_name)
+    printf "%-40s IGNORED\n", test_name
+
+    push_xml_output_ignored(test_name, reason) if @xml_out
+  end
+
+  # Test was flagged as having passed so format the output
+  def test_passed(array)
+    last_item = array.length - 1
+    test_name = array[last_item - 1]
+    test_suite_verify(array[@class_name_idx])
     printf "%-40s PASS\n", test_name
 
     return unless @xml_out
 
-    @array_list.push '     <testcase classname="' + test_suite + '" name="' + test_name + '"/>'
+    push_xml_output_passed(test_name) if @xml_out
   end
 
-  # Test was flagged as being ignored so format the output
-  def test_ignored(array)
-    last_item = array.length - 1
-    test_name = array[last_item - 2]
-    reason = array[last_item].chomp.lstrip
-    class_name = array[@class_name]
-
-    if test_name.start_with? 'TEST('
-      array2 = test_name.split(' ')
-
-      test_suite = array2[0].sub('TEST(', '')
-      test_suite = test_suite.sub(',', '')
-      class_name = test_suite
-
-      test_name = array2[1].sub(')', '')
-    end
-
-    test_suite_verify(class_name)
-    printf "%-40s IGNORED\n", test_name
-
-    return unless @xml_out
-
-    @array_list.push '     <testcase classname="' + @test_suite + '" name="' + test_name + '">'
-    @array_list.push '            <skipped type="TEST IGNORED">' + reason + '</skipped>'
-    @array_list.push '     </testcase>'
-  end
-
-  # Test was flagged as having failed  so format the line
+  # Test was flagged as having failed so format the line
   def test_failed(array)
     last_item = array.length - 1
     test_name = array[last_item - 2]
     reason = array[last_item].chomp.lstrip + ' at line: ' + array[last_item - 3]
-    class_name = array[@class_name]
+    class_name = array[@class_name_idx]
 
     if test_name.start_with? 'TEST('
       array2 = test_name.split(' ')
@@ -131,11 +177,30 @@ class ParseOutput
     test_suite_verify(class_name)
     printf "%-40s FAILED\n", test_name
 
-    return unless @xml_out
+    push_xml_output_failed(test_name, reason) if @xml_out
+  end
 
-    @array_list.push '     <testcase classname="' + @test_suite + '" name="' + test_name + '">'
-    @array_list.push '            <failure type="ASSERT FAILED">' + reason + '</failure>'
-    @array_list.push '     </testcase>'
+  # Test was flagged as being ignored so format the output
+  def test_ignored(array)
+    last_item = array.length - 1
+    test_name = array[last_item - 2]
+    reason = array[last_item].chomp.lstrip
+    class_name = array[@class_name_idx]
+
+    if test_name.start_with? 'TEST('
+      array2 = test_name.split(' ')
+
+      test_suite = array2[0].sub('TEST(', '')
+      test_suite = test_suite.sub(',', '')
+      class_name = test_suite
+
+      test_name = array2[1].sub(')', '')
+    end
+
+    test_suite_verify(class_name)
+    printf "%-40s IGNORED\n", test_name
+
+    push_xml_output_ignored(test_name, reason) if @xml_out
   end
 
   # Adjusts the os specific members according to the current path style
@@ -143,11 +208,11 @@ class ParseOutput
   def set_os_specifics(line)
     if line.include? '\\'
       # Windows X:\Y\Z
-      @class_name = 1
+      @class_name_idx = 1
       @path_delim = '\\'
     else
       # Unix Based /X/Y/Z
-      @class_name = 0
+      @class_name_idx = 0
       @path_delim = '/'
     end
   end
@@ -158,9 +223,9 @@ class ParseOutput
 
     puts 'Parsing file: ' + file_name
 
-    test_pass = 0
-    test_fail = 0
-    test_ignore = 0
+    @test_passed = 0
+    @test_failed = 0
+    @test_ignored = 0
     puts ''
     puts '=================== RESULTS ====================='
     puts ''
@@ -175,43 +240,52 @@ class ParseOutput
       line_array = line.split(':')
 
       # If we were able to split the line then we can look to see if any of our target words
-      # were found.  Case is important.
-      if (line_array.size >= 4) || (line.start_with? 'TEST(')
-        # Determine if this test passed
-        if line.include? ':PASS'
+      # were found. Case is important.
+      if (line_array.size >= 4) || (line.start_with? 'TEST(') || (line.start_with? 'IGNORE_TEST(')
+
+        # check if the output is fixture output (with verbose flag "-v")
+        if (line.start_with? 'TEST(') || (line.start_with? 'IGNORE_TEST(')
+          line_array = prepare_fixture_line(line)
+          if line.include? ' PASS'
+            test_passed_unity_fixture(line_array)
+            @test_passed += 1
+          elsif line.include? 'FAIL'
+            test_failed_unity_fixture(line_array)
+            @test_failed += 1
+          elsif line.include? 'IGNORE'
+            test_ignored_unity_fixture(line_array)
+            @test_ignored += 1
+          end
+        # normal output / fixture output (without verbose "-v")
+        elsif line.include? ':PASS'
           test_passed(line_array)
-          test_pass += 1
+          @test_passed += 1
         elsif line.include? ':FAIL'
           test_failed(line_array)
-          test_fail += 1
+          @test_failed += 1
         elsif line.include? ':IGNORE:'
           test_ignored(line_array)
-          test_ignore += 1
+          @test_ignored += 1
         elsif line.include? ':IGNORE'
           line_array.push('No reason given')
           test_ignored(line_array)
-          test_ignore += 1
-        elsif line.start_with? 'TEST('
-          if line.include? ' PASS'
-            line_array = line.split(' ')
-            test_passed_unity_fixture(line_array)
-            test_pass += 1
-          end
+          @test_ignored += 1
         end
+        @total_tests = @test_passed + @test_failed + @test_ignored
       end
     end
     puts ''
     puts '=================== SUMMARY ====================='
     puts ''
-    puts 'Tests Passed  : ' + test_pass.to_s
-    puts 'Tests Failed  : ' + test_fail.to_s
-    puts 'Tests Ignored : ' + test_ignore.to_s
-    @total_tests = test_pass + test_fail + test_ignore
+    puts 'Tests Passed  : ' + @test_passed.to_s
+    puts 'Tests Failed  : ' + @test_failed.to_s
+    puts 'Tests Ignored : ' + @test_ignored.to_s
 
     return unless @xml_out
 
-    heading = '<testsuite name="Unity" tests="' + @total_tests.to_s + '" failures="' + test_fail.to_s + '"' + ' skips="' + test_ignore.to_s + '">'
-    @array_list.insert(0, heading)
+    # push information about the suite
+    push_xml_output_suite_info
+    # write xml output file
     write_xml_output
   end
 end
