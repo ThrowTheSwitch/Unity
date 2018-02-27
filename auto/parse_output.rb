@@ -10,6 +10,11 @@
 #    To capture an output file under Linux builds use the following:
 #      make | tee Output.txt
 #
+#    This script can handle the following output formats:
+#    - normal output (raw unity)
+#    - fixture output (unity_fixture.h/.c)
+#    - fixture output with verbose flag set ("-v")
+#
 #    To use this parser use the following command
 #    ruby parseOutput.rb [options] [file]
 #        options: -xml  : produce a JUnit compatible XML file
@@ -230,12 +235,25 @@ class ParseOutput
     puts '=================== RESULTS ====================='
     puts ''
     File.open(file_name).each do |line|
-      # Typical test lines look like this:
+      # Typical test lines look like these:
+      # ----------------------------------------------------
+      # 1. normal output:
       # <path>/<test_file>.c:36:test_tc1000_opsys:FAIL: Expected 1 Was 0
       # <path>/<test_file>.c:112:test_tc5004_initCanChannel:IGNORE: Not Yet Implemented
       # <path>/<test_file>.c:115:test_tc5100_initCanVoidPtrs:PASS
       #
-      # where path is different on Unix vs Windows devices (Windows leads with a drive letter)
+      # 2. fixture output
+      # <path>/<test_file>.c:63:TEST(<test_group>, <test_function>):FAIL: Expected 0x00001234 Was 0x00005A5A
+      # <path>/<test_file>.c:36:TEST(<test_group>, <test_function>):IGNORE
+      # Note: "PASS" information won't be generated in this mode
+      #
+      # 3. fixture output with verbose information ("-v")
+      # TEST(<test_group, <test_file>)<path>/<test_file>:168::FAIL: Expected 0x8D Was 0x8C
+      # TEST(<test_group>, <test_file>)<path>/<test_file>:22::IGNORE: This Test Was Ignored On Purpose
+      # IGNORE_TEST(<test_group, <test_file>)
+      # TEST(<test_group, <test_file>) PASS
+      #
+      # Note: Where path is different on Unix vs Windows devices (Windows leads with a drive letter)!
       set_os_specifics(line)
       line_array = line.split(':')
 
