@@ -159,6 +159,12 @@ CMock (see CMock documentation). This generates extra variables required for
 everything to run smoothly. If you provide the same YAML to the generator as
 used in CMock's configuration, you've already configured the generator properly.
 
+##### `:mock_prefix` and `:mock_suffix`
+
+Unity automatically generates calls to Init, Verify and Destroy for every file
+included in the main test file that starts with the given mock prefix and ends
+with the given mock suffix, file extension not included. By default, Unity
+assumes a `Mock` prefix and no suffix.
 
 ##### `:plugins`
 
