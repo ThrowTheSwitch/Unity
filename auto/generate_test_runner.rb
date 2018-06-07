@@ -26,6 +26,7 @@ class UnityTestRunnerGenerator
       framework: :unity,
       test_prefix: 'test|spec|should',
       mock_prefix: 'Mock',
+      mock_suffix: '',
       setup_name: 'setUp',
       teardown_name: 'tearDown',
       main_name: 'main', # set to :auto to automatically generate each time
@@ -148,7 +149,7 @@ class UnityTestRunnerGenerator
     mock_headers = []
     includes.each do |include_path|
       include_file = File.basename(include_path)
-      mock_headers << include_path if include_file =~ /^#{@options[:mock_prefix]}/i
+      mock_headers << include_path if include_file =~ /^#{@options[:mock_prefix]}.*#{@options[:mock_suffix]}$/i
     end
     mock_headers
   end
