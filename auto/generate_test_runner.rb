@@ -179,7 +179,7 @@ class UnityTestRunnerGenerator
     output.puts('#endif')
     output.puts('#include <stdio.h>')
     if @options[:defines] && !@options[:defines].empty?
-      @options[:defines].each { |d| output.puts("#define #{d}") }
+      @options[:defines].each { |d| output.puts("#ifndef #{d}\n#define #{d}\n#endif /* #{d} */") }
     end
     if @options[:header_file] && !@options[:header_file].empty?
       output.puts("#include \"#{File.basename(@options[:header_file])}\"")
