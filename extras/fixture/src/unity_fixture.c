@@ -135,6 +135,22 @@ void UnityIgnoreTest(const char* printableName, const char* group, const char* n
 static int malloc_count;
 static int malloc_fail_countdown = MALLOC_DONT_FAIL;
 
+typedef struct malloc_info_s malloc_info_t;
+
+struct malloc_info_s {
+    malloc_info_t *next;     /** Pointer to next malloc info in the list */
+    void *         ptr;      /** Pointer to the allocated memory */
+    char           file[64]; /** File from which memory was allocated */
+    int            line;     /** Line number of the allocation call */
+};
+
+typedef struct {
+    malloc_info_t *head;    /** Pointer to the head of the list */
+    int            mallocs; /** Number of live allocations */
+} malloc_list_t;
+
+static malloc_list_t malloc_list = {NULL, 0};
+
 void UnityMalloc_StartTest(void)
 {
     malloc_count = 0;
@@ -146,7 +162,13 @@ void UnityMalloc_EndTest(void)
     malloc_fail_countdown = MALLOC_DONT_FAIL;
     if (malloc_count != 0)
     {
-        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "This test leaks!");
+        char str[256] = "";
+        sprintf(str,
+            "This test leaked %d pointers. First leaked pointer was from %s:%d",
+            malloc_list.mallocs, malloc_list.head->file,
+            malloc_list.head->line);
+
+        UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, str);
     }
 }
 
@@ -169,16 +191,56 @@ static size_t heap_index;
 #include <stdlib.h>
 #endif
 
+static void new_malloc(void *ptr, char const *file, int line)
+{
+    malloc_info_t *new_info = UNITY_FIXTURE_MALLOC(sizeof(malloc_info_t));
+    if (NULL == new_info) {
+        return;
+    }
+
+    new_info->next = malloc_list.head;
+    new_info->ptr  = ptr;
+    strcpy(new_info->file, file);
+    new_info->line = line;
+
+    malloc_list.head = new_info;
+    malloc_list.mallocs++;
+}
+
+static void del_malloc(void *ptr)
+{
+    malloc_info_t *current_info = malloc_list.head;
+    if (ptr == current_info->ptr) {
+        malloc_list.head = current_info->next;
+        UNITY_FIXTURE_FREE(current_info);
+        malloc_list.mallocs--;
+        return;
+    }
+    for (int i = 1; i < malloc_list.mallocs; i++) {
+        malloc_info_t *next_info = current_info->next;
+        if (ptr == next_info->ptr) {
+            current_info->next = next_info->next;
+            UNITY_FIXTURE_FREE(next_info);
+            malloc_list.mallocs--;
+            return;
+        }
+        current_info = next_info;
+        next_info    = current_info->next;
+    }
+    char str[64] = "";
+    sprintf(str, "Attempted to free unallocated memory at address: %p", ptr);
+    UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, str);
+}
+
 typedef struct GuardBytes
 {
     size_t size;
     size_t guard_space;
 } Guard;
 
-
 static const char end[] = "END";
 
-void* unity_malloc(size_t size)
+void* unity_malloc(size_t size, char const * file, int line)
 {
     char* mem;
     Guard* guard;
@@ -210,6 +272,7 @@ void* unity_malloc(size_t size)
     guard->size = size;
     guard->guard_space = 0;
     mem = (char*)&(guard[1]);
+    new_malloc(mem, file, line);
     memcpy(&mem[size], end, sizeof(end));
 
     return (void*)mem;
@@ -249,6 +312,7 @@ void unity_free(void* mem)
         return;
     }
 
+    del_malloc(mem);
     overrun = isOverrun(mem);
     release_memory(mem);
     if (overrun)
@@ -257,30 +321,32 @@ void unity_free(void* mem)
     }
 }
 
-void* unity_calloc(size_t num, size_t size)
+void* unity_calloc(size_t num, size_t size, char const * file, int line)
 {
-    void* mem = unity_malloc(num * size);
+    void* mem = unity_malloc(num * size, file, line);
     if (mem == NULL) return NULL;
     memset(mem, 0, num * size);
     return mem;
 }
 
-void* unity_realloc(void* oldMem, size_t size)
+void* unity_realloc(void* oldMem, size_t size, char const * file, int line)
 {
     Guard* guard = (Guard*)oldMem;
     void* newMem;
 
-    if (oldMem == NULL) return unity_malloc(size);
+    if (oldMem == NULL) return unity_malloc(size, file, line);
 
     guard--;
     if (isOverrun(oldMem))
     {
+        del_malloc(oldMem);
         release_memory(oldMem);
         UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "Buffer overrun detected during realloc()");
     }
 
     if (size == 0)
     {
+        del_malloc(oldMem);
         release_memory(oldMem);
         return NULL;
     }
@@ -291,13 +357,15 @@ void* unity_realloc(void* oldMem, size_t size)
     if (oldMem == unity_heap + heap_index - guard->size - sizeof(end) &&
         heap_index + size - guard->size <= UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
+        del_malloc(oldMem);
         release_memory(oldMem);    /* Not thread-safe, like unity_heap generally */
-        return unity_malloc(size); /* No memcpy since data is in place */
+        return unity_malloc(size, file, line); /* No memcpy since data is in place */
     }
 #endif
-    newMem = unity_malloc(size);
+    newMem = unity_malloc(size, file, line);
     if (newMem == NULL) return NULL; /* Do not release old memory */
     memcpy(newMem, oldMem, guard->size);
+    del_malloc(oldMem);
     release_memory(oldMem);
     return newMem;
 }

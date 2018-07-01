@@ -34,14 +34,14 @@
     extern void UNITY_FIXTURE_FREE(void* ptr);
 #endif
 
-#define malloc  unity_malloc
-#define calloc  unity_calloc
-#define realloc unity_realloc
-#define free    unity_free
+#define malloc(size)  unity_malloc(size, __FILE__, __LINE__)
+#define calloc(num, size)  unity_calloc(num, size, __FILE__, __LINE__)
+#define realloc(ptr, size) unity_realloc(ptr, size, __FILE__, __LINE__)
+#define free(ptr)    unity_free(ptr)
 
-void* unity_malloc(size_t size);
-void* unity_calloc(size_t num, size_t size);
-void* unity_realloc(void * oldMem, size_t size);
+void* unity_malloc(size_t size, char const * file, int line);
+void* unity_calloc(size_t num, size_t size, char const * file, int line);
+void* unity_realloc(void * oldMem, size_t size, char const * file, int line);
 void unity_free(void * mem);
 
 #endif /* UNITY_FIXTURE_MALLOC_OVERRIDES_H_ */
