@@ -307,7 +307,7 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #endif
 #endif
 
-#ifndef UNITY_EXEC_TIME_START
+#ifndef UNITY_EXEC_TIME_STOP
 #ifdef UNITY_INCLUDE_EXEC_TIME
 #define UNITY_EXEC_TIME_STOP() Unity.CurrentTestStopTime = UNITY_CLOCK_MS();
 #else
