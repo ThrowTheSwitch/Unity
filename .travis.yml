@@ -14,11 +14,13 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install --assume-yes --quiet gcc-multilib; fi
 install:
   - gem install rspec
-  - gem install rubocop
+  - gem install rubocop -v 0.57.2
 script:
   - cd test && rake ci
   - make -s
-  - make -s DEBUG=-m32
+  - make -s DEBUG=-m32 #32-bit architecture with 64-bit support
+  - make -s DEBUG=-m32 UNITY_SUPPORT_64= #32-bit build without 64-bit types
+  - make -s UNITY_INCLUDE_DOUBLE= # without double
   - cd ../extras/fixture/test && rake ci
   - make -s default noStdlibMalloc
   - make -s C89

@@ -124,7 +124,7 @@ demonstrates using a Ruby hash.
 
 ##### `:includes`
 
-This option specifies an array of file names to be ?#include?'d at the top of
+This option specifies an array of file names to be `#include`'d at the top of
 your runner C file. You might use it to reference custom types or anything else
 universally needed in your generated runners.
 
@@ -133,11 +133,23 @@ universally needed in your generated runners.
 
 Define this option with C code to be executed _before any_ test cases are run.
 
+Alternatively, if your C compiler supports weak symbols, you can leave this
+option unset and instead provide a `void suiteSetUp(void)` function in your test
+suite.  The linker will look for this symbol and fall back to a Unity-provided
+stub if it is not found.
+
 
 ##### `:suite_teardown`
 
-Define this option with C code to be executed ?after all?test cases have
-finished.
+Define this option with C code to be executed _after all_ test cases have
+finished.  An integer variable `num_failures` is available for diagnostics.
+The code should end with a `return` statement; the value returned will become
+the exit code of `main`.  You can normally just return `num_failures`.
+
+Alternatively, if your C compiler supports weak symbols, you can leave this
+option unset and instead provide a `int suiteTearDown(int num_failures)`
+function in your test suite.  The linker will look for this symbol and fall
+back to a Unity-provided stub if it is not found.
 
 
 ##### `:enforce_strict_ordering`
@@ -147,6 +159,12 @@ CMock (see CMock documentation). This generates extra variables required for
 everything to run smoothly. If you provide the same YAML to the generator as
 used in CMock's configuration, you've already configured the generator properly.
 
+##### `:mock_prefix` and `:mock_suffix`
+
+Unity automatically generates calls to Init, Verify and Destroy for every file
+included in the main test file that starts with the given mock prefix and ends
+with the given mock suffix, file extension not included. By default, Unity
+assumes a `Mock` prefix and no suffix.
 
 ##### `:plugins`
 
