@@ -11,7 +11,7 @@ functional. The core Unity test framework is three files: a single C file and a
 couple header files. These team up to provide functions and macros to make
 testing easier.
 
-Unity was designed to be cross platform. It works hard to stick with C standards
+Unity was designed to be cross-platform. It works hard to stick with C standards
 while still providing support for the many embedded C compilers that bend the
 rules. Unity has been used with many compilers, including GCC, IAR, Clang,
 Green Hills, Microchip, and MS Visual Studio. It's not much work to get it to
@@ -149,7 +149,7 @@ int main(void) {
 }
 ```
 
-It's possible that you will require more customization than this, eventually.
+It's possible that you will need more customization than this, eventually.
 For that sort of thing, you're going to want to look at the configuration guide.
 This should be enough to get you going, though.
 
