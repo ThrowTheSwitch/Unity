@@ -1,4 +1,4 @@
-# Unity Configuration Guide
+﻿# Unity Configuration Guide
 
 ## C Standards, Compilers and Microcontrollers
 
@@ -19,7 +19,7 @@ definitions. A couple are macros with arguments. They live inside the
 unity_internals.h header file. We don't necessarily recommend opening that file
 unless you really need to. That file is proof that a cross-platform library is
 challenging to build. From a more positive perspective, it is also proof that a
-great deal of complexity can be centralized primarily to one place in order to
+great deal of complexity can be centralized primarily to one place to
 provide a more consistent and simple experience elsewhere.
 
 
@@ -58,7 +58,7 @@ sizes. It starts off by trying to do it automatically.
 ##### `UNITY_EXCLUDE_STDINT_H`
 
 The first thing that Unity does to guess your types is check `stdint.h`.
-This file includes defines like `UINT_MAX` that Unity can make use of to
+This file includes defines like `UINT_MAX` that Unity can use to
 learn a lot about your system. It's possible you don't want it to do this
 (um. why not?) or (more likely) it's possible that your system doesn't
 support `stdint.h`. If that's the case, you're going to want to define this.
@@ -222,7 +222,7 @@ In addition to the options listed above, there are a number of other options
 which will come in handy to customize Unity's behavior for your specific
 toolchain. It is possible that you may not need to touch any of these... but
 certain platforms, particularly those running in simulators, may need to jump
-through extra hoops to operate properly. These macros will help in those
+through extra hoops to run properly. These macros will help in those
 situations.
 
 
