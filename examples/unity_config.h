@@ -236,4 +236,12 @@
 /* #define UNITY_PTR_ATTRIBUTE __attribute__((far)) */
 /* #define UNITY_PTR_ATTRIBUTE near */
 
+/* Print execution time of each test when executed in verbose mode
+ *
+ * Example:
+ *
+ * TEST - PASS (10 ms)
+ */
+/* #define UNITY_INCLUDE_EXEC_TIME */
+
 #endif /* UNITY_CONFIG_H */
