@@ -159,6 +159,12 @@ CMock (see CMock documentation). This generates extra variables required for
 everything to run smoothly. If you provide the same YAML to the generator as
 used in CMock's configuration, you've already configured the generator properly.
 
+
+##### `:externc`
+
+This option should be defined if you are mixing C and CPP and want your test
+runners to automatically include extern "C" support when they are generated.
+
 ##### `:mock_prefix` and `:mock_suffix`
 
 Unity automatically generates calls to Init, Verify and Destroy for every file

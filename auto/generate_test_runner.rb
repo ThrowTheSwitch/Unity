@@ -197,9 +197,11 @@ class UnityTestRunnerGenerator
     output.puts("\n/*=======External Functions This Runner Calls=====*/")
     output.puts("extern void #{@options[:setup_name]}(void);")
     output.puts("extern void #{@options[:teardown_name]}(void);")
+    output.puts("\n#ifdef __cplusplus\nextern \"C\"\n{\n#endif") if @options[:externc]
     tests.each do |test|
       output.puts("extern void #{test[:test]}(#{test[:call] || 'void'});")
     end
+    output.puts("#ifdef __cplusplus\n}\n#endif") if @options[:externc]
     output.puts('')
   end
 
@@ -439,6 +441,7 @@ if $0 == __FILE__
           '    *.h                   - header files are added as #includes in runner',
           '  options:',
           '    -cexception           - include cexception support',
+          '    -externc              - add extern "C" for cpp support',
           '    --setup_name=""       - redefine setUp func name to something else',
           '    --teardown_name=""    - redefine tearDown func name to something else',
           '    --main_name=""        - redefine main func name to something else',
