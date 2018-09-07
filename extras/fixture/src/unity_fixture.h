@@ -49,6 +49,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
     }\
     void TEST_##group##_##name##_(void)
 
+/* Call this for each test, insider the group runner */
 #define RUN_TEST_CASE(group, name) \
     { void TEST_##group##_##name##_run(void);\
       TEST_##group##_##name##_run(); }
@@ -64,6 +65,8 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
       TEST_##group##_GROUP_RUNNER(); }
 
 /* CppUTest Compatibility Macros */
+#ifndef UNITY_EXCLUDE_CPPUTEST_ASSERTS
+/* Sets a pointer and automatically restores it to its old value after teardown */
 #define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&(ptr), (void*)(newPointerValue), __LINE__)
 #define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT_EQUAL_PTR((expected), (actual))
 #define TEST_ASSERT_BYTES_EQUAL(expected, actual)      TEST_ASSERT_EQUAL_HEX8(0xff & (expected), 0xff & (actual))
@@ -71,8 +74,10 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 #define CHECK(condition)                               TEST_ASSERT_TRUE((condition))
 #define LONGS_EQUAL(expected, actual)                  TEST_ASSERT_EQUAL_INT((expected), (actual))
 #define STRCMP_EQUAL(expected, actual)                 TEST_ASSERT_EQUAL_STRING((expected), (actual))
-#define DOUBLES_EQUAL(expected, actual, delta)         TEST_ASSERT_FLOAT_WITHIN(((expected), (actual), (delta))
+#define DOUBLES_EQUAL(expected, actual, delta)         TEST_ASSERT_DOUBLE_WITHIN((delta), (expected), (actual))
+#endif
 
-void UnityMalloc_MakeMallocFailAfterCount(int count);
+/* You must compile with malloc replacement, as defined in unity_fixture_malloc_overrides.h */
+void UnityMalloc_MakeMallocFailAfterCount(int countdown);
 
 #endif /* UNITY_FIXTURE_H_ */

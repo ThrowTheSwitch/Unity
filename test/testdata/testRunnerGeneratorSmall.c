@@ -4,6 +4,8 @@
 #include "unity.h"
 #include "Defs.h"
 
+TEST_FILE("some_file.c")
+
 /* Notes about prefixes:
    test     - normal default prefix. these are "always run" tests for this procedure
    spec     - normal default prefix. required to run default setup/teardown calls.
@@ -11,7 +13,10 @@
 
 /* Support for Meta Test Rig */
 #define TEST_CASE(a)
-void putcharSpy(int c) { (void)putchar(c);} // include passthrough for linking tests
+
+/* Include Passthroughs for Linking Tests */
+void putcharSpy(int c) { (void)putchar(c);}
+void flushSpy(void) {}
 
 /* Global Variables Used During These Tests */
 int CounterSetup = 0;

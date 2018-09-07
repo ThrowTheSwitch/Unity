@@ -1,9 +1,9 @@
 build/
+test/sandbox
 .DS_Store
+examples/example_1/test1.exe
+examples/example_1/test2.exe
+examples/example_2/all_tests.exe
 examples/example_1/test1.out
 examples/example_1/test2.out
 examples/example_2/all_tests.out
-examples/example_3/test1.out
-examples/example_3/test2.out
-test/testparameterized.c.results
-test/testunity.c.results

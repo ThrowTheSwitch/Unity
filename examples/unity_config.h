@@ -1,6 +1,6 @@
 /* Unity Configuration
  * As of May 11th, 2016 at ThrowTheSwitch/Unity commit 837c529
- * Update: August 25th, 2016
+ * Update: December 29th, 2016
  * See Also: Unity/docs/UnityConfigurationGuide.pdf
  *
  * Unity is designed to run on almost anything that is targeted by a C compiler.
@@ -36,11 +36,6 @@
 
 #ifndef UNITY_CONFIG_H
 #define UNITY_CONFIG_H
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 /* ************************* AUTOMATIC INTEGER TYPES ***************************
  * C's concept of an integer varies from target to target. The C Standard has
@@ -122,10 +117,9 @@ extern "C"
 
  /* By default, Unity guesses that you will want single precision floating point
   * support, but not double precision. It's easy to change either of these using
-  * the include and exclude options here. You may include neither, either, or
-  * both, as suits your needs.
+  * the include and exclude options here. You may include neither, just float,
+  * or both, as suits your needs.
   */
-/* #define UNITY_INCLUDE_FLOAT  */
 /* #define UNITY_EXCLUDE_FLOAT  */
 /* #define UNITY_INCLUDE_DOUBLE */
 /* #define UNITY_EXCLUDE_DOUBLE */
@@ -137,18 +131,15 @@ extern "C"
 /* Unity aims for as small of a footprint as possible and avoids most standard
  * library calls (some embedded platforms don't have a standard library!).
  * Because of this, its routines for printing integer values are minimalist and
- * hand-coded. To keep Unity universal, though, we chose to _not_ develop our
- * own floating point print routines. Instead, the display of floating point
- * values during a failure are optional. By default, Unity will not print the
- * actual results of floating point assertion failure. So a failed assertion
- * will produce a message like `"Values Not Within Delta"`. If you would like
- * verbose failure messages for floating point assertions, use these options to
- * give more explicit failure messages (e.g. `"Expected 4.56 Was 4.68"`). Note
- * that this feature requires the use of `sprintf` so might not be desirable in
- * all cases.
+ * hand-coded. To keep Unity universal, though, we eventually chose to develop
+ * our own floating point print routines. Still, the display of floating point
+ * values during a failure are optional. By default, Unity will print the
+ * actual results of floating point assertion failures. So a failed assertion
+ * will produce a message like "Expected 4.0 Was 4.25". If you would like less
+ * verbose failure messages for floating point assertions, use this option to
+ * give a failure message `"Values Not Within Delta"` and trim the binary size.
  */
-/* #define UNITY_FLOAT_VERBOSE  */
-/* #define UNITY_DOUBLE_VERBOSE */
+/* #define UNITY_EXCLUDE_FLOAT_PRINT */
 
 /* If enabled, Unity assumes you want your `FLOAT` asserts to compare standard C
  * floats. If your compiler supports a specialty floating point type, you can
@@ -210,10 +201,12 @@ extern "C"
  * `stdout` option. You decide to route your test result output to a custom
  * serial `RS232_putc()` function you wrote like thus:
  */
-/* #define UNITY_OUTPUT_CHAR(a)    RS232_putc(a) */
-/* #define UNITY_OUTPUT_FLUSH()    RS232_config(115200,1,8,0) */
-/* #define UNITY_OUTPUT_START()    RS232_flush() */
-/* #define UNITY_OUTPUT_COMPLETE() RS232_close() */
+/* #define UNITY_OUTPUT_CHAR(a)                    RS232_putc(a) */
+/* #define UNITY_OUTPUT_CHAR_HEADER_DECLARATION    RS232_putc(int) */
+/* #define UNITY_OUTPUT_FLUSH()                    RS232_flush() */
+/* #define UNITY_OUTPUT_FLUSH_HEADER_DECLARATION   RS232_flush(void) */
+/* #define UNITY_OUTPUT_START()                    RS232_config(115200,1,8,0) */
+/* #define UNITY_OUTPUT_COMPLETE()                 RS232_close() */
 
 /* For some targets, Unity can make the otherwise required `setUp()` and
  * `tearDown()` functions optional. This is a nice convenience for test writers
@@ -232,6 +225,7 @@ extern "C"
  */
 /* #define UNITY_SUPPORT_WEAK weak */
 /* #define UNITY_SUPPORT_WEAK __attribute__((weak)) */
+/* #define UNITY_NO_WEAK */
 
 /* Some compilers require a custom attribute to be assigned to pointers, like
  * `near` or `far`. In these cases, you can give Unity a safe default for these
@@ -242,8 +236,12 @@ extern "C"
 /* #define UNITY_PTR_ATTRIBUTE __attribute__((far)) */
 /* #define UNITY_PTR_ATTRIBUTE near */
 
-#ifdef __cplusplus
-}
-#endif /* extern "C" */
+/* Print execution time of each test when executed in verbose mode
+ *
+ * Example:
+ *
+ * TEST - PASS (10 ms)
+ */
+/* #define UNITY_INCLUDE_EXEC_TIME */
 
 #endif /* UNITY_CONFIG_H */

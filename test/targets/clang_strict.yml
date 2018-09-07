@@ -16,13 +16,10 @@ compiler:
     - '-Winit-self'
     - '-Winline'
     - '-Winvalid-pch'
-    - '-Wmissing-declarations'
     - '-Wmissing-include-dirs'
-    - '-Wmissing-prototypes'
     - '-Wnonnull'
     - '-Wpacked'
     - '-Wpointer-arith'
-    - '-Wredundant-decls'
     - '-Wswitch-default'
     - '-Wstrict-aliasing'
     - '-Wstrict-overflow=5'
@@ -33,16 +30,13 @@ compiler:
     - '-Wshadow'
     - '-Wundef'
     - '-Wwrite-strings'
-    - '-Wno-missing-declarations'
-    - '-Wno-missing-prototypes'
     - '-Wno-nested-externs'
-    - '-Wno-redundant-decls'
     - '-Wno-unused-parameter'
     - '-Wno-variadic-macros'
     - '-Wbad-function-cast'
     - '-fms-extensions'
     - '-fno-omit-frame-pointer'
-    - '-ffloat-store'
+    #- '-ffloat-store'
     - '-fno-common'
     - '-fstrict-aliasing'
     - '-std=gnu99'
@@ -61,8 +55,6 @@ compiler:
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
       - UNITY_SUPPORT_64
-      - UNITY_OUTPUT_FLUSH
-      - UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
   object_files:
     prefix: '-o'
     extension: '.o'
