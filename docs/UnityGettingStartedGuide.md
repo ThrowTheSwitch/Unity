@@ -154,6 +154,63 @@ It's possible that you will need more customization than this, eventually.
 For that sort of thing, you're going to want to look at the configuration guide.
 This should be enough to get you going, though.
 
+### Running Test Functions
+When writing your own `main()` functions, for a test-runner. There are two ways
+to execute the test. 
+
+The classic variant
+``` c
+RUN_TEST(func, linenum)
+```
+or its simpler replacement that starts at the beginning of the function.
+``` c
+RUN_TEST(func)
+```
+These macros perform the necessary setup before the test is called and
+handles cleanup and result tabulation afterwards.
+
+### Ignoring Test Functions
+There are times when a test is incomplete or not valid for some reason. 
+At these times, TEST_IGNORE can be called. Control will immediately be 
+returned to the caller of the test, and no failures will be returned.
+This is useful when your test runners are automatically generated.
+
+``` c
+TEST_IGNORE()
+```
+
+Ignore this test and return immediately
+
+``` c
+TEST_IGNORE_MESSAGE (message)
+```
+
+Ignore this test and return immediately. Output a message stating why the test was ignored.
+
+### Aborting Tests
+There are times when a test will contain an infinite loop on error conditions, or there may be reason to escape from the test early without executing the rest of the test.  A pair of macros support this functionality in Unity.  The first `TEST_PROTECT` sets up the feature, and handles emergency abort cases. `TEST_ABORT` can then be used at any time within the tests to return to the last `TEST_PROTECT` call.
+
+    TEST_PROTECT()
+
+Setup and Catch macro
+
+    TEST_ABORT()
+
+Abort Test macro
+
+Example:
+
+    main()
+    {
+        if (TEST_PROTECT())
+        {
+            MyTest();
+        }
+    }
+
+If MyTest calls `TEST_ABORT`, program control will immediately return to `TEST_PROTECT` with a return value of zero.
+
+
 
 ## How to Build and Run A Test File
 

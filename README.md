@@ -4,54 +4,14 @@ Unity Test API
 [![Unity Build Status](https://api.travis-ci.org/ThrowTheSwitch/Unity.png?branch=master)](https://travis-ci.org/ThrowTheSwitch/Unity)
 __Copyright (c) 2007 - 2017 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
-Running Tests
--------------
-
-    RUN_TEST(func, linenum)
-
-Each Test is run within the macro `RUN_TEST`.  This macro performs necessary setup before the test is called and handles cleanup and result tabulation afterwards.
-
-Ignoring Tests
---------------
-
-There are times when a test is incomplete or not valid for some reason.  At these times, TEST_IGNORE can be called.  Control will immediately be returned to the caller of the test, and no failures will be returned.
-
-    TEST_IGNORE()
-
-Ignore this test and return immediately
-
-    TEST_IGNORE_MESSAGE (message)
-
-Ignore this test and return immediately.  Output a message stating why the test was ignored.
-
-Aborting Tests
---------------
-
-There are times when a test will contain an infinite loop on error conditions, or there may be reason to escape from the test early without executing the rest of the test.  A pair of macros support this functionality in Unity.  The first `TEST_PROTECT` sets up the feature, and handles emergency abort cases. `TEST_ABORT` can then be used at any time within the tests to return to the last `TEST_PROTECT` call.
-
-    TEST_PROTECT()
-
-Setup and Catch macro
-
-    TEST_ABORT()
-
-Abort Test macro
-
-Example:
-
-    main()
-    {
-        if (TEST_PROTECT())
-        {
-            MyTest();
-        }
-    }
-
-If MyTest calls `TEST_ABORT`, program control will immediately return to `TEST_PROTECT` with a return value of zero.
-
+Getting Started
+===============
+The [docs](docs/) folder contains a [getting started guide](docs/UnityGettingStartedGuide.md)
+and much more tips about using Unity. 
 
 Unity Assertion Summary
 =======================
+For the full list, see [UnityAssertionsReference.md](docs/UnityAssertionsReference.md).
 
 Basic Validity Tests
 --------------------
