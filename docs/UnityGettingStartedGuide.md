@@ -114,10 +114,10 @@ call.
 
 Remembering to add each test to the main function can get to be tedious. If you
 enjoy using helper scripts in your build process, you might consider making use
-of our handy generate_test_runner.rb script. This will create the main function
-and all the calls for you, assuming that you have followed the suggested naming
-conventions. In this case, there is no need for you to include the main function
-in your test file at all.
+of our handy [generate_test_runner.rb](../auto/generate_test_runner.rb) script.
+This will create the main function and all the calls for you, assuming that you
+have followed the suggested naming conventions. In this case, there is no need
+for you to include the main function in your test file at all.
 
 When you're done, your test file will look something like this:
 
@@ -141,6 +141,7 @@ void test_function_should_doAlsoDoBlah(void) {
     //more test stuff
 }
 
+// not needed when using generate_test_runner.rb
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_function_should_doBlahAndBlah);
