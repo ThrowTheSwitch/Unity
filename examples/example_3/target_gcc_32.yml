@@ -1,6 +1,6 @@
 # Copied from ~Unity/targets/gcc_32.yml
 unity_root:  &unity_root '../..'
-unity_source: &unity_source '../../src'
+unity_source: &unity_source '../../src/'
 compiler:
   path: gcc
   source_path:     &source_path 'src/'
