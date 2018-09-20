@@ -99,6 +99,9 @@
     typedef signed char     UNITY_INT8;
     typedef signed short    UNITY_INT16;
     typedef signed int      UNITY_INT32;
+
+    #define UNITY_INT32_MIN INT_MIN
+    #define UNITY_INT32_MAX INT_MAX
 #elif (UNITY_INT_WIDTH == 16)
     typedef unsigned char   UNITY_UINT8;
     typedef unsigned int    UNITY_UINT16;
@@ -106,6 +109,9 @@
     typedef signed char     UNITY_INT8;
     typedef signed int      UNITY_INT16;
     typedef signed long     UNITY_INT32;
+
+    #define UNITY_INT32_MIN LONG_MIN
+    #define UNITY_INT32_MAX LONG_MAX
 #else
     #error Invalid UNITY_INT_WIDTH specified! (16 or 32 are supported)
 #endif
@@ -124,22 +130,36 @@
     /* No 64-bit Support */
     typedef UNITY_UINT32 UNITY_UINT;
     typedef UNITY_INT32 UNITY_INT;
+
+    #define UNITY_INT_MIN UNITY_INT32_MIN
+    #define UNITY_INT_MAX UNITY_INT32_MAX
 #else
 
     /* 64-bit Support */
   #if (UNITY_LONG_WIDTH == 32)
     typedef unsigned long long UNITY_UINT64;
     typedef signed long long   UNITY_INT64;
+
+    #define UNITY_INT64_MIN LLONG_MIN
+    #define UNITY_INT64_MAX LLONG_MAX
   #elif (UNITY_LONG_WIDTH == 64)
     typedef unsigned long      UNITY_UINT64;
     typedef signed long        UNITY_INT64;
+
+    #define UNITY_INT64_MIN LONG_MIN
+    #define UNITY_INT64_MAX LONG_MAX
   #else
     #error Invalid UNITY_LONG_WIDTH specified! (32 or 64 are supported)
   #endif
     typedef UNITY_UINT64 UNITY_UINT;
     typedef UNITY_INT64 UNITY_INT;
 
+    #define UNITY_INT_MIN UNITY_INT64_MIN
+    #define UNITY_INT_MAX UNITY_INT64_MAX
 #endif
+
+/* Absolute value of UNITY_INT_MIN: we can't just use -UNITY_INT_MIN (signed overflow) */
+#define UNITY_INT_MIN_ABS ((UNITY_UINT)UNITY_INT_MAX + (-(UNITY_INT_MIN + UNITY_INT_MAX)))
 
 /*-------------------------------------------------------
  * Pointer Support
