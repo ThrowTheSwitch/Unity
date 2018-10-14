@@ -13,6 +13,7 @@ extern "C"
 {
 #endif
 
+#include <stddef.h>
 #include "unity_internals.h"
 
 /*-------------------------------------------------------
