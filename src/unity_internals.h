@@ -19,6 +19,10 @@
 #include <math.h>
 #endif
 
+#ifndef UNITY_EXCLUDE_STDDEF_H
+#include <stddef.h>
+#endif
+
 /* Unity Attempts to Auto-Detect Integer Types
  * Attempt 1: UINT_MAX, ULONG_MAX in <limits.h>, or default to 32 bits
  * Attempt 2: UINTPTR_MAX in <stdint.h>, or default to same size as long
