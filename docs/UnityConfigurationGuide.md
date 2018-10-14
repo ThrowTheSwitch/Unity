@@ -215,6 +215,18 @@ Guide.
 _Example:_
         #define UNITY_FLOAT_PRECISION 0.001f
 
+### Miscellaneous
+
+##### `UNITY_EXCLUDE_STDDEF_H`
+
+Unity uses the `NULL` macro, which defines the value of a null pointer constant,
+defined in `stddef.h` by default. If you want to provide
+your own macro for this, you should exclude the `stddef.h` header file by adding this
+define to your configuration.
+
+_Example:_
+        #define UNITY_EXCLUDE_STDDEF_H
+
 
 ### Toolset Customization
 
