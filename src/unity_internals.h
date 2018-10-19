@@ -323,7 +323,7 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #ifdef UNITY_INCLUDE_EXEC_TIME
 #define UNITY_PRINT_EXEC_TIME() \
 	UnityPrint(" (");\
-	UNITY_COUNTER_TYPE execTimeMs = (Unity.CurrentTestStopTime - Unity.CurrentTestStartTime);
+	UNITY_COUNTER_TYPE execTimeMs = (Unity.CurrentTestStopTime - Unity.CurrentTestStartTime);\
     UnityPrintNumberUnsigned(execTimeMs);\
     UnityPrint(" ms)");
 #else
