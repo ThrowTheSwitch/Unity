@@ -134,7 +134,7 @@
     typedef UNITY_INT32 UNITY_INT;
 #else
 
-    /* 64-bit Support */
+  /* 64-bit Support */
   #if (UNITY_LONG_WIDTH == 32)
     typedef unsigned long long UNITY_UINT64;
     typedef signed long long   UNITY_INT64;

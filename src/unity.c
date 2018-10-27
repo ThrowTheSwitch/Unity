@@ -164,29 +164,47 @@ void UnityPrintFormatted(const char* format, ... )
                         case 'd':
                         case 'i':
                             {
-                                const UNITY_INT number = va_arg(va, UNITY_INT);
-                                UnityPrintNumber(number);
+                                const int number = va_arg(va, int);
+                                UnityPrintNumber((UNITY_INT)number);
                                 break;
                             }
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
+                        case 'f':
+                        case 'g':
+                            {
+                                const double number = va_arg(va, double);
+                                UnityPrintFloat((UNITY_DOUBLE)number);
+                                break;
+                            }
+#endif
                         case 'u':
                             {
-                                const UNITY_UINT number = va_arg(va, UNITY_UINT);
-                                UnityPrintNumberUnsigned(number);
+                                const unsigned int number = va_arg(va, unsigned int);
+                                UnityPrintNumberUnsigned((UNITY_UINT)number);
+                                break;
+                            }
+                        case 'b':
+                            {
+                                const unsigned int number = va_arg(va, unsigned int);
+                                const UNITY_UINT mask = (UNITY_UINT)0 - (UNITY_UINT)1;
+                                UNITY_OUTPUT_CHAR('0');
+                                UNITY_OUTPUT_CHAR('b');
+                                UnityPrintMask(mask, (UNITY_UINT)number);
                                 break;
                             }
                         case 'x':
                         case 'X':
                         case 'p':
                             {
-                                const UNITY_UINT number = va_arg(va, UNITY_UINT);
+                                const unsigned int number = va_arg(va, unsigned int);
                                 UNITY_OUTPUT_CHAR('0');
                                 UNITY_OUTPUT_CHAR('x');
-                                UnityPrintNumberHex(number, 8);
+                                UnityPrintNumberHex((UNITY_UINT)number, 8);
                                 break;
                             }
                         case 'c':
                             {
-                                const UNITY_INT ch = va_arg(va, UNITY_INT);
+                                const int ch = va_arg(va, int);
                                 UnityPrintChar((const char *)&ch);
                                 break;
                             }
@@ -196,9 +214,17 @@ void UnityPrintFormatted(const char* format, ... )
                                 break;
                             }
                         case '%':
+                            {
+                                UnityPrintChar(pch);
+                                break;
+                            }
                         default:
-                            UnityPrintChar(pch);
-                            break;
+                            {
+                                /* print the unknown character */
+                                UNITY_OUTPUT_CHAR('%');
+                                UnityPrintChar(pch);
+                                break;
+                            }
                     }
                 }
             }
