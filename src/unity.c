@@ -67,6 +67,57 @@ static const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
  * Pretty Printers & Test Result Output Handlers
  *-----------------------------------------------*/
 
+/*-----------------------------------------------*/
+/* Local helper function to print characters. */
+static void UnityPrintChar(const char* pch)
+{
+    /* printable characters plus CR & LF are printed */
+    if ((*pch <= 126) && (*pch >= 32))
+    {
+        UNITY_OUTPUT_CHAR(*pch);
+    }
+    /* write escaped carriage returns */
+    else if (*pch == 13)
+    {
+        UNITY_OUTPUT_CHAR('\\');
+        UNITY_OUTPUT_CHAR('r');
+    }
+    /* write escaped line feeds */
+    else if (*pch == 10)
+    {
+        UNITY_OUTPUT_CHAR('\\');
+        UNITY_OUTPUT_CHAR('n');
+    }
+    /* unprintable characters are shown as codes */
+    else
+    {
+        UNITY_OUTPUT_CHAR('\\');
+        UNITY_OUTPUT_CHAR('x');
+        UnityPrintNumberHex((UNITY_UINT)*pch, 2);
+    }
+}
+
+/*-----------------------------------------------*/
+#ifdef UNITY_OUTPUT_COLOR
+static UNITY_UINT UnityPrintAnsiEscapeString(const char* string)
+{
+    const char* pch = string;
+    UNITY_UINT count = 0;
+
+    while (*pch && *pch != 'm')
+    {
+        UNITY_OUTPUT_CHAR(*pch);
+        pch++;
+        count++;
+    }
+    UNITY_OUTPUT_CHAR('m');
+    count++;
+
+    return count;
+}
+#endif
+
+/*-----------------------------------------------*/
 void UnityPrint(const char* string)
 {
     const char* pch = string;
@@ -75,47 +126,108 @@ void UnityPrint(const char* string)
     {
         while (*pch)
         {
-            /* printable characters plus CR & LF are printed */
-            if ((*pch <= 126) && (*pch >= 32))
-            {
-                UNITY_OUTPUT_CHAR(*pch);
-            }
-            /* write escaped carriage returns */
-            else if (*pch == 13)
-            {
-                UNITY_OUTPUT_CHAR('\\');
-                UNITY_OUTPUT_CHAR('r');
-            }
-            /* write escaped line feeds */
-            else if (*pch == 10)
-            {
-                UNITY_OUTPUT_CHAR('\\');
-                UNITY_OUTPUT_CHAR('n');
-            }
 #ifdef UNITY_OUTPUT_COLOR
             /* print ANSI escape code */
-            else if (*pch == 27 && *(pch + 1) == '[')
+            if (*pch == 27 && *(pch + 1) == '[')
             {
-                while (*pch && *pch != 'm')
-                {
-                    UNITY_OUTPUT_CHAR(*pch);
-                    pch++;
-                }
-                UNITY_OUTPUT_CHAR('m');
+                pch += UnityPrintAnsiEscapeString(pch);
+                continue;
             }
 #endif
-            /* unprintable characters are shown as codes */
-            else
-            {
-                UNITY_OUTPUT_CHAR('\\');
-                UNITY_OUTPUT_CHAR('x');
-                UnityPrintNumberHex((UNITY_UINT)*pch, 2);
-            }
+            UnityPrintChar(pch);
             pch++;
         }
     }
 }
 
+/*-----------------------------------------------*/
+#ifndef UNITY_EXCLUDE_PRINT_FORMATTED
+void UnityPrintFormatted(const char* format, ... )
+{
+    const char* pch = format;
+    va_list va;
+    va_start(va, format);
+
+    if (pch != NULL)
+    {
+        while (*pch)
+        {
+            /* format identification character */
+            if (*pch == '%')
+            {
+                pch++;
+
+                if (pch != NULL)
+                {
+                    switch (*pch)
+                    {
+                        case 'd':
+                        case 'i':
+                            {
+                                const UNITY_INT number = va_arg(va, UNITY_INT);
+                                UnityPrintNumber(number);
+                                break;
+                            }
+                        case 'u':
+                            {
+                                const UNITY_UINT number = va_arg(va, UNITY_UINT);
+                                UnityPrintNumberUnsigned(number);
+                                break;
+                            }
+                        case 'x':
+                        case 'X':
+                        case 'p':
+                            {
+                                const UNITY_UINT number = va_arg(va, UNITY_UINT);
+                                UNITY_OUTPUT_CHAR('0');
+                                UNITY_OUTPUT_CHAR('x');
+                                UnityPrintNumberHex(number, 8);
+                                break;
+                            }
+                        case 'c':
+                            {
+                                const UNITY_INT ch = va_arg(va, UNITY_INT);
+                                UnityPrintChar((const char *)&ch);
+                                break;
+                            }
+                        case 's':
+                            {   const char * string = va_arg(va, const char *);
+                                UnityPrint(string);
+                                break;
+                            }
+                        case '%':
+                        default:
+                            UnityPrintChar(pch);
+                            break;
+                    }
+                }
+            }
+#ifdef UNITY_OUTPUT_COLOR
+            /* print ANSI escape code */
+            else if (*pch == 27 && *(pch + 1) == '[')
+            {
+                pch += UnityPrintAnsiEscapeString(pch);
+                continue;
+            }
+#endif
+            else if (*pch == '\n')
+            {
+                UNITY_PRINT_EOL();
+            }
+            else
+            {
+                UnityPrintChar(pch);
+            }
+
+            pch++;
+        }
+    }
+
+    va_end(va);
+}
+#endif /* ! UNITY_EXCLUDE_PRINT_FORMATTED */
+
+/*-----------------------------------------------*/
 void UnityPrintLen(const char* string, const UNITY_UINT32 length)
 {
     const char* pch = string;
