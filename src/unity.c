@@ -67,6 +67,7 @@ static const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
  * Pretty Printers & Test Result Output Handlers
  *-----------------------------------------------*/
 
+/*-----------------------------------------------*/
 void UnityPrint(const char* string)
 {
     const char* pch = string;
@@ -116,6 +117,7 @@ void UnityPrint(const char* string)
     }
 }
 
+/*-----------------------------------------------*/
 void UnityPrintLen(const char* string, const UNITY_UINT32 length)
 {
     const char* pch = string;
@@ -479,6 +481,7 @@ static void UnityPrintExpectedAndActualStringsLen(const char* expected,
  * Assertion & Control Helpers
  *-----------------------------------------------*/
 
+/*-----------------------------------------------*/
 static int UnityIsOneArrayNull(UNITY_INTERNAL_PTR expected,
                                UNITY_INTERNAL_PTR actual,
                                const UNITY_LINE_TYPE lineNumber,
@@ -511,6 +514,7 @@ static int UnityIsOneArrayNull(UNITY_INTERNAL_PTR expected,
  * Assertion Functions
  *-----------------------------------------------*/
 
+/*-----------------------------------------------*/
 void UnityAssertBits(const UNITY_INT mask,
                      const UNITY_INT expected,
                      const UNITY_INT actual,
@@ -704,12 +708,14 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
     UnityPrint(UnityStrDelta)
 #endif /* UNITY_EXCLUDE_FLOAT_PRINT */
 
+/*-----------------------------------------------*/
 static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOAT actual)
 {
     UNITY_FLOAT diff;
     UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);
 }
 
+/*-----------------------------------------------*/
 void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
                                 UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* actual,
                                 const UNITY_UINT32 num_elements,
@@ -840,6 +846,7 @@ static int UnityDoublesWithin(UNITY_DOUBLE delta, UNITY_DOUBLE expected, UNITY_D
     UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);
 }
 
+/*-----------------------------------------------*/
 void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expected,
                                  UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* actual,
                                  const UNITY_UINT32 num_elements,
@@ -900,7 +907,6 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
 }
 
 /*-----------------------------------------------*/
-
 void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
@@ -1259,6 +1265,7 @@ UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
 }
 
 #ifndef UNITY_EXCLUDE_FLOAT
+/*-----------------------------------------------*/
 UNITY_INTERNAL_PTR UnityFloatToPtr(const float num)
 {
     UnityQuickCompare.f = num;
@@ -1267,6 +1274,7 @@ UNITY_INTERNAL_PTR UnityFloatToPtr(const float num)
 #endif
 
 #ifndef UNITY_EXCLUDE_DOUBLE
+/*-----------------------------------------------*/
 UNITY_INTERNAL_PTR UnityDoubleToPtr(const double num)
 {
     UnityQuickCompare.d = num;
@@ -1278,6 +1286,7 @@ UNITY_INTERNAL_PTR UnityDoubleToPtr(const double num)
  * Control Functions
  *-----------------------------------------------*/
 
+/*-----------------------------------------------*/
 void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
     RETURN_IF_FAIL_OR_IGNORE;
@@ -1402,6 +1411,7 @@ char* UnityOptionIncludeNamed = NULL;
 char* UnityOptionExcludeNamed = NULL;
 int UnityVerbosity            = 1;
 
+/*-----------------------------------------------*/
 int UnityParseOptions(int argc, char** argv)
 {
     UnityOptionIncludeNamed = NULL;
@@ -1458,6 +1468,7 @@ int UnityParseOptions(int argc, char** argv)
     return 0;
 }
 
+/*-----------------------------------------------*/
 int IsStringInBiggerString(const char* longstring, const char* shortstring)
 {
     const char* lptr = longstring;
@@ -1496,9 +1507,11 @@ int IsStringInBiggerString(const char* longstring, const char* shortstring)
         lptr = lnext;
         sptr = shortstring;
     }
+
     return 0;
 }
 
+/*-----------------------------------------------*/
 int UnityStringArgumentMatches(const char* str)
 {
     int retval;
@@ -1522,24 +1535,33 @@ int UnityStringArgumentMatches(const char* str)
             if ((ptr2[0] == ':') && (ptr2[1] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','))
                 ptrf = &ptr2[1];
         } while ((ptr2[0] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','));
+
         while ((ptr2[0] != 0) && ((ptr2[0] == ':') || (ptr2[0] == '\'') || (ptr2[0] == '"') || (ptr2[0] == ',')))
+        {
             ptr2++;
+        }
 
         /* done if complete filename match */
         retval = IsStringInBiggerString(Unity.TestFile, ptr1);
         if (retval == 1)
+        {
             return retval;
+        }
 
         /* done if testname match after filename partial match */
         if ((retval == 2) && (ptrf != 0))
         {
             if (IsStringInBiggerString(Unity.CurrentTestName, ptrf))
+            {
                 return 1;
+            }
         }
 
         /* done if complete testname match */
         if (IsStringInBiggerString(Unity.CurrentTestName, ptr1) == 1)
+        {
             return 1;
+        }
 
         ptr1 = ptr2;
     }
@@ -1548,6 +1570,7 @@ int UnityStringArgumentMatches(const char* str)
     return 0;
 }
 
+/*-----------------------------------------------*/
 int UnityTestMatches(void)
 {
     /* Check if this test name matches the included test pattern */
