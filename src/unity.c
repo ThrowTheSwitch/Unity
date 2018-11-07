@@ -296,7 +296,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         int exponent = 0;
         int decimals, digits;
         UNITY_INT32 n;
-        char buf[16];
+        char buf[16] = {0};
 
         /* scale up or down by powers of 10 */
         while (number < 100000.0f / 1e6f)  { number *= 1e6f; exponent -= 6; }
