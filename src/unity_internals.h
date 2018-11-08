@@ -682,7 +682,7 @@ extern const char UnityStrErr64[];
     Unity.NumberOfTests++;
 
 #ifndef UNITY_BEGIN
-#define UNITY_BEGIN() UnityBegin(__FILE__)
+#define UNITY_BEGIN(filename) UnityBegin(filename)
 #endif
 
 #ifndef UNITY_END

@@ -376,7 +376,7 @@ class UnityTestRunnerGenerator
       output.puts('{')
     end
     output.puts('  suite_setup();')
-    output.puts("  UnityBegin(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
+    output.puts("  UNITY_BEGIN(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
     if @options[:use_param_tests]
       tests.each do |test|
         if test[:args].nil? || test[:args].empty?
@@ -390,7 +390,7 @@ class UnityTestRunnerGenerator
     end
     output.puts
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
-    output.puts('  return suite_teardown(UnityEnd());')
+    output.puts('  return suite_teardown(UNITY_END());')
     output.puts('}')
   end
 
