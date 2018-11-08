@@ -381,7 +381,7 @@ output of your test results.
 A simple main function looks something like this:
 
         int main(void) {
-            UNITY_BEGIN();
+            UNITY_BEGIN(__FILE__);
             RUN_TEST(test_TheFirst);
             RUN_TEST(test_TheSecond);
             RUN_TEST(test_TheThird);

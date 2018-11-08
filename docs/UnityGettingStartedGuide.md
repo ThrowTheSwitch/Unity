@@ -103,13 +103,13 @@ The majority of the file will be a series of test functions. Test functions
 follow the convention of starting with the word "test_" or "spec_". You don't HAVE
 to name them this way, but it makes it clear what functions are tests for other
 developers.  Also, the automated scripts that come with Unity or Ceedling will default
-to looking for test functions to be prefixed this way. Test functions take no arguments 
+to looking for test functions to be prefixed this way. Test functions take no arguments
 and return nothing. All test accounting is handled internally in Unity.
 
 Finally, at the bottom of your test file, you will write a `main()` function.
-This function will call `UNITY_BEGIN()`, then `RUN_TEST` for each test, and
-finally `UNITY_END()`.This is what will actually trigger each of those test
-functions to run, so it is important that each function gets its own `RUN_TEST`
+This function will call `UNITY_BEGIN()` with filename, then `RUN_TEST` for each
+test, and finally `UNITY_END()`.This is what will actually trigger each of those
+test functions to run, so it is important that each function gets its own `RUN_TEST`
 call.
 
 Remembering to add each test to the main function can get to be tedious. If you
@@ -142,7 +142,7 @@ void test_function_should_doAlsoDoBlah(void) {
 }
 
 int main(void) {
-    UNITY_BEGIN();
+    UNITY_BEGIN(__FILE__);
     RUN_TEST(test_function_should_doBlahAndBlah);
     RUN_TEST(test_function_should_doAlsoDoBlah);
     return UNITY_END();
