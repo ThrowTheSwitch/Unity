@@ -54,6 +54,10 @@ void startPutcharSpy(void);
 void endPutcharSpy(void);
 char* getBufferPutcharSpy(void);
 
+void startFlushSpy(void);
+void endFlushSpy(void);
+int getFlushSpyCalls(void);
+
 static int SetToOneToFailInTearDown;
 static int SetToOneMeanWeAlreadyCheckedThisGuy;
 
@@ -99,6 +103,10 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifdef UNITY_INCLUDE_EXEC_TIME
+        UNITY_COUNTER_TYPE CurrentTestStartTime;
+        UNITY_COUNTER_TYPE CurrentTestStopTime;
+#endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
 #endif
@@ -115,6 +123,10 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifdef UNITY_INCLUDE_EXEC_TIME
+        UNITY_COUNTER_TYPE CurrentTestStartTime;
+        UNITY_COUNTER_TYPE CurrentTestStopTime;
+#endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
 #endif
@@ -3335,14 +3347,35 @@ void putcharSpy(int c)
 #endif
 }
 
+/* This is for counting the calls to the flushSpy */
+static int flushSpyEnabled;
+static int flushSpyCalls = 0;
+
+void startFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 1; }
+void endFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 0; }
+int getFlushSpyCalls(void) { return flushSpyCalls; }
+
+void flushSpy(void)
+{
+    if (flushSpyEnabled){ flushSpyCalls++; }
+}
+
 void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 {
     UNITY_UINT savedFailures = Unity.TestFailures;
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); // Suppress output
+    startFlushSpy();
+    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
     UnityConcludeTest();
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
+#if defined(UNITY_OUTPUT_FLUSH) && defined(UNITY_OUTPUT_FLUSH_HEADER_DECLARATION)
+    TEST_ASSERT_EQUAL(1, getFlushSpyCalls());
+#else
+    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
+#endif
+    endFlushSpy();
 
     startPutcharSpy(); // Suppress output
     int failures = UnityEnd();
@@ -3411,6 +3444,7 @@ void testPrintNumbersUnsigned32(void)
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("4294967295", (UNITY_UINT32)0xFFFFFFFF);
 #endif
 }
+
 
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ==================
 

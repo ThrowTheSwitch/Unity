@@ -4,8 +4,6 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
-File.expand_path(File.join(File.dirname(__FILE__), 'colour_prompt'))
-
 class UnityTestRunnerGenerator
   def initialize(options = nil)
     @options = UnityTestRunnerGenerator.default_options
@@ -15,7 +13,7 @@ class UnityTestRunnerGenerator
     when Hash     then @options.merge!(options)
     else raise 'If you specify arguments, it should be a filename or a hash of options'
     end
-    require "#{File.expand_path(File.dirname(__FILE__))}/type_sanitizer"
+    require_relative 'type_sanitizer'
   end
 
   def self.default_options
@@ -26,6 +24,7 @@ class UnityTestRunnerGenerator
       framework: :unity,
       test_prefix: 'test|spec|should',
       mock_prefix: 'Mock',
+      mock_suffix: '',
       setup_name: 'setUp',
       teardown_name: 'tearDown',
       main_name: 'main', # set to :auto to automatically generate each time
@@ -148,7 +147,7 @@ class UnityTestRunnerGenerator
     mock_headers = []
     includes.each do |include_path|
       include_file = File.basename(include_path)
-      mock_headers << include_path if include_file =~ /^#{@options[:mock_prefix]}/i
+      mock_headers << include_path if include_file =~ /^#{@options[:mock_prefix]}.*#{@options[:mock_suffix]}$/i
     end
     mock_headers
   end
@@ -162,7 +161,9 @@ class UnityTestRunnerGenerator
     output.puts('#endif')
     output.puts("#include \"#{@options[:framework]}.h\"")
     output.puts('#include "cmock.h"') unless mocks.empty?
+    output.puts('#ifndef UNITY_EXCLUDE_SETJMP_H')
     output.puts('#include <setjmp.h>')
+    output.puts('#endif')
     output.puts('#include <stdio.h>')
     if @options[:defines] && !@options[:defines].empty?
       @options[:defines].each { |d| output.puts("#define #{d}") }
@@ -194,9 +195,11 @@ class UnityTestRunnerGenerator
     output.puts("\n/*=======External Functions This Runner Calls=====*/")
     output.puts("extern void #{@options[:setup_name]}(void);")
     output.puts("extern void #{@options[:teardown_name]}(void);")
+    output.puts("\n#ifdef __cplusplus\nextern \"C\"\n{\n#endif") if @options[:externc]
     tests.each do |test|
       output.puts("extern void #{test[:test]}(#{test[:call] || 'void'});")
     end
+    output.puts("#ifdef __cplusplus\n}\n#endif") if @options[:externc]
     output.puts('')
   end
 
@@ -374,7 +377,7 @@ class UnityTestRunnerGenerator
     end
     output.puts
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
-    output.puts("  return suite_teardown(UnityEnd());")
+    output.puts('  return suite_teardown(UnityEnd());')
     output.puts('}')
   end
 
@@ -436,6 +439,7 @@ if $0 == __FILE__
           '    *.h                   - header files are added as #includes in runner',
           '  options:',
           '    -cexception           - include cexception support',
+          '    -externc              - add extern "C" for cpp support',
           '    --setup_name=""       - redefine setUp func name to something else',
           '    --teardown_name=""    - redefine tearDown func name to something else',
           '    --main_name=""        - redefine main func name to something else',

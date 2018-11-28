@@ -80,7 +80,7 @@ marked as an optional parameter because some assertions only need a single
 "actual" parameter (e.g. null check).
 "Size/count" refers to string lengths, number of array elements, etc.
 
-Many of Unity's assertions are apparent duplications in that the same data type
+Many of Unity's assertions are clear duplications in that the same data type
 is handled by several assertions. The differences among these are in how failure
 messages are presented. For instance, a `_HEX` variant of an assertion prints
 the expected and actual values of that assertion formatted as hexadecimal.
@@ -103,6 +103,15 @@ _Example:_
 becomes messageified like thus...
 
     TEST_ASSERT_X_MESSAGE( {modifiers}, {expected}, actual, {size/count}, message )
+
+Notes:
+- The `_MESSAGE` variants intentionally do not support `printf` style formatting 
+  since many embedded projects don't support or avoid `printf` for various reasons.
+  It is possible to use `sprintf` before the assertion to assemble a complex fail
+  message, if necessary.
+- If you want to output a counter value within an assertion fail message (e.g. from 
+  a loop) , building up an array of results and then using one of the `_ARRAY` 
+  assertions (see below) might be a handy alternative to `sprintf`.
 
 
 #### TEST_ASSERT_X_ARRAY Variants
@@ -694,7 +703,7 @@ point value.
 
 So what happens when it's zero? Zero - even more than other floating point
 values - can be represented many different ways. It doesn't matter if you have
-0 x 20or 0 x 263.It's still zero, right? Luckily, if you
+0 x 20 or 0 x 263.It's still zero, right? Luckily, if you
 subtract these values from each other, they will always produce a difference of
 zero, which will still fall between 0 plus or minus a delta of 0. So it still
 works!

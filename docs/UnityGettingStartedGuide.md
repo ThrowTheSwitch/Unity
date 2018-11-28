@@ -11,7 +11,7 @@ functional. The core Unity test framework is three files: a single C file and a
 couple header files. These team up to provide functions and macros to make
 testing easier.
 
-Unity was designed to be cross platform. It works hard to stick with C standards
+Unity was designed to be cross-platform. It works hard to stick with C standards
 while still providing support for the many embedded C compilers that bend the
 rules. Unity has been used with many compilers, including GCC, IAR, Clang,
 Green Hills, Microchip, and MS Visual Studio. It's not much work to get it to
@@ -100,10 +100,11 @@ find setUp or tearDown when it links, you'll know you need to at least include
 an empty function for these.
 
 The majority of the file will be a series of test functions. Test functions
-follow the convention of starting with the word "test" or "spec". You don't HAVE
+follow the convention of starting with the word "test_" or "spec_". You don't HAVE
 to name them this way, but it makes it clear what functions are tests for other
-developers.  Test functions take no arguments and return nothing. All test
-accounting is handled internally in Unity.
+developers.  Also, the automated scripts that come with Unity or Ceedling will default
+to looking for test functions to be prefixed this way. Test functions take no arguments 
+and return nothing. All test accounting is handled internally in Unity.
 
 Finally, at the bottom of your test file, you will write a `main()` function.
 This function will call `UNITY_BEGIN()`, then `RUN_TEST` for each test, and
@@ -148,7 +149,7 @@ int main(void) {
 }
 ```
 
-It's possible that you will require more customization than this, eventually.
+It's possible that you will need more customization than this, eventually.
 For that sort of thing, you're going to want to look at the configuration guide.
 This should be enough to get you going, though.
 
