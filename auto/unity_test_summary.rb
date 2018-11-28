@@ -101,10 +101,6 @@ class UnityTestSummary
     raise "Couldn't parse test results: #{summary}" unless summary.find { |v| v =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/ }
     [Regexp.last_match(1).to_i, Regexp.last_match(2).to_i, Regexp.last_match(3).to_i]
   end
-
-  def here
-    File.expand_path(File.dirname(__FILE__))
-  end
 end
 
 if $0 == __FILE__

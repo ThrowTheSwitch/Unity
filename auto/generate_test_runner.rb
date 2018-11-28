@@ -4,8 +4,6 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
-File.expand_path(File.join(File.dirname(__FILE__), 'colour_prompt'))
-
 class UnityTestRunnerGenerator
   def initialize(options = nil)
     @options = UnityTestRunnerGenerator.default_options
@@ -15,7 +13,7 @@ class UnityTestRunnerGenerator
     when Hash     then @options.merge!(options)
     else raise 'If you specify arguments, it should be a filename or a hash of options'
     end
-    require "#{File.expand_path(File.dirname(__FILE__))}/type_sanitizer"
+    require_relative 'type_sanitizer'
   end
 
   def self.default_options
@@ -165,7 +163,7 @@ class UnityTestRunnerGenerator
     output.puts('#include "cmock.h"') unless mocks.empty?
     output.puts('#ifndef UNITY_EXCLUDE_SETJMP_H')
     output.puts('#include <setjmp.h>')
-    output.puts("#endif")
+    output.puts('#endif')
     output.puts('#include <stdio.h>')
     if @options[:defines] && !@options[:defines].empty?
       @options[:defines].each { |d| output.puts("#define #{d}") }
@@ -379,7 +377,7 @@ class UnityTestRunnerGenerator
     end
     output.puts
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
-    output.puts("  return suite_teardown(UnityEnd());")
+    output.puts('  return suite_teardown(UnityEnd());')
     output.puts('}')
   end
 
