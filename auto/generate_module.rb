@@ -45,8 +45,6 @@ TEMPLATE_INC ||= '#ifndef _%3$s_H
 class UnityModuleGenerator
   ############################
   def initialize(options = nil)
-    here = File.expand_path(File.dirname(__FILE__)) + '/'
-
     @options = UnityModuleGenerator.default_options
     case options
     when NilClass then @options
@@ -56,9 +54,9 @@ class UnityModuleGenerator
     end
 
     # Create default file paths if none were provided
-    @options[:path_src] = here + '../src/'    if @options[:path_src].nil?
-    @options[:path_inc] = @options[:path_src] if @options[:path_inc].nil?
-    @options[:path_tst] = here + '../test/'   if @options[:path_tst].nil?
+    @options[:path_src] = "#{__dir__}/../src/"   if @options[:path_src].nil?
+    @options[:path_inc] = @options[:path_src]    if @options[:path_inc].nil?
+    @options[:path_tst] = "#{__dir__}/../test/"  if @options[:path_tst].nil?
     @options[:path_src] += '/'                unless @options[:path_src][-1] == 47
     @options[:path_inc] += '/'                unless @options[:path_inc][-1] == 47
     @options[:path_tst] += '/'                unless @options[:path_tst][-1] == 47

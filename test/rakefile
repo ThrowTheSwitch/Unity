@@ -4,17 +4,16 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
-UNITY_ROOT = File.expand_path(File.dirname(__FILE__)) + '/'
 $verbose = false
 
 require 'rake'
 require 'rake/clean'
-require UNITY_ROOT + 'rakefile_helper'
+require_relative 'rakefile_helper'
 require 'rspec/core/rake_task'
 
 TEMP_DIRS = [
-	File.join(UNITY_ROOT, 'build'),
-	File.join(UNITY_ROOT, 'sandbox')
+	File.join(__dir__, 'build'),
+	File.join(__dir__, 'sandbox')
 ]
 
 TEMP_DIRS.each do |dir|

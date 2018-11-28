@@ -18,7 +18,7 @@ Style/HashSyntax:
   EnforcedStyle: no_mixed_keys
 
 # This is disabled because it seems to get confused over nested hashes
-Style/AlignHash:
+Layout/AlignHash:
   Enabled: false
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
