@@ -33,6 +33,26 @@ int suiteTearDown(int num_failures);
  * unity_setup_stubs.h. */
 
 /*-------------------------------------------------------
+ * Test Runner Interface
+ *-------------------------------------------------------*/
+
+/* These functions are provided by the generated test runner. */
+void UnityRunner_Init(void);
+void UnityRunner_Verify(void);
+void UnityRunner_Destroy(void);
+
+/* These functions generally just wrap the normal setup/teardown functions,
+ * but could do something else depending on the test runner configuration. */
+void UnityRunner_SetUp(void);
+void UnityRunner_TearDown(void);
+void UnityRunner_SuiteSetUp(void);
+int UnityRunner_SuiteTearDown(int num_failures);
+
+/* A modified version of UnityDefaultTestRun() that interfaces with the
+ * rest of the test runner interface. */
+void UnityRunner_RunTest(UnityTestFunction func, const char* name, int line_num);
+
+/*-------------------------------------------------------
  * Configuration Options
  *-------------------------------------------------------
  * All options described below should be passed as a compiler flag to all files using Unity. If you must add #defines, place them BEFORE the #include above.

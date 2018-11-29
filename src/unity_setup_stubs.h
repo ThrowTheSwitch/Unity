@@ -21,7 +21,7 @@
  * targeting GNU/Linux and other ELF targets.  On some other platforms
  * (MinGW for example), weak function implementations need to be in the
  * same translation unit they are called from, so this header is also
- * included by each generated test runner.
+ * included by each test runner via unity_runner_common.h.
  *
  * If neither UNITY_WEAK_ATTRIBUTE nor UNITY_WEAK_PRAGMA is defined, the
  * compiler is assumed to have no support for weak symbols, and this
