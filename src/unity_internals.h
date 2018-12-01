@@ -40,10 +40,6 @@
 #include <limits.h>
 #endif
 
-#ifndef UNITY_EXCLUDE_TIME_H
-#include <time.h>
-#endif
-
 /*-------------------------------------------------------
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
@@ -297,42 +293,67 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #define UNITY_OUTPUT_COMPLETE()
 #endif
 
-#ifndef UNITY_EXEC_TIME_RESET
 #ifdef UNITY_INCLUDE_EXEC_TIME
-#define UNITY_EXEC_TIME_RESET()\
-    Unity.CurrentTestStartTime = 0;\
-    Unity.CurrentTestStopTime = 0;
-#else
-#define UNITY_EXEC_TIME_RESET()
-#endif
+  #if !defined(UNITY_EXEC_TIME_START) && \
+      !defined(UNITY_EXEC_TIME_STOP) && \
+      !defined(UNITY_PRINT_EXEC_TIME) && \
+      !defined(UNITY_TIME_TYPE)
+      /* If none any of these macros are defined then try to provide a default implementation */
+
+    #if defined(UNITY_CLOCK_MS)
+      /* This is a simple way to get a default implementation on platforms that support getting a millisecond counter */
+      #define UNITY_TIME_TYPE UNITY_UINT
+      #define UNITY_EXEC_TIME_START() Unity.CurrentTestStartTime = UNITY_CLOCK_MS()
+      #define UNITY_EXEC_TIME_STOP() Unity.CurrentTestStopTime = UNITY_CLOCK_MS()
+      #define UNITY_PRINT_EXEC_TIME() { \
+        UNITY_UINT execTimeMs = (Unity.CurrentTestStopTime - Unity.CurrentTestStartTime); \
+        UnityPrint(" ("); \
+        UnityPrintNumberUnsigned(execTimeMs); \
+        UnityPrint(" ms)"); \
+        }
+    #elif defined(_WIN32)
+      #include <time.h>
+      #define UNITY_TIME_TYPE clock_t
+      #define UNITY_GET_TIME(t) t = (clock_t)((clock() * 1000) / CLOCKS_PER_SEC)
+      #define UNITY_EXEC_TIME_START() UNITY_GET_TIME(Unity.CurrentTestStartTime)
+      #define UNITY_EXEC_TIME_STOP() UNITY_GET_TIME(Unity.CurrentTestStopTime)
+      #define UNITY_PRINT_EXEC_TIME() { \
+        UNITY_UINT execTimeMs = (Unity.CurrentTestStopTime - Unity.CurrentTestStartTime); \
+        UnityPrint(" ("); \
+        UnityPrintNumberUnsigned(execTimeMs); \
+        UnityPrint(" ms)"); \
+        }
+    #elif defined(__unix__)
+      #include <time.h>
+      #define UNITY_TIME_TYPE struct timespec
+      #define UNITY_GET_TIME(t) clock_gettime(CLOCK_MONOTONIC, &t)
+      #define UNITY_EXEC_TIME_START() UNITY_GET_TIME(Unity.CurrentTestStartTime)
+      #define UNITY_EXEC_TIME_STOP() UNITY_GET_TIME(Unity.CurrentTestStopTime)
+      #define UNITY_PRINT_EXEC_TIME() { \
+        UNITY_UINT execTimeMs = ((Unity.CurrentTestStopTime.tv_sec - Unity.CurrentTestStartTime.tv_sec) * 1000L); \
+        execTimeMs += ((Unity.CurrentTestStopTime.tv_nsec - Unity.CurrentTestStartTime.tv_nsec) / 1000000L); \
+        UnityPrint(" ("); \
+        UnityPrintNumberUnsigned(execTimeMs); \
+        UnityPrint(" ms)"); \
+        }
+    #endif
+  #endif
 #endif
 
 #ifndef UNITY_EXEC_TIME_START
-#ifdef UNITY_INCLUDE_EXEC_TIME
-#define UNITY_EXEC_TIME_START() Unity.CurrentTestStartTime = UNITY_CLOCK_MS();
-#else
-#define UNITY_EXEC_TIME_START()
-#endif
+#define UNITY_EXEC_TIME_START() do{}while(0)
 #endif
 
 #ifndef UNITY_EXEC_TIME_STOP
-#ifdef UNITY_INCLUDE_EXEC_TIME
-#define UNITY_EXEC_TIME_STOP() Unity.CurrentTestStopTime = UNITY_CLOCK_MS();
-#else
-#define UNITY_EXEC_TIME_STOP()
+#define UNITY_EXEC_TIME_STOP() do{}while(0)
 #endif
+
+#ifndef UNITY_TIME_TYPE
+#define UNITY_TIME_TYPE UNITY_UINT
 #endif
 
 #ifndef UNITY_PRINT_EXEC_TIME
-#ifdef UNITY_INCLUDE_EXEC_TIME
-#define UNITY_PRINT_EXEC_TIME() \
-	UnityPrint(" (");\
-	UNITY_COUNTER_TYPE execTimeMs = (Unity.CurrentTestStopTime - Unity.CurrentTestStartTime);\
-    UnityPrintNumberUnsigned(execTimeMs);\
-    UnityPrint(" ms)");
-#else
-#define UNITY_PRINT_EXEC_TIME()
-#endif
+#define UNITY_PRINT_EXEC_TIME() do{}while(0)
 #endif
 
 /*-------------------------------------------------------
@@ -449,8 +470,8 @@ struct UNITY_STORAGE_T
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
 #ifdef UNITY_INCLUDE_EXEC_TIME
-    UNITY_COUNTER_TYPE CurrentTestStartTime;
-    UNITY_COUNTER_TYPE CurrentTestStopTime;
+    UNITY_TIME_TYPE CurrentTestStartTime;
+    UNITY_TIME_TYPE CurrentTestStopTime;
 #endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
     jmp_buf AbortFrame;
@@ -653,12 +674,6 @@ extern const char UnityStrErr64[];
 #else
 #define TEST_PROTECT() 1
 #define TEST_ABORT() return
-#endif
-
-#ifndef UNITY_EXCLUDE_TIME_H
-#define UNITY_CLOCK_MS() (UNITY_COUNTER_TYPE)((clock() * 1000) / CLOCKS_PER_SEC)
-#else
-#define UNITY_CLOCK_MS()
 #endif
 
 /* This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__) */
