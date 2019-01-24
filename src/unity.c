@@ -98,6 +98,7 @@ static void UnityPrintChar(const char* pch)
 }
 
 /*-----------------------------------------------*/
+/* Local helper function to print ANSI escape strings e.g. "\033[42m". */
 #ifdef UNITY_OUTPUT_COLOR
 static UNITY_UINT UnityPrintAnsiEscapeString(const char* string)
 {
@@ -209,7 +210,8 @@ void UnityPrintFormatted(const char* format, ...)
                                 break;
                             }
                         case 's':
-                            {   const char * string = va_arg(va, const char *);
+                            {
+                                const char * string = va_arg(va, const char *);
                                 UnityPrint(string);
                                 break;
                             }
@@ -220,7 +222,7 @@ void UnityPrintFormatted(const char* format, ...)
                             }
                         default:
                             {
-                                /* print the unknown character */
+                                /* print the unknown format character */
                                 UNITY_OUTPUT_CHAR('%');
                                 UnityPrintChar(pch);
                                 break;
