@@ -1523,8 +1523,9 @@ int UnityParseOptions(int argc, char** argv)
 {
     UnityOptionIncludeNamed = NULL;
     UnityOptionExcludeNamed = NULL;
+    int i;
 
-    for (int i = 1; i < argc; i++)
+    for (i = 1; i < argc; i++)
     {
         if (argv[i][0] == '-')
         {
