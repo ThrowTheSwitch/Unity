@@ -141,8 +141,8 @@ void UnityPrint(const char* string)
 }
 
 /*-----------------------------------------------*/
-#ifndef UNITY_EXCLUDE_PRINT_FORMATTED
-void UnityPrintFormatted(const char* format, ... )
+#ifdef UNITY_INCLUDE_PRINT_FORMATTED
+void UnityPrintFormatted(const char* format, ...)
 {
     const char* pch = format;
     va_list va;
@@ -251,7 +251,7 @@ void UnityPrintFormatted(const char* format, ... )
 
     va_end(va);
 }
-#endif /* ! UNITY_EXCLUDE_PRINT_FORMATTED */
+#endif /* ! UNITY_INCLUDE_PRINT_FORMATTED */
 
 /*-----------------------------------------------*/
 void UnityPrintLen(const char* string, const UNITY_UINT32 length)

@@ -23,7 +23,7 @@
 #include <stddef.h>
 #endif
 
-#ifndef UNITY_EXCLUDE_PRINT_FORMATTED
+#ifdef UNITY_INCLUDE_PRINT_FORMATTED
 #include <stdarg.h>
 #endif
 
@@ -496,8 +496,8 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 
 void UnityPrint(const char* string);
 
-#ifndef UNITY_EXCLUDE_PRINT_FORMATTED
-void UnityPrintFormatted(const char* format, ... );
+#ifdef UNITY_INCLUDE_PRINT_FORMATTED
+void UnityPrintFormatted(const char* format, ...);
 #endif
 
 void UnityPrintLen(const char* string, const UNITY_UINT32 length);
