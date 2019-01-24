@@ -4,8 +4,6 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
-File.expand_path(File.join(File.dirname(__FILE__), 'colour_prompt'))
-
 class UnityTestRunnerGenerator
   def initialize(options = nil)
     @options = UnityTestRunnerGenerator.default_options
@@ -15,7 +13,7 @@ class UnityTestRunnerGenerator
     when Hash     then @options.merge!(options)
     else raise 'If you specify arguments, it should be a filename or a hash of options'
     end
-    require "#{File.expand_path(File.dirname(__FILE__))}/type_sanitizer"
+    require_relative 'type_sanitizer'
   end
 
   def self.default_options
@@ -92,12 +90,25 @@ class UnityTestRunnerGenerator
   def find_tests(source)
     tests_and_line_numbers = []
 
+    # contains characters which will be substituted from within strings, doing
+    # this prevents these characters from interferring with scrubbers
+    # @ is not a valid C character, so there should be no clashes with files genuinely containing these markers
+    substring_subs = { '{' => '@co@', '}' => '@cc@', ';' => '@ss@', '/' => '@fs@' }
+    substring_re = Regexp.union(substring_subs.keys)
+    substring_unsubs = substring_subs.invert                   # the inverse map will be used to fix the strings afterwords
+    substring_unsubs['@quote@'] = '\\"'
+    substring_unsubs['@apos@'] = '\\\''
+    substring_unre = Regexp.union(substring_unsubs.keys)
     source_scrubbed = source.clone
-    source_scrubbed = source_scrubbed.gsub(/"[^"\n]*"/, '') # remove things in strings
+    source_scrubbed = source_scrubbed.gsub(/\\"/, '@quote@')   # hide escaped quotes to allow capture of the full string/char
+    source_scrubbed = source_scrubbed.gsub(/\\'/, '@apos@')    # hide escaped apostrophes to allow capture of the full string/char
+    source_scrubbed = source_scrubbed.gsub(/("[^"\n]*")|('[^'\n]*')/) { |s| s.gsub(substring_re, substring_subs) } # temporarily hide problematic
+                                                                                                                   # characters within strings
     source_scrubbed = source_scrubbed.gsub(/\/\/.*$/, '')      # remove line comments
     source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '') # remove block comments
     lines = source_scrubbed.split(/(^\s*\#.*$)                 # Treat preprocessor directives as a logical line
                               | (;|\{|\}) /x)                  # Match ;, {, and } as end of lines
+                           .map { |line| line.gsub(substring_unre, substring_unsubs) } # unhide the problematic characters previously removed
 
     lines.each_with_index do |line, _index|
       # find tests
@@ -165,10 +176,10 @@ class UnityTestRunnerGenerator
     output.puts('#include "cmock.h"') unless mocks.empty?
     output.puts('#ifndef UNITY_EXCLUDE_SETJMP_H')
     output.puts('#include <setjmp.h>')
-    output.puts("#endif")
+    output.puts('#endif')
     output.puts('#include <stdio.h>')
     if @options[:defines] && !@options[:defines].empty?
-      @options[:defines].each { |d| output.puts("#define #{d}") }
+      @options[:defines].each { |d| output.puts("#ifndef #{d}\n#define #{d}\n#endif /* #{d} */") }
     end
     if @options[:header_file] && !@options[:header_file].empty?
       output.puts("#include \"#{File.basename(@options[:header_file])}\"")
@@ -379,7 +390,7 @@ class UnityTestRunnerGenerator
     end
     output.puts
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
-    output.puts("  return suite_teardown(UnityEnd());")
+    output.puts('  return suite_teardown(UnityEnd());')
     output.puts('}')
   end
 
