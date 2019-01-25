@@ -23,6 +23,10 @@
 #include <stddef.h>
 #endif
 
+#ifdef UNITY_INCLUDE_PRINT_FORMATTED
+#include <stdarg.h>
+#endif
+
 /* Unity Attempts to Auto-Detect Integer Types
  * Attempt 1: UINT_MAX, ULONG_MAX in <limits.h>, or default to 32 bits
  * Attempt 2: UINTPTR_MAX in <stdint.h>, or default to same size as long
@@ -130,7 +134,7 @@
     typedef UNITY_INT32 UNITY_INT;
 #else
 
-    /* 64-bit Support */
+  /* 64-bit Support */
   #if (UNITY_LONG_WIDTH == 32)
     typedef unsigned long long UNITY_UINT64;
     typedef signed long long   UNITY_INT64;
@@ -491,6 +495,11 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
  *-------------------------------------------------------*/
 
 void UnityPrint(const char* string);
+
+#ifdef UNITY_INCLUDE_PRINT_FORMATTED
+void UnityPrintFormatted(const char* format, ...);
+#endif
+
 void UnityPrintLen(const char* string, const UNITY_UINT32 length);
 void UnityPrintMask(const UNITY_UINT mask, const UNITY_UINT number);
 void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T style);
