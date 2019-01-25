@@ -176,6 +176,22 @@
 /* #define UNITY_DOUBLE_PRECISION 0.001f */
 
 
+/* *************************** MISCELLANEOUS ***********************************
+ * Miscellaneous configuration options for Unity
+ **************************************************************************** */
+
+/* Unity uses the stddef.h header included in the C standard library for the
+ * "NULL" macro. Define this in order to disable the include of stddef.h. If you
+ * do this, you have to make sure to provide your own "NULL" definition.
+ */
+/* #define UNITY_EXCLUDE_STDDEF_H */
+
+/* Define this to enable the unity formatted print function:
+ * "UnityPrintFormatted"
+ */
+/* #define UNITY_INCLUDE_PRINT_FORMATTED */
+
+
 /* *************************** TOOLSET CUSTOMIZATION ***************************
  * In addition to the options listed above, there are a number of other options
  * which will come in handy to customize Unity's behavior for your specific
