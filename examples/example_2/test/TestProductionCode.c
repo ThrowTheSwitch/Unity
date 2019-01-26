@@ -23,7 +23,7 @@ TEST(ProductionCode, FindFunction_WhichIsBroken_ShouldReturnZeroIfItemIsNotInLis
 {
   //All of these should pass
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(78));
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(1));
+  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(2));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(33));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(999));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(-1));
