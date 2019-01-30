@@ -105,7 +105,7 @@ static UNITY_UINT UnityPrintAnsiEscapeString(const char* string)
     const char* pch = string;
     UNITY_UINT count = 0;
 
-    while (*pch && *pch != 'm')
+    while (*pch && (*pch != 'm'))
     {
         UNITY_OUTPUT_CHAR(*pch);
         pch++;
@@ -129,7 +129,7 @@ void UnityPrint(const char* string)
         {
 #ifdef UNITY_OUTPUT_COLOR
             /* print ANSI escape code */
-            if (*pch == 27 && *(pch + 1) == '[')
+            if ((*pch == 27) && (*(pch + 1) == '['))
             {
                 pch += UnityPrintAnsiEscapeString(pch);
                 continue;
@@ -232,7 +232,7 @@ void UnityPrintFormatted(const char* format, ...)
             }
 #ifdef UNITY_OUTPUT_COLOR
             /* print ANSI escape code */
-            else if (*pch == 27 && *(pch + 1) == '[')
+            else if ((*pch == 27) && (*(pch + 1) == '['))
             {
                 pch += UnityPrintAnsiEscapeString(pch);
                 continue;
@@ -262,7 +262,7 @@ void UnityPrintLen(const char* string, const UNITY_UINT32 length)
 
     if (pch != NULL)
     {
-        while (*pch && (UNITY_UINT32)(pch - string) < length)
+        while (*pch && ((UNITY_UINT32)(pch - string) < length))
         {
             /* printable characters plus CR & LF are printed */
             if ((*pch <= 126) && (*pch >= 32))
@@ -351,6 +351,7 @@ void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print)
 {
     int nibble;
     char nibbles = nibbles_to_print;
+
     if ((unsigned)nibbles > (2 * sizeof(number)))
     {
         nibbles = 2 * sizeof(number);
@@ -422,7 +423,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     UNITY_DOUBLE number = input_number;
 
     /* print minus sign (including for negative zero) */
-    if (number < 0.0f || (number == 0.0f && 1.0f / number < 0.0f))
+    if ((number < 0.0f) || ((number == 0.0f) && ((1.0f / number) < 0.0f)))
     {
         UNITY_OUTPUT_CHAR('-');
         number = -number;
@@ -459,7 +460,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         {
             UNITY_DOUBLE factor = 1.0f;
 
-            while (number < (UNITY_DOUBLE)max_scaled / 1e10f) { number *= 1e10f; exponent -= 10; }
+            while (number < (UNITY_DOUBLE)max_scaled / 1e10f)  { number *= 1e10f; exponent -= 10; }
             while (number * factor < (UNITY_DOUBLE)min_scaled) { factor *= 10.0f; exponent--; }
 
             number *= factor;
@@ -468,7 +469,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         {
             UNITY_DOUBLE divisor = 1.0f;
 
-            while (number > (UNITY_DOUBLE)min_scaled * 1e10f) { number /= 1e10f; exponent += 10; }
+            while (number > (UNITY_DOUBLE)min_scaled * 1e10f)   { number  /= 1e10f; exponent += 10; }
             while (number / divisor > (UNITY_DOUBLE)max_scaled) { divisor *= 10.0f; exponent++; }
 
             number /= divisor;
@@ -494,7 +495,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
 #ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
         /* round to even if exactly between two integers */
-        if ((n & 1) && ((UNITY_DOUBLE)n - number == 0.5f))
+        if ((n & 1) && (((UNITY_DOUBLE)n - number) == 0.5f))
             n--;
 #endif
 
@@ -507,11 +508,11 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         }
 
         /* determine where to place decimal point */
-        decimals = (exponent <= 0 && exponent >= -(sig_digits + 3)) ? -exponent : (sig_digits - 1);
+        decimals = ((exponent <= 0) && (exponent >= -(sig_digits + 3))) ? (-exponent) : (sig_digits - 1);
         exponent += decimals;
 
         /* truncate trailing zeroes after decimal point */
-        while (decimals > 0 && n % 10 == 0)
+        while ((decimals > 0) && ((n % 10) == 0))
         {
             n /= 10;
             decimals--;
@@ -519,14 +520,14 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
         /* build up buffer in reverse order */
         digits = 0;
-        while (n != 0 || digits < decimals + 1)
+        while ((n != 0) || (digits < (decimals + 1)))
         {
             buf[digits++] = (char)('0' + n % 10);
             n /= 10;
         }
         while (digits > 0)
         {
-            if(digits == decimals) UNITY_OUTPUT_CHAR('.');
+            if (digits == decimals) { UNITY_OUTPUT_CHAR('.'); }
             UNITY_OUTPUT_CHAR(buf[--digits]);
         }
 
@@ -535,7 +536,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         {
             UNITY_OUTPUT_CHAR('e');
 
-            if(exponent < 0)
+            if (exponent < 0)
             {
                 UNITY_OUTPUT_CHAR('-');
                 exponent = -exponent;
@@ -546,7 +547,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
             }
 
             digits = 0;
-            while (exponent != 0 || digits < 2)
+            while ((exponent != 0) || (digits < 2))
             {
                 buf[digits++] = (char)('0' + exponent % 10);
                 exponent /= 10;
@@ -772,18 +773,18 @@ void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
     int failed = 0;
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (threshold == actual && compare & UNITY_EQUAL_TO) return;
-    if (threshold == actual) failed = 1;
+    if ((threshold == actual) && (compare & UNITY_EQUAL_TO)) { return; }
+    if ((threshold == actual))                               { failed = 1; }
 
     if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
     {
-        if (actual > threshold && compare & UNITY_SMALLER_THAN) failed = 1;
-        if (actual < threshold && compare & UNITY_GREATER_THAN) failed = 1;
+        if ((actual > threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
+        if ((actual < threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
     }
     else /* UINT or HEX */
     {
-        if ((UNITY_UINT)actual > (UNITY_UINT)threshold && compare & UNITY_SMALLER_THAN) failed = 1;
-        if ((UNITY_UINT)actual < (UNITY_UINT)threshold && compare & UNITY_GREATER_THAN) failed = 1;
+        if (((UNITY_UINT)actual > (UNITY_UINT)threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
+        if (((UNITY_UINT)actual < (UNITY_UINT)threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
     }
 
     if (failed)
@@ -791,9 +792,9 @@ void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
         UnityPrintNumberByStyle(actual, style);
-        if (compare & UNITY_GREATER_THAN) UnityPrint(UnityStrGt);
-        if (compare & UNITY_SMALLER_THAN) UnityPrint(UnityStrLt);
-        if (compare & UNITY_EQUAL_TO)     UnityPrint(UnityStrOrEqual);
+        if (compare & UNITY_GREATER_THAN) { UnityPrint(UnityStrGt);      }
+        if (compare & UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt);      }
+        if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual); }
         UnityPrintNumberByStyle(threshold, style);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -836,7 +837,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
         UNITY_FAIL_AND_BAIL;
     }
 
-    while ((elements > 0) && elements--)
+    while ((elements > 0) && (elements--))
     {
         UNITY_INT expect_val;
         UNITY_INT actual_val;
@@ -865,7 +866,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
         if (expect_val != actual_val)
         {
-            if (style & UNITY_DISPLAY_RANGE_UINT && length < sizeof(expect_val))
+            if ((style & UNITY_DISPLAY_RANGE_UINT) && (length < sizeof(expect_val)))
             {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */
                 UNITY_INT mask = 1;
                 mask = (mask << 8 * length) - 1;
