@@ -1,6 +1,8 @@
 #####################################################
 # FILE NAME CMakeLists.txt                          #
 #                                                   #
+# WRITTEN BY Michael Brockus.                       #
+#                                                   #
 # PURPOSE contains CMake statements.                #
 #                                                   #
 #####################################################
