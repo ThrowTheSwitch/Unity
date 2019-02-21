@@ -35,11 +35,11 @@ TEMPLATE_SRC ||= '%2$s#include "%1$s.h"
 '.freeze
 
 # TEMPLATE_INC
-TEMPLATE_INC ||= '#ifndef _%3$s_H
-#define _%3$s_H
+TEMPLATE_INC ||= '#ifndef %3$s_H
+#define %3$s_H
 %2$s
 
-#endif // _%3$s_H
+#endif // %3$s_H
 '.freeze
 
 class UnityModuleGenerator
