@@ -447,6 +447,9 @@ void testEqualInt8s(void)
 
 void testEqualInt8sWhenThereAreDifferencesOutside8Bits(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_EQUAL_INT8(0x321,0x421);
     TEST_ASSERT_EQUAL_INT8(0xFF21,0x0021);
 }
@@ -576,6 +579,9 @@ void testEqualUint8s(void)
 
 void testEqualUint8sWhenThereAreDifferencesOutside8Bits(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_EQUAL_UINT8(0x321,0x421);
     TEST_ASSERT_EQUAL_UINT8(0xFF21,0x0021);
 }
@@ -656,6 +662,9 @@ void testEqualHex8s(void)
 
 void testEqualHex8sWhenThereAreDifferencesOutside8Bits(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_EQUAL_HEX8(0x321,0x421);
     TEST_ASSERT_EQUAL_HEX8(0xFF21,0x0021);
 }
@@ -1072,11 +1081,17 @@ void testHEX8sWithinDeltaAndCustomMessage(void)
 
 void testHEX8sWithinDeltaWhenThereAreDifferenceOutsideOf8Bits(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_HEX8_WITHIN(5, 0x123, 0xF23);
 }
 
 void testHEX8sWithinDeltaWhenThereAreDifferenceOutsideOf8BitsAndCustomMessage(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_HEX8_WITHIN_MESSAGE(5, 0x123, 0xF23, "Custom Message.");
 }
 
@@ -1192,11 +1207,17 @@ void testUINT8sWithinDeltaAndCustomMessage(void)
 
 void testUINT8sWithinDeltaWhenThereAreDifferenceOutsideOf8Bits(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_UINT8_WITHIN(5, 0x123, 0xF23);
 }
 
 void testUINT8sWithinDeltaWhenThereAreDifferenceOutsideOf8BitsAndCustomMessage(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_UINT8_WITHIN_MESSAGE(5, 0x123, 0xF23, "Custom Message.");
 }
 
@@ -1296,11 +1317,17 @@ void testINT8sWithinDeltaAndCustomMessage(void)
 
 void testINT8sWithinDeltaWhenThereAreDifferenceOutsideOf8Bits(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_INT8_WITHIN(5, 0x123, 0xF23);
 }
 
 void testINT8sWithinDeltaWhenThereAreDifferenceOutsideOf8BitsAndCustomMessage(void)
 {
+#ifndef UNITY_SUPPORT_8
+    TEST_IGNORE();
+#endif
     TEST_ASSERT_INT8_WITHIN_MESSAGE(5, 0x123, 0xF23, "Custom Message.");
 }
 

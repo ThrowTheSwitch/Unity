@@ -48,6 +48,17 @@
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
 
+/* If UNITY_SUPPORT_8 is not defined, it does NOT mean that the data types
+ * UNITY_INT8 and UNITY_UINT8 will not be defined. It means that any test that
+ * rely on data types smaller than the platform's character width will not
+ * necessarily have the expected outcome eg. testing that two INT8s are equal
+ * when they have differences above the first 8 bits might fail, where it would
+ * pass on platforms where UNITY_SUPPORT_8 is defined.
+ */
+#if (CHAR_BIT == 8)
+  #define UNITY_SUPPORT_8
+#endif
+
 /* Determine the size of an int, if not already specified.
  * We cannot use sizeof(int), because it is not yet defined
  * at this stage in the translation of the C program.
