@@ -426,6 +426,13 @@ _Example:_
 #define UNITY_OUTPUT_COLOR
 ```
 
+##### `UNITY_VARIADIC_MACROS`
+
+Unity will use variadic macros for `RUN_TEST()` if it detects it's being
+compiled by a C99 toolchain, and fall back on fixed parameter macros if it
+doesn't. Some toolchains support variadic macros even though they nominally
+target C89. Define this macro to allow Unity to use variadic macros for
+`RUN_TEST()`.
 
 ## Getting Into The Guts
 

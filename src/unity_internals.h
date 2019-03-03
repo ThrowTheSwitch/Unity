@@ -674,14 +674,12 @@ extern const char UnityStrErr64[];
 
 /* This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__) */
 #ifndef RUN_TEST
-#ifdef __STDC_VERSION__
-#if __STDC_VERSION__ >= 199901L
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || defined(UNITY_VARIADIC_MACROS)
 #define RUN_TEST(...) UnityDefaultTestRun(RUN_TEST_FIRST(__VA_ARGS__), RUN_TEST_SECOND(__VA_ARGS__))
 #define RUN_TEST_FIRST(...) RUN_TEST_FIRST_HELPER(__VA_ARGS__, throwaway)
 #define RUN_TEST_FIRST_HELPER(first, ...) (first), #first
 #define RUN_TEST_SECOND(...) RUN_TEST_SECOND_HELPER(__VA_ARGS__, __LINE__, throwaway)
 #define RUN_TEST_SECOND_HELPER(first, second, ...) (second)
-#endif
 #endif
 #endif
 
