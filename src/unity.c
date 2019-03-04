@@ -286,6 +286,10 @@ void UnityPrintLen(const char* string, const UNITY_UINT32 length)
             {
                 UNITY_OUTPUT_CHAR('\\');
                 UNITY_OUTPUT_CHAR('x');
+                /* Note: we do not need to do the conversion to octet count
+                 * here, C's printable character set is 8-bits regardless of the
+                 * actual size of char.
+                 */
                 UnityPrintNumberHex((UNITY_UINT)*pch, 2);
             }
             pch++;
@@ -308,7 +312,7 @@ void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T
     {
         UNITY_OUTPUT_CHAR('0');
         UNITY_OUTPUT_CHAR('x');
-        UnityPrintNumberHex((UNITY_UINT)number, (char)((style & 0xF) * 2));
+        UnityPrintNumberHex((UNITY_UINT)number, (char)((style & 0xF) * UNITY_OCTETS_PER_CHAR * 2));
     }
 }
 
