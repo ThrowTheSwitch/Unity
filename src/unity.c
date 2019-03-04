@@ -822,7 +822,8 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                               const UNITY_FLAGS_T flags)
 {
     UNITY_UINT32 elements = num_elements;
-    unsigned int length   = style & 0xF;
+    const unsigned int length_in_chars  = (style & 0xF);
+    unsigned int length_in_octets = length_in_chars * UNITY_OCTETS_PER_CHAR;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -845,7 +846,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
     {
         UNITY_INT expect_val;
         UNITY_INT actual_val;
-        switch (length)
+        switch (length_in_octets)
         {
             case 1:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
@@ -864,16 +865,16 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             default: /* length 4 bytes */
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
-                length = 4;
+                length_in_octets = 4;
                 break;
         }
 
         if (expect_val != actual_val)
         {
-            if ((style & UNITY_DISPLAY_RANGE_UINT) && (length < sizeof(expect_val)))
+            if ((style & UNITY_DISPLAY_RANGE_UINT) && (length_in_chars < sizeof(expect_val)))
             {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */
                 UNITY_INT mask = 1;
-                mask = (mask << 8 * length) - 1;
+                mask = (mask << 8 * length_in_octets) - 1;
                 expect_val &= mask;
                 actual_val &= mask;
             }
@@ -889,9 +890,9 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
         }
         if (flags == UNITY_ARRAY_TO_ARRAY)
         {
-            expected = (UNITY_INTERNAL_PTR)(length + (const char*)expected);
+            expected = (UNITY_INTERNAL_PTR)(length_in_chars + (const char*)expected);
         }
-        actual   = (UNITY_INTERNAL_PTR)(length + (const char*)actual);
+        actual   = (UNITY_INTERNAL_PTR)(length_in_chars + (const char*)actual);
     }
 }
 
