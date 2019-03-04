@@ -1492,9 +1492,10 @@ static union
 #endif
 } UnityQuickCompare;
 
-UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
+UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size_in_chars)
 {
-    switch(size)
+    const UNITY_UINT8 size_in_octets = size_in_chars * UNITY_OCTETS_PER_CHAR;
+    switch(size_in_octets)
     {
         case 1:
           UnityQuickCompare.i8 = (UNITY_INT8)num;
