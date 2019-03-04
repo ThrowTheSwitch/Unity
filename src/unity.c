@@ -356,9 +356,9 @@ void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print)
     int nibble;
     char nibbles = nibbles_to_print;
 
-    if ((unsigned)nibbles > (2 * sizeof(number)))
+    if ((unsigned)nibbles > (2 * sizeof(number) * UNITY_OCTETS_PER_CHAR))
     {
-        nibbles = 2 * sizeof(number);
+        nibbles = 2 * sizeof(number)  * UNITY_OCTETS_PER_CHAR;
     }
 
     while (nibbles > 0)
