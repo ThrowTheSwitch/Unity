@@ -321,7 +321,7 @@ void UnityPrintNumber(const UNITY_INT number_to_print)
     {
         /* A negative number, including MIN negative */
         UNITY_OUTPUT_CHAR('-');
-        number = -number;
+        number = (UNITY_UINT)-number_to_print;
     }
     UnityPrintNumberUnsigned(number);
 }
