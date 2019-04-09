@@ -4,8 +4,8 @@
 
 /* These should be ignored because they are commented out in various ways:
 #include "whatever.h" 
+#include "somethingelse.h"
 */
-//#include "somethingelse.h"
 
 void setUp(void)
 {
@@ -27,5 +27,5 @@ void test_AnotherIgnoredTest(void)
 
 void test_ThisFunctionHasNotBeenTested_NeedsToBeImplemented(void)
 {
-    TEST_IGNORE(); //Like This
+    TEST_IGNORE(); /* Like This */
 }

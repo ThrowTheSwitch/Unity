@@ -1,9 +1,9 @@
-//- Copyright (c) 2010 James Grenning and Contributed to Unity Project
-/* ==========================================
-    Unity Project - A Test Framework for C
-    Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
-    [Released under MIT License. Please refer to license.txt for details]
-========================================== */
+/* Copyright (c) 2010 James Grenning and Contributed to Unity Project
+ * ==========================================
+ *  Unity Project - A Test Framework for C
+ *  Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+ *  [Released under MIT License. Please refer to license.txt for details]
+ * ========================================== */
 
 
 #include "unity_output_Spy.h"
@@ -19,31 +19,31 @@ static int spy_enable;
 
 void UnityOutputCharSpy_Create(int s)
 {
-    size = s;
+    size = (s > 0) ? s : 0;
     count = 0;
     spy_enable = 0;
-    buffer = UNITY_FIXTURE_MALLOC(size);
-    memset(buffer, 0, size);
+    buffer = malloc((size_t)size);
+    TEST_ASSERT_NOT_NULL_MESSAGE(buffer, "Internal malloc failed in Spy Create():" __FILE__);
+    memset(buffer, 0, (size_t)size);
 }
 
 void UnityOutputCharSpy_Destroy(void)
 {
     size = 0;
-    UNITY_FIXTURE_FREE(buffer);
+    free(buffer);
 }
 
-int UnityOutputCharSpy_OutputChar(int c)
+void UnityOutputCharSpy_OutputChar(int c)
 {
     if (spy_enable)
     {
         if (count < (size-1))
-            buffer[count++] = c;
+            buffer[count++] = (char)c;
     }
     else
     {
         putchar(c);
     }
-    return c;
 }
 
 const char * UnityOutputCharSpy_Get(void)

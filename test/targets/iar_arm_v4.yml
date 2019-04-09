@@ -32,6 +32,7 @@ compiler:
       - [*tools_root, 'arm\inc\']
       - 'src\'
       - '..\src\'
+      - 'testdata/'
       - *unit_tests_path
       - 'vendor\unity\src\'
   defines:

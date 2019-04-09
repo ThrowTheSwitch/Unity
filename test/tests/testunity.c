@@ -4,73 +4,96 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
-#include <setjmp.h>
 #include "unity.h"
 #include <string.h>
+#include <stdint.h>
 
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
 #ifndef UNITY_EXCLUDE_FLOAT
-static const _UF f_zero = 0.0f;
+static const UNITY_FLOAT f_zero = 0.0f;
 #endif
 
 #ifndef UNITY_EXCLUDE_DOUBLE
-static const _UD d_zero = 0.0;
+static const UNITY_DOUBLE d_zero = 0.0;
 #endif
 
 #define EXPECT_ABORT_BEGIN \
+    startPutcharSpy();     \
     if (TEST_PROTECT())    \
     {
 
 #define VERIFY_FAILS_END                                                       \
     }                                                                          \
+    endPutcharSpy(); /* start/end Spy to suppress output of failure message */ \
     Unity.CurrentTestFailed = (Unity.CurrentTestFailed == 1) ? 0 : 1;          \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Failed But Did Not ]]]]");    \
+      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
+      UNITY_OUTPUT_CHAR(':');                                                  \
+      UnityPrint(Unity.CurrentTestName);                                       \
+      UnityPrint(":FAIL: [[[[ Test Should Have Failed But Did Not ]]]]");      \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
 #define VERIFY_IGNORES_END                                                     \
     }                                                                          \
+    endPutcharSpy(); /* start/end Spy to suppress output of ignore message */  \
     Unity.CurrentTestFailed = (Unity.CurrentTestIgnored == 1) ? 0 : 1;         \
     Unity.CurrentTestIgnored = 0;                                              \
     if (Unity.CurrentTestFailed == 1) {                                        \
       SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrint("[[[[ Previous Test Should Have Ignored But Did Not ]]]]");   \
+      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
+      UNITY_OUTPUT_CHAR(':');                                                  \
+      UnityPrint(Unity.CurrentTestName);                                       \
+      UnityPrint(":FAIL: [[[[ Test Should Have Ignored But Did Not ]]]]");     \
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
-int SetToOneToFailInTearDown;
-int SetToOneMeanWeAlreadyCheckedThisGuy;
+void startPutcharSpy(void);
+void endPutcharSpy(void);
+char* getBufferPutcharSpy(void);
+
+void startFlushSpy(void);
+void endFlushSpy(void);
+int getFlushSpyCalls(void);
+
+static int SetToOneToFailInTearDown;
+static int SetToOneMeanWeAlreadyCheckedThisGuy;
 
 void setUp(void)
 {
-  SetToOneToFailInTearDown = 0;
-  SetToOneMeanWeAlreadyCheckedThisGuy = 0;
+    SetToOneToFailInTearDown = 0;
+    SetToOneMeanWeAlreadyCheckedThisGuy = 0;
 }
 
 void tearDown(void)
 {
-  if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL_MESSAGE("<= Failed in tearDown");
-  if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
-  {
-    UnityPrint("[[[[ Previous Test Should Have Passed But Did Not ]]]]");
-    UNITY_OUTPUT_CHAR('\n');
-  }
+    endPutcharSpy(); /* Stop suppressing test output */
+    if (SetToOneToFailInTearDown == 1)
+    {
+        /* These will be skipped internally if already failed/ignored */
+        TEST_FAIL_MESSAGE("<= Failed in tearDown");
+        TEST_IGNORE_MESSAGE("<= Ignored in tearDown");
+    }
+    if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
+    {
+        UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
+        UNITY_OUTPUT_CHAR('\n');
+    }
 }
 
 void testUnitySizeInitializationReminder(void)
 {
-    /* This test ensures that sizeof(struct _Unity) doesn't change. If this
+    /* This test ensures that sizeof(struct UNITY_STORAGE_T) doesn't change. If this
      * test breaks, go look at the initialization of the Unity global variable
      * in unity.c and make sure we're filling in the proper fields. */
-    const char* message = "Unexpected size for _Unity struct. Please check that "
+    const char* message = "Unexpected size for UNITY_STORAGE_T struct. Please check that "
                      "the initialization of the Unity symbol in unity.c is "
                      "still correct.";
 
-    /* Define a structure with all the same fields as `struct _Unity`. */
+    /* Define a structure with all the same fields as `struct UNITY_STORAGE_T`. */
+#ifdef UNITY_EXCLUDE_DETAILS
     struct {
         const char* TestFile;
         const char* CurrentTestName;
@@ -80,8 +103,35 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifdef UNITY_INCLUDE_EXEC_TIME
+        UNITY_COUNTER_TYPE CurrentTestStartTime;
+        UNITY_COUNTER_TYPE CurrentTestStopTime;
+#endif
+#ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
+#endif
     } _Expected_Unity;
+#else
+    struct {
+        const char* TestFile;
+        const char* CurrentTestName;
+        const char* CurrentDetails1;
+        const char* CurrentDetails2;
+        UNITY_LINE_TYPE CurrentTestLineNumber;
+        UNITY_COUNTER_TYPE NumberOfTests;
+        UNITY_COUNTER_TYPE TestFailures;
+        UNITY_COUNTER_TYPE TestIgnores;
+        UNITY_COUNTER_TYPE CurrentTestFailed;
+        UNITY_COUNTER_TYPE CurrentTestIgnored;
+#ifdef UNITY_INCLUDE_EXEC_TIME
+        UNITY_COUNTER_TYPE CurrentTestStartTime;
+        UNITY_COUNTER_TYPE CurrentTestStopTime;
+#endif
+#ifndef UNITY_EXCLUDE_SETJMP_H
+        jmp_buf AbortFrame;
+#endif
+    } _Expected_Unity;
+#endif
 
     /* Compare our fake structure's size to the actual structure's size. They
      * should be the same.
@@ -89,6 +139,12 @@ void testUnitySizeInitializationReminder(void)
      * This accounts for alignment, padding, and packing issues that might come
      * up between different architectures. */
     TEST_ASSERT_EQUAL_MESSAGE(sizeof(_Expected_Unity), sizeof(Unity), message);
+}
+
+void testPassShouldEndImmediatelyWithPass(void)
+{
+    TEST_PASS();
+    TEST_FAIL_MESSAGE("We should have passed already and finished this test");
 }
 
 void testTrue(void)
@@ -232,7 +288,7 @@ void testNotEqualBits(void)
 
 void testNotEqualUInts(void)
 {
-    _UU16 v0, v1;
+    UNITY_UINT16 v0, v1;
 
     v0 = 9000;
     v1 = 9001;
@@ -244,7 +300,7 @@ void testNotEqualUInts(void)
 
 void testNotEqualUInt8s(void)
 {
-    _UU8 v0, v1;
+    UNITY_UINT8 v0, v1;
 
     v0 = 254;
     v1 = 255;
@@ -256,7 +312,7 @@ void testNotEqualUInt8s(void)
 
 void testNotEqualUInt16s(void)
 {
-    _UU16 v0, v1;
+    UNITY_UINT16 v0, v1;
 
     v0 = 65535;
     v1 = 65534;
@@ -268,7 +324,7 @@ void testNotEqualUInt16s(void)
 
 void testNotEqualUInt32s(void)
 {
-    _UU32 v0, v1;
+    UNITY_UINT32 v0, v1;
 
     v0 = 4294967295;
     v1 = 4294967294;
@@ -280,7 +336,7 @@ void testNotEqualUInt32s(void)
 
 void testNotEqualHex8s(void)
 {
-    _UU8 v0, v1;
+    UNITY_UINT8 v0, v1;
 
     v0 = 0x23;
     v1 = 0x22;
@@ -292,7 +348,7 @@ void testNotEqualHex8s(void)
 
 void testNotEqualHex8sIfSigned(void)
 {
-    _US8 v0, v1;
+    UNITY_INT8 v0, v1;
 
     v0 = -2;
     v1 = 2;
@@ -304,7 +360,7 @@ void testNotEqualHex8sIfSigned(void)
 
 void testNotEqualHex16s(void)
 {
-    _UU16 v0, v1;
+    UNITY_UINT16 v0, v1;
 
     v0 = 0x1234;
     v1 = 0x1235;
@@ -316,7 +372,7 @@ void testNotEqualHex16s(void)
 
 void testNotEqualHex16sIfSigned(void)
 {
-    _US16 v0, v1;
+    UNITY_INT16 v0, v1;
 
     v0 = -1024;
     v1 = -1028;
@@ -328,7 +384,7 @@ void testNotEqualHex16sIfSigned(void)
 
 void testNotEqualHex32s(void)
 {
-    _UU32 v0, v1;
+    UNITY_UINT32 v0, v1;
 
     v0 = 900000;
     v1 = 900001;
@@ -340,7 +396,7 @@ void testNotEqualHex32s(void)
 
 void testNotEqualHex32sIfSigned(void)
 {
-    _US32 v0, v1;
+    UNITY_INT32 v0, v1;
 
     v0 = -900000;
     v1 = 900001;
@@ -372,8 +428,8 @@ void testEqualInts(void)
 
 void testEqualInt8s(void)
 {
-    _US8 v0, v1;
-    _US8 *p0, *p1;
+    UNITY_INT8 v0, v1;
+    UNITY_INT8 *p0, *p1;
 
     v0 = 0x22;
     v1 = 0x22;
@@ -397,8 +453,8 @@ void testEqualInt8sWhenThereAreDifferencesOutside8Bits(void)
 
 void testEqualInt16s(void)
 {
-    _US16 v0, v1;
-    _US16 *p0, *p1;
+    UNITY_INT16 v0, v1;
+    UNITY_INT16 *p0, *p1;
 
     v0 = 0x7876;
     v1 = 0x7876;
@@ -416,8 +472,8 @@ void testEqualInt16s(void)
 
 void testEqualInt16sNegatives(void)
 {
-    _US16 v0, v1;
-    _US16 *p0, *p1;
+    UNITY_INT16 v0, v1;
+    UNITY_INT16 *p0, *p1;
 
     v0 = -7876;
     v1 = -7876;
@@ -441,8 +497,8 @@ void testEqualInt16sWhenThereAreDifferencesOutside16Bits(void)
 
 void testEqualInt32s(void)
 {
-    _US32 v0, v1;
-    _US32 *p0, *p1;
+    UNITY_INT32 v0, v1;
+    UNITY_INT32 *p0, *p1;
 
     v0 = 0x78760000;
     v1 = 0x78760000;
@@ -460,8 +516,8 @@ void testEqualInt32s(void)
 
 void testEqualInt32sNegatives(void)
 {
-    _US32 v0, v1;
-    _US32 *p0, *p1;
+    UNITY_INT32 v0, v1;
+    UNITY_INT32 *p0, *p1;
 
     v0 = -123456789;
     v1 = -123456789;
@@ -501,8 +557,8 @@ void testEqualUints(void)
 
 void testEqualUint8s(void)
 {
-    _UU8 v0, v1;
-    _UU8 *p0, *p1;
+    UNITY_UINT8 v0, v1;
+    UNITY_UINT8 *p0, *p1;
 
     v0 = 0x22;
     v1 = 0x22;
@@ -526,8 +582,8 @@ void testEqualUint8sWhenThereAreDifferencesOutside8Bits(void)
 
 void testEqualUint16s(void)
 {
-    _UU16 v0, v1;
-    _UU16 *p0, *p1;
+    UNITY_UINT16 v0, v1;
+    UNITY_UINT16 *p0, *p1;
 
     v0 = 0x9876;
     v1 = 0x9876;
@@ -551,8 +607,8 @@ void testEqualUint16sWhenThereAreDifferencesOutside16Bits(void)
 
 void testEqualUint32s(void)
 {
-    _UU32 v0, v1;
-    _UU32 *p0, *p1;
+    UNITY_UINT32 v0, v1;
+    UNITY_UINT32 *p0, *p1;
 
     v0 = 0x98760000;
     v1 = 0x98760000;
@@ -581,8 +637,8 @@ void testNotEqual(void)
 
 void testEqualHex8s(void)
 {
-    _UU8 v0, v1;
-    _UU8 *p0, *p1;
+    UNITY_UINT8 v0, v1;
+    UNITY_UINT8 *p0, *p1;
 
     v0 = 0x22;
     v1 = 0x22;
@@ -606,8 +662,8 @@ void testEqualHex8sWhenThereAreDifferencesOutside8Bits(void)
 
 void testEqualHex8sNegatives(void)
 {
-    _UU8 v0, v1;
-    _UU8 *p0, *p1;
+    UNITY_UINT8 v0, v1;
+    UNITY_UINT8 *p0, *p1;
 
     v0 = 0xDD;
     v1 = 0xDD;
@@ -625,8 +681,8 @@ void testEqualHex8sNegatives(void)
 
 void testEqualHex16s(void)
 {
-    _UU16 v0, v1;
-    _UU16 *p0, *p1;
+    UNITY_UINT16 v0, v1;
+    UNITY_UINT16 *p0, *p1;
 
     v0 = 0x9876;
     v1 = 0x9876;
@@ -650,8 +706,8 @@ void testEqualHex16sWhenThereAreDifferencesOutside16Bits(void)
 
 void testEqualHex32s(void)
 {
-    _UU32 v0, v1;
-    _UU32 *p0, *p1;
+    UNITY_UINT32 v0, v1;
+    UNITY_UINT32 *p0, *p1;
 
     v0 = 0x98765432ul;
     v1 = 0x98765432ul;
@@ -669,8 +725,8 @@ void testEqualHex32s(void)
 
 void testEqualBits(void)
 {
-    _UU32 v0 = 0xFF55AA00;
-    _UU32 v1 = 0x55550000;
+    UNITY_UINT32 v0 = 0xFF55AA00;
+    UNITY_UINT32 v1 = 0x55550000;
 
     TEST_ASSERT_BITS(v1, v0, 0x55550000);
     TEST_ASSERT_BITS(v1, v0, 0xFF55CC00);
@@ -685,7 +741,7 @@ void testEqualBits(void)
 
 void testNotEqualBitHigh(void)
 {
-    _UU32 v0 = 0x7F55AA00;
+    UNITY_UINT32 v0 = 0x7F55AA00;
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BIT_HIGH(31, v0);
@@ -694,7 +750,7 @@ void testNotEqualBitHigh(void)
 
 void testNotEqualBitLow(void)
 {
-    _UU32 v0 = 0xFF55AA00;
+    UNITY_UINT32 v0 = 0xFF55AA00;
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BIT_LOW(30, v0);
@@ -703,8 +759,8 @@ void testNotEqualBitLow(void)
 
 void testNotEqualBitsHigh(void)
 {
-    _UU32 v0 = 0xFF55AA00;
-    _UU32 v1 = 0x55550000;
+    UNITY_UINT32 v0 = 0xFF55AA00;
+    UNITY_UINT32 v1 = 0x55550000;
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BITS_HIGH(v0, v1);
@@ -714,14 +770,15 @@ void testNotEqualBitsHigh(void)
 
 void testNotEqualBitsLow(void)
 {
-    _UU32 v0 = 0xFF55AA00;
-    _UU32 v1 = 0x55550000;
+    UNITY_UINT32 v0 = 0xFF55AA00;
+    UNITY_UINT32 v1 = 0x55550000;
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_BITS_LOW(v0, v1);
     VERIFY_FAILS_END
-
 }
+
+
 void testEqualShorts(void)
 {
     short v0, v1;
@@ -1176,6 +1233,12 @@ void testINT32sNotWithinDelta(void)
     VERIFY_FAILS_END
 }
 
+void testINT32sNotWithinDeltaAndDifferenceOverflows(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_INT32_WITHIN(1, -1, 0x7FFFFFFF);
+    VERIFY_FAILS_END
+}
 void testINT32sNotWithinDeltaAndCustomMessage(void)
 {
     EXPECT_ABORT_BEGIN
@@ -1255,6 +1318,415 @@ void testINT8sNotWithinDeltaAndCustomMessage(void)
     VERIFY_FAILS_END
 }
 
+
+//-----------------
+void testGreaterThan(void)
+{
+    UNITY_INT v0, v1;
+    UNITY_INT *p0, *p1;
+
+    v0 = 0;
+    v1 = 1;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN(v0, v1);
+    TEST_ASSERT_GREATER_THAN(*p0, v1);
+    TEST_ASSERT_GREATER_THAN(v0, *p1);
+    TEST_ASSERT_GREATER_THAN(*p0, *p1);
+}
+
+void testGreaterThanINT(void)
+{
+    UNITY_INT v0, v1;
+    UNITY_INT *p0, *p1;
+
+    v0 = 302;
+    v1 = 3334;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_INT(v0, v1);
+    TEST_ASSERT_GREATER_THAN_INT(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_INT(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_INT(*p0, *p1);
+}
+
+
+void testGreaterThanINT8(void)
+{
+    UNITY_INT8 v0, v1;
+    UNITY_INT8 *p0, *p1;
+
+    v0 = -128;
+    v1 = 127;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_INT8(v0, v1);
+    TEST_ASSERT_GREATER_THAN_INT8(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_INT8(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_INT8(*p0, *p1);
+}
+
+void testGreaterThanINT16(void)
+{
+    UNITY_INT16 v0, v1;
+    UNITY_INT16 *p0, *p1;
+
+    v0 = -32768;
+    v1 = 32767;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_INT16(v0, v1);
+    TEST_ASSERT_GREATER_THAN_INT16(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_INT16(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_INT16(*p0, *p1);
+}
+
+void testGreaterThanINT32(void)
+{
+    UNITY_INT32 v0, v1;
+    UNITY_INT32 *p0, *p1;
+
+    v0 = -214783648;
+    v1 = 214783647;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_INT32(v0, v1);
+    TEST_ASSERT_GREATER_THAN_INT32(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_INT32(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_INT32(*p0, *p1);
+}
+
+void testGreaterThanUINT(void)
+{
+    UNITY_UINT v0, v1;
+    UNITY_UINT *p0, *p1;
+
+    v0 = 0;
+    v1 = 1;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_UINT(v0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_UINT(*p0, *p1);
+}
+
+
+void testGreaterThanUINT8(void)
+{
+    UNITY_UINT8 v0, v1;
+    UNITY_UINT8 *p0, *p1;
+
+    v0 = 0;
+    v1 = 255;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_UINT8(v0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT8(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT8(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_UINT8(*p0, *p1);
+}
+
+void testGreaterThanUINT16(void)
+{
+    UNITY_UINT16 v0, v1;
+    UNITY_UINT16 *p0, *p1;
+
+    v0 = 0;
+    v1 = 65535;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_UINT16(v0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT16(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT16(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_UINT16(*p0, *p1);
+}
+
+void testGreaterThanUINT32(void)
+{
+    UNITY_UINT32 v0, v1;
+    UNITY_UINT32 *p0, *p1;
+
+    v0 = 0;
+    v1 = 4294967295;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_UINT32(v0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT32(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_UINT32(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_UINT32(*p0, *p1);
+}
+
+void testGreaterThanHEX8(void)
+{
+    UNITY_UINT8 v0, v1;
+    UNITY_UINT8 *p0, *p1;
+
+    v0 = 0x00;
+    v1 = 0xFF;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_HEX8(v0, v1);
+    TEST_ASSERT_GREATER_THAN_HEX8(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_HEX8(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_HEX8(*p0, *p1);
+}
+
+void testGreaterThanHEX16(void)
+{
+    UNITY_UINT16 v0, v1;
+    UNITY_UINT16 *p0, *p1;
+
+    v0 = 0x0000;
+    v1 = 0xFFFF;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_HEX16(v0, v1);
+    TEST_ASSERT_GREATER_THAN_HEX16(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_HEX16(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_HEX16(*p0, *p1);
+}
+
+void testGreaterThanHEX32(void)
+{
+    UNITY_UINT32 v0, v1;
+    UNITY_UINT32 *p0, *p1;
+
+    v0 = 0x00000000;
+    v1 = 0xFFFFFFFF;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_HEX32(v0, v1);
+    TEST_ASSERT_GREATER_THAN_HEX32(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_HEX32(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_HEX32(*p0, *p1);
+}
+
+
+void testNotGreaterThan(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN(0, -1);
+    VERIFY_FAILS_END
+}
+
+void testLessThan(void)
+{
+    UNITY_INT v0, v1;
+    UNITY_INT *p0, *p1;
+
+    v0 = 0;
+    v1 = -1;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN(v0, v1);
+    TEST_ASSERT_LESS_THAN(*p0, v1);
+    TEST_ASSERT_LESS_THAN(v0, *p1);
+    TEST_ASSERT_LESS_THAN(*p0, *p1);
+}
+
+void testLessThanINT(void)
+{
+    UNITY_INT v0, v1;
+    UNITY_INT *p0, *p1;
+
+    v0 = 3334;
+    v1 = 302;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_INT(v0, v1);
+    TEST_ASSERT_LESS_THAN_INT(*p0, v1);
+    TEST_ASSERT_LESS_THAN_INT(v0, *p1);
+    TEST_ASSERT_LESS_THAN_INT(*p0, *p1);
+}
+
+
+void testLessThanINT8(void)
+{
+    UNITY_INT8 v0, v1;
+    UNITY_INT8 *p0, *p1;
+
+    v0 = 127;
+    v1 = -128;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_INT8(v0, v1);
+    TEST_ASSERT_LESS_THAN_INT8(*p0, v1);
+    TEST_ASSERT_LESS_THAN_INT8(v0, *p1);
+    TEST_ASSERT_LESS_THAN_INT8(*p0, *p1);
+}
+
+void testLessThanINT16(void)
+{
+    UNITY_INT16 v0, v1;
+    UNITY_INT16 *p0, *p1;
+
+    v0 = 32767;
+    v1 = -32768;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_INT16(v0, v1);
+    TEST_ASSERT_LESS_THAN_INT16(*p0, v1);
+    TEST_ASSERT_LESS_THAN_INT16(v0, *p1);
+    TEST_ASSERT_LESS_THAN_INT16(*p0, *p1);
+}
+
+void testLessThanINT32(void)
+{
+    UNITY_INT32 v0, v1;
+    UNITY_INT32 *p0, *p1;
+
+    v0 = 214783647;
+    v1 = -214783648;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_INT32(v0, v1);
+    TEST_ASSERT_LESS_THAN_INT32(*p0, v1);
+    TEST_ASSERT_LESS_THAN_INT32(v0, *p1);
+    TEST_ASSERT_LESS_THAN_INT32(*p0, *p1);
+}
+
+void testLessThanUINT(void)
+{
+    UNITY_UINT v0, v1;
+    UNITY_UINT *p0, *p1;
+
+    v0 = 1;
+    v1 = 0;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_UINT(v0, v1);
+    TEST_ASSERT_LESS_THAN_UINT(*p0, v1);
+    TEST_ASSERT_LESS_THAN_UINT(v0, *p1);
+    TEST_ASSERT_LESS_THAN_UINT(*p0, *p1);
+}
+
+
+void testLessThanUINT8(void)
+{
+    UNITY_UINT8 v0, v1;
+    UNITY_UINT8 *p0, *p1;
+
+    v0 = 255;
+    v1 = 0;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_UINT8(v0, v1);
+    TEST_ASSERT_LESS_THAN_UINT8(*p0, v1);
+    TEST_ASSERT_LESS_THAN_UINT8(v0, *p1);
+    TEST_ASSERT_LESS_THAN_UINT8(*p0, *p1);
+}
+
+void testLessThanUINT16(void)
+{
+    UNITY_UINT16 v0, v1;
+    UNITY_UINT16 *p0, *p1;
+
+    v0 = 65535;
+    v1 = 0;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_UINT16(v0, v1);
+    TEST_ASSERT_LESS_THAN_UINT16(*p0, v1);
+    TEST_ASSERT_LESS_THAN_UINT16(v0, *p1);
+    TEST_ASSERT_LESS_THAN_UINT16(*p0, *p1);
+}
+
+void testLessThanUINT32(void)
+{
+    UNITY_UINT32 v0, v1;
+    UNITY_UINT32 *p0, *p1;
+
+    v0 = 4294967295;
+    v1 = 0;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_UINT32(v0, v1);
+    TEST_ASSERT_LESS_THAN_UINT32(*p0, v1);
+    TEST_ASSERT_LESS_THAN_UINT32(v0, *p1);
+    TEST_ASSERT_LESS_THAN_UINT32(*p0, *p1);
+}
+
+void testLessThanHEX8(void)
+{
+    UNITY_UINT8 v0, v1;
+    UNITY_UINT8 *p0, *p1;
+
+    v0 = 0xFF;
+    v1 = 0x00;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_HEX8(v0, v1);
+    TEST_ASSERT_LESS_THAN_HEX8(*p0, v1);
+    TEST_ASSERT_LESS_THAN_HEX8(v0, *p1);
+    TEST_ASSERT_LESS_THAN_HEX8(*p0, *p1);
+}
+
+void testLessThanHEX16(void)
+{
+    UNITY_UINT16 v0, v1;
+    UNITY_UINT16 *p0, *p1;
+
+    v0 = 0xFFFF;
+    v1 = 0x0000;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_HEX16(v0, v1);
+    TEST_ASSERT_LESS_THAN_HEX16(*p0, v1);
+    TEST_ASSERT_LESS_THAN_HEX16(v0, *p1);
+    TEST_ASSERT_LESS_THAN_HEX16(*p0, *p1);
+}
+
+void testLessThanHEX32(void)
+{
+    UNITY_UINT32 v0, v1;
+    UNITY_UINT32 *p0, *p1;
+
+    v0 = 0xFFFFFFFF;
+    v1 = 0x00000000;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_HEX32(v0, v1);
+    TEST_ASSERT_LESS_THAN_HEX32(*p0, v1);
+    TEST_ASSERT_LESS_THAN_HEX32(v0, *p1);
+    TEST_ASSERT_LESS_THAN_HEX32(*p0, *p1);
+}
+
+
+void testNotLessThan(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN(0, 1);
+    VERIFY_FAILS_END
+}
+
+
+
+//-----------------
 void testEqualStrings(void)
 {
     const char *testString = "foo";
@@ -1339,7 +1811,7 @@ void testNotEqualString4(void)
 void testNotEqualStringLen4(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_STRING_LEN("bar\r", "bar\n", 4);
+    TEST_ASSERT_EQUAL_STRING_LEN("ba\r\x16", "ba\r\n", 4);
     VERIFY_FAILS_END
 }
 
@@ -1359,10 +1831,24 @@ void testNotEqualString_ExpectedStringIsNull(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualStringLen_ExpectedStringIsNull(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN(NULL, "bar", 1);
+    VERIFY_FAILS_END
+}
+
 void testNotEqualString_ActualStringIsNull(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING("foo", NULL);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringLen_ActualStringIsNull(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_LEN("foo", NULL, 1);
     VERIFY_FAILS_END
 }
 
@@ -1445,6 +1931,71 @@ void testEqualStringArrayIfBothNulls(void)
     TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 4);
 }
 
+void testNotEqualStringArrayLengthZero(void)
+{
+    const char *testStrings[] = {NULL};
+    const char **expStrings = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expStrings, testStrings, 0);
+    VERIFY_FAILS_END
+}
+
+void testEqualStringEachEqual(void)
+{
+    const char *testStrings1[] = { "foo", "foo", "foo", "foo" };
+    const char *testStrings2[] = { "boo", "boo", "boo", "zoo" };
+    const char *testStrings3[] = { "", "", "", "" };
+
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings1, 4);
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings1, 1);
+    TEST_ASSERT_EACH_EQUAL_STRING("boo", testStrings2, 3);
+    TEST_ASSERT_EACH_EQUAL_STRING("", testStrings3, 4);
+}
+
+void testNotEqualStringEachEqual1(void)
+{
+    const char *testStrings[] = { "foo", "foo", "foo", "moo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual2(void)
+{
+    const char *testStrings[] = { "boo", "foo", "foo", "foo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual3(void)
+{
+    const char *testStrings[] = { "foo", "foo", "foo", NULL };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual4(void)
+{
+    const char *testStrings[] = { "foo", "foo", "woo", "foo" };
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", testStrings, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualStringEachEqual5(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_STRING("foo", NULL, 1);
+    VERIFY_FAILS_END
+}
+
 void testEqualMemory(void)
 {
     const char *testString = "whatever";
@@ -1485,6 +2036,13 @@ void testNotEqualMemory4(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualMemoryLengthZero(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 0);
+    VERIFY_FAILS_END
+}
+
 void testEqualIntArrays(void)
 {
     int p0[] = {1, 8, 987, -2};
@@ -1497,6 +2055,7 @@ void testEqualIntArrays(void)
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_INT_ARRAY(NULL, NULL, 1);
 }
 
 void testNotEqualIntArraysNullExpected(void)
@@ -1546,6 +2105,75 @@ void testNotEqualIntArrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntArraysLengthZero(void)
+{
+    UNITY_UINT32 p0[1] = {1};
+    UNITY_UINT32 p1[1] = {1};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(p0, p1, 0);
+    VERIFY_FAILS_END
+}
+
+void testEqualIntEachEqual(void)
+{
+    int p0[] = {1, 1, 1, 1};
+    int p1[] = {987, 987, 987, 987};
+    int p2[] = {-2, -2, -2, -3};
+    int p3[] = {1, 5, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_INT(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_INT(-2, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_INT(1, p3, 1);
+}
+
+void testNotEqualIntEachEqualNullActual(void)
+{
+    int* p1 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(1, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntEachEqual1(void)
+{
+    int p0[] = {1, 1, 1, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntEachEqual2(void)
+{
+    int p0[] = {-5, -5, -1, -5};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(-5, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualIntEachEqual3(void)
+{
+    int p0[] = {1, 88, 88, 88};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(88, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualEachEqualLengthZero(void)
+{
+    UNITY_UINT32 p0[1] = {1};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT(0, p0, 0);
     VERIFY_FAILS_END
 }
 
@@ -1629,12 +2257,83 @@ void testNotEqualPtrArrays3(void)
     VERIFY_FAILS_END
 }
 
+void testEqualPtrEachEqual(void)
+{
+    char A = 1;
+    char B = 2;
+    char C = 3;
+    char* p0[] = {&A, &A, &A};
+    char* p1[] = {&A, &B, &C, &A};
+    char* p2[] = {&B, &B};
+    char* p3[] = {&C};
+
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 3);
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p1, 1);
+    TEST_ASSERT_EACH_EQUAL_PTR(&B, p2, 2);
+    TEST_ASSERT_EACH_EQUAL_PTR(&C, p3, 1);
+}
+
+void testNotEqualPtrEachEqualNullExpected(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 2);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqualNullActual(void)
+{
+    char A = 1;
+    char** p0 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 2);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqual1(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&A, &A, &A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&A, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqual2(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&B, &B, &A, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&B, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualPtrEachEqual3(void)
+{
+    char A = 1;
+    char B = 1;
+    char* p0[] = {&A, &B, &B, &B};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_PTR(&B, p0, 4);
+    VERIFY_FAILS_END
+}
+
 void testEqualInt8Arrays(void)
 {
-    _US8 p0[] = {1, 8, 117, -2};
-    _US8 p1[] = {1, 8, 117, -2};
-    _US8 p2[] = {1, 8, 117, 2};
-    _US8 p3[] = {1, 50, 60, 70};
+    UNITY_INT8 p0[] = {1, 8, 117, -2};
+    UNITY_INT8 p1[] = {1, 8, 117, -2};
+    UNITY_INT8 p2[] = {1, 8, 117, 2};
+    UNITY_INT8 p3[] = {1, 50, 60, 70};
 
     TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p0, 4);
@@ -1645,11 +2344,34 @@ void testEqualInt8Arrays(void)
 
 void testNotEqualInt8Arrays(void)
 {
-    _US8 p0[] = {1, 8, 36, -2};
-    _US8 p1[] = {1, 8, 36, 2};
+    UNITY_INT8 p0[] = {1, 8, 36, -2};
+    UNITY_INT8 p1[] = {1, 8, 36, 2};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT8_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualInt8EachEqual(void)
+{
+    UNITY_INT8 p0[] = {1, 1, 1, 1};
+    UNITY_INT8 p1[] = {117, 117, 117, -2};
+    UNITY_INT8 p2[] = {-1, -1, 117, 2};
+    UNITY_INT8 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT8(117, p1, 3);
+    TEST_ASSERT_EACH_EQUAL_INT8(-1, p2, 2);
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p3, 1);
+}
+
+void testNotEqualInt8EachEqual(void)
+{
+    UNITY_INT8 p0[] = {1, 8, 36, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT8(1, p0, 2);
     VERIFY_FAILS_END
 }
 
@@ -1697,12 +2419,53 @@ void testNotEqualUIntArrays3(void)
     VERIFY_FAILS_END
 }
 
+void testEqualUIntEachEqual(void)
+{
+    unsigned int p0[] = {1, 1, 1, 1};
+    unsigned int p1[] = {65132u, 65132u, 65132u, 65132u};
+    unsigned int p2[] = {8, 8, 987, 2};
+    unsigned int p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT(65132u, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT(8, p2, 2);
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p3, 1);
+}
+
+void testNotEqualUIntEachEqual1(void)
+{
+    unsigned int p0[] = {1, 65132u, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUIntEachEqual2(void)
+{
+    unsigned int p0[] = {987, 8, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUIntEachEqual3(void)
+{
+    unsigned int p0[] = {1, 1, 1, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
 void testEqualInt16Arrays(void)
 {
-    _US16 p0[] = {1, 8, 117, 3};
-    _US16 p1[] = {1, 8, 117, 3};
-    _US16 p2[] = {1, 8, 117, 2};
-    _US16 p3[] = {1, 50, 60, 70};
+    UNITY_INT16 p0[] = {1, 8, 117, 3};
+    UNITY_INT16 p1[] = {1, 8, 117, 3};
+    UNITY_INT16 p2[] = {1, 8, 117, 2};
+    UNITY_INT16 p3[] = {1, 50, 60, 70};
 
     TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p0, 4);
@@ -1713,20 +2476,43 @@ void testEqualInt16Arrays(void)
 
 void testNotEqualInt16Arrays(void)
 {
-    _US16 p0[] = {1, 8, 127, 3};
-    _US16 p1[] = {1, 8, 127, 2};
+    UNITY_INT16 p0[] = {1, 8, 127, 3};
+    UNITY_INT16 p1[] = {1, 8, 127, 2};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT16_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
 }
 
+void testEqualInt16EachEqual(void)
+{
+    UNITY_INT16 p0[] = {1, 1, 1, 1};
+    UNITY_INT16 p1[] = {32111, 32111, 32111, 3};
+    UNITY_INT16 p2[] = {-1, -1, -1, 2};
+    UNITY_INT16 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EACH_EQUAL_INT16(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT16(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT16(32111, p1, 3);
+    TEST_ASSERT_EACH_EQUAL_INT16(-1, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_INT16(1, p3, 1);
+}
+
+void testNotEqualInt16EachEqual(void)
+{
+    UNITY_INT16 p0[] = {127, 127, 127, 3};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT16(127, p0, 4);
+    VERIFY_FAILS_END
+}
+
 void testEqualInt32Arrays(void)
 {
-    _US32 p0[] = {1, 8, 117, 3};
-    _US32 p1[] = {1, 8, 117, 3};
-    _US32 p2[] = {1, 8, 117, 2};
-    _US32 p3[] = {1, 50, 60, 70};
+    UNITY_INT32 p0[] = {1, 8, 117, 3};
+    UNITY_INT32 p1[] = {1, 8, 117, 3};
+    UNITY_INT32 p2[] = {1, 8, 117, 2};
+    UNITY_INT32 p3[] = {1, 50, 60, 70};
 
     TEST_ASSERT_EQUAL_INT32_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_INT32_ARRAY(p0, p0, 4);
@@ -1737,20 +2523,43 @@ void testEqualInt32Arrays(void)
 
 void testNotEqualInt32Arrays(void)
 {
-    _US32 p0[] = {1, 8, 127, 3};
-    _US32 p1[] = {1, 8, 127, 2};
+    UNITY_INT32 p0[] = {1, 8, 127, 3};
+    UNITY_INT32 p1[] = {1, 8, 127, 2};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT32_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
 }
 
+void testEqualInt32EachEqual(void)
+{
+    UNITY_INT32 p0[] = {8, 8, 8, 8};
+    UNITY_INT32 p1[] = {65537, 65537, 65537, 65537};
+    UNITY_INT32 p2[] = {-3, -3, -3, 2};
+    UNITY_INT32 p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EACH_EQUAL_INT32(8, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_INT32(8, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_INT32(65537, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_INT32(-3, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_INT32(1, p3, 1);
+}
+
+void testNotEqualInt32EachEqual(void)
+{
+    UNITY_INT32 p0[] = {127, 8, 127, 127};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_INT32(127, p0, 4);
+    VERIFY_FAILS_END
+}
+
 void testEqualUINT8Arrays(void)
 {
-    _UU8 p0[] = {1, 8, 100, 127};
-    _UU8 p1[] = {1, 8, 100, 127};
-    _UU8 p2[] = {1, 8, 100, 2};
-    _UU8 p3[] = {1, 50, 60, 70};
+    UNITY_UINT8 p0[] = {1, 8, 100, 127};
+    UNITY_UINT8 p1[] = {1, 8, 100, 127};
+    UNITY_UINT8 p2[] = {1, 8, 100, 2};
+    UNITY_UINT8 p3[] = {1, 50, 60, 70};
 
     TEST_ASSERT_EQUAL_UINT8_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(p0, p0, 4);
@@ -1836,10 +2645,10 @@ void testNotEqualUINT16Arrays3(void)
 
 void testEqualUINT32Arrays(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 987, 65132u};
-    _UU32 p2[] = {1, 8, 987, 2};
-    _UU32 p3[] = {1, 500, 600, 700};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p2[] = {1, 8, 987, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
 
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p0, 4);
@@ -1850,8 +2659,8 @@ void testEqualUINT32Arrays(void)
 
 void testNotEqualUINT32Arrays1(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 987, 65131u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 987, 65131u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p1, 4);
@@ -1860,8 +2669,8 @@ void testNotEqualUINT32Arrays1(void)
 
 void testNotEqualUINT32Arrays2(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {2, 8, 987, 65132u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {2, 8, 987, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p1, 4);
@@ -1870,8 +2679,8 @@ void testNotEqualUINT32Arrays2(void)
 
 void testNotEqualUINT32Arrays3(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 986, 65132u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 986, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32_ARRAY(p0, p1, 4);
@@ -1880,10 +2689,10 @@ void testNotEqualUINT32Arrays3(void)
 
 void testEqualHEXArrays(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 987, 65132u};
-    _UU32 p2[] = {1, 8, 987, 2};
-    _UU32 p3[] = {1, 500, 600, 700};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p2[] = {1, 8, 987, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
 
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p0, 4);
@@ -1894,8 +2703,8 @@ void testEqualHEXArrays(void)
 
 void testNotEqualHEXArrays1(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 987, 65131u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 987, 65131u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
@@ -1904,8 +2713,8 @@ void testNotEqualHEXArrays1(void)
 
 void testNotEqualHEXArrays2(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {2, 8, 987, 65132u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {2, 8, 987, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
@@ -1914,8 +2723,8 @@ void testNotEqualHEXArrays2(void)
 
 void testNotEqualHEXArrays3(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 986, 65132u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 986, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX_ARRAY(p0, p1, 4);
@@ -1924,10 +2733,10 @@ void testNotEqualHEXArrays3(void)
 
 void testEqualHEX32Arrays(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 987, 65132u};
-    _UU32 p2[] = {1, 8, 987, 2};
-    _UU32 p3[] = {1, 500, 600, 700};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p2[] = {1, 8, 987, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
 
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p0, 4);
@@ -1938,8 +2747,8 @@ void testEqualHEX32Arrays(void)
 
 void testNotEqualHEX32Arrays1(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 987, 65131u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 987, 65131u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
@@ -1948,8 +2757,8 @@ void testNotEqualHEX32Arrays1(void)
 
 void testNotEqualHEX32Arrays2(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {2, 8, 987, 65132u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {2, 8, 987, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
@@ -1958,8 +2767,8 @@ void testNotEqualHEX32Arrays2(void)
 
 void testNotEqualHEX32Arrays3(void)
 {
-    _UU32 p0[] = {1, 8, 987, 65132u};
-    _UU32 p1[] = {1, 8, 986, 65132u};
+    UNITY_UINT32 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT32 p1[] = {1, 8, 986, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX32_ARRAY(p0, p1, 4);
@@ -2012,10 +2821,10 @@ void testNotEqualHEX16Arrays3(void)
 
 void testEqualHEX8Arrays(void)
 {
-    unsigned short p0[] = {1, 8, 254u, 123};
-    unsigned short p1[] = {1, 8, 254u, 123};
-    unsigned short p2[] = {1, 8, 254u, 2};
-    unsigned short p3[] = {1, 23, 25, 26};
+    unsigned char p0[] = {1, 8, 254u, 123};
+    unsigned char p1[] = {1, 8, 254u, 123};
+    unsigned char p2[] = {1, 8, 254u, 2};
+    unsigned char p3[] = {1, 23, 25, 26};
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p0, 4);
@@ -2051,6 +2860,293 @@ void testNotEqualHEX8Arrays3(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualUINT8EachEqual(void)
+{
+    UNITY_UINT8 p0[] = {127u, 127u, 127u, 127u};
+    UNITY_UINT8 p1[] = {1u, 1u, 1u, 1u};
+    UNITY_UINT8 p2[] = {128u, 128u, 128u, 2u};
+    UNITY_UINT8 p3[] = {1u, 50u, 60u, 70u};
+
+    TEST_ASSERT_EACH_EQUAL_UINT8(127u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT8(127u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT8(1u, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT8(128u, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_UINT8(1u, p3, 1);
+}
+
+void testNotEqualUINT8EachEqual1(void)
+{
+    unsigned char p0[] = {127u, 127u, 128u, 127u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT8(127u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT8EachEqual2(void)
+{
+    unsigned char p0[] = {1, 1, 1, 127u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT8(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT8EachEqual3(void)
+{
+    unsigned char p0[] = {54u, 55u, 55u, 55u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT8(55u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualUINT16EachEqual(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 65132u, 65132u};
+    unsigned short p1[] = {987, 987, 987, 987};
+    unsigned short p2[] = {1, 1, 1, 2};
+    unsigned short p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT16(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT16(1, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_UINT16(1, p3, 1);
+}
+
+void testNotEqualUINT16EachEqual1(void)
+{
+    unsigned short p0[] = {1, 65132u, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT16EachEqual2(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT16EachEqual3(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 65132u, 65133u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualUINT32EachEqual(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT32 p1[] = {987, 987, 987, 987};
+    UNITY_UINT32 p2[] = {8, 8, 8, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_UINT32(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_UINT32(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT32(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_UINT32(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_UINT32(1, p3, 1);
+}
+
+void testNotEqualUINT32EachEqual1(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT32(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT32EachEqual2(void)
+{
+    UNITY_UINT32 p0[] = {1, 987, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT32(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualUINT32EachEqual3(void)
+{
+    UNITY_UINT32 p0[] = {1, 1, 1, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_UINT32(1, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEXEachEqual(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT32 p1[] = {987, 987, 987, 987};
+    UNITY_UINT32 p2[] = {8, 8, 8, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_HEX(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX(1, p3, 1);
+}
+
+void testNotEqualHEXEachEqual1(void)
+{
+    UNITY_UINT32 p0[] = {1, 65132u, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEXEachEqual2(void)
+{
+    UNITY_UINT32 p0[] = {987, 987, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEXEachEqual3(void)
+{
+    UNITY_UINT32 p0[] = {8, 8, 987, 8};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX(8, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEX32EachEqual(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT32 p1[] = {987, 987, 987, 987};
+    UNITY_UINT32 p2[] = {8, 8, 8, 2};
+    UNITY_UINT32 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX32(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX32(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX32(1, p3, 1);
+}
+
+void testNotEqualHEX32EachEqual1(void)
+{
+    UNITY_UINT32 p0[] = {65132u, 8, 65132u, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX32EachEqual2(void)
+{
+    UNITY_UINT32 p0[] = {1, 987, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX32EachEqual3(void)
+{
+    UNITY_UINT32 p0[] = {8, 8, 8, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX32(8, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEX16EachEqual(void)
+{
+    UNITY_UINT16 p0[] = {65132u, 65132u, 65132u, 65132u};
+    UNITY_UINT16 p1[] = {987, 987, 987, 987};
+    UNITY_UINT16 p2[] = {8, 8, 8, 2};
+    UNITY_UINT16 p3[] = {1, 500, 600, 700};
+
+    TEST_ASSERT_EACH_EQUAL_HEX16(65132u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX16(65132u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX16(987, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX16(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX16(1, p3, 1);
+}
+
+void testNotEqualHEX16EachEqual1(void)
+{
+    unsigned short p0[] = {65132u, 65132u, 987, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX16(65132u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX16EachEqual2(void)
+{
+    unsigned short p0[] = {1, 987, 987, 987};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX16(987, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX16EachEqual3(void)
+{
+    unsigned short p0[] = {8, 8, 8, 65132u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX16(8, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualHEX8EachEqual(void)
+{
+    unsigned char p0[] = {254u, 254u, 254u, 254u};
+    unsigned char p1[] = {123, 123, 123, 123};
+    unsigned char p2[] = {8, 8, 8, 2};
+    unsigned char p3[] = {1, 23, 25, 26};
+
+    TEST_ASSERT_EACH_EQUAL_HEX8(254u, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_HEX8(254u, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX8(123, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_HEX8(8, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_HEX8(1, p3, 1);
+}
+
+void testNotEqualHEX8EachEqual1(void)
+{
+    unsigned char p0[] = {253u, 253u, 254u, 253u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX8(253u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX8EachEqual2(void)
+{
+    unsigned char p0[] = {254u, 254u, 254u, 253u};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX8(254u, p0, 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualHEX8EachEqual3(void)
+{
+    unsigned char p0[] = {1, 8, 8, 8};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_HEX8(8, p0, 4);
     VERIFY_FAILS_END
 }
 
@@ -2118,6 +3214,71 @@ void testNotEqualMemoryArrays3(void)
     VERIFY_FAILS_END
 }
 
+void testEqualMemoryEachEqual(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2, 1, 8, 987, -2};
+    int p2[] = {8, 8, 8, 2};
+    int p3[] = {8, 500, 600, 700};
+    int v = 8;
+
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p0, sizeof(int)*4, 1);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 2);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 1);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(&v, p2, sizeof(int), 3);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(&v, p3, sizeof(int), 1);
+}
+
+void testNotEqualMemoryEachEqualExpectedNull(void)
+{
+    int* p0 = NULL;
+    int p1[] = {1, 8, 987, 2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int), 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqualActualNull(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int* p1 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int), 4);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqual1(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {9, 8, 987, -2, 1, 8, 987, -2, 1, 8, 987, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 3);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqual2(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2, 1, 8, 987, -2, 1, 8, 987, 9};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 3);
+    VERIFY_FAILS_END
+}
+
+void testNotEqualMemoryEachEqual3(void)
+{
+    int p0[] = {1, 8, 987, -2};
+    int p1[] = {1, 8, 987, -2, 1, 9, 987, -2, 1, 8, 987, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(p0, p1, sizeof(int)*4, 3);
+    VERIFY_FAILS_END
+}
+
 void testProtection(void)
 {
     volatile int mask = 0;
@@ -2142,15 +3303,190 @@ void testIgnoredAndThenFailInTearDown(void)
     TEST_IGNORE();
 }
 
+// Tricky series of macros to set USING_OUTPUT_SPY
+#define USING_SPY_AS(a)           EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
+#define ASSIGN_VALUE(a)           VAL_##a
+#define VAL_putcharSpy            0, 1
+#define EXPAND_AND_USE_2ND(a, b)  SECOND_PARAM(a, b, throwaway)
+#define SECOND_PARAM(a, b, ...)   b
+#if USING_SPY_AS(UNITY_OUTPUT_CHAR)
+  #define USING_OUTPUT_SPY // true only if UNITY_OUTPUT_CHAR = putcharSpy
+#endif
+
+#ifdef USING_OUTPUT_SPY
+#include <stdio.h>
+#define SPY_BUFFER_MAX 40
+static char putcharSpyBuffer[SPY_BUFFER_MAX];
+#endif
+static int indexSpyBuffer;
+static int putcharSpyEnabled;
+
+void startPutcharSpy(void) {indexSpyBuffer = 0; putcharSpyEnabled = 1;}
+
+void endPutcharSpy(void) {putcharSpyEnabled = 0;}
+
+char* getBufferPutcharSpy(void)
+{
+#ifdef USING_OUTPUT_SPY
+    putcharSpyBuffer[indexSpyBuffer] = '\0';
+    return putcharSpyBuffer;
+#else
+    return NULL;
+#endif
+}
+
+void putcharSpy(int c)
+{
+#ifdef USING_OUTPUT_SPY
+    if (putcharSpyEnabled)
+    {
+        if (indexSpyBuffer < SPY_BUFFER_MAX - 1)
+            putcharSpyBuffer[indexSpyBuffer++] = (char)c;
+    } else
+        putchar((char)c);
+#endif
+}
+
+/* This is for counting the calls to the flushSpy */
+static int flushSpyEnabled;
+static int flushSpyCalls = 0;
+
+void startFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 1; }
+void endFlushSpy(void) { flushSpyCalls = 0; flushSpyEnabled = 0; }
+int getFlushSpyCalls(void) { return flushSpyCalls; }
+
+void flushSpy(void)
+{
+    if (flushSpyEnabled){ flushSpyCalls++; }
+}
+
+void testFailureCountIncrementsAndIsReturnedAtEnd(void)
+{
+    UNITY_UINT savedFailures = Unity.TestFailures;
+    Unity.CurrentTestFailed = 1;
+    startPutcharSpy(); // Suppress output
+    startFlushSpy();
+    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
+    UnityConcludeTest();
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
+#if defined(UNITY_OUTPUT_FLUSH) && defined(UNITY_OUTPUT_FLUSH_HEADER_DECLARATION)
+    TEST_ASSERT_EQUAL(1, getFlushSpyCalls());
+#else
+    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
+#endif
+    endFlushSpy();
+
+    startPutcharSpy(); // Suppress output
+    int failures = UnityEnd();
+    Unity.TestFailures--;
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL(savedFailures + 1, failures);
+}
+
+void testCstringsEscapeSequence(void)
+{
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+#else
+    startPutcharSpy();
+    UnityPrint("\x16\x10");
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL_STRING("\\x16\\x10", getBufferPutcharSpy());
+#endif
+}
+
+void testHexPrintsUpToMaxNumberOfNibbles(void)
+{
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+#else
+    startPutcharSpy();
+    UnityPrintNumberHex(0xBEE, 21);
+    endPutcharSpy();
+    TEST_ASSERT_EQUAL_INT(sizeof(UNITY_INT)*2, strlen(getBufferPutcharSpy()));
+#endif
+}
+
+#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
+        startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
+        }
+
+#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) {            \
+        startPutcharSpy(); UnityPrintNumberUnsigned((actual)); endPutcharSpy(); \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());            \
+        }
+
+void testPrintNumbers32(void)
+{
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE_MESSAGE("Compile with '-D UNITY_OUTPUT_CHAR=putcharSpy' to enable print testing");
+#else
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("1", 1);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1", -1);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("2000000000", 2000000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-2147483648", (UNITY_INT32)0x80000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1",          (UNITY_INT32)0xFFFFFFFF);
+#endif
+}
+
+void testPrintNumbersUnsigned32(void)
+{
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("1", 1);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("1500000000", 1500000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("2147483648", (UNITY_UINT32)0x80000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("4294967295", (UNITY_UINT32)0xFFFFFFFF);
+#endif
+}
+
+
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ==================
+
+void testPrintNumbersInt64(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+  #ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+  #else
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("10000000000", 10000000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-9223372036854775808", (UNITY_INT)0x8000000000000000);
+    TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1", (UNITY_INT)0xFFFFFFFFFFFFFFFF);
+  #endif
+#endif
+}
+
+void testPrintNumbersUInt64(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+  #ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+  #else
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("0", 0);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("70000000000", 70000000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("9223372036854775808",  (UNITY_UINT)0x8000000000000000);
+    TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("18446744073709551615", (UNITY_UINT)0xFFFFFFFFFFFFFFFF);
+  #endif
+#endif
+}
 
 void testEqualHex64s(void)
 {
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 v0, v1;
-    _UU64 *p0, *p1;
+    UNITY_UINT64 v0, v1;
+    UNITY_UINT64 *p0, *p1;
 
     v0 = 0x9876543201234567;
     v1 = 0x9876543201234567;
@@ -2172,8 +3508,8 @@ void testEqualUint64s(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 v0, v1;
-    _UU64 *p0, *p1;
+    UNITY_UINT64 v0, v1;
+    UNITY_UINT64 *p0, *p1;
 
     v0 = 0x9876543201234567;
     v1 = 0x9876543201234567;
@@ -2195,11 +3531,11 @@ void testEqualInt64s(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _US64 v0, v1;
-    _US64 *p0, *p1;
+    UNITY_INT64 v0, v1;
+    UNITY_INT64 *p0, *p1;
 
-    v0 = (_US64)0x9876543201234567;
-    v1 = (_US64)0x9876543201234567;
+    v0 = (UNITY_INT64)0x9876543201234567;
+    v1 = (UNITY_INT64)0x9876543201234567;
     p0 = &v0;
     p1 = &v1;
 
@@ -2219,7 +3555,7 @@ void testNotEqualHex64s(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 v0, v1;
+    UNITY_UINT64 v0, v1;
 
     v0 = 9000000000;
     v1 = 9100000000;
@@ -2235,7 +3571,7 @@ void testNotEqualUint64s(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 v0, v1;
+    UNITY_UINT64 v0, v1;
 
     v0 = 9000000000;
     v1 = 9100000000;
@@ -2251,7 +3587,7 @@ void testNotEqualInt64s(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _US64 v0, v1;
+    UNITY_INT64 v0, v1;
 
     v0 = -9000000000;
     v1 = 9100000000;
@@ -2267,7 +3603,7 @@ void testNotEqualHex64sIfSigned(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _US64 v0, v1;
+    UNITY_INT64 v0, v1;
 
     v0 = -9000000000;
     v1 = 9000000000;
@@ -2366,15 +3702,26 @@ void testINT64sNotWithinDelta(void)
 #endif
 }
 
+void testINT64sNotWithinDeltaAndDifferenceOverflows(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_INT64_WITHIN(1, 0x8000000000000000, 0x7FFFFFFFFFFFFFFF);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualHEX64Arrays(void)
 {
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 p0[] = {1, 8, 987, 65132u};
-    _UU64 p1[] = {1, 8, 987, 65132u};
-    _UU64 p2[] = {1, 8, 987, 2};
-    _UU64 p3[] = {1, 500, 600, 700};
+    UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT64 p1[] = {1, 8, 987, 65132u};
+    UNITY_UINT64 p2[] = {1, 8, 987, 2};
+    UNITY_UINT64 p3[] = {1, 500, 600, 700};
 
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p0, 4);
@@ -2389,10 +3736,10 @@ void testEqualUint64Arrays(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 p0[] = {1, 8, 987, 65132u};
-    _UU64 p1[] = {1, 8, 987, 65132u};
-    _UU64 p2[] = {1, 8, 987, 2};
-    _UU64 p3[] = {1, 500, 600, 700};
+    UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT64 p1[] = {1, 8, 987, 65132u};
+    UNITY_UINT64 p2[] = {1, 8, 987, 2};
+    UNITY_UINT64 p3[] = {1, 500, 600, 700};
 
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p0, 4);
@@ -2407,10 +3754,10 @@ void testEqualInt64Arrays(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _US64 p0[] = {1, 8, 987, -65132};
-    _US64 p1[] = {1, 8, 987, -65132};
-    _US64 p2[] = {1, 8, 987, -2};
-    _US64 p3[] = {1, 500, 600, 700};
+    UNITY_INT64 p0[] = {1, 8, 987, -65132};
+    UNITY_INT64 p1[] = {1, 8, 987, -65132};
+    UNITY_INT64 p2[] = {1, 8, 987, -2};
+    UNITY_INT64 p3[] = {1, 500, 600, 700};
 
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p0, 1);
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p0, 4);
@@ -2426,8 +3773,8 @@ void testNotEqualHEX64Arrays1(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 p0[] = {1, 8, 987, 65132u};
-    _UU64 p1[] = {1, 8, 987, 65131u};
+    UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT64 p1[] = {1, 8, 987, 65131u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
@@ -2440,8 +3787,8 @@ void testNotEqualHEX64Arrays2(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 p0[] = {1, 8, 987, 65132u};
-    _UU64 p1[] = {2, 8, 987, 65132u};
+    UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT64 p1[] = {2, 8, 987, 65132u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
@@ -2454,8 +3801,8 @@ void testNotEqualUint64Arrays(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _UU64 p0[] = {1, 8, 987, 65132u};
-    _UU64 p1[] = {1, 8, 987, 65131u};
+    UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
+    UNITY_UINT64 p1[] = {1, 8, 987, 65131u};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p1, 4);
@@ -2468,8 +3815,8 @@ void testNotEqualInt64Arrays(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    _US64 p0[] = {1, 8, 987, -65132};
-    _US64 p1[] = {1, 8, 987, -65131};
+    UNITY_INT64 p0[] = {1, 8, 987, -65132};
+    UNITY_INT64 p1[] = {1, 8, 987, -65131};
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p1, 4);
@@ -2568,14 +3915,12 @@ void testFloatsNotEqualExpectedNaN(void)
 #endif
 }
 
-void testFloatsNotEqualBothNaN(void)
+void testFloatsEqualBothNaN(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 0.0f / f_zero);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -2623,14 +3968,12 @@ void testFloatsNotEqualExpectedInf(void)
 #endif
 }
 
-void testFloatsNotEqualBothInf(void)
+void testFloatsEqualBothInf(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 1.0f / f_zero);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -2822,6 +4165,18 @@ void testFloatIsNotDeterminate2(void)
 #endif
 }
 
+void testFloatTraitFailsOnInvalidTrait(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    UnityAssertFloatSpecial(1.0f, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
+    VERIFY_FAILS_END
+#endif
+}
+
+
 void testEqualFloatArrays(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
@@ -2837,6 +4192,7 @@ void testEqualFloatArrays(void)
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(NULL, NULL, 1);
 #endif
 }
 
@@ -2952,7 +4308,7 @@ void testNotEqualFloatArraysNegative3(void)
 #endif
 }
 
-void testNotEqualFloatArraysNaN(void)
+void testEqualFloatArraysNaN(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -2960,13 +4316,11 @@ void testNotEqualFloatArraysNaN(void)
     float p0[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
 #endif
 }
 
-void testNotEqualFloatArraysInf(void)
+void testEqualFloatArraysInf(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
@@ -2974,9 +4328,356 @@ void testNotEqualFloatArraysInf(void)
     float p0[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
+#endif
+}
+
+void testNotEqualFloatArraysLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[1] = {0.0f};
+    float p1[1] = {0.0f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 0);
     VERIFY_FAILS_END
+#endif
+}
+
+void testEqualFloatEachEqual(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float p1[] = {-0.123f, -0.123f, -0.123f, -0.123f};
+    float p2[] = {25.4f, 25.4f, 25.4f, -0.2f};
+    float p3[] = {1.0f, -23.0f, 25.0f, -0.26f};
+
+    TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_FLOAT(-0.123f, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_FLOAT(25.4f, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f, p3, 1);
+#endif
+}
+
+void testNotEqualFloatEachEqualActualNull(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float* p0 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(5, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatEachEqual1(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {0.253f, 8.0f, 0.253f, 0.253f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(0.253f, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatEachEqual2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {8.0f, 8.0f, 8.0f, 0.253f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(8.0f, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatEachEqual3(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0f, 1.0f, 1.0f, 0.253f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatEachEqualNegative1(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {-1.0f, -0.253f, -0.253f, -0.253f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(-0.253f, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatEachEqualNegative2(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {-25.4f, -8.0f, -25.4f, -25.4f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(-25.4f, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualFloatEachEqualNegative3(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {-8.0f, -8.0f, -8.0f, -0.253f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(-8.0f, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testEqualFloatEachEqualNaN(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {0.0f / f_zero, 0.0f / f_zero, 0.0f / f_zero, 0.0f / f_zero};
+
+    TEST_ASSERT_EACH_EQUAL_FLOAT(0.0f / f_zero, p0, 4);
+#endif
+}
+
+void testEqualFloatEachEqualInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0f / f_zero, 1.0f / f_zero, 25.4f, 0.253f};
+
+    TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f / f_zero, p0, 2);
+#endif
+}
+
+void testNotEqualFloatEachEqualLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[1] = {0.0f};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_FLOAT(0.0f, p0, 0);
+    VERIFY_FAILS_END
+#endif
+}
+
+#define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) {            \
+        startPutcharSpy(); UnityPrintFloat((actual)); endPutcharSpy();  \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
+        }
+
+void testFloatPrinting(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0",            0.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("4.99e-07",     0.000000499f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.1004695",    0.100469499f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("2",            1.9999995f); /*Rounding to int place*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1",            1.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.25",         1.25f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("7.999999",     7.999999f); /*Not rounding*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("16.00002",     16.00002f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("16.00004",     16.00004f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("16.00006",     16.00006f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("9999999",      9999999.0f); /*Last full print integer*/
+
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-0",            -0.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.99e-07",     -0.000000499f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-0.1004695",    -0.100469499f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-2",            -1.9999995f); /*Rounding to int place*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-1",            -1.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-1.25",         -1.25f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-7.999999",     -7.999999f); /*Not rounding*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-16.00002",     -16.00002f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-16.00004",     -16.00004f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-16.00006",     -16.00006f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-9999999",      -9999999.0f); /*Last full print integer*/
+
+    /* Fails, prints "4.294968e+09" due to FP math imprecision
+     * TEST_ASSERT_EQUAL_PRINT_FLOATING("4.294967e+09",  4294967296.0f); */
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("5e+09",        5000000000.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("8e+09",        8.0e+09f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("8.309999e+09", 8309999104.0f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1e+10",        1.0e+10f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1e+10",        10000000000.0f);
+    /* Some compilers have trouble with inexact float constants, a float cast works generally */
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.000055e+10", (float)1.000055e+10f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.1e+38",      (float)1.10000005e+38f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.635299e+10", 1.63529943e+10f);
+    /* Fails, prints "3.402824e+38" due to FP math imprecision
+     * TEST_ASSERT_EQUAL_PRINT_FLOATING("3.402823e+38", 3.40282346638e38f); */
+
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-1e+10",        -1.0e+10f);
+    /* Fails, prints "-3.402824e+38" due to FP math imprecision
+     * TEST_ASSERT_EQUAL_PRINT_FLOATING("-3.402823e+38", -3.40282346638e38f); */
+#endif
+}
+
+void testFloatPrintingRoundTiesToEven(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+  #ifdef UNITY_ROUND_TIES_AWAY_FROM_ZERO
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.0004882813",  0.00048828125f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("488281.3",      488281.25f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("5.000001e-07",  0.00000050000005f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-5.000001e-07", -0.00000050000005f);
+  #else /* Default to Round ties to even */
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.0004882812",  0.00048828125f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("488281.2",      488281.25f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("5e-07",         0.00000050000005f);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-5e-07",        -0.00000050000005f);
+  #endif
+#endif
+}
+
+void testFloatPrintingInfinityAndNaN(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("inf",   1.0f / f_zero);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-inf", -1.0f / f_zero);
+
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("nan",   0.0f / f_zero);
+#endif
+}
+
+#if defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) && defined(USING_OUTPUT_SPY)
+#ifdef UNITY_INCLUDE_DOUBLE
+static void printFloatValue(float f)
+{
+    char expected[18];
+
+    startPutcharSpy();
+    UnityPrintFloat(f);
+
+    sprintf(expected, "%.9g", f);
+    /* We print all NaN's as "nan", not "-nan" */
+    if (strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
+
+    if (strcmp(expected, getBufferPutcharSpy()))
+    {
+        /* Fail with diagnostic printing */
+        TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, f);
+    }
+}
+#else
+static void printFloatValue(float f)
+{
+    char expected[18];
+    char expected_lower[18];
+    char expected_lower2[18];
+    char expected_lower3[18];
+    char expected_higher[18];
+    char expected_higher2[18];
+    char expected_higher3[18];
+
+    startPutcharSpy();
+    UnityPrintFloat(f);
+
+    sprintf(expected, "%.7g", f);
+    /* We print all NaN's as "nan", not "-nan" */
+    if (strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
+
+    strcpy(expected_lower, expected);
+    strcpy(expected_lower2, expected);
+    strcpy(expected_lower3, expected);
+    strcpy(expected_higher, expected);
+    strcpy(expected_higher2, expected);
+    strcpy(expected_higher3, expected);
+
+    /* Allow for rounding differences in the last digit */
+    double lower = (double)f * 0.99999995;
+    double higher = (double)f * 1.00000005;
+
+    if(isfinite(lower)) sprintf(expected_lower, "%.7g", lower);
+    if(isfinite(higher)) sprintf(expected_higher, "%.7g", higher);
+
+    /* Outside [1,10000000] allow for relative error of +/-2.5e-7 */
+    if (f < 1.0 || f > 10000000)
+    {
+        double lower2 = (double)f * 0.99999985;
+        double lower3 = (double)f * 0.99999975;
+        double higher2 = (double)f * 1.00000015;
+        double higher3 = (double)f * 1.00000025;
+
+        if (isfinite(lower2)) sprintf(expected_lower2, "%.7g", lower2);
+        if (isfinite(lower3)) sprintf(expected_lower3, "%.7g", lower3);
+        if (isfinite(higher2)) sprintf(expected_higher2, "%.7g", higher2);
+        if (isfinite(higher3)) sprintf(expected_higher3, "%.7g", higher3);
+    }
+
+    if (strcmp(expected, getBufferPutcharSpy()) != 0 &&
+        strcmp(expected_lower, getBufferPutcharSpy()) != 0 &&
+        strcmp(expected_lower2, getBufferPutcharSpy()) != 0 &&
+        strcmp(expected_lower3, getBufferPutcharSpy()) != 0 &&
+        strcmp(expected_higher, getBufferPutcharSpy()) != 0 &&
+        strcmp(expected_higher2, getBufferPutcharSpy()) != 0 &&
+        strcmp(expected_higher3, getBufferPutcharSpy()) != 0)
+    {
+        /* Fail with diagnostic printing */
+        TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, f);
+    }
+}
+#endif
+#endif
+
+void testFloatPrintingRandomSamples(void)
+{
+#if !defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+    union { float f_value; uint32_t int_value; } u;
+
+    /* These values are not covered by the MINSTD generator */
+    u.int_value = 0x00000000; printFloatValue(u.f_value);
+    u.int_value = 0x80000000; printFloatValue(u.f_value);
+    u.int_value = 0x7fffffff; printFloatValue(u.f_value);
+    u.int_value = 0xffffffff; printFloatValue(u.f_value);
+
+    uint32_t a = 1;
+    for(int num_tested = 0; num_tested < 1000000; num_tested++)
+    {
+        /* MINSTD pseudo-random number generator */
+        a = (uint32_t)(((uint64_t)a * 48271u) % 2147483647u);
+
+        /* MINSTD does not set the highest bit; test both possibilities */
+        u.int_value = a;              printFloatValue(u.f_value);
+        u.int_value = a | 0x80000000; printFloatValue(u.f_value);
+    }
 #endif
 }
 
@@ -3073,14 +4774,12 @@ void testDoublesNotEqualExpectedNaN(void)
 #endif
 }
 
-void testDoublesNotEqualBothNaN(void)
+void testDoublesEqualBothNaN(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -3128,14 +4827,12 @@ void testDoublesNotEqualExpectedInf(void)
 #endif
 }
 
-void testDoublesNotEqualBothInf(void)
+void testDoublesEqualBothInf(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
-    VERIFY_FAILS_END
 #endif
 }
 
@@ -3327,6 +5024,17 @@ void testDoubleIsNotDeterminate2(void)
 #endif
 }
 
+void testDoubleTraitFailsOnInvalidTrait(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    UnityAssertDoubleSpecial(1.0, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualDoubleArrays(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
@@ -3342,6 +5050,7 @@ void testEqualDoubleArrays(void)
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p3, 1);
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(NULL, NULL, 1);
 #endif
 }
 
@@ -3457,7 +5166,7 @@ void testNotEqualDoubleArraysNegative3(void)
 #endif
 }
 
-void testNotEqualDoubleArraysNaN(void)
+void testEqualDoubleArraysNaN(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
@@ -3465,13 +5174,11 @@ void testNotEqualDoubleArraysNaN(void)
     double p0[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    VERIFY_FAILS_END
 #endif
 }
 
-void testNotEqualDoubleArraysInf(void)
+void testEqualDoubleArraysInf(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
@@ -3479,8 +5186,293 @@ void testNotEqualDoubleArraysInf(void)
     double p0[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
 
-    EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
+#endif
+}
+
+void testNotEqualDoubleArraysLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[1] = {0.0};
+    double p1[1] = {0.0};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testEqualDoubleEachEqual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {1.0, 1.0, 1.0, 1.0};
+    double p1[] = {-0.123, -0.123, -0.123, -0.123};
+    double p2[] = {25.4, 25.4, 25.4, -0.2};
+    double p3[] = {1.0, -23.0, 25.0, -0.26};
+
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(-0.123, p1, 4);
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(25.4, p2, 3);
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0, p3, 1);
+#endif
+}
+
+void testNotEqualDoubleEachEqualActualNull(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double* p0 = NULL;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(5, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleEachEqual1(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {0.253, 8.0, 0.253, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(0.253, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleEachEqual2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {8.0, 8.0, 8.0, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(8.0, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleEachEqual3(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {1.0, 1.0, 1.0, 0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleEachEqualNegative1(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {-1.0, -0.253, -0.253, -0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(-0.253, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleEachEqualNegative2(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {-25.4, -8.0, -25.4, -25.4};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(-25.4, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testNotEqualDoubleEachEqualNegative3(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {-8.0, -8.0, -8.0, -0.253};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(-8.0, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testEqualDoubleEachEqualNaN(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {0.0 / d_zero, 0.0 / d_zero, 0.0 / d_zero, 0.0 / d_zero};
+
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(0.0 / d_zero, p0, 4);
+#endif
+}
+
+void testEqualDoubleEachEqualInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {1.0 / d_zero, 1.0 / d_zero, 25.4, 0.253};
+
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0 / d_zero, p0, 2);
+#endif
+}
+
+void testNotEqualDoubleEachEqualLengthZero(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[1] = {0.0};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_DOUBLE(0.0, p0, 0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublePrinting(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0",             0.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("4.99e-07",      0.000000499);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("5.0000005e-07", 0.00000050000005);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.100469499",   0.100469499);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1",             0.9999999995); /*Rounding to int place*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1",             1.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.25",          1.25);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("7.99999999",    7.99999999); /*Not rounding*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("16.0000002",    16.0000002);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("16.0000004",    16.0000004);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("16.0000006",    16.0000006);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("999999999",     999999999.0); /*Last full print integer*/
+
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-0",             -0.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.99e-07",      -0.000000499);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-5.0000005e-07", -0.00000050000005);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-0.100469499",   -0.100469499);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-1",             -0.9999999995); /*Rounding to int place*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-1",             -1.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-1.25",          -1.25);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-7.99999999",    -7.99999999); /*Not rounding*/
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-16.0000002",    -16.0000002);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-16.0000004",    -16.0000004);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-16.0000006",    -16.0000006);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-999999999",     -999999999.0); /*Last full print integer*/
+
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("0.1004695",       0.10046949999999999);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("4.2949673e+09",   4294967295.9);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("4.2949673e+09",   4294967296.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1e+10",           9999999995.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("9.00719925e+15",  9007199254740990.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("7e+100",          7.0e+100);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("3e+200",          3.0e+200);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("9.23456789e+300", 9.23456789e+300);
+
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-0.1004695",     -0.10046949999999999);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.2949673e+09", -4294967295.9);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.2949673e+09", -4294967296.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-7e+100",        -7.0e+100);
+#endif
+}
+
+void testDoublePrintingRoundTiesToEven(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+  #ifdef UNITY_ROUND_TIES_AWAY_FROM_ZERO
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1.00000001e+10", 10000000050.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("9.00719925e+15", 9007199245000000.0);
+  #else /* Default to Round ties to even */
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("1e+10",          10000000050.0);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("9.00719924e+15", 9007199245000000.0);
+  #endif
+#endif
+}
+
+void testDoublePrintingInfinityAndNaN(void)
+{
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("inf",   1.0 / d_zero);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("-inf", -1.0 / d_zero);
+
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("nan",   0.0 / d_zero);
+#endif
+}
+
+// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DETAIL SUPPORT ==================
+
+void testThatDetailsCanBeHandleOneDetail(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAIL("Detail1");
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_MESSAGE(5, 6, "Should Fail And Say Detail1");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanHandleTestFail(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAILS("Detail1","Detail2");
+
+    EXPECT_ABORT_BEGIN
+    TEST_FAIL_MESSAGE("Should Fail And Say Detail1 and Detail2");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanBeHandleTwoDetails(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAILS("Detail1","Detail2");
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_HEX8_MESSAGE(7, 8, "Should Fail And Say Detail1 and Detail2");
+    VERIFY_FAILS_END
+#endif
+}
+
+void testThatDetailsCanBeHandleSingleDetailClearingTwoDetails(void)
+{
+#ifdef UNITY_EXCLUDE_DETAILS
+    TEST_IGNORE();
+#else
+    UNITY_SET_DETAILS("Detail1","Detail2");
+    UNITY_SET_DETAIL("DetailNew");
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING_MESSAGE("MEH", "GUH", "Should Fail And Say DetailNew");
     VERIFY_FAILS_END
 #endif
 }
