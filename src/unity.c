@@ -59,17 +59,14 @@ const _U_UINT UnitySizeMask[] =
     255u,         // 0xFF
     65535u,       // 0xFFFF
     65535u,
-    4294967295u,  // 0xFFFFFFFF
-    4294967295u,
-    4294967295u,
-    4294967295u
+    (_U_UINT)4294967295UL,  // 0xFFFFFFFF
+    (_U_UINT)4294967295UL,
+    (_U_UINT)4294967295UL,
+    (_U_UINT)4294967295UL
 #ifdef UNITY_SUPPORT_64
     ,0xFFFFFFFFFFFFFFFF
 #endif
 };
-
-void UnityPrintFail(void);
-void UnityPrintOk(void);
 
 //-----------------------------------------------
 // Pretty Printers & Test Result Output Handlers
@@ -177,7 +174,7 @@ void UnityPrintNumber(const _U_SINT number_to_print)
     {
         //The largest representable negative number
         UNITY_OUTPUT_CHAR('-');
-        number = (1ul << (UNITY_LONG_WIDTH-1));
+        number = (_U_UINT)(1ul << (UNITY_LONG_WIDTH-1));
     }
     else if (number_to_print < 0)
     {
@@ -261,7 +258,7 @@ void UnityPrintNumberHex(const _U_UINT number, const char nibbles_to_print)
 //-----------------------------------------------
 void UnityPrintMask(const _U_UINT mask, const _U_UINT number)
 {
-    _U_UINT current_bit = (_U_UINT)1 << (UNITY_INT_WIDTH - 1);
+    _U_UINT current_bit = (_U_UINT)(1UL << (UNITY_INT_WIDTH - 1));
     _US32 i;
 
     for (i = 0; i < UNITY_INT_WIDTH; i++)
@@ -311,7 +308,7 @@ void UnityPrintOk(void)
 }
 
 //-----------------------------------------------
-static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line);
+
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
 #ifndef UNITY_FIXTURES
@@ -554,8 +551,8 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
-                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 1);
-                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 1);
+                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)(ptr_exp + 1);
+                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)(ptr_act + 1);
             }
             break;
         case UNITY_DISPLAY_STYLE_HEX16:
@@ -575,8 +572,8 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
-                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 2);
-                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 2);
+                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)(ptr_exp + 2);
+                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)(ptr_act + 2);
             }
             break;
 #ifdef UNITY_SUPPORT_64
@@ -617,8 +614,8 @@ void UnityAssertEqualIntArray(UNITY_PTR_ATTRIBUTE const void* expected,
                     UnityAddMsgIfSpecified(msg);
                     UNITY_FAIL_AND_BAIL;
                 }
-                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 4);
-                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 4);
+                ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)(ptr_exp + 4);
+                ptr_act = (UNITY_PTR_ATTRIBUTE const void*)(ptr_act + 4);
             }
             break;
     }
@@ -728,7 +725,7 @@ void UnityAssertFloatSpecial(const _UF actual,
     const char* trait_names[] = { UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet };
     _U_SINT should_be_trait   = ((_U_SINT)style & 1);
     _U_SINT is_trait          = !should_be_trait;
-    _U_SINT trait_index       = style >> 1;
+    _U_SINT trait_index       = (_U_SINT)(style >> 1);
 
     UNITY_SKIP_EXECUTION;
 
@@ -1177,8 +1174,8 @@ void UnityAssertEqualMemory( UNITY_PTR_ATTRIBUTE const void* expected,
                 UnityAddMsgIfSpecified(msg);
                 UNITY_FAIL_AND_BAIL;
             }
-            ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_exp + 1);
-            ptr_act = (UNITY_PTR_ATTRIBUTE const void*)((_UP)ptr_act + 1);
+            ptr_exp = (UNITY_PTR_ATTRIBUTE const void*)(ptr_exp + 1);
+            ptr_act = (UNITY_PTR_ATTRIBUTE const void*)(ptr_act + 1);
         }
         /////////////////////////////////////
 
