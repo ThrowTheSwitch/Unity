@@ -1852,6 +1852,20 @@ void testNotEqualStringLen_ActualStringIsNull(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualString_ExpectedStringIsLonger(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING("foo2", "foo");
+    VERIFY_FAILS_END
+}
+
+void testNotEqualString_ActualStringIsLonger(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_STRING("foo", "foo2");
+    VERIFY_FAILS_END
+}
+
 void testEqualStringArrays(void)
 {
     const char *testStrings[] = { "foo", "boo", "woo", "moo" };
