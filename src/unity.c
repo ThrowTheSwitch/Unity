@@ -21,15 +21,15 @@ void UNITY_OUTPUT_CHAR(int);
 struct UNITY_STORAGE_T Unity;
 
 #ifdef UNITY_OUTPUT_COLOR
-static const char UnityStrOk[]                     = "\033[42mOK\033[00m";
-static const char UnityStrPass[]                   = "\033[42mPASS\033[00m";
-static const char UnityStrFail[]                   = "\033[41mFAIL\033[00m";
-static const char UnityStrIgnore[]                 = "\033[43mIGNORE\033[00m";
+const char UnityStrOk[]                            = "\033[42mOK\033[00m";
+const char UnityStrPass[]                          = "\033[42mPASS\033[00m";
+const char UnityStrFail[]                          = "\033[41mFAIL\033[00m";
+const char UnityStrIgnore[]                        = "\033[43mIGNORE\033[00m";
 #else
-static const char UnityStrOk[]                     = "OK";
-static const char UnityStrPass[]                   = "PASS";
-static const char UnityStrFail[]                   = "FAIL";
-static const char UnityStrIgnore[]                 = "IGNORE";
+const char UnityStrOk[]                            = "OK";
+const char UnityStrPass[]                          = "PASS";
+const char UnityStrFail[]                          = "FAIL";
+const char UnityStrIgnore[]                        = "IGNORE";
 #endif
 static const char UnityStrNull[]                   = "NULL";
 static const char UnityStrSpacer[]                 = ". ";

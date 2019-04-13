@@ -639,6 +639,11 @@ UNITY_INTERNAL_PTR UnityDoubleToPtr(const double num);
  * Error Strings We Might Need
  *-------------------------------------------------------*/
 
+extern const char UnityStrOk[];
+extern const char UnityStrPass[];
+extern const char UnityStrFail[];
+extern const char UnityStrIgnore[];
+
 extern const char UnityStrErrFloat[];
 extern const char UnityStrErrDouble[];
 extern const char UnityStrErr64[];
