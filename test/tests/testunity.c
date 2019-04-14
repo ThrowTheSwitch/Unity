@@ -1318,8 +1318,8 @@ void testINT8sNotWithinDeltaAndCustomMessage(void)
     VERIFY_FAILS_END
 }
 
-
 //-----------------
+
 void testGreaterThan(void)
 {
     UNITY_INT v0, v1;
@@ -1334,6 +1334,13 @@ void testGreaterThan(void)
     TEST_ASSERT_GREATER_THAN(*p0, v1);
     TEST_ASSERT_GREATER_THAN(v0, *p1);
     TEST_ASSERT_GREATER_THAN(*p0, *p1);
+}
+
+void testNotGreaterThan(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN(0, -1);
+    VERIFY_FAILS_END
 }
 
 void testGreaterThanINT(void)
@@ -1352,6 +1359,12 @@ void testGreaterThanINT(void)
     TEST_ASSERT_GREATER_THAN_INT(*p0, *p1);
 }
 
+void testNotGreaterThanINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_INT(3334, 302);
+    VERIFY_FAILS_END
+}
 
 void testGreaterThanINT8(void)
 {
@@ -1367,6 +1380,13 @@ void testGreaterThanINT8(void)
     TEST_ASSERT_GREATER_THAN_INT8(*p0, v1);
     TEST_ASSERT_GREATER_THAN_INT8(v0, *p1);
     TEST_ASSERT_GREATER_THAN_INT8(*p0, *p1);
+}
+
+void testNotGreaterThanINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_INT8(127, -128);
+    VERIFY_FAILS_END
 }
 
 void testGreaterThanINT16(void)
@@ -1385,6 +1405,13 @@ void testGreaterThanINT16(void)
     TEST_ASSERT_GREATER_THAN_INT16(*p0, *p1);
 }
 
+void testNotGreaterThanINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_INT16(32768, -32768);
+    VERIFY_FAILS_END
+}
+
 void testGreaterThanINT32(void)
 {
     UNITY_INT32 v0, v1;
@@ -1399,6 +1426,13 @@ void testGreaterThanINT32(void)
     TEST_ASSERT_GREATER_THAN_INT32(*p0, v1);
     TEST_ASSERT_GREATER_THAN_INT32(v0, *p1);
     TEST_ASSERT_GREATER_THAN_INT32(*p0, *p1);
+}
+
+void testNotGreaterThanINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_INT32(214783647, -214783648);
+    VERIFY_FAILS_END
 }
 
 void testGreaterThanUINT(void)
@@ -1417,6 +1451,12 @@ void testGreaterThanUINT(void)
     TEST_ASSERT_GREATER_THAN_UINT(*p0, *p1);
 }
 
+void testNotGreaterThanUINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_UINT(1, 0);
+    VERIFY_FAILS_END
+}
 
 void testGreaterThanUINT8(void)
 {
@@ -1432,6 +1472,13 @@ void testGreaterThanUINT8(void)
     TEST_ASSERT_GREATER_THAN_UINT8(*p0, v1);
     TEST_ASSERT_GREATER_THAN_UINT8(v0, *p1);
     TEST_ASSERT_GREATER_THAN_UINT8(*p0, *p1);
+}
+
+void testNotGreaterThanUINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_UINT8(255, 0);
+    VERIFY_FAILS_END
 }
 
 void testGreaterThanUINT16(void)
@@ -1450,6 +1497,13 @@ void testGreaterThanUINT16(void)
     TEST_ASSERT_GREATER_THAN_UINT16(*p0, *p1);
 }
 
+void testNotGreaterThanUINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_UINT16(65535, 0);
+    VERIFY_FAILS_END
+}
+
 void testGreaterThanUINT32(void)
 {
     UNITY_UINT32 v0, v1;
@@ -1464,6 +1518,13 @@ void testGreaterThanUINT32(void)
     TEST_ASSERT_GREATER_THAN_UINT32(*p0, v1);
     TEST_ASSERT_GREATER_THAN_UINT32(v0, *p1);
     TEST_ASSERT_GREATER_THAN_UINT32(*p0, *p1);
+}
+
+void testNotGreaterThanUINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_UINT32(4294967295, 0);
+    VERIFY_FAILS_END
 }
 
 void testGreaterThanHEX8(void)
@@ -1482,6 +1543,13 @@ void testGreaterThanHEX8(void)
     TEST_ASSERT_GREATER_THAN_HEX8(*p0, *p1);
 }
 
+void testNotGreaterThanHEX8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_HEX8(0xFF, 0x00);
+    VERIFY_FAILS_END
+}
+
 void testGreaterThanHEX16(void)
 {
     UNITY_UINT16 v0, v1;
@@ -1496,6 +1564,13 @@ void testGreaterThanHEX16(void)
     TEST_ASSERT_GREATER_THAN_HEX16(*p0, v1);
     TEST_ASSERT_GREATER_THAN_HEX16(v0, *p1);
     TEST_ASSERT_GREATER_THAN_HEX16(*p0, *p1);
+}
+
+void testNotGreaterThanHEX16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_HEX16(0xFFFF, 0x00);
+    VERIFY_FAILS_END
 }
 
 void testGreaterThanHEX32(void)
@@ -1514,13 +1589,363 @@ void testGreaterThanHEX32(void)
     TEST_ASSERT_GREATER_THAN_HEX32(*p0, *p1);
 }
 
-
-void testNotGreaterThan(void)
+void testNotGreaterThanHEX32(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_GREATER_THAN(0, -1);
+    TEST_ASSERT_GREATER_THAN_HEX32(0xFFFFFFFF, 0x00);
     VERIFY_FAILS_END
 }
+
+void testGreaterOrEqual(void)
+{
+    UNITY_INT v0, v1, v2;
+    UNITY_INT *p0, *p1, *p2;
+
+    v0 = 0;
+    v1 = 1;
+    v2 = 0;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL(*p0, *p2);
+}
+
+void testNotGreaterOrEqual(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL(0, -1);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualINT(void)
+{
+    UNITY_INT v0, v1, v2;
+    UNITY_INT *p0, *p1, *p2;
+
+    v0 = 302;
+    v1 = 3334;
+    v2 = 302;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(*p0, *p2);
+}
+
+void testNotGreaterOrEqualINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_INT(3334, 302);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualINT8(void)
+{
+    UNITY_INT8 v0, v1, v2;
+    UNITY_INT8 *p0, *p1, *p2;
+
+    v0 = -128;
+    v1 = 127;
+    v2 = -128;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(*p0, *p2);
+}
+
+void testNotGreaterOrEqualINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_INT8(127, -128);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualINT16(void)
+{
+    UNITY_INT16 v0, v1, v2;
+    UNITY_INT16 *p0, *p1, *p2;
+
+    v0 = -32768;
+    v1 = 32767;
+    v2 = -32768;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(*p0, *p2);
+}
+
+void testNotGreaterOrEqualINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_INT16(32767, -32768);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualINT32(void)
+{
+    UNITY_INT32 v0, v1, v2;
+    UNITY_INT32 *p0, *p1, *p2;
+
+    v0 = -214783648;
+    v1 = 214783647;
+    v2 = -214783648;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(*p0, *p2);
+}
+
+void testNotGreaterOrEqualINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_INT32(214783647, -214783648);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualUINT(void)
+{
+    UNITY_UINT v0, v1, v2;
+    UNITY_UINT *p0, *p1, *p2;
+
+    v0 = 0;
+    v1 = 1;
+    v2 = 0;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(*p0, *p2);
+}
+
+void testNotGreaterOrEqualUINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT(1, 0);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualUINT8(void)
+{
+    UNITY_UINT8 v0, v1, v2;
+    UNITY_UINT8 *p0, *p1, *p2;
+
+    v0 = 0;
+    v1 = 255;
+    v2 = 0;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(*p0, *p2);
+}
+
+void testNotGreaterOrEqualUINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT8(255, 0);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualUINT16(void)
+{
+    UNITY_UINT16 v0, v1, v2;
+    UNITY_UINT16 *p0, *p1, *p2;
+
+    v0 = 0;
+    v1 = 65535;
+    v2 = 0;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(*p0, *p2);
+}
+
+void testNotGreaterOrEqualUINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT16(65535, 0);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualUINT32(void)
+{
+    UNITY_UINT32 v0, v1, v2;
+    UNITY_UINT32 *p0, *p1, *p2;
+
+    v0 = 0;
+    v1 = 4294967295;
+    v2 = 0;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(*p0, *p2);
+}
+
+void testNotGreaterOrEqualUINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(4294967295, 0);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualHEX8(void)
+{
+    UNITY_UINT8 v0, v1, v2;
+    UNITY_UINT8 *p0, *p1, *p2;
+
+    v0 = 0x00;
+    v1 = 0xFF;
+    v2 = 0x00;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(*p0, *p2);
+}
+
+void testNotGreaterOrEqualHEX8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX8(0xFF, 0x00);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualHEX16(void)
+{
+    UNITY_UINT16 v0, v1, v2;
+    UNITY_UINT16 *p0, *p1, *p2;
+
+    v0 = 0x0000;
+    v1 = 0xFFFF;
+    v2 = 0x0000;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(*p0, *p2);
+}
+
+void testNotGreaterOrEqualHEX16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX16(0xFFFF, 0x00);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualHEX32(void)
+{
+    UNITY_UINT32 v0, v1, v2;
+    UNITY_UINT32 *p0, *p1, *p2;
+
+    v0 = 0x00000000;
+    v1 = 0xFFFFFFFF;
+    v2 = 0x00000000;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(*p0, *p2);
+}
+
+void testNotGreaterOrEqualHEX32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_HEX32(0xFFFFFFFF, 0x00);
+    VERIFY_FAILS_END
+}
+
+//-----------------
+
 
 void testLessThan(void)
 {
@@ -1536,6 +1961,13 @@ void testLessThan(void)
     TEST_ASSERT_LESS_THAN(*p0, v1);
     TEST_ASSERT_LESS_THAN(v0, *p1);
     TEST_ASSERT_LESS_THAN(*p0, *p1);
+}
+
+void testNotLessThan(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN(0, 1);
+    VERIFY_FAILS_END
 }
 
 void testLessThanINT(void)
@@ -1554,6 +1986,12 @@ void testLessThanINT(void)
     TEST_ASSERT_LESS_THAN_INT(*p0, *p1);
 }
 
+void testNotLessThanINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_INT(302, 3334);
+    VERIFY_FAILS_END
+}
 
 void testLessThanINT8(void)
 {
@@ -1569,6 +2007,13 @@ void testLessThanINT8(void)
     TEST_ASSERT_LESS_THAN_INT8(*p0, v1);
     TEST_ASSERT_LESS_THAN_INT8(v0, *p1);
     TEST_ASSERT_LESS_THAN_INT8(*p0, *p1);
+}
+
+void testNotLessThanINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_INT8(-128, 127);
+    VERIFY_FAILS_END
 }
 
 void testLessThanINT16(void)
@@ -1587,6 +2032,13 @@ void testLessThanINT16(void)
     TEST_ASSERT_LESS_THAN_INT16(*p0, *p1);
 }
 
+void testNotLessThanINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_INT16(-32768, 32767);
+    VERIFY_FAILS_END
+}
+
 void testLessThanINT32(void)
 {
     UNITY_INT32 v0, v1;
@@ -1601,6 +2053,13 @@ void testLessThanINT32(void)
     TEST_ASSERT_LESS_THAN_INT32(*p0, v1);
     TEST_ASSERT_LESS_THAN_INT32(v0, *p1);
     TEST_ASSERT_LESS_THAN_INT32(*p0, *p1);
+}
+
+void testNotLessThanINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_INT32(-214783648, 214783647);
+    VERIFY_FAILS_END
 }
 
 void testLessThanUINT(void)
@@ -1619,6 +2078,12 @@ void testLessThanUINT(void)
     TEST_ASSERT_LESS_THAN_UINT(*p0, *p1);
 }
 
+void testNotLessThanUINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_UINT(0, 1);
+    VERIFY_FAILS_END
+}
 
 void testLessThanUINT8(void)
 {
@@ -1634,6 +2099,13 @@ void testLessThanUINT8(void)
     TEST_ASSERT_LESS_THAN_UINT8(*p0, v1);
     TEST_ASSERT_LESS_THAN_UINT8(v0, *p1);
     TEST_ASSERT_LESS_THAN_UINT8(*p0, *p1);
+}
+
+void testNotLessThanUINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_UINT8(0, 255);
+    VERIFY_FAILS_END
 }
 
 void testLessThanUINT16(void)
@@ -1652,6 +2124,13 @@ void testLessThanUINT16(void)
     TEST_ASSERT_LESS_THAN_UINT16(*p0, *p1);
 }
 
+void testNotLessThanUINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_UINT16(0, 65535);
+    VERIFY_FAILS_END
+}
+
 void testLessThanUINT32(void)
 {
     UNITY_UINT32 v0, v1;
@@ -1666,6 +2145,13 @@ void testLessThanUINT32(void)
     TEST_ASSERT_LESS_THAN_UINT32(*p0, v1);
     TEST_ASSERT_LESS_THAN_UINT32(v0, *p1);
     TEST_ASSERT_LESS_THAN_UINT32(*p0, *p1);
+}
+
+void testNotLessThanUINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_UINT32(0, 4294967295);
+    VERIFY_FAILS_END
 }
 
 void testLessThanHEX8(void)
@@ -1684,6 +2170,13 @@ void testLessThanHEX8(void)
     TEST_ASSERT_LESS_THAN_HEX8(*p0, *p1);
 }
 
+void testNotLessThanHEX8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_HEX8(0x00, 0xFF);
+    VERIFY_FAILS_END
+}
+
 void testLessThanHEX16(void)
 {
     UNITY_UINT16 v0, v1;
@@ -1698,6 +2191,13 @@ void testLessThanHEX16(void)
     TEST_ASSERT_LESS_THAN_HEX16(*p0, v1);
     TEST_ASSERT_LESS_THAN_HEX16(v0, *p1);
     TEST_ASSERT_LESS_THAN_HEX16(*p0, *p1);
+}
+
+void testNotLessThanHEX16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_HEX16(0x0000, 0xFFFF);
+    VERIFY_FAILS_END
 }
 
 void testLessThanHEX32(void)
@@ -1716,15 +2216,360 @@ void testLessThanHEX32(void)
     TEST_ASSERT_LESS_THAN_HEX32(*p0, *p1);
 }
 
-
-void testNotLessThan(void)
+void testNotLessThanHEX32(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_LESS_THAN(0, 1);
+    TEST_ASSERT_LESS_THAN_HEX32(0x00000000, 0xFFFFFFFF);
     VERIFY_FAILS_END
 }
 
+void testLessOrEqual(void)
+{
+    UNITY_INT v0, v1, v2;
+    UNITY_INT *p0, *p1, *p2;
 
+    v0 = 0;
+    v1 = -1;
+    v2 = 0;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL(*p0, *p2);
+}
+
+void testNotLessOrEqual(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL(0, 1);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualINT(void)
+{
+    UNITY_INT v0, v1, v2;
+    UNITY_INT *p0, *p1, *p2;
+
+    v0 = 3334;
+    v1 = 302;
+    v2 = 3334;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_INT(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT(*p0, *p2);
+}
+
+void testNotLessOrEqualINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_INT(302, 3334);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualINT8(void)
+{
+    UNITY_INT8 v0, v1, v2;
+    UNITY_INT8 *p0, *p1, *p2;
+
+    v0 = 127;
+    v1 = -128;
+    v2 = 127;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(*p0, *p2);
+}
+
+void testNotLessOrEqualINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_INT8(-128, 127);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualINT16(void)
+{
+    UNITY_INT16 v0, v1, v2;
+    UNITY_INT16 *p0, *p1, *p2;
+
+    v0 = 32767;
+    v1 = -32768;
+    v2 = 32767;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(*p0, *p2);
+}
+
+void testNotLessOrEqualINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_INT16(-32768, 32767);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualINT32(void)
+{
+    UNITY_INT32 v0, v1, v2;
+    UNITY_INT32 *p0, *p1, *p2;
+
+    v0 = 214783647;
+    v1 = -214783648;
+    v2 = 214783647;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(*p0, *p2);
+}
+
+void testNotLessOrEqualINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_INT32(-214783648, 214783647);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualUINT(void)
+{
+    UNITY_UINT v0, v1, v2;
+    UNITY_UINT *p0, *p1, *p2;
+
+    v0 = 1;
+    v1 = 0;
+    v2 = 1;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(*p0, *p2);
+}
+
+void testNotLessOrEqualUINT(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_UINT(0, 1);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualUINT8(void)
+{
+    UNITY_UINT8 v0, v1, v2;
+    UNITY_UINT8 *p0, *p1, *p2;
+
+    v0 = 255;
+    v1 = 0;
+    v2 = 255;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(*p0, *p2);
+}
+
+void testNotLessOrEqualUINT8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_UINT8(0, 255);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualUINT16(void)
+{
+    UNITY_UINT16 v0, v1, v2;
+    UNITY_UINT16 *p0, *p1, *p2;
+
+    v0 = 65535;
+    v1 = 0;
+    v2 = 65535;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(*p0, *p2);
+}
+
+void testNotLessOrEqualUINT16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_UINT16(0, 65535);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualUINT32(void)
+{
+    UNITY_UINT32 v0, v1, v2;
+    UNITY_UINT32 *p0, *p1, *p2;
+
+    v0 = 4294967295;
+    v1 = 0;
+    v2 = 4294967295;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(*p0, *p2);
+}
+
+void testNotLessOrEqualUINT32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(0, 4294967295);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualHEX8(void)
+{
+    UNITY_UINT8 v0, v1, v2;
+    UNITY_UINT8 *p0, *p1, *p2;
+
+    v0 = 0xFF;
+    v1 = 0x00;
+    v2 = 0xFF;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(*p0, *p2);
+}
+
+void testNotLessOrEqualHEX8(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_HEX8(0x00, 0xFF);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualHEX16(void)
+{
+    UNITY_UINT16 v0, v1, v2;
+    UNITY_UINT16 *p0, *p1, *p2;
+
+    v0 = 0xFFFF;
+    v1 = 0x0000;
+    v2 = 0xFFFF;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(*p0, *p2);
+}
+
+void testNotLessOrEqualHEX16(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_HEX16(0x0000, 0xFFFF);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualHEX32(void)
+{
+    UNITY_UINT32 v0, v1, v2;
+    UNITY_UINT32 *p0, *p1, *p2;
+
+    v0 = 0xFFFFFFFF;
+    v1 = 0x00000000;
+    v2 = 0xFFFFFFFF;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(*p0, *p2);
+}
+
+void testNotLessOrEqualHEX32(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_HEX32(0x00000000, 0xFFFFFFFF);
+    VERIFY_FAILS_END
+}
 
 //-----------------
 void testEqualStrings(void)
