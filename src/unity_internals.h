@@ -122,18 +122,20 @@
  * 64-bit Support
  *-------------------------------------------------------*/
 
+/* Auto-detect 64 Bit Support */
 #ifndef UNITY_SUPPORT_64
   #if UNITY_LONG_WIDTH == 64 || UNITY_POINTER_WIDTH == 64
     #define UNITY_SUPPORT_64
   #endif
 #endif
 
+/* 64-Bit Support Dependent Configuration */
 #ifndef UNITY_SUPPORT_64
     /* No 64-bit Support */
     typedef UNITY_UINT32 UNITY_UINT;
     typedef UNITY_INT32 UNITY_INT;
+    #define UNITY_MAX_NIBBLES (8)  /* Maximum number of nibbles in a UNITY_(U)INT */
 #else
-
   /* 64-bit Support */
   #if (UNITY_LONG_WIDTH == 32)
     typedef unsigned long long UNITY_UINT64;
@@ -146,7 +148,7 @@
   #endif
     typedef UNITY_UINT64 UNITY_UINT;
     typedef UNITY_INT64 UNITY_INT;
-
+    #define UNITY_MAX_NIBBLES (16) /* Maximum number of nibbles in a UNITY_(U)INT */
 #endif
 
 /*-------------------------------------------------------
