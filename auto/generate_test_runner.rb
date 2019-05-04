@@ -112,7 +112,7 @@ class UnityTestRunnerGenerator
 
     lines.each_with_index do |line, _index|
       # find tests
-      next unless line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/
+      next unless line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
       arguments = Regexp.last_match(1)
       name = Regexp.last_match(2)
       call = Regexp.last_match(3)
