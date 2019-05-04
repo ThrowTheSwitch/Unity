@@ -1,6 +1,6 @@
 /* ==========================================
     Unity Project - A Test Framework for C
-    Copyright (c) 2007-14 Mike Karlesky, Mark VanderVoord, Greg Williams
+    Copyright (c) 2007-19 Mike Karlesky, Mark VanderVoord, Greg Williams
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
@@ -375,7 +375,7 @@ typedef void (*UnityTestFunction)(void);
 
 typedef enum
 {
-UNITY_DISPLAY_STYLE_INT = sizeof(int)+ UNITY_DISPLAY_RANGE_INT,
+    UNITY_DISPLAY_STYLE_INT      = sizeof(int) + UNITY_DISPLAY_RANGE_INT,
     UNITY_DISPLAY_STYLE_INT8     = 1 + UNITY_DISPLAY_RANGE_INT,
     UNITY_DISPLAY_STYLE_INT16    = 2 + UNITY_DISPLAY_RANGE_INT,
     UNITY_DISPLAY_STYLE_INT32    = 4 + UNITY_DISPLAY_RANGE_INT,
@@ -383,7 +383,7 @@ UNITY_DISPLAY_STYLE_INT = sizeof(int)+ UNITY_DISPLAY_RANGE_INT,
     UNITY_DISPLAY_STYLE_INT64    = 8 + UNITY_DISPLAY_RANGE_INT,
 #endif
 
-UNITY_DISPLAY_STYLE_UINT = sizeof(unsigned) + UNITY_DISPLAY_RANGE_UINT,
+    UNITY_DISPLAY_STYLE_UINT     = sizeof(unsigned) + UNITY_DISPLAY_RANGE_UINT,
     UNITY_DISPLAY_STYLE_UINT8    = 1 + UNITY_DISPLAY_RANGE_UINT,
     UNITY_DISPLAY_STYLE_UINT16   = 2 + UNITY_DISPLAY_RANGE_UINT,
     UNITY_DISPLAY_STYLE_UINT32   = 4 + UNITY_DISPLAY_RANGE_UINT,
