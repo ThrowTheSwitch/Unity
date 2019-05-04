@@ -1248,6 +1248,116 @@ void UnityAssertNumbersWithin(const UNITY_UINT delta,
 }
 
 /*-----------------------------------------------*/
+void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
+                                   UNITY_INTERNAL_PTR expected,
+                                   UNITY_INTERNAL_PTR actual,
+                                   const UNITY_UINT32 num_elements,
+                                   const char* msg,
+                                   const UNITY_LINE_TYPE lineNumber,
+                                   const UNITY_DISPLAY_STYLE_T style,
+                                   const UNITY_FLAGS_T flags)
+{
+    UNITY_UINT32 elements = num_elements;
+    unsigned int length   = style & 0xF;
+
+    RETURN_IF_FAIL_OR_IGNORE;
+    if (num_elements == 0)
+    {
+        UnityPrintPointlessAndBail();
+    }
+
+    if (expected == actual)
+    {
+        return; /* Both are NULL or same pointer */
+    }
+
+    if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))
+    {
+        UNITY_FAIL_AND_BAIL;
+    }
+
+    while ((elements > 0) && (elements--))
+    {
+        UNITY_INT expect_val;
+        UNITY_INT actual_val;
+
+        switch (length)
+        {
+            case 1:
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
+                break;
+            case 2:
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
+                break;
+#ifdef UNITY_SUPPORT_64
+            case 8:
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
+                break;
+#endif
+            default: /* length 4 bytes */
+                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                length = 4;
+                break;
+        }
+
+        if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+        {
+            if (actual_val > expect_val)
+            {
+                Unity.CurrentTestFailed = (((UNITY_UINT)actual_val - (UNITY_UINT)expect_val) > delta);
+            }
+            else
+            {
+                Unity.CurrentTestFailed = (((UNITY_UINT)expect_val - (UNITY_UINT)actual_val) > delta);
+            }
+        }
+        else
+        {
+            if ((UNITY_UINT)actual_val > (UNITY_UINT)expect_val)
+            {
+                Unity.CurrentTestFailed = (((UNITY_UINT)actual_val - (UNITY_UINT)expect_val) > delta);
+            }
+            else
+            {
+                Unity.CurrentTestFailed = (((UNITY_UINT)expect_val - (UNITY_UINT)actual_val) > delta);
+            }
+        }
+
+        if (Unity.CurrentTestFailed)
+        {
+            if ((style & UNITY_DISPLAY_RANGE_UINT) && (length < sizeof(expect_val)))
+            {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */
+                UNITY_INT mask = 1;
+                mask = (mask << 8 * length) - 1;
+                expect_val &= mask;
+                actual_val &= mask;
+            }
+            UnityTestResultsFailBegin(lineNumber);
+            UnityPrint(UnityStrDelta);
+            UnityPrintNumberByStyle((UNITY_INT)delta, style);
+            UnityPrint(UnityStrElement);
+            UnityPrintNumberUnsigned(num_elements - elements - 1);
+            UnityPrint(UnityStrExpected);
+            UnityPrintNumberByStyle(expect_val, style);
+            UnityPrint(UnityStrWas);
+            UnityPrintNumberByStyle(actual_val, style);
+            UnityAddMsgIfSpecified(msg);
+            UNITY_FAIL_AND_BAIL;
+        }
+        if (flags == UNITY_ARRAY_TO_ARRAY)
+        {
+            expected = (UNITY_INTERNAL_PTR)(length + (const char*)expected);
+        }
+        actual   = (UNITY_INTERNAL_PTR)(length + (const char*)actual);
+    }
+
+}
+
+/*-----------------------------------------------*/
 void UnityAssertEqualString(const char* expected,
                             const char* actual,
                             const char* msg,
