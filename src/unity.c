@@ -599,7 +599,7 @@ void UnityConcludeTest(void)
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
-    UNITY_EXEC_TIME_RESET();
+    UNITY_PRINT_EXEC_TIME();
     UNITY_PRINT_EOL();
     UNITY_FLUSH_CALL();
 }
@@ -1712,6 +1712,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
     Unity.CurrentTestLineNumber = (UNITY_LINE_TYPE)FuncLineNum;
     Unity.NumberOfTests++;
     UNITY_CLR_DETAILS();
+    UNITY_EXEC_TIME_START();
     if (TEST_PROTECT())
     {
         setUp();
@@ -1721,6 +1722,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
     {
         tearDown();
     }
+    UNITY_EXEC_TIME_STOP();
     UnityConcludeTest();
 }
 
@@ -1735,7 +1737,6 @@ void UnityBegin(const char* filename)
     Unity.TestIgnores = 0;
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
-    UNITY_EXEC_TIME_RESET();
 
     UNITY_CLR_DETAILS();
     UNITY_OUTPUT_START();

@@ -104,8 +104,8 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
 #ifdef UNITY_INCLUDE_EXEC_TIME
-        UNITY_COUNTER_TYPE CurrentTestStartTime;
-        UNITY_COUNTER_TYPE CurrentTestStopTime;
+        UNITY_TIME_TYPE CurrentTestStartTime;
+        UNITY_TIME_TYPE CurrentTestStopTime;
 #endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;

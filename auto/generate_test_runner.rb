@@ -300,6 +300,7 @@ class UnityTestRunnerGenerator
     output.puts('  Unity.CurrentTestLineNumber = TestLineNum; \\')
     output.puts('  if (UnityTestMatches()) { \\') if @options[:cmdline_args]
     output.puts('  Unity.NumberOfTests++; \\')
+    output.puts('  UNITY_EXEC_TIME_START(); \\')
     output.puts('  CMock_Init(); \\') unless used_mocks.empty?
     output.puts('  UNITY_CLR_DETAILS(); \\') unless used_mocks.empty?
     output.puts('  if (TEST_PROTECT()) \\')
@@ -316,6 +317,7 @@ class UnityTestRunnerGenerator
     output.puts('    CMock_Verify(); \\') unless used_mocks.empty?
     output.puts('  } \\')
     output.puts('  CMock_Destroy(); \\') unless used_mocks.empty?
+    output.puts('  UNITY_EXEC_TIME_STOP(); \\')
     output.puts('  UnityConcludeTest(); \\')
     output.puts('  } \\') if @options[:cmdline_args]
     output.puts("}\n")
