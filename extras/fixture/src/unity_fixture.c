@@ -419,7 +419,8 @@ void UnityConcludeFixtureTest(void)
     {
         if (UnityFixture.Verbose)
         {
-            UnityPrint(" PASS");
+            UnityPrint(" ");
+            UnityPrint(UnityStrPass);
             UNITY_EXEC_TIME_STOP();
             UNITY_PRINT_EXEC_TIME();
             UNITY_PRINT_EOL();

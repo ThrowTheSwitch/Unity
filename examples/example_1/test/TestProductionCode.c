@@ -5,7 +5,7 @@
 /* sometimes you may want to get at local data in a module.
  * for example: If you plan to pass by reference, this could be useful
  * however, it should often be avoided */
-extern int Counter; 
+extern int Counter;
 
 void setUp(void)
 {
@@ -21,7 +21,7 @@ void test_FindFunction_WhichIsBroken_ShouldReturnZeroIfItemIsNotInList_WhichWork
 {
   /* All of these should pass */
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(78));
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(1));
+  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(2));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(33));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(999));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(-1));
@@ -31,9 +31,9 @@ void test_FindFunction_WhichIsBroken_ShouldReturnTheIndexForItemsInList_WhichWil
 {
   /* You should see this line fail in your test summary */
   TEST_ASSERT_EQUAL(1, FindFunction_WhichIsBroken(34));
-  
-  /* Notice the rest of these didn't get a chance to run because the line above failed.  
-   * Unit tests abort each test function on the first sign of trouble. 
+
+  /* Notice the rest of these didn't get a chance to run because the line above failed.
+   * Unit tests abort each test function on the first sign of trouble.
    * Then NEXT test function runs as normal. */
   TEST_ASSERT_EQUAL(8, FindFunction_WhichIsBroken(8888));
 }
@@ -42,7 +42,7 @@ void test_FunctionWhichReturnsLocalVariable_ShouldReturnTheCurrentCounterValue(v
 {
     /* This should be true because setUp set this up for us before this test */
     TEST_ASSERT_EQUAL_HEX(0x5a5a, FunctionWhichReturnsLocalVariable());
-    
+
     /* This should be true because we can still change our answer */
     Counter = 0x1234;
     TEST_ASSERT_EQUAL_HEX(0x1234, FunctionWhichReturnsLocalVariable());

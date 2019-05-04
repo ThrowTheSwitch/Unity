@@ -2,7 +2,7 @@ Unity Test API
 ==============
 
 [![Unity Build Status](https://api.travis-ci.org/ThrowTheSwitch/Unity.png?branch=master)](https://travis-ci.org/ThrowTheSwitch/Unity)
-__Copyright (c) 2007 - 2017 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
+__Copyright (c) 2007 - 2019 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
 Getting Started
 ===============
@@ -35,7 +35,7 @@ Another way of calling `TEST_ASSERT_FALSE`
     TEST_FAIL()
     TEST_FAIL_MESSAGE(message)
 
-This test is automatically marked as a failure.  The message is output stating why.
+This test is automatically marked as a failure. The message is output stating why.
 
 Numerical Assertions: Integers
 ------------------------------
@@ -47,7 +47,7 @@ Numerical Assertions: Integers
     TEST_ASSERT_EQUAL_INT64(expected, actual)
 
 Compare two integers for equality and display errors as signed integers. A cast will be performed
-to your natural integer size so often this can just be used.  When you need to specify the exact size,
+to your natural integer size so often this can just be used. When you need to specify the exact size,
 like when comparing arrays, you can use a specific version:
 
     TEST_ASSERT_EQUAL_UINT(expected, actual)
@@ -56,7 +56,7 @@ like when comparing arrays, you can use a specific version:
     TEST_ASSERT_EQUAL_UINT32(expected, actual)
     TEST_ASSERT_EQUAL_UINT64(expected, actual)
 
-Compare two integers for equality and display errors as unsigned integers.  Like INT, there are
+Compare two integers for equality and display errors as unsigned integers. Like INT, there are
 variants for different sizes also.
 
     TEST_ASSERT_EQUAL_HEX(expected, actual)
@@ -65,7 +65,7 @@ variants for different sizes also.
     TEST_ASSERT_EQUAL_HEX32(expected, actual)
     TEST_ASSERT_EQUAL_HEX64(expected, actual)
 
-Compares two integers for equality and display errors as hexadecimal.  Like the other integer comparisons,
+Compares two integers for equality and display errors as hexadecimal. Like the other integer comparisons,
 you can specify the size... here the size will also effect how many nibbles are shown (for example, `HEX16`
 will show 4 nibbles).
 
@@ -75,7 +75,7 @@ Another way of calling TEST_ASSERT_EQUAL_INT
 
     TEST_ASSERT_INT_WITHIN(delta, expected, actual)
 
-Asserts that the actual value is within plus or minus delta of the expected value.  This also comes in
+Asserts that the actual value is within plus or minus delta of the expected value. This also comes in
 size specific variants.
 
 
@@ -159,12 +159,12 @@ Compare two null-terminate strings.  Fail if any character is different or if th
 
     TEST_ASSERT_EQUAL_STRING_LEN_MESSAGE(expected, actual, len, message)
 
-Compare two strings.  Fail if any character is different, stop comparing after len characters. Output a custom message on failure.
+Compare two strings. Fail if any character is different, stop comparing after len characters. Output a custom message on failure.
 
 Pointer Assertions
 ------------------
 
-Most pointer operations can be performed by simply using the integer comparisons above.  However, a couple of special cases are added for clarity.
+Most pointer operations can be performed by simply using the integer comparisons above. However, a couple of special cases are added for clarity.
 
     TEST_ASSERT_NULL(pointer)
 

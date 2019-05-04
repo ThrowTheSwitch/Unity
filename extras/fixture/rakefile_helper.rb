@@ -6,9 +6,9 @@
 
 require 'yaml'
 require 'fileutils'
-require HERE + '../../auto/unity_test_summary'
-require HERE + '../../auto/generate_test_runner'
-require HERE + '../../auto/colour_reporter'
+require_relative '../../auto/unity_test_summary'
+require_relative '../../auto/generate_test_runner'
+require_relative '../../auto/colour_reporter'
 
 module RakefileHelpers
   C_EXTENSION = '.c'.freeze
@@ -16,7 +16,7 @@ module RakefileHelpers
   def load_configuration(config_file)
     return if $configured
 
-    $cfg_file = HERE + "../../test/targets/#{config_file}" unless config_file =~ /[\\|\/]/
+    $cfg_file = "#{__dir__}/../../test/targets/#{config_file}" unless config_file =~ /[\\|\/]/
     $cfg = YAML.load(File.read($cfg_file))
     $colour_output = false unless $cfg['colour']
     $configured = true if config_file != DEFAULT_CONFIG_FILE
@@ -128,7 +128,7 @@ module RakefileHelpers
 
   def report_summary
     summary = UnityTestSummary.new
-    summary.root = HERE
+    summary.root = __dir__
     results_glob = "#{$cfg['compiler']['build_path']}*.test*"
     results_glob.tr!('\\', '/')
     results = Dir[results_glob]
@@ -145,9 +145,9 @@ module RakefileHelpers
     $cfg['compiler']['defines']['items'] = [] if $cfg['compiler']['defines']['items'].nil?
 
     # Get a list of all source files needed
-    src_files  = Dir[HERE + 'src/*.c']
-    src_files += Dir[HERE + 'test/*.c']
-    src_files += Dir[HERE + 'test/main/*.c']
+    src_files  = Dir["#{__dir__}/src/*.c"]
+    src_files += Dir["#{__dir__}/test/*.c"]
+    src_files += Dir["#{__dir__}/test/main/*.c"]
     src_files << '../../src/unity.c'
 
     # Build object files

@@ -66,7 +66,9 @@ That way, Unity will know to skip the inclusion of this file and you won't
 be left with a compiler error.
 
 _Example:_
-        #define UNITY_EXCLUDE_STDINT_H
+```C
+#define UNITY_EXCLUDE_STDINT_H
+```
 
 
 ##### `UNITY_EXCLUDE_LIMITS_H`
@@ -76,8 +78,9 @@ that don't support `stdint.h` could include `limits.h` instead. If you don't
 want Unity to check this file either, define this to make it skip the inclusion.
 
 _Example:_
-        #define UNITY_EXCLUDE_LIMITS_H
-
+```C
+#define UNITY_EXCLUDE_LIMITS_H
+```
 
 If you've disabled both of the automatic options above, you're going to have to
 do the configuration yourself. Don't worry. Even this isn't too bad... there are
@@ -91,7 +94,9 @@ Define this to be the number of bits an `int` takes up on your system. The
 default, if not autodetected, is 32 bits.
 
 _Example:_
-        #define UNITY_INT_WIDTH 16
+```C
+#define UNITY_INT_WIDTH 16
+```
 
 
 ##### `UNITY_LONG_WIDTH`
@@ -103,7 +108,9 @@ of 64-bit support your system can handle. Does it need to specify a `long` or a
 ignored.
 
 _Example:_
-        #define UNITY_LONG_WIDTH 16
+```C
+#define UNITY_LONG_WIDTH 16
+```
 
 
 ##### `UNITY_POINTER_WIDTH`
@@ -113,7 +120,9 @@ default, if not autodetected, is 32-bits. If you're getting ugly compiler
 warnings about casting from pointers, this is the one to look at.
 
 _Example:_
-        #define UNITY_POINTER_WIDTH 64
+```C
+#define UNITY_POINTER_WIDTH 64
+```
 
 
 ##### `UNITY_SUPPORT_64`
@@ -125,7 +134,9 @@ can be a significant size and speed impact to enabling 64-bit support on small
 targets, so don't define it if you don't need it.
 
 _Example:_
-        #define UNITY_SUPPORT_64
+```C
+#define UNITY_SUPPORT_64
+```
 
 
 ### Floating Point Types
@@ -153,10 +164,11 @@ suits your needs. For features that are enabled, the following floating point
 options also become available.
 
 _Example:_
-
-        //what manner of strange processor is this?
-        #define UNITY_EXCLUDE_FLOAT
-        #define UNITY_INCLUDE_DOUBLE
+```C
+//what manner of strange processor is this?
+#define UNITY_EXCLUDE_FLOAT
+#define UNITY_INCLUDE_DOUBLE
+```
 
 
 ##### `UNITY_EXCLUDE_FLOAT_PRINT`
@@ -172,7 +184,9 @@ can use this define to instead respond to a failed assertion with a message like
 point assertions, use these options to give more explicit failure messages.
 
 _Example:_
-        #define UNITY_EXCLUDE_FLOAT_PRINT
+```C
+#define UNITY_EXCLUDE_FLOAT_PRINT
+```
 
 
 ##### `UNITY_FLOAT_TYPE`
@@ -182,7 +196,9 @@ floats. If your compiler supports a specialty floating point type, you can
 always override this behavior by using this definition.
 
 _Example:_
-        #define UNITY_FLOAT_TYPE float16_t
+```C
+#define UNITY_FLOAT_TYPE float16_t
+```
 
 
 ##### `UNITY_DOUBLE_TYPE`
@@ -194,7 +210,9 @@ could enable gargantuan floating point types on your 64-bit processor instead of
 the standard `double`.
 
 _Example:_
-        #define UNITY_DOUBLE_TYPE long double
+```C
+#define UNITY_DOUBLE_TYPE long double
+```
 
 
 ##### `UNITY_FLOAT_PRECISION`
@@ -213,7 +231,62 @@ For further details on how this works, see the appendix of the Unity Assertion
 Guide.
 
 _Example:_
-        #define UNITY_FLOAT_PRECISION 0.001f
+```C
+#define UNITY_FLOAT_PRECISION 0.001f
+```
+
+
+### Miscellaneous
+
+##### `UNITY_EXCLUDE_STDDEF_H`
+
+Unity uses the `NULL` macro, which defines the value of a null pointer constant,
+defined in `stddef.h` by default. If you want to provide
+your own macro for this, you should exclude the `stddef.h` header file by adding this
+define to your configuration.
+
+_Example:_
+```C
+#define UNITY_EXCLUDE_STDDEF_H
+```
+
+
+#### `UNITY_INCLUDE_PRINT_FORMATTED`
+
+Unity provides a simple (and very basic) printf-like string output implementation,
+which is able to print a string modified by the following format string modifiers:
+
+- __%d__ - signed value (decimal)
+- __%i__ - same as __%i__
+- __%u__ - unsigned value (decimal)
+- __%f__ - float/Double (if float support is activated)
+- __%g__ - same as __%f__
+- __%b__ - binary prefixed with "0b"
+- __%x__ - hexadecimal (upper case) prefixed with "0x"
+- __%X__ - same as __%x__
+- __%p__ - pointer (same as __%x__ or __%X__)
+- __%c__ - a single character
+- __%s__ - a string (e.g. "string")
+- __%%__ - The "%" symbol (escaped)
+
+_Example:_
+```C
+#define UNITY_INCLUDE_PRINT_FORMATTED
+
+int a = 0xfab1;
+UnityPrintFormatted("Decimal   %d\n", -7);
+UnityPrintFormatted("Unsigned  %u\n", 987);
+UnityPrintFormatted("Float     %f\n", 3.1415926535897932384);
+UnityPrintFormatted("Binary    %b\n", 0xA);
+UnityPrintFormatted("Hex       %X\n", 0xFAB);
+UnityPrintFormatted("Pointer   %p\n", &a);
+UnityPrintFormatted("Character %c\n", 'F');
+UnityPrintFormatted("String    %s\n", "My string");
+UnityPrintFormatted("Percent   %%\n");
+UnityPrintFormatted("Color Red \033[41mFAIL\033[00m\n");
+UnityPrintFormatted("\n");
+UnityPrintFormatted("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);
+```
 
 
 ### Toolset Customization
@@ -248,12 +321,14 @@ _Example:_
 Say you are forced to run your test suite on an embedded processor with no
 `stdout` option. You decide to route your test result output to a custom serial
 `RS232_putc()` function you wrote like thus:
-        #include "RS232_header.h"
-        ...
-        #define UNITY_OUTPUT_CHAR(a) RS232_putc(a)
-        #define UNITY_OUTPUT_START() RS232_config(115200,1,8,0)
-        #define UNITY_OUTPUT_FLUSH() RS232_flush()
-        #define UNITY_OUTPUT_COMPLETE() RS232_close()
+```C
+#include "RS232_header.h"
+...
+#define UNITY_OUTPUT_CHAR(a)    RS232_putc(a)
+#define UNITY_OUTPUT_START()    RS232_config(115200,1,8,0)
+#define UNITY_OUTPUT_FLUSH()    RS232_flush()
+#define UNITY_OUTPUT_COMPLETE() RS232_close()
+```
 
 _Note:_
 `UNITY_OUTPUT_FLUSH()` can be set to the standard out flush function simply by
@@ -282,10 +357,12 @@ empty). You can also force Unity to NOT use weak functions by defining
 UNITY_NO_WEAK. The most common options for this feature are:
 
 _Example:_
-        #define UNITY_WEAK_ATTRIBUTE weak
-        #define UNITY_WEAK_ATTRIBUTE __attribute__((weak))
-        #define UNITY_WEAK_PRAGMA
-        #define UNITY_NO_WEAK
+```C
+#define UNITY_WEAK_ATTRIBUTE weak
+#define UNITY_WEAK_ATTRIBUTE __attribute__((weak))
+#define UNITY_WEAK_PRAGMA
+#define UNITY_NO_WEAK
+```
 
 
 ##### `UNITY_PTR_ATTRIBUTE`
@@ -295,9 +372,10 @@ Some compilers require a custom attribute to be assigned to pointers, like
 defining this option with the attribute you would like.
 
 _Example:_
-        #define UNITY_PTR_ATTRIBUTE __attribute__((far))
-        #define UNITY_PTR_ATTRIBUTE near
-
+```C
+#define UNITY_PTR_ATTRIBUTE __attribute__((far))
+#define UNITY_PTR_ATTRIBUTE near
+```
 
 ##### `UNITY_PRINT_EOL`
 
@@ -306,8 +384,9 @@ to parse by the scripts, by Ceedling, etc, but it might not be ideal for YOUR
 system. Feel free to override this and to make it whatever you wish.
 
 _Example:_
-        #define UNITY_PRINT_EOL { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n') }
-
+```C
+#define UNITY_PRINT_EOL { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n') }
+```
 
 
 ##### `UNITY_EXCLUDE_DETAILS`
@@ -319,8 +398,9 @@ report which function or argument flagged an error. If you're not using CMock an
 you're not using these details for other things, then you can exclude them.
 
 _Example:_
-        #define UNITY_EXCLUDE_DETAILS
-
+```C
+#define UNITY_EXCLUDE_DETAILS
+```
 
 
 ##### `UNITY_EXCLUDE_SETJMP`
@@ -333,15 +413,18 @@ compiler doesn't support setjmp, you wouldn't have had the memory space for thos
 things anyway, though... so this option exists for those situations.
 
 _Example:_
-        #define UNITY_EXCLUDE_SETJMP
+```C
+#define UNITY_EXCLUDE_SETJMP
+```
 
 ##### `UNITY_OUTPUT_COLOR`
 
 If you want to add color using ANSI escape codes you can use this define.
 t
 _Example:_
-        #define UNITY_OUTPUT_COLOR
-
+```C
+#define UNITY_OUTPUT_COLOR
+```
 
 
 ## Getting Into The Guts
@@ -368,13 +451,15 @@ output of your test results.
 
 A simple main function looks something like this:
 
-        int main(void) {
-            UNITY_BEGIN();
-            RUN_TEST(test_TheFirst);
-            RUN_TEST(test_TheSecond);
-            RUN_TEST(test_TheThird);
-            return UNITY_END();
-        }
+```C
+int main(void) {
+    UNITY_BEGIN();
+    RUN_TEST(test_TheFirst);
+    RUN_TEST(test_TheSecond);
+    RUN_TEST(test_TheThird);
+    return UNITY_END();
+}
+```
 
 You can see that our main function doesn't bother taking any arguments. For our
 most barebones case, we'll never have arguments because we just run all the
@@ -397,15 +482,17 @@ case function. This includes catching failures, calling the test module's
 using CMock or test coverage, there will be additional stubs in use here. A
 simple minimalist RUN_TEST macro looks something like this:
 
-        #define RUN_TEST(testfunc) \
-            UNITY_NEW_TEST(#testfunc) \
-            if (TEST_PROTECT()) { \
-                setUp(); \
-                testfunc(); \
-            } \
-            if (TEST_PROTECT() && (!TEST_IS_IGNORED)) \
-                tearDown(); \
-            UnityConcludeTest();
+```C
+#define RUN_TEST(testfunc) \
+    UNITY_NEW_TEST(#testfunc) \
+    if (TEST_PROTECT()) { \
+        setUp(); \
+        testfunc(); \
+    } \
+    if (TEST_PROTECT() && (!TEST_IS_IGNORED)) \
+        tearDown(); \
+    UnityConcludeTest();
+```
 
 So that's quite a macro, huh? It gives you a glimpse of what kind of stuff Unity
 has to deal with for every single test case. For each test case, we declare that

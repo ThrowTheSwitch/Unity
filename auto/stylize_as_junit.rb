@@ -61,8 +61,8 @@ class ArgvParser
 
     opts.parse!(args)
     options
-  end # parse()
-end # class OptparseExample
+  end
+end
 
 class UnityToJUnit
   include FileUtils::Verbose
@@ -155,10 +155,6 @@ class UnityToJUnit
     [Regexp.last_match(1).to_i, Regexp.last_match(2).to_i, Regexp.last_match(3).to_i]
   end
 
-  def here
-    File.expand_path(File.dirname(__FILE__))
-  end
-
   private
 
   def results_structure
@@ -221,9 +217,9 @@ class UnityToJUnit
   def write_suites_footer(stream)
     stream.puts '</testsuites>'
   end
-end # UnityToJUnit
+end
 
-if __FILE__ == $0
+if $0 == __FILE__
   # parse out the command options
   options = ArgvParser.parse(ARGV)
 
