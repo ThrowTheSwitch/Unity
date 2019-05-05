@@ -1,12 +1,12 @@
 /* Copyright (c) 2010 James Grenning and Contributed to Unity Project
  * ==========================================
  *  Unity Project - A Test Framework for C
- *  Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+ *  Copyright (c) 2007-19 Mike Karlesky, Mark VanderVoord, Greg Williams
  *  [Released under MIT License. Please refer to license.txt for details]
  * ========================================== */
 
-#ifndef UNITY_FIXTURE_MALLOC_OVERRIDES_H_
-#define UNITY_FIXTURE_MALLOC_OVERRIDES_H_
+#ifndef UNITY_FIXTURE_MALLOC_OVERRIDES_H
+#define UNITY_FIXTURE_MALLOC_OVERRIDES_H
 
 #include <stddef.h>
 
@@ -31,7 +31,7 @@
     #define UNITY_FIXTURE_FREE(ptr)    free(ptr)
 #else
     extern void* UNITY_FIXTURE_MALLOC(size_t size);
-    extern void UNITY_FIXTURE_FREE(void* ptr);
+    extern void  UNITY_FIXTURE_FREE(void* ptr);
 #endif
 
 #define malloc  unity_malloc
@@ -41,7 +41,7 @@
 
 void* unity_malloc(size_t size);
 void* unity_calloc(size_t num, size_t size);
-void* unity_realloc(void * oldMem, size_t size);
-void unity_free(void * mem);
+void* unity_realloc(void* oldMem, size_t size);
+void  unity_free(void* mem);
 
-#endif /* UNITY_FIXTURE_MALLOC_OVERRIDES_H_ */
+#endif /* UNITY_FIXTURE_MALLOC_OVERRIDES_H */
