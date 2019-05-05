@@ -2,11 +2,11 @@
 
 static void RunAllTests(void)
 {
-  RUN_TEST_GROUP(ProductionCode);
-  RUN_TEST_GROUP(ProductionCode2);
+    RUN_TEST_GROUP(ProductionCode);
+    RUN_TEST_GROUP(ProductionCode2);
 }
 
-int main(int argc, const char * argv[])
+int main(int argc, const char* argv[])
 {
-  return UnityMain(argc, argv, RunAllTests);
+    return UnityMain(argc, argv, RunAllTests);
 }
