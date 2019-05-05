@@ -5,13 +5,13 @@
  *  [Released under MIT License. Please refer to license.txt for details]
  * ========================================== */
 
-#ifndef D_unity_output_Spy_H
-#define D_unity_output_Spy_H
+#ifndef UNITY_OUTPUT_SPY_H
+#define UNITY_OUTPUT_SPY_H
 
-void UnityOutputCharSpy_Create(int s);
-void UnityOutputCharSpy_Destroy(void);
-void UnityOutputCharSpy_OutputChar(int c);
-const char * UnityOutputCharSpy_Get(void);
-void UnityOutputCharSpy_Enable(int enable);
+void        UnityOutputCharSpy_Create(int s);
+void        UnityOutputCharSpy_Destroy(void);
+void        UnityOutputCharSpy_OutputChar(int c);
+const char* UnityOutputCharSpy_Get(void);
+void        UnityOutputCharSpy_Enable(int enable);
 
-#endif
+#endif /* UNITY_OUTPUT_SPY_H */
