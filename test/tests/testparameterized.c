@@ -12,69 +12,78 @@
 #define TEST_CASE(...)
 
 /* Include Passthroughs for Linking Tests */
-void putcharSpy(int c) { (void)putchar(c);}
-void flushSpy(void) {}
+void putcharSpy(int c)
+{
+    (void)putchar(c);
+}
+
+void flushSpy(void)
+{
+
+}
 
 #define EXPECT_ABORT_BEGIN \
     if (TEST_PROTECT())    \
     {
 
-#define VERIFY_FAILS_END                                                       \
-    }                                                                          \
-    Unity.CurrentTestFailed = (Unity.CurrentTestFailed != 0) ? 0 : 1;          \
-    if (Unity.CurrentTestFailed == 1) {                                        \
-      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
-      UNITY_OUTPUT_CHAR(':');                                                  \
-      UnityPrint(Unity.CurrentTestName);                                       \
-      UnityPrint(":FAIL: [[[[ Test Should Have Failed But Did Not ]]]]");      \
-      UNITY_OUTPUT_CHAR('\n');                                                 \
+#define VERIFY_FAILS_END                                                    \
+    }                                                                       \
+    Unity.CurrentTestFailed = (Unity.CurrentTestFailed != 0) ? 0 : 1;       \
+    if (Unity.CurrentTestFailed == 1)                                       \
+    {                                                                       \
+        SetToOneMeanWeAlreadyCheckedThisGuy = 1;                            \
+        UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);              \
+        UNITY_OUTPUT_CHAR(':');                                             \
+        UnityPrint(Unity.CurrentTestName);                                  \
+        UnityPrint(":FAIL: [[[[ Test Should Have Failed But Did Not ]]]]"); \
+        UNITY_OUTPUT_CHAR('\n');                                            \
     }
 
-#define VERIFY_IGNORES_END                                                     \
-    }                                                                          \
-    Unity.CurrentTestFailed = (Unity.CurrentTestIgnored != 0) ? 0 : 1;         \
-    Unity.CurrentTestIgnored = 0;                                              \
-    if (Unity.CurrentTestFailed == 1) {                                        \
-      SetToOneMeanWeAlreadyCheckedThisGuy = 1;                                 \
-      UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);                   \
-      UNITY_OUTPUT_CHAR(':');                                                  \
-      UnityPrint(Unity.CurrentTestName);                                       \
-      UnityPrint(":FAIL: [[[[ Test Should Have Ignored But Did Not ]]]]");     \
-      UNITY_OUTPUT_CHAR('\n');                                                 \
+#define VERIFY_IGNORES_END                                                   \
+    }                                                                        \
+    Unity.CurrentTestFailed  = (Unity.CurrentTestIgnored != 0) ? 0 : 1;      \
+    Unity.CurrentTestIgnored = 0;                                            \
+    if (Unity.CurrentTestFailed == 1)                                        \
+    {                                                                        \
+        SetToOneMeanWeAlreadyCheckedThisGuy = 1;                             \
+        UnityPrintNumberUnsigned(Unity.CurrentTestLineNumber);               \
+        UNITY_OUTPUT_CHAR(':');                                              \
+        UnityPrint(Unity.CurrentTestName);                                   \
+        UnityPrint(":FAIL: [[[[ Test Should Have Ignored But Did Not ]]]]"); \
+        UNITY_OUTPUT_CHAR('\n');                                             \
     }
 
-int SetToOneToFailInTearDown;
-int SetToOneMeanWeAlreadyCheckedThisGuy;
+int             SetToOneToFailInTearDown;
+int             SetToOneMeanWeAlreadyCheckedThisGuy;
 static unsigned NextExpectedStringIndex;
 static unsigned NextExpectedCharIndex;
 
 void suiteSetUp(void)
 {
     NextExpectedStringIndex = 0;
-    NextExpectedCharIndex = 0;
+    NextExpectedCharIndex   = 0;
 }
 
 void setUp(void)
 {
-  SetToOneToFailInTearDown = 0;
-  SetToOneMeanWeAlreadyCheckedThisGuy = 0;
+    SetToOneToFailInTearDown            = 0;
+    SetToOneMeanWeAlreadyCheckedThisGuy = 0;
 }
 
 void tearDown(void)
 {
-  if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL_MESSAGE("<= Failed in tearDown");
-  if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
-  {
-    UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
-    UNITY_OUTPUT_CHAR('\n');
-  }
+    if (SetToOneToFailInTearDown == 1)
+        TEST_FAIL_MESSAGE("<= Failed in tearDown");
+    if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
+    {
+        UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
+        UNITY_OUTPUT_CHAR('\n');
+    }
 }
 
 TEST_CASE(0)
 TEST_CASE(44)
-TEST_CASE((90)+9)
+TEST_CASE((90) + 9)
 void test_TheseShouldAllPass(int Num)
 {
     TEST_ASSERT_TRUE(Num < 100);
@@ -82,7 +91,7 @@ void test_TheseShouldAllPass(int Num)
 
 TEST_CASE(3)
 TEST_CASE(77)
-TEST_CASE( (99) + 1 - (1))
+TEST_CASE((99) + 1 - (1))
 void test_TheseShouldAllFail(int Num)
 {
     EXPECT_ABORT_BEGIN
@@ -125,7 +134,7 @@ TEST_CASE(1, "{")
 TEST_CASE(2, "}")
 TEST_CASE(3, ";")
 TEST_CASE(4, "\"quoted\"")
-void test_StringsArePreserved(unsigned index, const char * str)
+void test_StringsArePreserved(unsigned index, const char* str)
 {
     static const char * const expected[] = 
     {
@@ -169,6 +178,3 @@ void test_CharsArePreserved(unsigned index, char c)
 
     NextExpectedCharIndex++;
 }
-
-
-
