@@ -3,16 +3,18 @@
 #include "unity.h"
 
 /* These should be ignored because they are commented out in various ways:
-#include "whatever.h" 
 #include "somethingelse.h"
+#include "whatever.h"
 */
 
 void setUp(void)
 {
+
 }
 
 void tearDown(void)
 {
+
 }
 
 void test_IgnoredTest(void)

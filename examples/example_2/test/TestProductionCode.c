@@ -11,33 +11,35 @@ extern int Counter;
 
 TEST_SETUP(ProductionCode)
 {
-  //This is run before EACH TEST
-  Counter = 0x5a5a;
+    //This is run before EACH TEST
+    Counter = 0x5a5a;
 }
 
 TEST_TEAR_DOWN(ProductionCode)
 {
+
 }
 
 TEST(ProductionCode, FindFunction_WhichIsBroken_ShouldReturnZeroIfItemIsNotInList_WhichWorksEvenInOurBrokenCode)
 {
-  //All of these should pass
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(78));
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(2));
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(33));
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(999));
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(-1));
+    //All of these should pass
+    TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(78));
+    TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(2));
+    TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(33));
+    TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(999));
+    TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(-1));
 }
 
-TEST(ProductionCode, FindFunction_WhichIsBroken_ShouldReturnTheIndexForItemsInList_WhichWillFailBecauseOurFunctionUnderTestIsBroken)
+TEST(ProductionCode,
+     FindFunction_WhichIsBroken_ShouldReturnTheIndexForItemsInList_WhichWillFailBecauseOurFunctionUnderTestIsBroken)
 {
-  // You should see this line fail in your test summary
-  TEST_ASSERT_EQUAL(1, FindFunction_WhichIsBroken(34));
+    // You should see this line fail in your test summary
+    TEST_ASSERT_EQUAL(1, FindFunction_WhichIsBroken(34));
 
-  // Notice the rest of these didn't get a chance to run because the line above failed.
-  // Unit tests abort each test function on the first sign of trouble.
-  // Then NEXT test function runs as normal.
-  TEST_ASSERT_EQUAL(8, FindFunction_WhichIsBroken(8888));
+    // Notice the rest of these didn't get a chance to run because the line above failed.
+    // Unit tests abort each test function on the first sign of trouble.
+    // Then NEXT test function runs as normal.
+    TEST_ASSERT_EQUAL(8, FindFunction_WhichIsBroken(8888));
 }
 
 TEST(ProductionCode, FunctionWhichReturnsLocalVariable_ShouldReturnTheCurrentCounterValue)

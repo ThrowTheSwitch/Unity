@@ -11,10 +11,12 @@ TEST_GROUP(ProductionCode2);
 
 TEST_SETUP(ProductionCode2)
 {
+
 }
 
 TEST_TEAR_DOWN(ProductionCode2)
 {
+
 }
 
 TEST(ProductionCode2, IgnoredTest)
@@ -29,5 +31,5 @@ TEST(ProductionCode2, AnotherIgnoredTest)
 
 TEST(ProductionCode2, ThisFunctionHasNotBeenTested_NeedsToBeImplemented)
 {
-    TEST_IGNORE(); //Like This
+    TEST_IGNORE();  // Like This
 }
