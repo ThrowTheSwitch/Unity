@@ -15,12 +15,19 @@ TEST_FILE("some_file.c")
 #define TEST_CASE(a)
 
 /* Include Passthroughs for Linking Tests */
-void putcharSpy(int c) { (void)putchar(c);}
-void flushSpy(void) {}
+void putcharSpy(int c)
+{
+    (void)putchar(c);
+}
+
+void flushSpy(void)
+{
+
+}
 
 /* Global Variables Used During These Tests */
-int CounterSetup = 0;
-int CounterTeardown = 0;
+int CounterSetup      = 0;
+int CounterTeardown   = 0;
 int CounterSuiteSetup = 0;
 
 void setUp(void)
@@ -67,4 +74,3 @@ void spec_ThisTestPassesWhenNormalTeardownRan(void)
 {
     TEST_ASSERT_EQUAL_MESSAGE(1, CounterTeardown, "Normal Teardown Wasn't Run");
 }
-
