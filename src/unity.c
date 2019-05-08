@@ -484,8 +484,29 @@ void UnityAssertBits(const _U_SINT mask,
 }
 
 //-----------------------------------------------
-void UnityAssertEqualNumber(const _U_SINT expected,
+void UnityAssertEqualSignedNumber(const _U_SINT expected,
                             const _U_SINT actual,
+                            const char* msg,
+                            const UNITY_LINE_TYPE lineNumber,
+                            const UNITY_DISPLAY_STYLE_T style)
+{
+    UNITY_SKIP_EXECUTION;
+
+    if (expected != actual)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintNumberByStyle(expected, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+//-----------------------------------------------
+void UnityAssertEqualUnsignedNumber(const _U_UINT expected,
+                            const _U_UINT actual,
                             const char* msg,
                             const UNITY_LINE_TYPE lineNumber,
                             const UNITY_DISPLAY_STYLE_T style)

@@ -16,6 +16,7 @@ extern "C"
 struct UNITY_FIXTURE_T
 {
     int Verbose;
+    int Silent;
     unsigned int RepeatCount;
     const char* NameFilter;
     const char* GroupFilter;
