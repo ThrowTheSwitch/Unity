@@ -1271,8 +1271,10 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
 {
     UNITY_UINT32 elements = num_elements;
     unsigned int length   = style & 0xF;
+    unsigned int increment = 0;
 
     RETURN_IF_FAIL_OR_IGNORE;
+
     if (num_elements == 0)
     {
         UnityPrintPointlessAndBail();
@@ -1298,20 +1300,28 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
             case 1:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
+                increment  = sizeof(UNITY_INT8);
                 break;
+
             case 2:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
+                increment  = sizeof(UNITY_INT16);
                 break;
+
 #ifdef UNITY_SUPPORT_64
             case 8:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
+                increment  = sizeof(UNITY_INT64);
                 break;
 #endif
-            default: /* length 4 bytes */
+
+            default: /* default is length 4 bytes */
+            case 4:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                increment  = sizeof(UNITY_INT32);
                 length = 4;
                 break;
         }
@@ -1341,7 +1351,7 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
 
         if (Unity.CurrentTestFailed)
         {
-            if ((style & UNITY_DISPLAY_RANGE_UINT) && (length < sizeof(expect_val)))
+            if ((style & UNITY_DISPLAY_RANGE_UINT) && (length < (UNITY_INT_WIDTH / 8)))
             {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */
                 UNITY_INT mask = 1;
                 mask = (mask << 8 * length) - 1;
@@ -1360,13 +1370,13 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
         }
+        /* Walk through array by incrementing the pointers */
         if (flags == UNITY_ARRAY_TO_ARRAY)
         {
-            expected = (UNITY_INTERNAL_PTR)(length + (const char*)expected);
+            expected = (UNITY_INTERNAL_PTR)((const char*)expected + increment);
         }
-        actual   = (UNITY_INTERNAL_PTR)(length + (const char*)actual);
+        actual = (UNITY_INTERNAL_PTR)((const char*)actual + increment);
     }
-
 }
 
 /*-----------------------------------------------*/
