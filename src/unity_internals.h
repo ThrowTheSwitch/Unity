@@ -131,7 +131,7 @@
 #ifndef UNITY_SUPPORT_64
     /* No 64-bit Support */
     typedef UNITY_UINT32 UNITY_UINT;
-    typedef UNITY_INT32 UNITY_INT;
+    typedef UNITY_INT32  UNITY_INT;
     #define UNITY_MAX_NIBBLES (8)  /* Maximum number of nibbles in a UNITY_(U)INT */
 #else
   /* 64-bit Support */
@@ -145,7 +145,7 @@
     #error Invalid UNITY_LONG_WIDTH specified! (32 or 64 are supported)
   #endif
     typedef UNITY_UINT64 UNITY_UINT;
-    typedef UNITY_INT64 UNITY_INT;
+    typedef UNITY_INT64  UNITY_INT;
     #define UNITY_MAX_NIBBLES (16) /* Maximum number of nibbles in a UNITY_(U)INT */
 #endif
 
@@ -154,24 +154,24 @@
  *-------------------------------------------------------*/
 
 #if (UNITY_POINTER_WIDTH == 32)
-#define UNITY_PTR_TO_INT UNITY_INT32
-#define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX32
+  #define UNITY_PTR_TO_INT UNITY_INT32
+  #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX32
 #elif (UNITY_POINTER_WIDTH == 64)
-#define UNITY_PTR_TO_INT UNITY_INT64
-#define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX64
+  #define UNITY_PTR_TO_INT UNITY_INT64
+  #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX64
 #elif (UNITY_POINTER_WIDTH == 16)
-#define UNITY_PTR_TO_INT UNITY_INT16
-#define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX16
+  #define UNITY_PTR_TO_INT UNITY_INT16
+  #define UNITY_DISPLAY_STYLE_POINTER UNITY_DISPLAY_STYLE_HEX16
 #else
-    #error Invalid UNITY_POINTER_WIDTH specified! (16, 32 or 64 are supported)
+  #error Invalid UNITY_POINTER_WIDTH specified! (16, 32 or 64 are supported)
 #endif
 
 #ifndef UNITY_PTR_ATTRIBUTE
-#define UNITY_PTR_ATTRIBUTE
+  #define UNITY_PTR_ATTRIBUTE
 #endif
 
 #ifndef UNITY_INTERNAL_PTR
-#define UNITY_INTERNAL_PTR UNITY_PTR_ATTRIBUTE const void*
+  #define UNITY_INTERNAL_PTR UNITY_PTR_ATTRIBUTE const void*
 #endif
 
 /*-------------------------------------------------------
