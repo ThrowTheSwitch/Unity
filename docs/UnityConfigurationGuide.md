@@ -1,4 +1,4 @@
-﻿# Unity Configuration Guide
+# Unity Configuration Guide
 
 ## C Standards, Compilers and Microcontrollers
 
@@ -119,9 +119,17 @@ Define this to be the number of bits a pointer takes up on your system. The
 default, if not autodetected, is 32-bits. If you're getting ugly compiler
 warnings about casting from pointers, this is the one to look at.
 
+_Hint:_ In order to support exotic processors (for example TI C55x with a pointer 
+width of 23-bit), choose the next power of two (in this case 32-bit).
+
+_Supported values:_ 16, 32 and 64 
+
 _Example:_
 ```C
-#define UNITY_POINTER_WIDTH 64
+// Choose on of these #defines to set your pointer width (if not autodetected)
+//#define UNITY_POINTER_WIDTH 16
+//#define UNITY_POINTER_WIDTH 32
+#define UNITY_POINTER_WIDTH 64 // Set UNITY_POINTER_WIDTH to 64-bit
 ```
 
 
