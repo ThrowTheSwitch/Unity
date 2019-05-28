@@ -42,7 +42,7 @@
 #
 ##
 project('unity', 'c',
-    version         : '1.0.0',
+    version         : '2.4.3',
     license         : 'MIT',
     meson_version   : '>=0.50.0',
     default_options : 
