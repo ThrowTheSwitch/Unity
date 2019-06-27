@@ -14,6 +14,7 @@ require 'pathname'
 
 # TEMPLATE_TST
 TEMPLATE_TST ||= '#include "unity.h"
+
 %2$s#include "%1$s.h"
 
 void setUp(void)
