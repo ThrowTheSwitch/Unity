@@ -338,7 +338,6 @@ int suiteTearDown(int num_failures);
 #define TEST_ASSERT_NOT_EQUAL(expected, actual)                                                    UNITY_TEST_ASSERT(((expected) != (actual)), __LINE__, " Expected Not-Equal")
 #endif
 #ifdef UNITY_SHORTHAND_AS_NONE
-const char UnityStrErrShorthand[];
 #define TEST_ASSERT_EQUAL(expected, actual)                                                        UNITY_TEST_FAIL(__LINE__, UnityStrErrShorthand)
 #define TEST_ASSERT_NOT_EQUAL(expected, actual)                                                    UNITY_TEST_FAIL(__LINE__, UnityStrErrShorthand)
 #endif
@@ -569,7 +568,6 @@ const char UnityStrErrShorthand[];
 #define TEST_ASSERT_NOT_EQUAL_MESSAGE(expected, actual, message)                                   UNITY_TEST_ASSERT(((expected) != (actual)), __LINE__, message)
 #endif
 #ifdef UNITY_SHORTHAND_AS_NONE
-const char UnityStrErrShorthand[];
 #define TEST_ASSERT_EQUAL_MESSAGE(expected, actual, message)                                       UNITY_TEST_FAIL(__LINE__, UnityStrErrShorthand)
 #define TEST_ASSERT_NOT_EQUAL_MESSAGE(expected, actual, message)                                   UNITY_TEST_FAIL(__LINE__, UnityStrErrShorthand)
 #endif

@@ -679,6 +679,7 @@ extern const char UnityStrIgnore[];
 extern const char UnityStrErrFloat[];
 extern const char UnityStrErrDouble[];
 extern const char UnityStrErr64[];
+extern const char UnityStrErrShorthand[];
 
 /*-------------------------------------------------------
  * Test Running Macros
