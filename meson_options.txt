@@ -1,0 +1,17 @@
+###################################################################################
+#                                                                                 #
+# NAME: meson_options.txt                                                         #
+#                                                                                 #
+# AUTHOR: Mike Karlesky, Mark VanderVoord, Greg Williams.                         #
+# WRITTEN BY: Michael Brockus.                                                    #
+#                                                                                 #
+# License: MIT                                                                    #
+#                                                                                 #
+###################################################################################
+
+
+
+option('with_examples', 
+    type: 'feature', value : 'disabled', 
+    description: 'Enable Unity for unit testing.'
+)
