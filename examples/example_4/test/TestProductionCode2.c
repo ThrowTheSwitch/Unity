@@ -15,6 +15,10 @@ void tearDown(void)
 {
 }
 
+void test_IgnoredTest(void);
+void test_AnotherIgnoredTest(void);
+void test_ThisFunctionHasNotBeenTested_NeedsToBeImplemented(void);
+
 void test_IgnoredTest(void)
 {
     TEST_IGNORE_MESSAGE("This Test Was Ignored On Purpose");
