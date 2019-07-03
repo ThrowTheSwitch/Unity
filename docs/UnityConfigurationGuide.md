@@ -420,12 +420,34 @@ _Example:_
 ##### `UNITY_OUTPUT_COLOR`
 
 If you want to add color using ANSI escape codes you can use this define.
-t
+
 _Example:_
 ```C
 #define UNITY_OUTPUT_COLOR
 ```
 
+##### `UNITY_SHORTHAND_AS_INT`
+##### `UNITY_SHORTHAND_AS_MEM`
+##### `UNITY_SHORTHAND_AS_RAW`
+##### `UNITY_SHORTHAND_AS_NONE`
+
+These options  give you control of the `TEST_ASSERT_EQUAL` and the
+`TEST_ASSERT_NOT_EQUAL` shorthand assertions. Historically, Unity treated the
+former as an alias for an integer comparison. It treated the latter as a direct
+comparison using `!=`. This assymetry was confusing, but there was much
+disagreement as to how best to treat this pair of assertions. These four options
+will allow you to specify how Unity will treat these assertions.
+
+  - AS INT - the values will be cast to integers and directly compared. Arguments
+             that don't cast easily to integers will cause compiler errors.
+  - AS MEM - the address of both values will be taken and the entire object's
+             memory footprint will be compared byte by byte. Directly placing
+             constant numbers like `456` as expected values will cause errors.
+  - AS_RAW - Unity assumes that you can compare the two values using `==` and `!=`
+             and will do so. No details are given about mismatches, because it
+             doesn't really know what type it's dealing with.
+  - AS_NONE - Unity will disallow the use of these shorthand macros altogether,
+             insisting that developers choose a more descriptive option.
 
 ## Getting Into The Guts
 

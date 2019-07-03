@@ -105,12 +105,12 @@ becomes messageified like thus...
     TEST_ASSERT_X_MESSAGE( {modifiers}, {expected}, actual, {size/count}, message )
 
 Notes:
-- The `_MESSAGE` variants intentionally do not support `printf` style formatting 
+- The `_MESSAGE` variants intentionally do not support `printf` style formatting
   since many embedded projects don't support or avoid `printf` for various reasons.
   It is possible to use `sprintf` before the assertion to assemble a complex fail
   message, if necessary.
-- If you want to output a counter value within an assertion fail message (e.g. from 
-  a loop) , building up an array of results and then using one of the `_ARRAY` 
+- If you want to output a counter value within an assertion fail message (e.g. from
+  a loop) , building up an array of results and then using one of the `_ARRAY`
   assertions (see below) might be a handy alternative to `sprintf`.
 
 
@@ -236,10 +236,6 @@ sizes.
 ##### `TEST_ASSERT_EQUAL_INT32 (expected, actual)`
 
 ##### `TEST_ASSERT_EQUAL_INT64 (expected, actual)`
-
-##### `TEST_ASSERT_EQUAL (expected, actual)`
-
-##### `TEST_ASSERT_NOT_EQUAL (expected, actual)`
 
 ##### `TEST_ASSERT_EQUAL_UINT (expected, actual)`
 

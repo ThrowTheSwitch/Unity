@@ -729,6 +729,16 @@ extern const char UnityStrErr64[];
 #define UNITY_END() UnityEnd()
 #endif
 
+#ifndef UNITY_SHORTHAND_AS_INT
+#ifndef UNITY_SHORTHAND_AS_MEM
+#ifndef UNITY_SHORTHAND_AS_NONE
+#ifndef UNITY_SHORTHAND_AS_RAW
+#define UNITY_SHORTHAND_AS_OLD
+#endif
+#endif
+#endif
+#endif
+
 /*-----------------------------------------------
  * Command Line Argument Support
  *-----------------------------------------------*/

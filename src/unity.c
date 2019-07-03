@@ -53,6 +53,7 @@ static const char UnityStrNaN[]                    = "NaN";
 static const char UnityStrDet[]                    = "Determinate";
 static const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
 #endif
+const char UnityStrErrShorthand[]                  = "Unity Shorthand Support Disabled";
 const char UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
 const char UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
 const char UnityStrErr64[]                         = "Unity 64-bit Support Disabled";

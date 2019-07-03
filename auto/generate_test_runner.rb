@@ -103,8 +103,7 @@ class UnityTestRunnerGenerator
     source_scrubbed = source.clone
     source_scrubbed = source_scrubbed.gsub(/\\"/, '@quote@')   # hide escaped quotes to allow capture of the full string/char
     source_scrubbed = source_scrubbed.gsub(/\\'/, '@apos@')    # hide escaped apostrophes to allow capture of the full string/char
-    source_scrubbed = source_scrubbed.gsub(/("[^"\n]*")|('[^'\n]*')/) { |s| s.gsub(substring_re, substring_subs) } # temporarily hide problematic
-                                                                                                                   # characters within strings
+    source_scrubbed = source_scrubbed.gsub(/("[^"\n]*")|('[^'\n]*')/) { |s| s.gsub(substring_re, substring_subs) } # temporarily hide problematic characters within strings
     source_scrubbed = source_scrubbed.gsub(/\/\/.*$/, '')      # remove line comments
     source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '') # remove block comments
     lines = source_scrubbed.split(/(^\s*\#.*$)                 # Treat preprocessor directives as a logical line
