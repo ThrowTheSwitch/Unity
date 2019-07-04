@@ -20,5 +20,5 @@ test_src_2 = [
     join_paths('..' ,'TestProductionCode2.c') 
     ]
 
-test('Test production code one', executable('test-1', test_src_1, dependencies: [ example_dep, unity_dep ]))
-test('Test production code two', executable('test-2', test_src_2, dependencies: [ example_dep, unity_dep ]))
+test('Test production code one', executable('test-1', test_src_1, dependencies: [ a_dep, unity_dep ]))
+test('Test production code two', executable('test-2', test_src_2, dependencies: [ b_dep, unity_dep ]))

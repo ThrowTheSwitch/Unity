@@ -11,13 +11,21 @@
 
 
 
-example_src = files('ProductionCode.c', 'ProductionCode2.c')
-
-example_lib = library(meson.project_name(), 
-    sources: example_src,
+a_lib = library(
+    'production-code-1', 
+    'ProductionCode.c',
     include_directories: example_dir)
 
-example_dep = declare_dependency(
-    version: meson.project_version(),
-    link_with: example_lib,
+b_lib = library(
+    'production-code-2',
+    'ProductionCode2.c',
+    include_directories: example_dir)
+
+
+a_dep = declare_dependency(
+    link_with: a_lib,
+    include_directories: example_dir)
+
+b_dep = declare_dependency(
+    link_with: b_lib,
     include_directories: example_dir)

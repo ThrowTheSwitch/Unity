@@ -78,8 +78,3 @@ unity_dep = declare_dependency(
     version: meson.project_version(),
     link_with: unity_lib,
     include_directories: unity_dir)
-
-
-if get_option('with_examples').enabled()
-    subdir('examples')
-endif
