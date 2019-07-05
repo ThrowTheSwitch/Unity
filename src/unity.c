@@ -4,7 +4,6 @@
     [Released under MIT License. Please refer to license.txt for details]
 ============================================================================ */
 
-#define UNITY_INCLUDE_SETUP_STUBS
 #include "unity.h"
 #include <stddef.h>
 
