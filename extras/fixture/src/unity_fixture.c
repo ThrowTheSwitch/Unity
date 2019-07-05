@@ -15,10 +15,8 @@ struct UNITY_FIXTURE_T UnityFixture;
  * Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>
  * int (*outputChar)(int) = putchar; */
 
-#if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
 void setUp(void)    { /*does nothing*/ }
 void tearDown(void) { /*does nothing*/ }
-#endif
 
 static void announceTestRun(unsigned int runNumber)
 {
