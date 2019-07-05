@@ -5730,7 +5730,11 @@ void testHexPrintsUpToMaxNumberOfNibbles(void)
     startPutcharSpy();
     UnityPrintNumberHex(0xBEE, 21);
     endPutcharSpy();
-    TEST_ASSERT_EQUAL_INT(sizeof(UNITY_INT)*2, strlen(getBufferPutcharSpy()));
+#ifdef UNITY_SUPPORT_64
+    TEST_ASSERT_EQUAL_INT(16, strlen(getBufferPutcharSpy()));
+#else
+    TEST_ASSERT_EQUAL_INT( 8, strlen(getBufferPutcharSpy()));
+#endif
 #endif
 }
 
