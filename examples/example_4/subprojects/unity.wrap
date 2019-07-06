@@ -1,4 +1,4 @@
 [wrap-git]
 directory = unity
-url = https://github.com/squidfarts/Unity.git
+url = https://github.com/ThrowTheSwitch/Unity.git
 revision = head
