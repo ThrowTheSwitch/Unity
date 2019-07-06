@@ -10,7 +10,7 @@
 ###################################################################################
 
 
-project('example-4')
+project('example-4', 'c')
 
 unity_dep = dependency('unity', fallback : ['unity', 'unity_dep'])
 
