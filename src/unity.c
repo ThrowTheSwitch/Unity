@@ -1715,7 +1715,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     UNITY_IGNORE_AND_BAIL;
 }
 
-//-----------------------------------------------
+/*-----------------------------------------------*/
 void UnityMessage(const char* msg, const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
