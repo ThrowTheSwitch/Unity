@@ -147,6 +147,28 @@ void testPassShouldEndImmediatelyWithPass(void)
     TEST_FAIL_MESSAGE("We should have passed already and finished this test");
 }
 
+void testPassShouldEndImmediatelyWithPassAndMessage(void)
+{
+    TEST_PASS_MESSAGE("Woohoo! This Automatically Passes!");
+    TEST_FAIL_MESSAGE("We should have passed already and finished this test");
+}
+
+void testMessageShouldDisplayMessageWithoutEndingAndGoOnToPass(void)
+{
+    TEST_MESSAGE("This is just a message");
+    TEST_MESSAGE("This is another message");
+    TEST_PASS();
+}
+
+void testMessageShouldDisplayMessageWithoutEndingAndGoOnToFail(void)
+{
+    TEST_MESSAGE("This is yet another message");
+
+    EXPECT_ABORT_BEGIN
+    TEST_FAIL();
+    VERIFY_FAILS_END
+}
+
 void testTrue(void)
 {
     TEST_ASSERT(1);

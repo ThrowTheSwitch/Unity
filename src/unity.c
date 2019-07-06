@@ -1715,6 +1715,20 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     UNITY_IGNORE_AND_BAIL;
 }
 
+//-----------------------------------------------
+void UnityMessage(const char* msg, const UNITY_LINE_TYPE line)
+{
+    UnityTestResultsBegin(Unity.TestFile, line);
+    UnityPrint("INFO");
+    if (msg != NULL)
+    {
+      UNITY_OUTPUT_CHAR(':');
+      UNITY_OUTPUT_CHAR(' ');
+      UnityPrint(msg);
+    }
+    UNITY_PRINT_EOL();
+}
+
 /*-----------------------------------------------*/
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
 {

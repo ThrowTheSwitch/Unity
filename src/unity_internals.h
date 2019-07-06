@@ -614,8 +614,8 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
                                    const UNITY_FLAGS_T flags);
 
 void UnityFail(const char* message, const UNITY_LINE_TYPE line);
-
 void UnityIgnore(const char* message, const UNITY_LINE_TYPE line);
+void UnityMessage(const char* message, const UNITY_LINE_TYPE line);
 
 #ifndef UNITY_EXCLUDE_FLOAT
 void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
