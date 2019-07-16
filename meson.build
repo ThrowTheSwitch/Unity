@@ -69,7 +69,7 @@ if cc.get_id() == 'msvc'
         '/wd4146', # unary minus on unsigned (beware INT_MIN)
         '/wd4244', # lossy type conversion (e.g. double -> int)
         '/wd4305', # truncating type conversion (e.g. double -> float)
-        mesno.get_supported_arguments(['/utf-8']), language: args_for_langs)
+        language: args_for_langs)
 endif
 
 subdir('src')
