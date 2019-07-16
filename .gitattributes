@@ -4,6 +4,7 @@
 *.rb        text
 *.test      text
 *.c         text
+*.cc        text
 *.cpp       text
 *.h         text
 *.txt       text
