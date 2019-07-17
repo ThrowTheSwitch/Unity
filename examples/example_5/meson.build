@@ -10,11 +10,7 @@
 ###################################################################################
 
 
-project('example-5', 'cpp', 
-        default_options: [
-            'default_library=static',
-            'cpp_std=c++17'
-        ])
+project('example-5', 'cpp', default_options: [ 'cpp_std=c++17' ])
 
 unity_dep = dependency('unity', fallback : ['unity', 'unity_dep'])
 
