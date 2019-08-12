@@ -124,7 +124,9 @@ void test_NotBeConfusedByLongComplicatedStrings(void)
 void test_NotDisappearJustBecauseTheTestBeforeAndAfterHaveCrazyStrings(void)
 {
     TEST_ASSERT_TRUE_MESSAGE(1, "1 Should be True");
+    /* still should not break anything */
 }
+/* nor should this */
 
 void test_StillNotBeConfusedByLongComplicatedStrings(void)
 {
