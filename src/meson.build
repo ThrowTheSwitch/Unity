@@ -15,6 +15,6 @@ unity_src = files('unity.c')
 
 unity_dir = include_directories('.')
 
-unity_lib = library(meson.project_name(), 
+unity_lib = static_library(meson.project_name(), 
     sources: unity_src,
     include_directories: unity_dir)
