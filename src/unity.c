@@ -327,7 +327,11 @@ void UnityPrintNumber(const UNITY_INT number_to_print)
     {
         /* A negative number, including MIN negative */
         UNITY_OUTPUT_CHAR('-');
-        number = (UNITY_UINT)-number_to_print;
+        /* Take the two's complement of the unsigned value.  We could use
+           unary minus here except that the Micros**t compiler complains
+           about that.  Negating the signed value doesn't work because
+           that's undefined behavior for the most-negative integer. */
+        number = (~number) + 1;
     }
     UnityPrintNumberUnsigned(number);
 }
