@@ -10,6 +10,10 @@ compiler:
     - '-Wno-address'
     - '-std=c99'
     - '-pedantic'
+    - '-fsanitize=undefined'
+    - '-fsanitize=address'
+    - '-fno-sanitize-recover=all'
+    - '-fno-common'
   includes:
     prefix: '-I'
     items:
@@ -36,6 +40,8 @@ linker:
   options:
     - -lm
     - '-m64'
+    - '-fsanitize=undefined'
+    - '-fsanitize=address'
   includes:
     prefix: '-I'
   object_files:
