@@ -12,7 +12,7 @@
 
 
 project('unity', 'c',
-    version         : '2.4.3',
+    version         : '2.4.4',
     license         : 'MIT',
     meson_version   : '>=0.50.0',
     default_options : 
