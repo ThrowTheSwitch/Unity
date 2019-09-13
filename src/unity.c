@@ -5,6 +5,7 @@
 ============================================================================ */
 
 #include "unity.h"
+#include "unity_setup_stubs.h"
 #include <stddef.h>
 
 #ifdef AVR
