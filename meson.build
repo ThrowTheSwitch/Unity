@@ -12,7 +12,6 @@
 
 
 project('unity', 'c',
-    version         : '2.4.3',
     license         : 'MIT',
     meson_version   : '>=0.50.0',
     default_options: [
@@ -67,7 +66,4 @@ endif
 
 subdir('src')
 
-unity_dep = declare_dependency(
-    version: meson.project_version(),
-    link_with: unity_lib,
-    include_directories: unity_dir)
+unity_dep = declare_dependency(link_with: unity_lib, include_directories: unity_dir)
