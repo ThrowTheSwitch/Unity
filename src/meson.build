@@ -1,6 +1,6 @@
 ###################################################################################
 #                                                                                 #
-# NAME: src/meson.build                                                           #
+# NAME: meson.build                                                               #
 #                                                                                 #
 # AUTHOR: Mike Karlesky, Mark VanderVoord, Greg Williams.                         #
 # WRITTEN BY: Michael Brockus.                                                    #
@@ -9,12 +9,8 @@
 #                                                                                 #
 ###################################################################################
 
-
-
-unity_src = files('unity.c')
-
 unity_dir = include_directories('.')
 
-unity_lib = library(meson.project_name(), 
-    sources: unity_src,
+unity_lib = static_library(meson.project_name(), 
+    sources: ['unity.c'],
     include_directories: unity_dir)
