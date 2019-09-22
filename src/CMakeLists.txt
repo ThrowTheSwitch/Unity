@@ -1,6 +1,6 @@
 ###################################################################################
 #                                                                                 #
-# NAME: CMakeLsits.txt                                                            #
+# NAME: CMakeLists.txt                                                            #
 #                                                                                 #
 # AUTHOR: Mike Karlesky, Mark VanderVoord, Greg Williams.                         #
 # WRITTEN BY: Michael Brockus.                                                    #
