@@ -188,13 +188,26 @@ typedef struct GuardBytes
 } Guard;
 
 
+#define UNITY_MALLOC_ALIGNMENT (UNITY_POINTER_WIDTH / 8)
 static const char end[] = "END";
+
+
+static size_t unity_size_round_up(size_t size)
+{
+    size_t rounded_size;
+
+    rounded_size = ((size + UNITY_MALLOC_ALIGNMENT - 1) / UNITY_MALLOC_ALIGNMENT) * UNITY_MALLOC_ALIGNMENT;
+
+    return rounded_size;
+}
 
 void* unity_malloc(size_t size)
 {
     char* mem;
     Guard* guard;
-    size_t total_size = size + sizeof(Guard) + sizeof(end);
+    size_t total_size;
+
+    total_size = sizeof(Guard) + unity_size_round_up(size + sizeof(end));
 
     if (malloc_fail_countdown != MALLOC_DONT_FAIL)
     {
@@ -243,9 +256,13 @@ static void release_memory(void* mem)
 
     malloc_count--;
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-    if (mem == unity_heap + heap_index - guard->size - sizeof(end))
+    size_t block_size;
+
+    block_size = unity_size_round_up(guard->size + sizeof(end));
+
+    if (mem == unity_heap + heap_index - block_size)
     {
-        heap_index -= (guard->size + sizeof(Guard) + sizeof(end));
+        heap_index -= (sizeof(Guard) + block_size);
     }
 #else
     UNITY_FIXTURE_FREE(guard);
