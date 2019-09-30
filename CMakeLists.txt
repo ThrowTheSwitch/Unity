@@ -8,34 +8,15 @@
 # License: MIT                                                                    #
 #                                                                                 #
 ###################################################################################
-cmake_minimum_required(VERSION 3.13.2.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3 FATAL_ERROR)
 
 
-
-#
-#  CMake: Declare project
-#
 project(unity LANGUAGES C DESCRIPTION "C Unit testing framework.")
 
 
-
-#
-#  CMake: Creation of library   
-#
-add_library("unity" STATIC)
+add_subdirectory("src")
 
 
-
-#
-#  CMake: Adding source to target
-#
-target_sources("unity" PRIVATE "src/unity.c")
-
-
-
-#
-#  CMake: Including directories to target
-#
 target_include_directories("unity" 
     PUBLIC 
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
@@ -44,18 +25,8 @@ target_include_directories("unity"
     PRIVATE "src"
 )
 
-
-
-#
-#  CMake: Give target an alias 
-#
 add_library("unity::framework" ALIAS "unity")
 
-
-
-#
-#  CMake: export project
-#
 install(TARGETS "unity" EXPORT "unityConfig"
     ARCHIVE  DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_INSTALL_LIBDIR}"
     LIBRARY  DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_INSTALL_LIBDIR}"
