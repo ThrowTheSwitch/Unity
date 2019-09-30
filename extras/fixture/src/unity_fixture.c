@@ -256,13 +256,15 @@ static void release_memory(void* mem)
 
     malloc_count--;
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-    size_t block_size;
-
-    block_size = unity_size_round_up(guard->size + sizeof(end));
-
-    if (mem == unity_heap + heap_index - block_size)
     {
-        heap_index -= (sizeof(Guard) + block_size);
+        size_t block_size;
+
+        block_size = unity_size_round_up(guard->size + sizeof(end));
+
+        if (mem == unity_heap + heap_index - block_size)
+        {
+            heap_index -= (sizeof(Guard) + block_size);
+        }
     }
 #else
     UNITY_FIXTURE_FREE(guard);
