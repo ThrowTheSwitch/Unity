@@ -317,11 +317,15 @@ void* unity_realloc(void* oldMem, size_t size)
     if (guard->size >= size) return oldMem;
 
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC /* Optimization if memory is expandable */
-    if (oldMem == unity_heap + heap_index - guard->size - sizeof(end) &&
-        heap_index + size - guard->size <= UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
-        release_memory(oldMem);    /* Not thread-safe, like unity_heap generally */
-        return unity_malloc(size); /* No memcpy since data is in place */
+        size_t old_total_size = unity_size_round_up(guard->size + sizeof(end));
+
+        if ((oldMem == unity_heap + heap_index - old_total_size) &&
+            ((heap_index - old_total_size + unity_size_round_up(size + sizeof(end))) <= UNITY_INTERNAL_HEAP_SIZE_BYTES))
+        {
+            release_memory(oldMem);    /* Not thread-safe, like unity_heap generally */
+            return unity_malloc(size); /* No memcpy since data is in place */
+        }
     }
 #endif
     newMem = unity_malloc(size);
