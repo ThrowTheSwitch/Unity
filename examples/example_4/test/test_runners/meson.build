@@ -1,6 +1,6 @@
 ###################################################################################
 #                                                                                 #
-# NAME: examples/example_4/test/test_runners/meson.build                          #
+# NAME: meson.build                                                               #
 #                                                                                 #
 # AUTHOR: Mike Karlesky, Mark VanderVoord, Greg Williams.                         #
 # WRITTEN BY: Michael Brockus.                                                    #
@@ -9,16 +9,8 @@
 #                                                                                 #
 ###################################################################################
 
+cases = [['TestProductionCode_Runner.c',  join_paths('..' ,'TestProductionCode.c')], 
+        ['TestProductionCode2_Runner.c', join_paths('..' ,'TestProductionCode2.c')]]
 
-
-test_src_1 = [ 
-    'TestProductionCode_Runner.c',
-    join_paths('..' ,'TestProductionCode.c')
-    ]
-test_src_2 = [ 
-    'TestProductionCode2_Runner.c',
-    join_paths('..' ,'TestProductionCode2.c') 
-    ]
-
-test('Test production code one', executable('test-1', test_src_1, dependencies: [ a_dep, unity_dep ]))
-test('Test production code two', executable('test-2', test_src_2, dependencies: [ b_dep, unity_dep ]))
+test('Running: 01-test-case', executable('01-test-case', cases[0], dependencies: [ a_dep, unity_dep ]))
+test('Running: 02-test-case', executable('02-test-case', cases[1], dependencies: [ b_dep, unity_dep ]))
