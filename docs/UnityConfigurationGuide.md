@@ -119,10 +119,10 @@ Define this to be the number of bits a pointer takes up on your system. The
 default, if not autodetected, is 32-bits. If you're getting ugly compiler
 warnings about casting from pointers, this is the one to look at.
 
-_Hint:_ In order to support exotic processors (for example TI C55x with a pointer 
+_Hint:_ In order to support exotic processors (for example TI C55x with a pointer
 width of 23-bit), choose the next power of two (in this case 32-bit).
 
-_Supported values:_ 16, 32 and 64 
+_Supported values:_ 16, 32 and 64
 
 _Example:_
 ```C
@@ -341,36 +341,6 @@ Say you are forced to run your test suite on an embedded processor with no
 _Note:_
 `UNITY_OUTPUT_FLUSH()` can be set to the standard out flush function simply by
 specifying `UNITY_USE_FLUSH_STDOUT`. No other defines are required.
-
-
-##### `UNITY_WEAK_ATTRIBUTE`
-
-##### `UNITY_WEAK_PRAGMA`
-
-##### `UNITY_NO_WEAK`
-
-For some targets, Unity can make the otherwise required setUp() and tearDown()
-functions optional. This is a nice convenience for test writers since setUp and
-tearDown don’t often actually do anything. If you’re using gcc or clang, this
-option is automatically defined for you. Other compilers can also support this
-behavior, if they support a C feature called weak functions. A weak function is
-a function that is compiled into your executable unless a non-weak version of
-the same function is defined elsewhere. If a non-weak version is found, the weak
-version is ignored as if it never existed. If your compiler supports this feature,
-you can let Unity know by defining UNITY_WEAK_ATTRIBUTE or UNITY_WEAK_PRAGMA as
-the function attributes that would need to be applied to identify a function as
-weak. If your compiler lacks support for weak functions, you will always need to
-define setUp and tearDown functions (though they can be and often will be just
-empty). You can also force Unity to NOT use weak functions by defining
-UNITY_NO_WEAK. The most common options for this feature are:
-
-_Example:_
-```C
-#define UNITY_WEAK_ATTRIBUTE weak
-#define UNITY_WEAK_ATTRIBUTE __attribute__((weak))
-#define UNITY_WEAK_PRAGMA
-#define UNITY_NO_WEAK
-```
 
 
 ##### `UNITY_PTR_ATTRIBUTE`

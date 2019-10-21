@@ -93,8 +93,9 @@ Next, a test file will include a `setUp()` and `tearDown()` function. The setUp
 function can contain anything you would like to run before each test. The
 tearDown function can contain anything you would like to run after each test.
 Both functions accept no arguments and return nothing. You may leave either or
-both of these blank if you have no need for them. If you're using a compiler
-that is configured to make these functions optional, you may leave them off
+both of these blank if you have no need for them.
+
+If you're using Ceedling or the test runner generator script, you may leave these off
 completely. Not sure? Give it a try. If you compiler complains that it can't
 find setUp or tearDown when it links, you'll know you need to at least include
 an empty function for these.
@@ -103,7 +104,7 @@ The majority of the file will be a series of test functions. Test functions
 follow the convention of starting with the word "test_" or "spec_". You don't HAVE
 to name them this way, but it makes it clear what functions are tests for other
 developers.  Also, the automated scripts that come with Unity or Ceedling will default
-to looking for test functions to be prefixed this way. Test functions take no arguments 
+to looking for test functions to be prefixed this way. Test functions take no arguments
 and return nothing. All test accounting is handled internally in Unity.
 
 Finally, at the bottom of your test file, you will write a `main()` function.
@@ -156,7 +157,7 @@ This should be enough to get you going, though.
 
 ### Running Test Functions
 When writing your own `main()` functions, for a test-runner. There are two ways
-to execute the test. 
+to execute the test.
 
 The classic variant
 ``` c
@@ -170,8 +171,8 @@ These macros perform the necessary setup before the test is called and
 handles cleanup and result tabulation afterwards.
 
 ### Ignoring Test Functions
-There are times when a test is incomplete or not valid for some reason. 
-At these times, TEST_IGNORE can be called. Control will immediately be 
+There are times when a test is incomplete or not valid for some reason.
+At these times, TEST_IGNORE can be called. Control will immediately be
 returned to the caller of the test, and no failures will be returned.
 This is useful when your test runners are automatically generated.
 
