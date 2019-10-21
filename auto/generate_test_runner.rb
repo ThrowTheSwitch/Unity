@@ -167,8 +167,8 @@ class UnityTestRunnerGenerator
   end
 
   def find_setup_and_teardown(source)
-    @has_setup = source =~ /void\s+#{@options[setup_name]}\s*\(/
-    @has_teardown = source =~ /void\s+#{@options[teardown_name]}\s*\(/
+    @has_setup = source =~ /void\s+#{@options[:setup_name]}\s*\(/
+    @has_teardown = source =~ /void\s+#{@options[:teardown_name]}\s*\(/
     @has_suite_setup = (!@options[:suite_setup].nil?) || (source =~ /void\s+suiteSetUp\s*\(/)
     @has_suite_teardown = (!@options[:suite_teardown].nil?) || (source =~ /void\s+suiteTearDown\s*\(/)
   end
