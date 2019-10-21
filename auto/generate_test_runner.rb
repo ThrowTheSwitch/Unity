@@ -58,7 +58,7 @@ class UnityTestRunnerGenerator
     used_mocks          = find_mocks(testfile_includes)
     testfile_includes   = (testfile_includes - used_mocks)
     testfile_includes.delete_if { |inc| inc =~ /(unity|cmock)/ }
-    find_setup_and_teardown()
+    find_setup_and_teardown(source)
 
     # build runner file
     generate(input_file, output_file, tests, used_mocks, testfile_includes)
