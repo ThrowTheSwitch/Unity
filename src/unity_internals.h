@@ -373,22 +373,6 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #endif
 
 /*-------------------------------------------------------
- * Language Features Available
- *-------------------------------------------------------*/
-#if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
-#   if defined(__GNUC__) || defined(__ghs__) /* __GNUC__ includes clang */
-#       if !(defined(__WIN32__) && defined(__clang__)) && !defined(__TMS470__)
-#           define UNITY_WEAK_ATTRIBUTE __attribute__((weak))
-#       endif
-#   endif
-#endif
-
-#ifdef UNITY_NO_WEAK
-#   undef UNITY_WEAK_ATTRIBUTE
-#   undef UNITY_WEAK_PRAGMA
-#endif
-
-/*-------------------------------------------------------
  * Internal Structs Needed
  *-------------------------------------------------------*/
 
