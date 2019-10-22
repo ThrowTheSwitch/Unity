@@ -271,7 +271,7 @@ class UnityTestRunnerGenerator
     if @options[:has_suite_setup]
       if !@options[:suite_setup].nil?
         output.puts("\n/*=======Suite Setup=====*/")
-        output.puts('static void suiteSetUp(void)')
+        output.puts('void suiteSetUp(void)')
         output.puts('{')
         output.puts(@options[:suite_setup])
         output.puts('}')
@@ -285,7 +285,7 @@ class UnityTestRunnerGenerator
     if @options[:has_suite_teardown]
       if !@options[:suite_teardown].nil?
         output.puts("\n/*=======Suite Teardown=====*/")
-        output.puts('static int suite_teardown(int num_failures)')
+        output.puts('int suite_teardown(int num_failures)')
         output.puts('{')
         output.puts(@options[:suite_teardown])
         output.puts('}')
