@@ -57,7 +57,7 @@ default: $(SRC_FILES1) $(SRC_FILES2)
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES2) -o $(TARGET2)
 	- ./$(TARGET1)
-	./$(TARGET2)
+	- ./$(TARGET2)
 
 test/test_runners/TestProductionCode_Runner.c: test/TestProductionCode.c
 	ruby $(UNITY_ROOT)/auto/generate_test_runner.rb test/TestProductionCode.c  test/test_runners/TestProductionCode_Runner.c
