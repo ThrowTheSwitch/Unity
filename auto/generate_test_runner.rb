@@ -269,7 +269,7 @@ class UnityTestRunnerGenerator
 
   def create_suite_setup(output)
     if @options[:has_suite_setup]
-      if @options[:suite_setup].nil?
+      if !@options[:suite_setup].nil?
         output.puts("\n/*=======Suite Setup=====*/")
         output.puts('static void suiteSetUp(void)')
         output.puts('{')
@@ -283,7 +283,7 @@ class UnityTestRunnerGenerator
 
   def create_suite_teardown(output)
     if @options[:has_suite_teardown]
-      if @options[:suite_teardown].nil?
+      if !@options[:suite_teardown].nil?
         output.puts("\n/*=======Suite Teardown=====*/")
         output.puts('static int suite_teardown(int num_failures)')
         output.puts('{')
