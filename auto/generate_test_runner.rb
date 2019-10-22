@@ -285,12 +285,12 @@ class UnityTestRunnerGenerator
     if @options[:has_suite_teardown]
       if !@options[:suite_teardown].nil?
         output.puts("\n/*=======Suite Teardown=====*/")
-        output.puts('int suite_teardown(int num_failures)')
+        output.puts('int suiteTearDown(int num_failures)')
         output.puts('{')
         output.puts(@options[:suite_teardown])
         output.puts('}')
       else
-        output.puts('extern int suite_teardown(int num_failures);')
+        output.puts('extern int suiteTearDown(int num_failures);')
       end
     end
   end
