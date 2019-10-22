@@ -190,10 +190,6 @@ class UnityTestRunnerGenerator
     output.puts("\n/*=======Automagically Detected Files To Include=====*/")
     output.puts("#include \"#{@options[:framework]}.h\"")
     output.puts('#include "cmock.h"') unless mocks.empty?
-    output.puts('#ifndef UNITY_EXCLUDE_SETJMP_H')
-    output.puts('#include <setjmp.h>')
-    output.puts('#endif')
-    output.puts('#include <stdio.h>')
     if @options[:defines] && !@options[:defines].empty?
       @options[:defines].each { |d| output.puts("#ifndef #{d}\n#define #{d}\n#endif /* #{d} */") }
     end
