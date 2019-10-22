@@ -8,10 +8,19 @@ class UnityTestRunnerGenerator
   def initialize(options = nil)
     @options = UnityTestRunnerGenerator.default_options
     case options
-    when NilClass then @options
-    when String   then @options.merge!(UnityTestRunnerGenerator.grab_config(options))
-    when Hash     then @options.merge!(options)
-    else raise 'If you specify arguments, it should be a filename or a hash of options'
+    when NilClass
+      @options
+    when String
+      @options.merge!(UnityTestRunnerGenerator.grab_config(options))
+    when Hash
+      # Check if some of these have been specified
+      @options[:has_setup] = !options[:setup_name].nil?
+      @options[:has_teardown] = !options[:teardown_name].nil?
+      @options[:has_suite_setup] = !options[:suite_setup].nil?
+      @options[:has_suite_teardown] = !options[:suite_teardown].nil?
+      @options.merge!(options)
+    else
+      raise 'If you specify arguments, it should be a filename or a hash of options'
     end
     require_relative 'type_sanitizer'
   end
@@ -167,10 +176,10 @@ class UnityTestRunnerGenerator
   end
 
   def find_setup_and_teardown(source)
-    @has_setup = source =~ /void\s+#{@options[:setup_name]}\s*\(/
-    @has_teardown = source =~ /void\s+#{@options[:teardown_name]}\s*\(/
-    @has_suite_setup = (!@options[:suite_setup].nil?) || (source =~ /void\s+suiteSetUp\s*\(/)
-    @has_suite_teardown = (!@options[:suite_teardown].nil?) || (source =~ /void\s+suiteTearDown\s*\(/)
+    @options[:has_setup] = source =~ /void\s+#{@options[:setup_name]}\s*\(/
+    @options[:has_teardown] = source =~ /void\s+#{@options[:teardown_name]}\s*\(/
+    @options[:has_suite_setup] ||= (source =~ /void\s+suiteSetUp\s*\(/)
+    @options[:has_suite_teardown] ||= (source =~ /void\s+suiteTearDown\s*\(/)
   end
 
   def create_header(output, mocks, testfile_includes = [])
@@ -211,8 +220,8 @@ class UnityTestRunnerGenerator
 
   def create_externs(output, tests, _mocks)
     output.puts("\n/*=======External Functions This Runner Calls=====*/")
-    output.puts("extern void #{@options[:setup_name]}(void);") if @has_setup
-    output.puts("extern void #{@options[:teardown_name]}(void);") if @has_teardown
+    output.puts("extern void #{@options[:setup_name]}(void);") if @options[:has_setup]
+    output.puts("extern void #{@options[:teardown_name]}(void);") if @options[:has_teardown]
     output.puts("\n#ifdef __cplusplus\nextern \"C\"\n{\n#endif") if @options[:externc]
     tests.each do |test|
       output.puts("extern void #{test[:test]}(#{test[:call] || 'void'});")
@@ -259,7 +268,7 @@ class UnityTestRunnerGenerator
   end
 
   def create_suite_setup(output)
-    if @has_suite_setup
+    if @options[:has_suite_setup]
       if @options[:suite_setup].nil?
         output.puts("\n/*=======Suite Setup=====*/")
         output.puts('static void suiteSetUp(void)')
@@ -273,7 +282,7 @@ class UnityTestRunnerGenerator
   end
 
   def create_suite_teardown(output)
-    if (@has_suite_teardown)
+    if @options[:has_suite_teardown]
       if @options[:suite_teardown].nil?
         output.puts("\n/*=======Suite Teardown=====*/")
         output.puts('static int suite_teardown(int num_failures)')
@@ -305,13 +314,13 @@ class UnityTestRunnerGenerator
     output.puts('  { \\')
     output.puts('    CEXCEPTION_T e; \\') if cexception
     output.puts('    Try { \\') if cexception
-    output.puts("      #{@options[:setup_name]}(); \\") if @has_setup
+    output.puts("      #{@options[:setup_name]}(); \\") if @options[:has_setup]
     output.puts("      TestFunc(#{va_args2}); \\")
     output.puts('    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, "Unhandled Exception!"); } \\') if cexception
     output.puts('  } \\')
     output.puts('  if (TEST_PROTECT()) \\')
     output.puts('  { \\')
-    output.puts("    #{@options[:teardown_name]}(); \\") if @has_teardown
+    output.puts("    #{@options[:teardown_name]}(); \\") if @options[:has_teardown]
     output.puts('    CMock_Verify(); \\') unless used_mocks.empty?
     output.puts('  } \\')
     output.puts('  CMock_Destroy(); \\') unless used_mocks.empty?
@@ -328,9 +337,9 @@ class UnityTestRunnerGenerator
     output.puts('{')
     output.puts('  CMock_Verify();') unless used_mocks.empty?
     output.puts('  CMock_Destroy();') unless used_mocks.empty?
-    output.puts("  #{@options[:teardown_name]}();") if @has_teardown
+    output.puts("  #{@options[:teardown_name]}();") if @options[:has_teardown]
     output.puts('  CMock_Init();') unless used_mocks.empty?
-    output.puts("  #{@options[:setup_name]}();") if @has_setup
+    output.puts("  #{@options[:setup_name]}();") if @options[:has_setup]
     output.puts('}')
   end
 
@@ -376,7 +385,7 @@ class UnityTestRunnerGenerator
       output.puts("int #{main_name}(void)")
       output.puts('{')
     end
-    output.puts('  suiteSetUp();') if @has_suite_setup
+    output.puts('  suiteSetUp();') if @options[:has_suite_setup]
     output.puts("  UnityBegin(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
     if @options[:use_param_tests]
       tests.each do |test|
@@ -391,7 +400,7 @@ class UnityTestRunnerGenerator
     end
     output.puts
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
-    if (@has_suite_teardown)
+    if @options[:has_suite_teardown]
       output.puts('  return suiteTearDown(UnityEnd());')
     else
       output.puts('  return UnityEnd();')
