@@ -10,7 +10,7 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
     Unity.NumberOfTests++;
     UNITY_CLR_DETAILS();
     UNITY_EXEC_TIME_START();
-    CMock_Init();
+    UnityRunner_Init();
     if (TEST_PROTECT())
     {
 <% if @options[:plugins].include?(:cexception) %>
@@ -28,9 +28,9 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
     if (TEST_PROTECT())
     {
         <%= @options[:teardown_name] %>();
-        CMock_Verify();
+        UnityRunner_Verify();
     }
-    CMock_Destroy();
+    UnityRunner_Destroy();
     UNITY_EXEC_TIME_STOP();
     UnityConcludeTest();
 }

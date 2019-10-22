@@ -41,6 +41,15 @@ void suiteSetUp(void);
 int suiteTearDown(int num_failures);
 
 /*-------------------------------------------------------
+ * Test Runner Interface
+ *-------------------------------------------------------*/
+
+/* These functions are provided by the generated test runner. */
+void UnityRunner_Init(void);
+void UnityRunner_Verify(void);
+void UnityRunner_Destroy(void);
+
+/*-------------------------------------------------------
  * Configuration Options
  *-------------------------------------------------------
  * All options described below should be passed as a compiler flag to all files using Unity. If you must add #defines, place them BEFORE the #include above.

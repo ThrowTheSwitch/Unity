@@ -231,7 +231,7 @@ class UnityTestRunnerGenerator
 
   def create_mock_management(output, mock_headers)
     output.puts("\n/*=======Mock Management=====*/")
-    output.puts('static void CMock_Init(void)')
+    output.puts('void UnityRunner_Init(void)')
     output.puts('{')
 
     if @options[:enforce_strict_ordering]
@@ -247,7 +247,7 @@ class UnityTestRunnerGenerator
     end
     output.puts("}\n")
 
-    output.puts('static void CMock_Verify(void)')
+    output.puts('void UnityRunner_Verify(void)')
     output.puts('{')
     mocks.each do |mock|
       mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
@@ -255,7 +255,7 @@ class UnityTestRunnerGenerator
     end
     output.puts("}\n")
 
-    output.puts('static void CMock_Destroy(void)')
+    output.puts('void UnityRunner_Destroy(void)')
     output.puts('{')
     mocks.each do |mock|
       mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
@@ -300,9 +300,9 @@ class UnityTestRunnerGenerator
     output.puts("void #{@options[:test_reset_name]}(void)")
     output.puts('{')
     output.puts("  #{@options[:teardown_name]}();")
-    output.puts('  CMock_Verify();')
-    output.puts('  CMock_Destroy();')
-    output.puts('  CMock_Init();')
+    output.puts('  UnityRunner_Verify();')
+    output.puts('  UnityRunner_Destroy();')
+    output.puts('  UnityRunner_Init();')
     output.puts("  #{@options[:setup_name]}();")
     output.puts('}')
   end
