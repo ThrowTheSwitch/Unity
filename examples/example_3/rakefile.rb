@@ -13,8 +13,6 @@ end
 
 task prepare_for_tests: TEMP_DIRS
 
-include RakefileHelpers
-
 # Load default configuration, for now
 DEFAULT_CONFIG_FILE = 'target_gcc_32.yml'.freeze
 configure_toolchain(DEFAULT_CONFIG_FILE)

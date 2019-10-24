@@ -264,6 +264,7 @@ if $0 == __FILE__
     when /^-y\"?(.+)\"?/  then options = UnityModuleGenerator.grab_config(Regexp.last_match(1))
     when /^(\w+)/
       raise "ERROR: You can't have more than one Module name specified!" unless module_name.nil?
+
       module_name = arg
     when /^-(h|-help)/
       ARGV = [].freeze
@@ -298,6 +299,7 @@ if $0 == __FILE__
   end
 
   raise 'ERROR: You must have a Module name specified! (use option -h for help)' if module_name.nil?
+
   if destroy
     UnityModuleGenerator.new(options).destroy(module_name)
   else

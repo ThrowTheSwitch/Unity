@@ -20,8 +20,6 @@ end
 
 task prepare_for_tests: TEMP_DIRS
 
-include RakefileHelpers
-
 # Load default configuration, for now
 DEFAULT_CONFIG_FILE = 'gcc_auto_stdint.yml'.freeze
 configure_toolchain(DEFAULT_CONFIG_FILE)

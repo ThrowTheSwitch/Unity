@@ -61,11 +61,11 @@ class UnityTestRunnerGenerator
     # pull required data from source file
     source = File.read(input_file)
     source = source.force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
-    tests               = find_tests(source)
-    headers             = find_includes(source)
-    testfile_includes   = (headers[:local] + headers[:system])
-    used_mocks          = find_mocks(testfile_includes)
-    testfile_includes   = (testfile_includes - used_mocks)
+    tests = find_tests(source)
+    headers = find_includes(source)
+    testfile_includes = (headers[:local] + headers[:system])
+    used_mocks = find_mocks(testfile_includes)
+    testfile_includes = (testfile_includes - used_mocks)
     testfile_includes.delete_if { |inc| inc =~ /(unity|cmock)/ }
     find_setup_and_teardown(source)
 
@@ -127,17 +127,21 @@ class UnityTestRunnerGenerator
     lines.each_with_index do |line, _index|
       # find tests
       next unless line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
+
       arguments = Regexp.last_match(1)
       name = Regexp.last_match(2)
       call = Regexp.last_match(3)
       params = Regexp.last_match(4)
       args = nil
+
       if @options[:use_param_tests] && !arguments.empty?
         args = []
         arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) { |a| args << a[0] }
       end
+
       tests_and_line_numbers << { test: name, args: args, call: call, params: params, line_number: 0 }
     end
+
     tests_and_line_numbers.uniq! { |v| v[:test] }
 
     # determine line numbers and create tests to run
@@ -146,6 +150,7 @@ class UnityTestRunnerGenerator
     tests_and_line_numbers.size.times do |i|
       source_lines[source_index..-1].each_with_index do |line, index|
         next unless line =~ /\s+#{tests_and_line_numbers[i][:test]}(?:\s|\()/
+
         source_index += index
         tests_and_line_numbers[i][:line_number] = source_index + 1
         break
@@ -266,18 +271,21 @@ class UnityTestRunnerGenerator
 
   def create_setup(output)
     return if @options[:has_setup]
+
     output.puts("\n/*=======Setup (stub)=====*/")
     output.puts("void #{@options[:setup_name]}(void) {}")
   end
 
   def create_teardown(output)
     return if @options[:has_teardown]
+
     output.puts("\n/*=======Teardown (stub)=====*/")
     output.puts("void #{@options[:teardown_name]}(void) {}")
   end
 
   def create_suite_setup(output)
     return if @options[:suite_setup].nil?
+
     output.puts("\n/*=======Suite Setup=====*/")
     output.puts('void suiteSetUp(void)')
     output.puts('{')
@@ -287,6 +295,7 @@ class UnityTestRunnerGenerator
 
   def create_suite_teardown(output)
     return if @options[:suite_teardown].nil?
+
     output.puts("\n/*=======Suite Teardown=====*/")
     output.puts('int suiteTearDown(int num_failures)')
     output.puts('{')
@@ -315,9 +324,11 @@ class UnityTestRunnerGenerator
 
   def create_args_wrappers(output, tests)
     return unless @options[:use_param_tests]
+
     output.puts("\n/*=======Parameterized Test Wrappers=====*/")
     tests.each do |test|
       next if test[:args].nil? || test[:args].empty?
+
       test[:args].each.with_index(1) do |args, idx|
         output.puts("static void runner_args#{idx}_#{test[:test]}(void)")
         output.puts('{')

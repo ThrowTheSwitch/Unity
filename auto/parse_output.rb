@@ -34,9 +34,9 @@ class ParseOutput
 
     # current suite name and statistics
     @test_suite = nil
-    @total_tests  = 0
-    @test_passed  = 0
-    @test_failed  = 0
+    @total_tests = 0
+    @test_passed = 0
+    @test_failed = 0
     @test_ignored = 0
   end
 
