@@ -169,6 +169,3 @@ void test_CharsArePreserved(unsigned index, char c)
 
     NextExpectedCharIndex++;
 }
-
-
-

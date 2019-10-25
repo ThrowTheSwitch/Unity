@@ -345,7 +345,7 @@ TEST_TEAR_DOWN(LeakDetection)
 /* This tricky set of defines lets us see if we are using the Spy, returns 1 if true */
 #ifdef __STDC_VERSION__
 
-#if __STDC_VERSION__ >= 199901L
+#if UNITY_SUPPORT_VARIADIC_MACROS
 #define USING_SPY_AS(a)                    EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
 #define ASSIGN_VALUE(a)                    VAL_##a
 #define VAL_UnityOutputCharSpy_OutputChar  0, 1
@@ -354,7 +354,7 @@ TEST_TEAR_DOWN(LeakDetection)
 #if USING_SPY_AS(UNITY_OUTPUT_CHAR)
   #define USING_OUTPUT_SPY /* UNITY_OUTPUT_CHAR = UnityOutputCharSpy_OutputChar */
 #endif
-#endif /* >= 199901 */
+#endif /* UNITY_SUPPORT_VARIADIC_MACROS */
 
 #else  /* __STDC_VERSION__ else */
 #define UnityOutputCharSpy_OutputChar 42

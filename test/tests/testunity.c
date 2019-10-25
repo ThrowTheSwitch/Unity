@@ -8,8 +8,9 @@
 #include <string.h>
 #include <stdint.h>
 
-// Dividing by these constants produces +/- infinity.
-// The rationale is given in UnityAssertFloatIsInf's body.
+/* Dividing by these constants produces +/- infinity.
+ * The rationale is given in UnityAssertFloatIsInf's body.
+ */
 #ifndef UNITY_EXCLUDE_FLOAT
 static const UNITY_FLOAT f_zero = 0.0f;
 #endif
@@ -297,7 +298,9 @@ void testNotEqualInt16s(void)
 void testNotEqualInt32s(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_INT32(-2147483647, -2147483648); //use largest 32 bit negative to test printability
+    /*use largest 32 bit negative to test printability*/
+    /*note: (-2147483647 - 1) is used instead of -2147483648 because of C90 casting rules */
+    TEST_ASSERT_EQUAL_INT32(-2147483647, (-2147483647 - 1)); 
     VERIFY_FAILS_END
 }
 
@@ -336,8 +339,8 @@ void testNotEqualUInt16s(void)
 {
     UNITY_UINT16 v0, v1;
 
-    v0 = 65535;
-    v1 = 65534;
+    v0 = 65535u;
+    v1 = 65534u;
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT16(v0, v1);
@@ -348,8 +351,8 @@ void testNotEqualUInt32s(void)
 {
     UNITY_UINT32 v0, v1;
 
-    v0 = 4294967295;
-    v1 = 4294967294;
+    v0 = 4294967295u;
+    v1 = 4294967294u;
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT32(v0, v1);
@@ -1116,7 +1119,7 @@ void testHEX8sNotWithinDeltaAndCustomMessage(void)
     VERIFY_FAILS_END
 }
 
-//-----------------
+/*-----------------*/
 
 void testUINT32sWithinDelta(void)
 {
@@ -1340,7 +1343,7 @@ void testINT8sNotWithinDeltaAndCustomMessage(void)
     VERIFY_FAILS_END
 }
 
-//------------------------
+/*------------------------*/
 
 void testInt64ArrayWithinDelta(void)
 {
@@ -2807,7 +2810,7 @@ void testHEX8ArrayWithinDeltaSamePointerAndMessage(void)
     TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(60, expected, expected, 3, "Custom Message.");
 }
 
-//-----------------
+/*-----------------*/
 
 void testGreaterThan(void)
 {
@@ -2998,8 +3001,8 @@ void testGreaterThanUINT32(void)
     UNITY_UINT32 v0, v1;
     UNITY_UINT32 *p0, *p1;
 
-    v0 = 0;
-    v1 = 4294967295;
+    v0 = 0u;
+    v1 = 4294967295u;
     p0 = &v0;
     p1 = &v1;
 
@@ -3012,7 +3015,7 @@ void testGreaterThanUINT32(void)
 void testNotGreaterThanUINT32(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_GREATER_THAN_UINT32(4294967295, 0);
+    TEST_ASSERT_GREATER_THAN_UINT32(4294967295u, 0);
     VERIFY_FAILS_END
 }
 
@@ -3323,7 +3326,7 @@ void testGreaterOrEqualUINT32(void)
     UNITY_UINT32 *p0, *p1, *p2;
 
     v0 = 0;
-    v1 = 4294967295;
+    v1 = 4294967295u;
     v2 = 0;
     p0 = &v0;
     p1 = &v1;
@@ -3342,7 +3345,7 @@ void testGreaterOrEqualUINT32(void)
 void testNotGreaterOrEqualUINT32(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(4294967295, 0);
+    TEST_ASSERT_GREATER_OR_EQUAL_UINT32(4294967295u, 0);
     VERIFY_FAILS_END
 }
 
@@ -3433,8 +3436,7 @@ void testNotGreaterOrEqualHEX32(void)
     VERIFY_FAILS_END
 }
 
-//-----------------
-
+/*-----------------*/
 
 void testLessThan(void)
 {
@@ -3625,7 +3627,7 @@ void testLessThanUINT32(void)
     UNITY_UINT32 v0, v1;
     UNITY_UINT32 *p0, *p1;
 
-    v0 = 4294967295;
+    v0 = 4294967295u;
     v1 = 0;
     p0 = &v0;
     p1 = &v1;
@@ -3639,7 +3641,7 @@ void testLessThanUINT32(void)
 void testNotLessThanUINT32(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_LESS_THAN_UINT32(0, 4294967295);
+    TEST_ASSERT_LESS_THAN_UINT32(0, 4294967295u);
     VERIFY_FAILS_END
 }
 
@@ -3949,9 +3951,9 @@ void testLessOrEqualUINT32(void)
     UNITY_UINT32 v0, v1, v2;
     UNITY_UINT32 *p0, *p1, *p2;
 
-    v0 = 4294967295;
+    v0 = 4294967295u;
     v1 = 0;
-    v2 = 4294967295;
+    v2 = 4294967295u;
     p0 = &v0;
     p1 = &v1;
     p2 = &v2;
@@ -3969,7 +3971,7 @@ void testLessOrEqualUINT32(void)
 void testNotLessOrEqualUINT32(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_LESS_OR_EQUAL_UINT32(0, 4294967295);
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(0, 4294967295u);
     VERIFY_FAILS_END
 }
 
@@ -4060,7 +4062,8 @@ void testNotLessOrEqualHEX32(void)
     VERIFY_FAILS_END
 }
 
-//-----------------
+/*-----------------*/
+
 void testEqualStrings(void)
 {
     const char *testString = "foo";
@@ -5651,14 +5654,14 @@ void testIgnoredAndThenFailInTearDown(void)
     TEST_IGNORE();
 }
 
-// Tricky series of macros to set USING_OUTPUT_SPY
+/* Tricky series of macros to set USING_OUTPUT_SPY */
 #define USING_SPY_AS(a)           EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
 #define ASSIGN_VALUE(a)           VAL_##a
 #define VAL_putcharSpy            0, 1
 #define EXPAND_AND_USE_2ND(a, b)  SECOND_PARAM(a, b, throwaway)
 #define SECOND_PARAM(a, b, ...)   b
 #if USING_SPY_AS(UNITY_OUTPUT_CHAR)
-  #define USING_OUTPUT_SPY // true only if UNITY_OUTPUT_CHAR = putcharSpy
+  #define USING_OUTPUT_SPY /* true only if UNITY_OUTPUT_CHAR = putcharSpy */
 #endif
 
 #ifdef USING_OUTPUT_SPY
@@ -5712,7 +5715,7 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 {
     UNITY_UINT savedFailures = Unity.TestFailures;
     Unity.CurrentTestFailed = 1;
-    startPutcharSpy(); // Suppress output
+    startPutcharSpy(); /* Suppress output */
     startFlushSpy();
     TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
     UnityConcludeTest();
@@ -5725,7 +5728,7 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 #endif
     endFlushSpy();
 
-    startPutcharSpy(); // Suppress output
+    startPutcharSpy(); /* Suppress output */
     int failures = UnityEnd();
     Unity.TestFailures--;
     endPutcharSpy();
@@ -5798,7 +5801,7 @@ void testPrintNumbersUnsigned32(void)
 }
 
 
-// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ==================
+/* ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES 64 BIT SUPPORT ================== */
 
 void testPrintNumbersInt64(void)
 {
@@ -6175,7 +6178,8 @@ void testNotEqualInt64Arrays(void)
     VERIFY_FAILS_END
 #endif
 }
-// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES FLOAT SUPPORT ==================
+
+/* ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES FLOAT SUPPORT ================== */
 
 void testFloatsWithinDelta(void)
 {
@@ -7033,7 +7037,7 @@ void testFloatPrintingRandomSamples(void)
 #endif
 }
 
-// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DOUBLE SUPPORT ==================
+/* ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DOUBLE SUPPORT ================== */
 
 void testDoublesWithinDelta(void)
 {
@@ -7774,7 +7778,7 @@ void testDoublePrintingInfinityAndNaN(void)
 #endif
 }
 
-// ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DETAIL SUPPORT ==================
+/* ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DETAIL SUPPORT ================== */
 
 void testThatDetailsCanBeHandleOneDetail(void)
 {

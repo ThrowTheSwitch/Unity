@@ -109,10 +109,12 @@ void custtest_ThisTestPassesWhenCustomTeardownRan(void)
     TEST_ASSERT_EQUAL_MESSAGE(2, CounterTeardown, "Custom Teardown Wasn't Run");
 }
 
+#ifndef UNITY_EXCLUDE_TESTING_NEW_COMMENTS
 //void test_NewStyleCommentsShouldBeIgnored(void)
 //{
 //    TEST_ASSERT_FAIL("New Style Comments Should Be Ignored");
 //}
+#endif
 
 void test_NotBeConfusedByLongComplicatedStrings(void)
 {

@@ -5,4 +5,4 @@
 
 extern int CounterSuiteSetup;
 
-#endif //DEF_H
+#endif

@@ -200,6 +200,15 @@ module RakefileHelpers
 
     # Build and execute each unit test
     test_files.each do |test|
+
+      # Drop Out if we're skipping this type of test
+      if $cfg[:skip_tests]
+        if $cfg[:skip_tests].include?(:parameterized) && test.match(/parameterized/)
+          report("Skipping Parameterized Tests for this Target:IGNORE")
+          next
+        end
+      end
+
       obj_list = []
 
       unless $cfg['compiler']['aux_sources'].nil?

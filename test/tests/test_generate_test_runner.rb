@@ -144,6 +144,7 @@ RUNNER_TESTS = [
       :test_prefix => "paratest",
       :use_param_tests => true,
     },
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
                     'paratest_ShouldHandleParameterizedTests\(125\)',
@@ -160,6 +161,7 @@ RUNNER_TESTS = [
     :testfile => 'testdata/testRunnerGenerator.c',
     :testdefines => ['TEST'],
     :cmdline => " --test_prefix=\"paratest\" --use_param_tests=1",
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
                     'paratest_ShouldHandleParameterizedTests\(125\)',
@@ -179,6 +181,7 @@ RUNNER_TESTS = [
     :yaml => {
       :test_prefix => "paratest"
     },
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
                     'paratest_ShouldHandleParameterizedTests\(125\)',
@@ -468,6 +471,7 @@ RUNNER_TESTS = [
       :test_prefix => "paratest",
       :use_param_tests => true,
     },
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
                     'paratest_ShouldHandleParameterizedTests\(125\)',
@@ -484,6 +488,7 @@ RUNNER_TESTS = [
     :testfile => 'testdata/testRunnerGeneratorWithMocks.c',
     :testdefines => ['TEST'],
     :cmdline => " --test_prefix=\"paratest\" --use_param_tests=1",
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
                     'paratest_ShouldHandleParameterizedTests\(125\)',
@@ -503,6 +508,7 @@ RUNNER_TESTS = [
     :yaml => {
       :test_prefix => "paratest"
     },
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
                     'paratest_ShouldHandleParameterizedTests\(125\)',
@@ -1044,6 +1050,7 @@ RUNNER_TESTS = [
       :test_prefix => "paratest"
     },
     :cmdline_args => "-n ShouldHandleParameterizedTests",
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
                     'paratest_ShouldHandleParameterizedTests\(125\)',
@@ -1090,6 +1097,7 @@ RUNNER_TESTS = [
       :cmdline_args => true,
     },
     :cmdline_args => "-l",
+    :features => [ :parameterized ],
     :expected => {
       :to_pass => [ ],
       :to_fail => [ ],
@@ -1151,9 +1159,17 @@ RUNNER_TESTS = [
   },
 ]
 
-def runner_test(test, runner, expected, test_defines, cmdline_args)
+def runner_test(test, runner, expected, test_defines, cmdline_args, features)
   # Tack on TEST define for compiling unit tests
   load_configuration($cfg_file)
+
+  # Drop Out if we're skipping this type of test
+  if $cfg[:skip_tests] && features
+    if $cfg[:skip_tests].include?(:parameterized) && features.include?(:parameterized)
+      report("Skipping Parameterized Tests for this Target:IGNORE")
+      return true
+    end
+  end
 
   #compile objects
   obj_list = [
@@ -1239,7 +1255,7 @@ RUNNER_TESTS.each do |testset|
     end
 
     #test the script against the specified test file and check results
-    if (runner_test(testset[:testfile], runner_name, testset[:expected], testset[:testdefines], testset[:cmdline_args]))
+    if (runner_test(testset[:testfile], runner_name, testset[:expected], testset[:testdefines], testset[:cmdline_args], testset[:features]))
       report "#{testset_name}:PASS"
     else
       report "#{testset_name}:FAIL"

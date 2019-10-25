@@ -1814,9 +1814,9 @@ int UnityVerbosity            = 1;
 /*-----------------------------------------------*/
 int UnityParseOptions(int argc, char** argv)
 {
+    int i;
     UnityOptionIncludeNamed = NULL;
     UnityOptionExcludeNamed = NULL;
-    int i;
 
     for (i = 1; i < argc; i++)
     {
