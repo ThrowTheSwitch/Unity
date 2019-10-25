@@ -52,7 +52,7 @@ def build_compiler_fields
   defines = if $cfg['compiler']['defines']['items'].nil?
               ''
             else
-              squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'] + ['UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar\(int\)'])
+              squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'] + ['UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar(int)'])
             end
   options = squash('', $cfg['compiler']['options'])
   includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
