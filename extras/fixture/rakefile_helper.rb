@@ -6,9 +6,12 @@
 
 require 'yaml'
 require 'fileutils'
+require 'rbconfig'
 require_relative '../../auto/unity_test_summary'
 require_relative '../../auto/generate_test_runner'
 require_relative '../../auto/colour_reporter'
+
+$is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
 
 C_EXTENSION = '.c'.freeze
 
@@ -52,7 +55,12 @@ def build_compiler_fields
   defines = if $cfg['compiler']['defines']['items'].nil?
               ''
             else
-              squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'] + ['UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar(int)'])
+              if $is_windows
+                decl = 'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar(int)'
+              else
+                decl = 'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar\(int\)'
+              end
+              squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'] + [decl])
             end
   options = squash('', $cfg['compiler']['options'])
   includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
