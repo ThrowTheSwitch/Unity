@@ -487,35 +487,35 @@ These assertions verify that the `expected` array parameter is within +/- `delta
 \[10, 12\] and the delta is 3 then the assertion will fail for any value
 outside the range of \[7 - 13, 9 - 15\].
 
-##### `TEST_ASSERT_INT_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_INT_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_INT8_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_INT8_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_INT16_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_INT16_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_INT32_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_INT32_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_INT64_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_INT64_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_UINT_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_UINT_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_UINT8_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_UINT8_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_UINT16_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_UINT16_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_UINT32_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_UINT32_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_UINT64_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_UINT64_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_HEX_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_HEX_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_HEX8_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_HEX8_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_HEX16_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_HEX16_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_HEX32_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_HEX32_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
-##### `TEST_ASSERT_HEX64_ARRAY_WITHIN (delta, expected, actual)`
+##### `TEST_ASSERT_HEX64_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
 ### Each Equal (Arrays to Single Value)
 
