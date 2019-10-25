@@ -13,13 +13,13 @@ CFLAGS += -Wbad-function-cast -Wcast-qual -Wold-style-definition -Wshadow -Wstri
           -Wstrict-prototypes -Wswitch-default -Wundef
 #DEBUG = -O0 -g
 CFLAGS += $(DEBUG)
+UNITY_SUPPORT_64 = -D UNITY_SUPPORT_64
+UNITY_INCLUDE_DOUBLE = -D UNITY_INCLUDE_DOUBLE
 DEFINES =  -D UNITY_OUTPUT_CHAR=putcharSpy
 DEFINES += -D UNITY_OUTPUT_CHAR_HEADER_DECLARATION=putcharSpy\(int\)
 DEFINES += -D UNITY_OUTPUT_FLUSH=flushSpy
 DEFINES += -D UNITY_OUTPUT_FLUSH_HEADER_DECLARATION=flushSpy\(void\)
 DEFINES += $(UNITY_SUPPORT_64) $(UNITY_INCLUDE_DOUBLE)
-UNITY_SUPPORT_64 = -D UNITY_SUPPORT_64
-UNITY_INCLUDE_DOUBLE = -D UNITY_INCLUDE_DOUBLE
 SRC = ../src/unity.c tests/testunity.c build/testunityRunner.c
 INC_DIR = -I ../src
 COV_FLAGS = -fprofile-arcs -ftest-coverage -I ../../src
@@ -30,7 +30,6 @@ TARGET = build/testunity-cov.exe
 # For verbose output of all the tests, run 'make test'.
 default: coverage
 .PHONY: default coverage test clean
-coverage: DEFINES += -D UNITY_NO_WEAK
 coverage: $(BUILD_DIR)/testunityRunner.c
 	cd $(BUILD_DIR) && \
 	$(CC) $(CFLAGS) $(DEFINES) $(foreach i,$(SRC), ../$i) $(COV_FLAGS) -o ../$(TARGET)

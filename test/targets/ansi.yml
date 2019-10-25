@@ -23,6 +23,7 @@ compiler:
       - UNITY_INCLUDE_DOUBLE
       - UNITY_SUPPORT_TEST_CASES
       - UNITY_EXCLUDE_TESTING_NEW_COMMENTS
+      - UNITY_SUPPORT_64
   object_files:
     prefix: '-o'
     extension: '.o'

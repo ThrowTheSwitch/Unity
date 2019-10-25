@@ -683,7 +683,7 @@ extern const char UnityStrErrShorthand[];
 #ifndef RUN_TEST
 #ifdef __STDC_VERSION__
 #if __STDC_VERSION__ >= 199901L
-#define UNITY_SUPPORT_VARIADIC
+#define UNITY_SUPPORT_VARIADIC_MACROS
 #endif
 #endif
 #ifdef UNITY_SUPPORT_VARIADIC_MACROS
