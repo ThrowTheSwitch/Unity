@@ -284,6 +284,15 @@ in hexadecimal. Unity output is big endian.
 ##### `TEST_ASSERT_EQUAL_HEX64 (expected, actual)`
 
 
+### Characters
+
+While you can use the 8-bit integer assertions to compare `char`, another option is
+to use this specialized assertion which will show printable characters as printables,
+otherwise showing the HEX escape code for the characters.
+
+##### `TEST_ASSERT_EQUAL_CHAR (expected, actual)`
+
+
 ### Masked and Bit-level Assertions
 
 Masked and bit-level assertions produce output formatted in hexadecimal. Unity
@@ -344,6 +353,8 @@ greater than assertion will fail if it is 0 or less.
 
 ##### `TEST_ASSERT_GREATER_THAN_HEX32 (threshold, actual)`
 
+##### `TEST_ASSERT_GREATER_THAN_CHAR (threshold, actual)`
+
 ##### `TEST_ASSERT_LESS_THAN (threshold, actual)`
 
 ##### `TEST_ASSERT_LESS_THAN_INT (threshold, actual)`
@@ -367,6 +378,8 @@ greater than assertion will fail if it is 0 or less.
 ##### `TEST_ASSERT_LESS_THAN_HEX16 (threshold, actual)`
 
 ##### `TEST_ASSERT_LESS_THAN_HEX32 (threshold, actual)`
+
+##### `TEST_ASSERT_LESS_THAN_CHAR (threshold, actual)`
 
 
 ### Integer Ranges (of all sizes)
@@ -405,6 +418,8 @@ of 7 - 13.
 ##### `TEST_ASSERT_HEX32_WITHIN (delta, expected, actual)`
 
 ##### `TEST_ASSERT_HEX64_WITHIN (delta, expected, actual)`
+
+##### `TEST_ASSERT_CHAR_WITHIN (delta, expected, actual)`
 
 ### Structs and Strings
 
@@ -472,6 +487,8 @@ match. Failure messages specify the array index of the failed comparison.
 
 ##### `TEST_ASSERT_EQUAL_HEX64_ARRAY (expected, actual, num_elements)`
 
+##### `TEST_ASSERT_EQUAL_CHAR_ARRAY (expected, actual, num_elements)`
+
 ##### `TEST_ASSERT_EQUAL_PTR_ARRAY (expected, actual, num_elements)`
 
 ##### `TEST_ASSERT_EQUAL_STRING_ARRAY (expected, actual, num_elements)`
@@ -517,6 +534,8 @@ outside the range of \[7 - 13, 9 - 15\].
 
 ##### `TEST_ASSERT_HEX64_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
+##### `TEST_ASSERT_CHAR_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
 ### Each Equal (Arrays to Single Value)
 
 `expected` are single values and `actual` are arrays. `num_elements` specifies
@@ -557,6 +576,8 @@ match. Failure messages specify the array index of the failed comparison.
 #### `TEST_ASSERT_EACH_EQUAL_HEX32 (expected, actual, num_elements)`
 
 #### `TEST_ASSERT_EACH_EQUAL_HEX64 (expected, actual, num_elements)`
+
+#### `TEST_ASSERT_EACH_EQUAL_CHAR (expected, actual, num_elements)`
 
 #### `TEST_ASSERT_EACH_EQUAL_PTR (expected, actual, num_elements)`
 

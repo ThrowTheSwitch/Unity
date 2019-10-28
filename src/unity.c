@@ -304,13 +304,49 @@ void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T
 {
     if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
     {
-        UnityPrintNumber(number);
+        if (style == UNITY_DISPLAY_STYLE_CHAR)
+        {
+            /* printable characters plus CR & LF are printed */
+            UNITY_OUTPUT_CHAR('\'');
+            if ((number <= 126) && (number >= 32))
+            {
+                UNITY_OUTPUT_CHAR(number);
+            }
+            /* write escaped carriage returns */
+            else if (number == 13)
+            {
+                UNITY_OUTPUT_CHAR('\\');
+                UNITY_OUTPUT_CHAR('r');
+            }
+            /* write escaped line feeds */
+            else if (number == 10)
+            {
+                UNITY_OUTPUT_CHAR('\\');
+                UNITY_OUTPUT_CHAR('n');
+            }
+            /* unprintable characters are shown as codes */
+            else
+            {
+                UNITY_OUTPUT_CHAR('\\');
+                UNITY_OUTPUT_CHAR('x');
+                UnityPrintNumberHex((UNITY_UINT)number, 2);
+            }
+            UNITY_OUTPUT_CHAR('\'');
+        }
+        else
+        {
+            UnityPrintNumber(number);
+        }
     }
     else if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
     {
         UnityPrintNumberUnsigned((UNITY_UINT)number);
     }
-    else
+    else if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
+    {
+        UnityPrintNumberUnsigned((UNITY_UINT)number);
+    }
+    else 
     {
         UNITY_OUTPUT_CHAR('0');
         UNITY_OUTPUT_CHAR('x');

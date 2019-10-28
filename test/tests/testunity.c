@@ -288,6 +288,13 @@ void testNotEqualInt8s(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualChars(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_CHAR('A', 'a');
+    VERIFY_FAILS_END
+}
+
 void testNotEqualInt16s(void)
 {
     EXPECT_ABORT_BEGIN
@@ -475,6 +482,32 @@ void testEqualInt8sWhenThereAreDifferencesOutside8Bits(void)
     TEST_ASSERT_EQUAL_INT8(0x321,0x421);
     TEST_ASSERT_EQUAL_INT8(0xFF21,0x0021);
 }
+
+void testEqualChars(void)
+{
+    char v0, v1;
+    char *p0, *p1;
+
+    v0 = 'A';
+    v1 = 'A';
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_EQUAL_CHAR('A', 'A');
+    TEST_ASSERT_EQUAL_CHAR(v0, v1);
+    TEST_ASSERT_EQUAL_CHAR('A', v1);
+    TEST_ASSERT_EQUAL_CHAR(v0, 'A');
+    TEST_ASSERT_EQUAL_CHAR(*p0, v1);
+    TEST_ASSERT_EQUAL_CHAR(*p0, *p1);
+    TEST_ASSERT_EQUAL_CHAR(*p0, 'A');
+}
+
+void testEqualCharsWhenThereAreDifferencesOutside8Bits(void)
+{
+    TEST_ASSERT_EQUAL_CHAR(0x321,0x421);
+    TEST_ASSERT_EQUAL_CHAR(0xFF21,0x0021);
+}
+
 
 void testEqualInt16s(void)
 {
@@ -844,24 +877,24 @@ void testEqualUShorts(void)
     TEST_ASSERT_EQUAL_UINT(*p0, 19467);
 }
 
-void testEqualChars(void)
+void testEqualUInts(void)
 {
-    signed char v0, v1;
-    signed char *p0, *p1;
+    unsigned char v0, v1;
+    unsigned char *p0, *p1;
 
     v0 = 109;
     v1 = 109;
     p0 = &v0;
     p1 = &v1;
 
-    TEST_ASSERT_EQUAL_INT(42, 42);
-    TEST_ASSERT_EQUAL_INT(-116, -116);
-    TEST_ASSERT_EQUAL_INT(v0, v1);
-    TEST_ASSERT_EQUAL_INT(109, v1);
-    TEST_ASSERT_EQUAL_INT(v0, 109);
-    TEST_ASSERT_EQUAL_INT(*p0, v1);
-    TEST_ASSERT_EQUAL_INT(*p0, *p1);
-    TEST_ASSERT_EQUAL_INT(*p0, 109);
+    TEST_ASSERT_EQUAL_UINT(42, 42);
+    TEST_ASSERT_EQUAL_UINT(-116, -116);
+    TEST_ASSERT_EQUAL_UINT(v0, v1);
+    TEST_ASSERT_EQUAL_UINT(109, v1);
+    TEST_ASSERT_EQUAL_UINT(v0, 109);
+    TEST_ASSERT_EQUAL_UINT(*p0, v1);
+    TEST_ASSERT_EQUAL_UINT(*p0, *p1);
+    TEST_ASSERT_EQUAL_UINT(*p0, 109);
 }
 
 void testEqualUChars(void)
@@ -1343,6 +1376,42 @@ void testINT8sNotWithinDeltaAndCustomMessage(void)
     VERIFY_FAILS_END
 }
 
+void testCHARsWithinDelta(void)
+{
+    TEST_ASSERT_CHAR_WITHIN(1, 'M', 'L');
+    TEST_ASSERT_CHAR_WITHIN(5, -2, 2);
+    TEST_ASSERT_CHAR_WITHIN(5, 2, -2);
+}
+
+void testCHARsWithinDeltaAndCustomMessage(void)
+{
+    TEST_ASSERT_CHAR_WITHIN_MESSAGE(5, 1, 4, "Custom Message.");
+}
+
+void testCHARsWithinDeltaWhenThereAreDifferenceOutsideOf8Bits(void)
+{
+    TEST_ASSERT_CHAR_WITHIN(5, 0x123, 0xF23);
+}
+
+void testCHARsWithinDeltaWhenThereAreDifferenceOutsideOf8BitsAndCustomMessage(void)
+{
+    TEST_ASSERT_CHAR_WITHIN_MESSAGE(5, 0x123, 0xF23, "Custom Message.");
+}
+
+void testCHARsNotWithinDelta(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_WITHIN(2, -3, 0);
+    VERIFY_FAILS_END
+}
+
+void testCHARsNotWithinDeltaAndCustomMessage(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_WITHIN_MESSAGE(2, -4, 0, "Custom Message.");
+    VERIFY_FAILS_END
+}
+
 /*------------------------*/
 
 void testInt64ArrayWithinDelta(void)
@@ -1352,10 +1421,10 @@ void testInt64ArrayWithinDelta(void)
 #else
     UNITY_INT64 expected[] = {12345000, -12344995, 12345005};
     UNITY_INT64 acutalSmallDelta[] = {12345001, -12344996, 12345005};
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     TEST_ASSERT_INT64_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_INT64_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_INT64_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 #endif
 }
 
@@ -1366,10 +1435,10 @@ void testInt64ArrayWithinDeltaAndMessage(void)
 #else
     UNITY_INT64 expected[] = {12345000, -12344995, 12345005};
     UNITY_INT64 acutalSmallDelta[] = {12345001, -12344996, 12345005};
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 #endif
 }
 
@@ -1379,10 +1448,10 @@ void tesUInt64ArrayNotWithinDelta(void)
     TEST_IGNORE();
 #else
     UNITY_INT64 expected[] = {12345000, -12344995, 12345005};
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT64_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT64_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 #endif
 }
@@ -1393,10 +1462,10 @@ void testInt64ArrayNotWithinDeltaAndMessage(void)
     TEST_IGNORE();
 #else
     UNITY_INT64 expected[] = {12345000, -12344995, 12345005};
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -1407,10 +1476,10 @@ void testInt64ArrayWithinDeltaPointless(void)
     TEST_IGNORE();
 #else
     UNITY_INT64 expected[] = {12345000, -12344995, 12345005};
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT64_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_INT64_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 #endif
 }
@@ -1421,10 +1490,10 @@ void testInt64ArrayWithinDeltaPointlessAndMessage(void)
     TEST_IGNORE();
 #else
     UNITY_INT64 expected[] = {12345000, -12344995, 12345005};
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -1434,10 +1503,10 @@ void testInt64ArrayWithinDeltaExpectedNull(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT64_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_INT64_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 #endif
 }
@@ -1447,10 +1516,10 @@ void testInt64ArrayWithinDeltaExpectedNullAndMessage(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    UNITY_INT64 acutalBigDelta[] = {12345101, -12344896, 12345055};
+    UNITY_INT64 actualBigDelta[] = {12345101, -12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT64_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -1507,77 +1576,77 @@ void testIntArrayWithinDelta(void)
 {
     UNITY_INT expected[] = {5000, -4995, 5005};
     UNITY_INT acutalSmallDelta[] = {5001, -4996, 5005};
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     TEST_ASSERT_INT_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_INT_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_INT_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 }
 
 void testIntArrayWithinDeltaAndMessage(void)
 {
     UNITY_INT expected[] = {5000, -4995, 5005};
     UNITY_INT acutalSmallDelta[] = {5001, -4996, 5005};
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testIntArrayNotWithinDelta(void)
 {
     UNITY_INT expected[] = {5000, -4995, 5005};
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_INT_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testIntArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_INT expected[] = {5000, -4995, 5005};
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testIntArrayWithinDeltaPointless(void)
 {
     UNITY_INT expected[] = {5000, -4995, 5005};
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_INT_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testIntArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_INT expected[] = {5000, -4995, 5005};
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testIntArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_INT_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testIntArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_INT acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -1617,77 +1686,77 @@ void testInt16ArrayWithinDelta(void)
 {
     UNITY_INT16 expected[] = {5000, -4995, 5005};
     UNITY_INT16 acutalSmallDelta[] = {5001, -4996, 5005};
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     TEST_ASSERT_INT16_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_INT16_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_INT16_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 }
 
 void testInt16ArrayWithinDeltaAndMessage(void)
 {
     UNITY_INT16 expected[] = {5000, -4995, 5005};
     UNITY_INT16 acutalSmallDelta[] = {5001, -4996, 5005};
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testInt16ArrayNotWithinDelta(void)
 {
     UNITY_INT16 expected[] = {5000, -4995, 5005};
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT16_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT16_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testInt16ArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_INT16 expected[] = {5000, -4995, 5005};
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testInt16ArrayWithinDeltaPointless(void)
 {
     UNITY_INT16 expected[] = {5000, -4995, 5005};
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT16_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_INT16_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testInt16ArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_INT16 expected[] = {5000, -4995, 5005};
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testInt16ArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT16_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_INT16_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testInt16ArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_INT16 acutalBigDelta[] = {5101, -4896, 5055};
+    UNITY_INT16 actualBigDelta[] = {5101, -4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT16_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -1727,77 +1796,77 @@ void testInt8ArrayWithinDelta(void)
 {
     UNITY_INT8 expected[] = {20, -95, 55};
     UNITY_INT8 acutalSmallDelta[] = {21, -94, 55};
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     TEST_ASSERT_INT8_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_INT8_ARRAY_WITHIN(11, expected, acutalBigDelta, 3);
+    TEST_ASSERT_INT8_ARRAY_WITHIN(11, expected, actualBigDelta, 3);
 }
 
 void testInt8ArrayWithinDeltaAndMessage(void)
 {
     UNITY_INT8 expected[] = {20, -95, 55};
     UNITY_INT8 acutalSmallDelta[] = {21, -94, 55};
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(11, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(11, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testInt8ArrayNotWithinDelta(void)
 {
     UNITY_INT8 expected[] = {20, -95, 55};
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT8_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_INT8_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testInt8ArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_INT8 expected[] = {20, -95, 55};
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testInt8ArrayWithinDeltaPointless(void)
 {
     UNITY_INT8 expected[] = {20, -95, 55};
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT8_ARRAY_WITHIN(11, expected, acutalBigDelta, 0);
+    TEST_ASSERT_INT8_ARRAY_WITHIN(11, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testInt8ArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_INT8 expected[] = {20, -95, 55};
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(11, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(11, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testInt8ArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT8_ARRAY_WITHIN(11, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_INT8_ARRAY_WITHIN(11, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testInt8ArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_INT8 acutalBigDelta[] = {11, -86, 45};
+    UNITY_INT8 actualBigDelta[] = {11, -86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(11, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(11, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -1833,6 +1902,120 @@ void testInt8ArrayWithinDeltaSamePointerAndMessage(void)
     TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(11, expected, expected, 3, "Custom Message.");
 }
 
+
+
+
+
+void testCHARArrayWithinDelta(void)
+{
+    char expected[] = {20, -95, 55};
+    char acutalSmallDelta[] = {21, -94, 55};
+    char actualBigDelta[] = {11, -86, 45};
+
+    TEST_ASSERT_CHAR_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
+    TEST_ASSERT_CHAR_ARRAY_WITHIN(11, expected, actualBigDelta, 3);
+}
+
+void testCHARArrayWithinDeltaAndMessage(void)
+{
+    char expected[] = {20, -95, 55};
+    char acutalSmallDelta[] = {21, -94, 55};
+    char actualBigDelta[] = {11, -86, 45};
+
+    TEST_ASSERT_CHAR_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
+    TEST_ASSERT_CHAR_ARRAY_WITHIN_MESSAGE(11, expected, actualBigDelta, 3, "Custom Message.");
+}
+
+void testCHARArrayNotWithinDelta(void)
+{
+    char expected[] = {20, -95, 55};
+    char actualBigDelta[] = {11, -86, 45};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayNotWithinDeltaAndMessage(void)
+{
+    char expected[] = {20, -95, 55};
+    char actualBigDelta[] = {11, -86, 45};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayWithinDeltaPointless(void)
+{
+    char expected[] = {20, -95, 55};
+    char actualBigDelta[] = {11, -86, 45};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN(11, expected, actualBigDelta, 0);
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayWithinDeltaPointlessAndMessage(void)
+{
+    char expected[] = {20, -95, 55};
+    char actualBigDelta[] = {11, -86, 45};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN_MESSAGE(11, expected, actualBigDelta, 0, "Custom Message.");
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayWithinDeltaExpectedNull(void)
+{
+    char actualBigDelta[] = {11, -86, 45};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN(11, NULL, actualBigDelta, 3);
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayWithinDeltaExpectedNullAndMessage(void)
+{
+    char actualBigDelta[] = {11, -86, 45};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN_MESSAGE(11, NULL, actualBigDelta, 3, "Custom Message.");
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayWithinDeltaActualNull(void)
+{
+    char expected[] = {20, -95, 55};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN(11, expected, NULL, 3);
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayWithinDeltaActualNullAndMessage(void)
+{
+    char expected[] = {20, -95, 55};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_CHAR_ARRAY_WITHIN_MESSAGE(11, expected, NULL, 3, "Custom Message.");
+    VERIFY_FAILS_END
+}
+
+void testCHARArrayWithinDeltaSamePointer(void)
+{
+    char expected[] = {20, -95, 55};
+
+    TEST_ASSERT_CHAR_ARRAY_WITHIN(11, expected, expected, 3);
+}
+
+void testCHARArrayWithinDeltaSamePointerAndMessage(void)
+{
+    char expected[] = {20, -95, 55};
+
+    TEST_ASSERT_CHAR_ARRAY_WITHIN_MESSAGE(11, expected, expected, 3, "Custom Message.");
+}
+
 void testUInt64ArrayWithinDelta(void)
 {
 #ifndef UNITY_SUPPORT_64
@@ -1840,10 +2023,10 @@ void testUInt64ArrayWithinDelta(void)
 #else
     UNITY_UINT64 expected[] = {12345000, 12344995, 12345005};
     UNITY_UINT64 acutalSmallDelta[] = {12345001, 12344996, 12345005};
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     TEST_ASSERT_UINT64_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_UINT64_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT64_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 #endif
 }
 
@@ -1854,10 +2037,10 @@ void testUInt64ArrayWithinDeltaAndMessage(void)
 #else
     UNITY_UINT64 expected[] = {12345000, 12344995, 12345005};
     UNITY_UINT64 acutalSmallDelta[] = {12345001, 12344996, 12345005};
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 #endif
 }
 
@@ -1867,10 +2050,10 @@ void testUInt64ArrayNotWithinDelta(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {12345000, 12344995, 12345005};
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT64_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT64_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 #endif
 }
@@ -1881,10 +2064,10 @@ void testUInt64ArrayNotWithinDeltaAndMessage(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {12345000, 12344995, 12345005};
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -1895,10 +2078,10 @@ void testUInt64ArrayWithinDeltaPointless(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {12345000, 12344995, 12345005};
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT64_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_UINT64_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 #endif
 }
@@ -1909,10 +2092,10 @@ void testUInt64ArrayWithinDeltaPointlessAndMessage(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {12345000, 12344995, 12345005};
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -1922,10 +2105,10 @@ void testUInt64ArrayWithinDeltaExpectedNull(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT64_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_UINT64_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 #endif
 }
@@ -1935,10 +2118,10 @@ void testUInt64ArrayWithinDeltaExpectedNullAndMessage(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    UNITY_UINT64 acutalBigDelta[] = {12345101, 12344896, 12345055};
+    UNITY_UINT64 actualBigDelta[] = {12345101, 12344896, 12345055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT64_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -1995,77 +2178,77 @@ void testUIntArrayWithinDelta(void)
 {
     UNITY_UINT expected[] = {125000, 124995, 125005};
     UNITY_UINT acutalSmallDelta[] = {125001, 124996, 125005};
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     TEST_ASSERT_UINT_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_UINT_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 }
 
 void testUIntArrayWithinDeltaAndMessage(void)
 {
     UNITY_UINT expected[] = {125000, 124995, 125005};
     UNITY_UINT acutalSmallDelta[] = {125001, 124996, 125005};
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testUIntArrayNotWithinDelta(void)
 {
     UNITY_UINT expected[] = {125000, 124995, 125005};
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testUIntArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_UINT expected[] = {125000, 124995, 125005};
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testUIntArrayWithinDeltaPointless(void)
 {
     UNITY_UINT expected[] = {125000, 124995, 125005};
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_UINT_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testUIntArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_UINT expected[] = {125000, 124995, 125005};
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testUIntArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_UINT_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testUIntArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_UINT acutalBigDelta[] = {125101, 124896, 125055};
+    UNITY_UINT actualBigDelta[] = {125101, 124896, 125055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -2105,77 +2288,77 @@ void testUInt16ArrayWithinDelta(void)
 {
     UNITY_UINT16 expected[] = {5000, 4995, 5005};
     UNITY_UINT16 acutalSmallDelta[] = {5001, 4996, 5005};
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     TEST_ASSERT_UINT16_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_UINT16_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT16_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 }
 
 void testUInt16ArrayWithinDeltaAndMessage(void)
 {
     UNITY_UINT16 expected[] = {5000, 4995, 5005};
     UNITY_UINT16 acutalSmallDelta[] = {5001, 4996, 5005};
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testUInt16ArrayNotWithinDelta(void)
 {
     UNITY_UINT16 expected[] = {5000, 4995, 5005};
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT16_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT16_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testUInt16ArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_UINT16 expected[] = {5000, 4995, 5005};
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testUInt16ArrayWithinDeltaPointless(void)
 {
     UNITY_UINT16 expected[] = {5000, 4995, 5005};
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT16_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_UINT16_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testUInt16ArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_UINT16 expected[] = {5000, 4995, 5005};
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testUInt16ArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT16_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_UINT16_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testUInt16ArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_UINT16 acutalBigDelta[] = {5101, 4896, 5055};
+    UNITY_UINT16 actualBigDelta[] = {5101, 4896, 5055};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT16_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -2215,77 +2398,77 @@ void testUInt8ArrayWithinDelta(void)
 {
     UNITY_UINT8 expected[] = {20, 95, 55};
     UNITY_UINT8 acutalSmallDelta[] = {21, 94, 55};
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     TEST_ASSERT_UINT8_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_UINT8_ARRAY_WITHIN(11, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT8_ARRAY_WITHIN(11, expected, actualBigDelta, 3);
 }
 
 void testUInt8ArrayWithinDeltaAndMessage(void)
 {
     UNITY_UINT8 expected[] = {20, 95, 55};
     UNITY_UINT8 acutalSmallDelta[] = {21, 94, 55};
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(11, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(11, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testUInt8ArrayNotWithinDelta(void)
 {
     UNITY_UINT8 expected[] = {20, 95, 55};
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT8_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_UINT8_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testUInt8ArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_UINT8 expected[] = {20, 95, 55};
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testUInt8ArrayWithinDeltaPointless(void)
 {
     UNITY_UINT8 expected[] = {20, 95, 55};
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT8_ARRAY_WITHIN(11, expected, acutalBigDelta, 0);
+    TEST_ASSERT_UINT8_ARRAY_WITHIN(11, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testUInt8ArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_UINT8 expected[] = {20, 95, 55};
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(11, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(11, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testUInt8ArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT8_ARRAY_WITHIN(11, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_UINT8_ARRAY_WITHIN(11, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testUInt8ArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_UINT8 acutalBigDelta[] = {11, 86, 45};
+    UNITY_UINT8 actualBigDelta[] = {11, 86, 45};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(11, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_UINT8_ARRAY_WITHIN_MESSAGE(11, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -2328,10 +2511,10 @@ void testHEX64ArrayWithinDelta(void)
 #else
     UNITY_UINT64 expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
     UNITY_UINT64 acutalSmallDelta[] = {0xABCD1235, 0xABCD1121, 0xABCD1277};
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     TEST_ASSERT_HEX64_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_HEX64_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX64_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 #endif
 }
 
@@ -2342,10 +2525,10 @@ void testHEX64ArrayWithinDeltaAndMessage(void)
 #else
     UNITY_UINT64 expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
     UNITY_UINT64 acutalSmallDelta[] = {0xABCD1235, 0xABCD1121, 0xABCD1277};
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 #endif
 }
 
@@ -2355,10 +2538,10 @@ void testHEX64ArrayNotWithinDelta(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX64_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX64_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 #endif
 }
@@ -2369,10 +2552,10 @@ void testHEX64ArrayNotWithinDeltaAndMessage(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -2383,10 +2566,10 @@ void testHEX64ArrayWithinDeltaPointless(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX64_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_HEX64_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 #endif
 }
@@ -2397,10 +2580,10 @@ void testHEX64ArrayWithinDeltaPointlessAndMessage(void)
     TEST_IGNORE();
 #else
     UNITY_UINT64 expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -2410,10 +2593,10 @@ void testHEX64ArrayWithinDeltaExpectedNull(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX64_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_HEX64_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 #endif
 }
@@ -2423,10 +2606,10 @@ void testHEX64ArrayWithinDeltaExpectedNullAndMessage(void)
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
 #else
-    UNITY_UINT64 acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT64 actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX64_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 #endif
 }
@@ -2483,77 +2666,77 @@ void testHEX32ArrayWithinDelta(void)
 {
     UNITY_UINT expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
     UNITY_UINT acutalSmallDelta[] = {0xABCD1235, 0xABCD1121, 0xABCD1277};
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     TEST_ASSERT_HEX32_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_HEX32_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX32_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 }
 
 void testHEX32ArrayWithinDeltaAndMessage(void)
 {
     UNITY_UINT expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
     UNITY_UINT acutalSmallDelta[] = {0xABCD1235, 0xABCD1121, 0xABCD1277};
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testHEX32ArrayNotWithinDelta(void)
 {
     UNITY_UINT expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX32_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX32_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testHEX32ArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_UINT expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testHEX32ArrayWithinDeltaPointless(void)
 {
     UNITY_UINT expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX32_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_HEX32_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testHEX32ArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_UINT expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testHEX32ArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX32_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_HEX32_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testHEX32ArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_UINT acutalBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
+    UNITY_UINT actualBigDelta[] = {0xABCD1267, 0xABCD1188, 0xABCD12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX32_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -2594,77 +2777,77 @@ void testHEX16ArrayWithinDelta(void)
 {
     UNITY_UINT16 expected[] = {0x1234, 0x1122, 0x1277};
     UNITY_UINT16 acutalSmallDelta[] = {0x1235, 0x1121, 0x1277};
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     TEST_ASSERT_HEX16_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_HEX16_ARRAY_WITHIN(110, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX16_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 }
 
 void testHEX16ArrayWithinDeltaAndMessage(void)
 {
     UNITY_UINT16 expected[] = {0x1234, 0x1122, 0x1277};
     UNITY_UINT16 acutalSmallDelta[] = {0x1235, 0x1121, 0x1277};
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testHEX16ArrayNotWithinDelta(void)
 {
     UNITY_UINT16 expected[] = {0x1234, 0x1122, 0x1277};
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX16_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX16_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testHEX16ArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_UINT16 expected[] = {0x1234, 0x1122, 0x1277};
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testHEX16ArrayWithinDeltaPointless(void)
 {
     UNITY_UINT16 expected[] = {0x1234, 0x1122, 0x1277};
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX16_ARRAY_WITHIN(110, expected, acutalBigDelta, 0);
+    TEST_ASSERT_HEX16_ARRAY_WITHIN(110, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testHEX16ArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_UINT16 expected[] = {0x1234, 0x1122, 0x1277};
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(110, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(110, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testHEX16ArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX16_ARRAY_WITHIN(110, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_HEX16_ARRAY_WITHIN(110, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testHEX16ArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_UINT16 acutalBigDelta[] = {0x1267, 0x1188, 0x12AC};
+    UNITY_UINT16 actualBigDelta[] = {0x1267, 0x1188, 0x12AC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(110, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX16_ARRAY_WITHIN_MESSAGE(110, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -2704,77 +2887,77 @@ void testHEX8ArrayWithinDelta(void)
 {
     UNITY_UINT8 expected[] = {0x34, 0x22, 0x77};
     UNITY_UINT8 acutalSmallDelta[] = {0x35, 0x21, 0x77};
-    UNITY_UINT8 acutalBigDelta[] = {0x47, 0x48, 0x4C};
+    UNITY_UINT8 actualBigDelta[] = {0x47, 0x48, 0x4C};
 
     TEST_ASSERT_HEX8_ARRAY_WITHIN(1, expected, acutalSmallDelta, 3);
-    TEST_ASSERT_HEX8_ARRAY_WITHIN(60, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX8_ARRAY_WITHIN(60, expected, actualBigDelta, 3);
 }
 
 void testHEX8ArrayWithinDeltaAndMessage(void)
 {
     UNITY_UINT8 expected[] = {0x34, 0x22, 0x77};
     UNITY_UINT8 acutalSmallDelta[] = {0x35, 0x21, 0x77};
-    UNITY_UINT8 acutalBigDelta[] = {0x47, 0x48, 0x4C};
+    UNITY_UINT8 actualBigDelta[] = {0x47, 0x48, 0x4C};
 
     TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(1, expected, acutalSmallDelta, 3, "Custom Message.");
-    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(60, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(60, expected, actualBigDelta, 3, "Custom Message.");
 }
 
 void testHEX8ArrayNotWithinDelta(void)
 {
     UNITY_UINT8 expected[] = {0x34, 0x22, 0x77};
-    UNITY_UINT8 acutalBigDelta[] = {0x67, 0x88, 0xAC};
+    UNITY_UINT8 actualBigDelta[] = {0x67, 0x88, 0xAC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX8_ARRAY_WITHIN(1, expected, acutalBigDelta, 3);
+    TEST_ASSERT_HEX8_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testHEX8ArrayNotWithinDeltaAndMessage(void)
 {
     UNITY_UINT8 expected[] = {0x34, 0x22, 0x77};
-    UNITY_UINT8 acutalBigDelta[] = {0x67, 0x88, 0xAC};
+    UNITY_UINT8 actualBigDelta[] = {0x67, 0x88, 0xAC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(1, expected, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(1, expected, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testHEX8ArrayWithinDeltaPointless(void)
 {
     UNITY_UINT8 expected[] = {0x34, 0x22, 0x77};
-    UNITY_UINT8 acutalBigDelta[] = {0x67, 0x88, 0xAC};
+    UNITY_UINT8 actualBigDelta[] = {0x67, 0x88, 0xAC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX8_ARRAY_WITHIN(60, expected, acutalBigDelta, 0);
+    TEST_ASSERT_HEX8_ARRAY_WITHIN(60, expected, actualBigDelta, 0);
     VERIFY_FAILS_END
 }
 
 void testHEX8ArrayWithinDeltaPointlessAndMessage(void)
 {
     UNITY_UINT8 expected[] = {0x34, 0x22, 0x77};
-    UNITY_UINT8 acutalBigDelta[] = {0x67, 0x88, 0xAC};
+    UNITY_UINT8 actualBigDelta[] = {0x67, 0x88, 0xAC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(60, expected, acutalBigDelta, 0, "Custom Message.");
+    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(60, expected, actualBigDelta, 0, "Custom Message.");
     VERIFY_FAILS_END
 }
 
 void testHEX8ArrayWithinDeltaExpectedNull(void)
 {
-    UNITY_UINT8 acutalBigDelta[] = {0x67, 0x88, 0xAC};
+    UNITY_UINT8 actualBigDelta[] = {0x67, 0x88, 0xAC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX8_ARRAY_WITHIN(60, NULL, acutalBigDelta, 3);
+    TEST_ASSERT_HEX8_ARRAY_WITHIN(60, NULL, actualBigDelta, 3);
     VERIFY_FAILS_END
 }
 
 void testHEX8ArrayWithinDeltaExpectedNullAndMessage(void)
 {
-    UNITY_UINT8 acutalBigDelta[] = {0x67, 0x88, 0xAC};
+    UNITY_UINT8 actualBigDelta[] = {0x67, 0x88, 0xAC};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(60, NULL, acutalBigDelta, 3, "Custom Message.");
+    TEST_ASSERT_HEX8_ARRAY_WITHIN_MESSAGE(60, NULL, actualBigDelta, 3, "Custom Message.");
     VERIFY_FAILS_END
 }
 
@@ -2878,6 +3061,29 @@ void testNotGreaterThanINT8(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_GREATER_THAN_INT8(127, -128);
+    VERIFY_FAILS_END
+}
+
+void testGreaterThanCHAR(void)
+{
+    char v0, v1;
+    char *p0, *p1;
+
+    v0 = -128;
+    v1 = 127;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_GREATER_THAN_CHAR(v0, v1);
+    TEST_ASSERT_GREATER_THAN_CHAR(*p0, v1);
+    TEST_ASSERT_GREATER_THAN_CHAR(v0, *p1);
+    TEST_ASSERT_GREATER_THAN_CHAR(*p0, *p1);
+}
+
+void testNotGreaterThanCHAR(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_CHAR(127, -128);
     VERIFY_FAILS_END
 }
 
@@ -3172,6 +3378,35 @@ void testNotGreaterOrEqualINT8(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_GREATER_OR_EQUAL_INT8(127, -128);
+    VERIFY_FAILS_END
+}
+
+void testGreaterOrEqualCHAR(void)
+{
+    char v0, v1, v2;
+    char *p0, *p1, *p2;
+
+    v0 = -128;
+    v1 = 127;
+    v2 = -128;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(v0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(*p0, v1);
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(v0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(*p0, *p1);
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(v0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(*p0, v2);
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(v0, *p2);
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(*p0, *p2);
+}
+
+void testNotGreaterOrEqualCHAR(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_CHAR(127, -128);
     VERIFY_FAILS_END
 }
 
@@ -3507,6 +3742,29 @@ void testNotLessThanINT8(void)
     VERIFY_FAILS_END
 }
 
+void testLessThanCHAR(void)
+{
+    char v0, v1;
+    char *p0, *p1;
+
+    v0 = 127;
+    v1 = -128;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_LESS_THAN_CHAR(v0, v1);
+    TEST_ASSERT_LESS_THAN_CHAR(*p0, v1);
+    TEST_ASSERT_LESS_THAN_CHAR(v0, *p1);
+    TEST_ASSERT_LESS_THAN_CHAR(*p0, *p1);
+}
+
+void testNotLessThanCHAR(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_CHAR(-128, 127);
+    VERIFY_FAILS_END
+}
+
 void testLessThanINT16(void)
 {
     UNITY_INT16 v0, v1;
@@ -3798,6 +4056,35 @@ void testNotLessOrEqualINT8(void)
 {
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_LESS_OR_EQUAL_INT8(-128, 127);
+    VERIFY_FAILS_END
+}
+
+void testLessOrEqualCHAR(void)
+{
+    char v0, v1, v2;
+    char *p0, *p1, *p2;
+
+    v0 = 127;
+    v1 = -128;
+    v2 = 127;
+    p0 = &v0;
+    p1 = &v1;
+    p2 = &v2;
+
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(v0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(*p0, v1);
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(v0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(*p0, *p1);
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(v0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(*p0, v2);
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(v0, *p2);
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(*p0, *p2);
+}
+
+void testNotLessOrEqualCHAR(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_CHAR(-128, 127);
     VERIFY_FAILS_END
 }
 
@@ -4723,6 +5010,53 @@ void testNotEqualInt8EachEqual(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_INT8(1, p0, 2);
+    VERIFY_FAILS_END
+}
+
+void testEqualCHARArrays(void)
+{
+    char p0[] = {1, 8, 117, -2};
+    char p1[] = {1, 8, 117, -2};
+    char p2[] = {1, 8, 117, 2};
+    char p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EQUAL_CHAR_ARRAY(p0, p0, 1);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY(p0, p0, 4);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY(p0, p1, 4);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY(p0, p2, 3);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY(p0, p3, 1);
+}
+
+void testNotEqualCHARArrays(void)
+{
+    char p0[] = {1, 8, 36, -2};
+    char p1[] = {1, 8, 36, 2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_CHAR_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEqualCHAREachEqual(void)
+{
+    char p0[] = {1, 1, 1, 1};
+    char p1[] = {117, 117, 117, -2};
+    char p2[] = {-1, -1, 117, 2};
+    char p3[] = {1, 50, 60, 70};
+
+    TEST_ASSERT_EACH_EQUAL_CHAR(1, p0, 1);
+    TEST_ASSERT_EACH_EQUAL_CHAR(1, p0, 4);
+    TEST_ASSERT_EACH_EQUAL_CHAR(117, p1, 3);
+    TEST_ASSERT_EACH_EQUAL_CHAR(-1, p2, 2);
+    TEST_ASSERT_EACH_EQUAL_CHAR(1, p3, 1);
+}
+
+void testNotEqualCHAREachEqual(void)
+{
+    char p0[] = {1, 8, 36, -2};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_CHAR(1, p0, 2);
     VERIFY_FAILS_END
 }
 
