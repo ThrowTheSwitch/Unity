@@ -37,6 +37,7 @@ class UnityTestRunnerGenerator
       setup_name: 'setUp',
       teardown_name: 'tearDown',
       test_reset_name: 'resetTest',
+      test_verify_name: 'verifyTest',
       main_name: 'main', # set to :auto to automatically generate each time
       main_export_decl: '',
       cmdline_args: false,
@@ -304,7 +305,7 @@ class UnityTestRunnerGenerator
   end
 
   def create_reset(output)
-    output.puts("\n/*=======Test Reset Option=====*/")
+    output.puts("\n/*=======Test Reset Options=====*/")
     output.puts("void #{@options[:test_reset_name]}(void);")
     output.puts("void #{@options[:test_reset_name]}(void)")
     output.puts('{')
@@ -313,6 +314,13 @@ class UnityTestRunnerGenerator
     output.puts('  CMock_Destroy();')
     output.puts('  CMock_Init();')
     output.puts("  #{@options[:setup_name]}();")
+    output.puts('}')
+    output.puts("void #{@options[:test_verify_name]}(void);")
+    output.puts("void #{@options[:test_verify_name]}(void)")
+    output.puts('{')
+    output.puts('  CMock_Verify();')
+    output.puts('  CMock_Destroy();')
+    output.puts('  CMock_Init();')
     output.puts('}')
   end
 
@@ -463,6 +471,7 @@ if $0 == __FILE__
           '    --main_name=""        - redefine main func name to something else',
           '    --test_prefix=""      - redefine test prefix from default test|spec|should',
           '    --test_reset_name=""  - redefine resetTest func name to something else',
+          '    --test_verify_name="" - redefine verifyTest func name to something else',
           '    --suite_setup=""      - code to execute for setup of entire suite',
           '    --suite_teardown=""   - code to execute for teardown of entire suite',
           '    --use_param_tests=1   - enable parameterized tests (disabled by default)',

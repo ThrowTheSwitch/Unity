@@ -429,7 +429,7 @@ will allow you to specify how Unity will treat these assertions.
 
 #### `UNITY_SUPPORT_VARIADIC_MACROS`
 
-This will force Unity to support variadic macros when using it's own built-in 
+This will force Unity to support variadic macros when using its own built-in 
 RUN_TEST macro. This will rarely be necessary. Most often, Unity will automatically
 detect if the compiler supports variadic macros by checking to see if it's C99+
 compatible. In the event that the compiler supports variadic macros, but is primarily

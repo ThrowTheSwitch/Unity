@@ -41,6 +41,18 @@ void suiteSetUp(void);
 int suiteTearDown(int num_failures);
 
 /*-------------------------------------------------------
+ * Test Reset and Verify
+ *-------------------------------------------------------*/
+
+/* These functions are intended to be called before during tests in order
+ * to support complex test loops, etc. Both are NOT built into Unity. Instead
+ * the test runner generator will create them. resetTest will run teardown and
+ * setup again, verifying any end-of-test needs between. verifyTest will only
+ * run the verification. */
+void resetTest(void);
+void verifyTest(void);
+
+/*-------------------------------------------------------
  * Configuration Options
  *-------------------------------------------------------
  * All options described below should be passed as a compiler flag to all files using Unity. If you must add #defines, place them BEFORE the #include above.

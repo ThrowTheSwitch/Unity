@@ -55,11 +55,11 @@ def build_compiler_fields
   defines = if $cfg['compiler']['defines']['items'].nil?
               ''
             else
-              if $is_windows
-                decl = 'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar(int)'
-              else
-                decl = 'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar\(int\)'
-              end
+              decl = if $is_windows
+                       'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar(int)'
+                     else
+                       'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar\(int\)'
+                     end
               squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'] + [decl])
             end
   options = squash('', $cfg['compiler']['options'])
