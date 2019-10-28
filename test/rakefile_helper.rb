@@ -6,9 +6,9 @@
 
 require 'yaml'
 require 'fileutils'
-require UNITY_ROOT + '../auto/unity_test_summary'
-require UNITY_ROOT + '../auto/generate_test_runner'
-require UNITY_ROOT + '../auto/colour_reporter'
+require_relative '../auto/unity_test_summary'
+require_relative '../auto/generate_test_runner'
+require_relative '../auto/colour_reporter'
 
 module RakefileHelpers
   C_EXTENSION = '.c'.freeze
@@ -91,7 +91,7 @@ module RakefileHelpers
     defines = if $cfg['compiler']['defines']['items'].nil?
                 ''
               else
-                squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=putcharSpy'] + ['UNITY_OUTPUT_CHAR_HEADER_DECLARATION=putcharSpy\(int\)'] + inject_defines)
+                squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=putcharSpy'] + ['UNITY_OUTPUT_CHAR_HEADER_DECLARATION="putcharSpy(int)"'] + inject_defines)
               end
     options = squash('', $cfg['compiler']['options'])
     includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
@@ -173,13 +173,13 @@ module RakefileHelpers
     report command_string if $verbose
     output = `#{command_string}`.chomp
     report(output) if $verbose && !output.nil? && !output.empty?
-    raise "Command failed. (Returned #{$?.exitstatus})" if !$?.exitstatus.zero? && !ok_to_fail
+    raise "Command failed. (Returned #{$?.exitstatus})" if !$?.nil? && !$?.exitstatus.zero? && !ok_to_fail
     output
   end
 
   def report_summary
     summary = UnityTestSummary.new
-    summary.root = UNITY_ROOT
+    summary.root = __dir__
     results_glob = "#{$cfg['compiler']['build_path']}*.test*"
     results_glob.tr!('\\', '/')
     results = Dir[results_glob]
@@ -200,6 +200,15 @@ module RakefileHelpers
 
     # Build and execute each unit test
     test_files.each do |test|
+
+      # Drop Out if we're skipping this type of test
+      if $cfg[:skip_tests]
+        if $cfg[:skip_tests].include?(:parameterized) && test.match(/parameterized/)
+          report("Skipping Parameterized Tests for this Target:IGNORE")
+          next
+        end
+      end
+
       obj_list = []
 
       unless $cfg['compiler']['aux_sources'].nil?

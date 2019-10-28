@@ -3,7 +3,7 @@
 ## With a Little Help From Our Friends
 
 Sometimes what it takes to be a really efficient C programmer is a little non-C.
-The Unity project includes a couple Ruby scripts for making your life just a tad
+The Unity project includes a couple of Ruby scripts for making your life just a tad
 easier. They are completely optional. If you choose to use them, you'll need a
 copy of Ruby, of course. Just install whatever the latest version is, and it is
 likely to work. You can find Ruby at [ruby-lang.org](https://ruby-labg.org/).
@@ -105,7 +105,7 @@ UnityTestRunnerGenerator.new.run(testfile, runner_name, options)
 
 If you have multiple files to generate in a build script (such as a Rakefile),
 you might want to instantiate a generator object with your options and call it
-to generate each runner thereafter. Like thus:
+to generate each runner afterwards. Like thus:
 
 ```Ruby
 gen = UnityTestRunnerGenerator.new(options)
@@ -158,6 +158,12 @@ This option should be defined if you have the strict order feature enabled in
 CMock (see CMock documentation). This generates extra variables required for
 everything to run smoothly. If you provide the same YAML to the generator as
 used in CMock's configuration, you've already configured the generator properly.
+
+
+##### `:externc`
+
+This option should be defined if you are mixing C and CPP and want your test
+runners to automatically include extern "C" support when they are generated.
 
 ##### `:mock_prefix` and `:mock_suffix`
 

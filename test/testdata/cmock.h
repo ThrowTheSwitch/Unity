@@ -11,4 +11,4 @@ void mockMock_Init(void)           { mockMock_Init_Counter++;    }
 void mockMock_Verify(void)         { mockMock_Verify_Counter++;  }
 void mockMock_Destroy(void)        { mockMock_Destroy_Counter++; }
 
-#endif //CMOCK_H
+#endif

@@ -4,15 +4,13 @@
 #   [Released under MIT License. Please refer to license.txt for details]
 # ==========================================
 
-HERE = File.expand_path(File.dirname(__FILE__)) + '/'
-
 require 'rake'
 require 'rake/clean'
 require 'rake/testtask'
-require HERE + 'rakefile_helper'
+require_relative 'rakefile_helper'
 
 TEMP_DIRS = [
-  File.join(HERE, 'build')
+  File.join(__dir__, 'build')
 ].freeze
 
 TEMP_DIRS.each do |dir|
@@ -21,8 +19,6 @@ TEMP_DIRS.each do |dir|
 end
 
 task prepare_for_tests: TEMP_DIRS
-
-include RakefileHelpers
 
 # Load default configuration, for now
 DEFAULT_CONFIG_FILE = 'gcc_auto_stdint.yml'.freeze
@@ -33,10 +29,10 @@ task unit: [:prepare_for_tests] do
 end
 
 desc 'Build and test Unity Framework'
-task all: %i(clean unit)
-task default: %i(clobber all)
-task ci: %i(no_color default)
-task cruise: %i(no_color default)
+task all: %i[clean unit]
+task default: %i[clobber all]
+task ci: %i[no_color default]
+task cruise: %i[no_color default]
 
 desc 'Load configuration'
 task :config, :config_file do |_t, args|

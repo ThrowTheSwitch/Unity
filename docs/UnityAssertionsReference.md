@@ -80,7 +80,7 @@ marked as an optional parameter because some assertions only need a single
 "actual" parameter (e.g. null check).
 "Size/count" refers to string lengths, number of array elements, etc.
 
-Many of Unity's assertions are apparent duplications in that the same data type
+Many of Unity's assertions are clear duplications in that the same data type
 is handled by several assertions. The differences among these are in how failure
 messages are presented. For instance, a `_HEX` variant of an assertion prints
 the expected and actual values of that assertion formatted as hexadecimal.
@@ -103,6 +103,15 @@ _Example:_
 becomes messageified like thus...
 
     TEST_ASSERT_X_MESSAGE( {modifiers}, {expected}, actual, {size/count}, message )
+
+Notes:
+- The `_MESSAGE` variants intentionally do not support `printf` style formatting
+  since many embedded projects don't support or avoid `printf` for various reasons.
+  It is possible to use `sprintf` before the assertion to assemble a complex fail
+  message, if necessary.
+- If you want to output a counter value within an assertion fail message (e.g. from
+  a loop) , building up an array of results and then using one of the `_ARRAY`
+  assertions (see below) might be a handy alternative to `sprintf`.
 
 
 #### TEST_ASSERT_X_ARRAY Variants
@@ -169,9 +178,11 @@ documentation for specifics.
 
 ## The Assertions in All Their Blessed Glory
 
-### Basic Fail and Ignore
+### Basic Fail, Pass and Ignore
 
 ##### `TEST_FAIL()`
+
+##### `TEST_FAIL_MESSAGE("message")`
 
 This fella is most often used in special conditions where your test code is
 performing logic beyond a simple assertion. That is, in practice, `TEST_FAIL()`
@@ -183,12 +194,29 @@ code then verifies as a final step.
 - Triggering an exception and verifying it (as in Try / Catch / Throw - see the
 [CException](https://github.com/ThrowTheSwitch/CException) project).
 
+##### `TEST_PASS()`
+
+##### `TEST_PASS_MESSAGE("message")`
+
+This will abort the remainder of the test, but count the test as a pass. Under
+normal circumstances, it is not necessary to include this macro in your tests...
+a lack of failure will automatically be counted as a `PASS`. It is occasionally
+useful for tests with `#ifdef`s and such.
+
 ##### `TEST_IGNORE()`
+
+##### `TEST_IGNORE_MESSAGE("message")`
 
 Marks a test case (i.e. function meant to contain test assertions) as ignored.
 Usually this is employed as a breadcrumb to come back and implement a test case.
 An ignored test case has effects if other assertions are in the enclosing test
 case (see Unity documentation for more).
+
+##### `TEST_MESSAGE(message)`
+
+This can be useful for outputting `INFO` messages into the Unity output stream
+without actually ending the test. Like pass and fail messages, it will be output
+with the filename and line number.
 
 ### Boolean
 
@@ -227,10 +255,6 @@ sizes.
 ##### `TEST_ASSERT_EQUAL_INT32 (expected, actual)`
 
 ##### `TEST_ASSERT_EQUAL_INT64 (expected, actual)`
-
-##### `TEST_ASSERT_EQUAL (expected, actual)`
-
-##### `TEST_ASSERT_NOT_EQUAL (expected, actual)`
 
 ##### `TEST_ASSERT_EQUAL_UINT (expected, actual)`
 
@@ -382,7 +406,6 @@ of 7 - 13.
 
 ##### `TEST_ASSERT_HEX64_WITHIN (delta, expected, actual)`
 
-
 ### Structs and Strings
 
 ##### `TEST_ASSERT_EQUAL_PTR (expected, actual)`
@@ -457,6 +480,42 @@ match. Failure messages specify the array index of the failed comparison.
 
 `len` is the memory in bytes to be compared at each array element.
 
+### Integer Array Ranges (of all sizes)
+
+These assertions verify that the `expected` array parameter is within +/- `delta`
+(inclusive) of the `actual` array parameter. For example, if the expected value is
+\[10, 12\] and the delta is 3 then the assertion will fail for any value
+outside the range of \[7 - 13, 9 - 15\].
+
+##### `TEST_ASSERT_INT_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_INT8_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_INT16_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_INT32_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_INT64_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_UINT_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_UINT8_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_UINT16_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_UINT32_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_UINT64_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_HEX_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_HEX8_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_HEX16_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_HEX32_ARRAY_WITHIN (delta, expected, actual, num_elements)`
+
+##### `TEST_ASSERT_HEX64_ARRAY_WITHIN (delta, expected, actual, num_elements)`
 
 ### Each Equal (Arrays to Single Value)
 
@@ -694,7 +753,7 @@ point value.
 
 So what happens when it's zero? Zero - even more than other floating point
 values - can be represented many different ways. It doesn't matter if you have
-0 x 20or 0 x 263.It's still zero, right? Luckily, if you
+0 x 20 or 0 x 263.It's still zero, right? Luckily, if you
 subtract these values from each other, they will always produce a difference of
 zero, which will still fall between 0 plus or minus a delta of 0. So it still
 works!

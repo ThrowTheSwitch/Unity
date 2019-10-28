@@ -10,4 +10,4 @@ void mockMock_Init(void);
 void mockMock_Verify(void);
 void mockMock_Destroy(void);
 
-#endif //MOCK_MOCK_H
+#endif

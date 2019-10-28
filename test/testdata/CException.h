@@ -8,4 +8,4 @@
 #define Try          if (e)
 #define Catch(a)     if (!a)
 
-#endif //CEXCEPTION_H
+#endif

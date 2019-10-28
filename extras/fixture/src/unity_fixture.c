@@ -15,10 +15,8 @@ struct UNITY_FIXTURE_T UnityFixture;
  * Build with -D UNITY_OUTPUT_CHAR=outputChar and include <stdio.h>
  * int (*outputChar)(int) = putchar; */
 
-#if !defined(UNITY_WEAK_ATTRIBUTE) && !defined(UNITY_WEAK_PRAGMA)
 void setUp(void)    { /*does nothing*/ }
 void tearDown(void) { /*does nothing*/ }
-#endif
 
 static void announceTestRun(unsigned int runNumber)
 {
@@ -79,19 +77,27 @@ void UnityTestRunner(unityfunction* setup,
         Unity.TestFile = file;
         Unity.CurrentTestName = printableName;
         Unity.CurrentTestLineNumber = line;
-        if (!UnityFixture.Verbose)
-            UNITY_OUTPUT_CHAR('.');
-        else
+        if (UnityFixture.Verbose)
         {
             UnityPrint(printableName);
         #ifndef UNITY_REPEAT_TEST_NAME
             Unity.CurrentTestName = NULL;
         #endif
         }
+        else if (UnityFixture.Silent)
+        {
+            /* Do Nothing */
+        }
+        else
+        {
+            UNITY_OUTPUT_CHAR('.');
+        }
 
         Unity.NumberOfTests++;
         UnityMalloc_StartTest();
         UnityPointer_Init();
+
+        UNITY_EXEC_TIME_START();
 
         if (TEST_PROTECT())
         {
@@ -118,12 +124,18 @@ void UnityIgnoreTest(const char* printableName, const char* group, const char* n
     {
         Unity.NumberOfTests++;
         Unity.TestIgnores++;
-        if (!UnityFixture.Verbose)
-            UNITY_OUTPUT_CHAR('!');
-        else
+        if (UnityFixture.Verbose)
         {
             UnityPrint(printableName);
             UNITY_PRINT_EOL();
+        }
+        else if (UnityFixture.Silent)
+        {
+            /* Do Nothing */
+        }
+        else
+        {
+            UNITY_OUTPUT_CHAR('!');
         }
     }
 }
@@ -238,13 +250,25 @@ typedef struct GuardBytes
     size_t guard_space;
 } Guard;
 
+#define UNITY_MALLOC_ALIGNMENT (UNITY_POINTER_WIDTH / 8)
 static const char end[] = "END";
+
+static size_t unity_size_round_up(size_t size)
+{
+    size_t rounded_size;
+
+    rounded_size = ((size + UNITY_MALLOC_ALIGNMENT - 1) / UNITY_MALLOC_ALIGNMENT) * UNITY_MALLOC_ALIGNMENT;
+
+    return rounded_size;
+}
 
 void* unity_malloc(size_t size, char const * file, int line)
 {
     char* mem;
     Guard* guard;
-    size_t total_size = size + sizeof(Guard) + sizeof(end);
+    size_t total_size;
+
+    total_size = sizeof(Guard) + unity_size_round_up(size + sizeof(end));
 
     if (malloc_fail_countdown != MALLOC_DONT_FAIL)
     {
@@ -294,9 +318,15 @@ static void release_memory(void* mem)
 
     malloc_count--;
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-    if (mem == unity_heap + heap_index - guard->size - sizeof(end))
     {
-        heap_index -= (guard->size + sizeof(Guard) + sizeof(end));
+        size_t block_size;
+
+        block_size = unity_size_round_up(guard->size + sizeof(end));
+
+        if (mem == unity_heap + heap_index - block_size)
+        {
+            heap_index -= (sizeof(Guard) + block_size);
+        }
     }
 #else
     UNITY_FIXTURE_FREE(guard);
@@ -354,12 +384,16 @@ void* unity_realloc(void* oldMem, size_t size, char const * file, int line)
     if (guard->size >= size) return oldMem;
 
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC /* Optimization if memory is expandable */
-    if (oldMem == unity_heap + heap_index - guard->size - sizeof(end) &&
-        heap_index + size - guard->size <= UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
-        del_malloc(oldMem);
-        release_memory(oldMem);    /* Not thread-safe, like unity_heap generally */
-        return unity_malloc(size, file, line); /* No memcpy since data is in place */
+        size_t old_total_size = unity_size_round_up(guard->size + sizeof(end));
+
+        if ((oldMem == unity_heap + heap_index - old_total_size) &&
+            ((heap_index - old_total_size + unity_size_round_up(size + sizeof(end))) <= UNITY_INTERNAL_HEAP_SIZE_BYTES))
+        {
+            del_malloc(oldMem);
+            release_memory(oldMem);    /* Not thread-safe, like unity_heap generally */
+            return unity_malloc(size, file, line); /* No memcpy since data is in place */
+        }
     }
 #endif
     newMem = unity_malloc(size, file, line);
@@ -416,6 +450,7 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
 {
     int i;
     UnityFixture.Verbose = 0;
+    UnityFixture.Silent = 0;
     UnityFixture.GroupFilter = 0;
     UnityFixture.NameFilter = 0;
     UnityFixture.RepeatCount = 1;
@@ -428,6 +463,11 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
         if (strcmp(argv[i], "-v") == 0)
         {
             UnityFixture.Verbose = 1;
+            i++;
+        }
+        else if (strcmp(argv[i], "-s") == 0)
+        {
+            UnityFixture.Silent = 1;
             i++;
         }
         else if (strcmp(argv[i], "-g") == 0)
@@ -485,7 +525,10 @@ void UnityConcludeFixtureTest(void)
     {
         if (UnityFixture.Verbose)
         {
-            UnityPrint(" PASS");
+            UnityPrint(" ");
+            UnityPrint(UnityStrPass);
+            UNITY_EXEC_TIME_STOP();
+            UNITY_PRINT_EXEC_TIME();
             UNITY_PRINT_EOL();
         }
     }

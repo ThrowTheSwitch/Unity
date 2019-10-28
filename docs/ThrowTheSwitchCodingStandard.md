@@ -1,4 +1,4 @@
-# ThrowTheSwitch.org Coding Standard
+﻿# ThrowTheSwitch.org Coding Standard
 
 Hi. Welcome to the coding standard for ThrowTheSwitch.org. For the most part,
 we try to follow these standards to unify our contributors' code into a cohesive
@@ -11,7 +11,7 @@ and we'll try to be polite when we notice yours.
 
 ## Why Have A Coding Standard?
 
-Being consistent makes code easier to understand. We've made an attempt to keep
+Being consistent makes code easier to understand. We've tried to keep
 our standard simple because we also believe that we can only expect someone to
 follow something that is understandable. Please do your best.
 
@@ -51,11 +51,11 @@ much as they can, but give the user the power to override it when it's wrong.
 
 Let's talk about naming things. Programming is all about naming things. We name
 files, functions, variables, and so much more. While we're not always going to
-find the best name for something, we actually put quite a bit of effort into
+find the best name for something, we actually put a bit of effort into
 finding *What Something WANTS to be Called*™.
 
-When naming things, we more or less follow this hierarchy, the first being the
-most important to us (but we do all four whenever possible):
+When naming things, we follow this hierarchy, the first being the
+most important to us (but we do all four when possible):
 1. Readable
 2. Descriptive
 3. Consistent
@@ -74,7 +74,7 @@ abbreviations (sticking to ones we feel are common).
 We like descriptive names for things, especially functions and variables.
 Finding the right name for something is an important endeavor. You might notice
 from poking around our code that this often results in names that are a little
-longer than the average. Guilty. We're okay with a tiny bit more typing if it
+longer than the average. Guilty. We're okay with a bit more typing if it
 means our code is easier to understand.
 
 There are two exceptions to this rule that we also stick to as religiously as
@@ -82,8 +82,7 @@ possible:
 
 First, while we realize hungarian notation (and similar systems for encoding
 type information into variable names) is providing a more descriptive name, we
-feel that (for the average developer) it takes away from readability and
-therefore is to be avoided.
+feel that (for the average developer) it takes away from readability and is to be avoided.
 
 Second, loop counters and other local throw-away variables often have a purpose
 which is obvious. There's no need, therefore, to get carried away with complex
@@ -128,7 +127,7 @@ the same. It will only hurt a little. We promise.
 #### Whitespace
 
 Our C-style is to use spaces and to use 4 of them per indent level. It's a nice
-power-of-2 number that looks decent on a wide screen. We have no more reason
+power-of-2 number that looks decent on a wide-screen. We have no more reason
 than that. We break that rule when we have lines that wrap (macros or function
 arguments or whatnot). When that happens, we like to indent further to line
 things up in nice tidy columns.
@@ -200,7 +199,7 @@ that happens, we like to indent further to line things up in nice tidy columns.
 
 ## Documentation
 
-Egad. Really? We use markdown and we like pdf files because they can be made to
+Egad. Really? We use mark down and we like pdf files because they can be made to
 look nice while still being portable. Good enough?
 
 
