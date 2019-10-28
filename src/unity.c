@@ -429,14 +429,14 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     UNITY_DOUBLE number = input_number;
 
     /* print minus sign (including for negative zero) */
-    if ((number < 0.0f) || ((number == 0.0f) && ((1.0f / number) < 0.0f)))
+    if (number < 0.0f)
     {
         UNITY_OUTPUT_CHAR('-');
         number = -number;
     }
 
     /* handle zero, NaN, and +/- infinity */
-    if (number == 0.0f)
+    if (number == 0.0f) 
     {
         UnityPrint("0");
     }
