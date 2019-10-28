@@ -8,9 +8,15 @@
 # License: MIT                                                                    #
 #                                                                                 #
 ###################################################################################
-cmake_minimum_required(VERSION 3.13.2.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 
-add_library("unity" STATIC)
+add_library(unity STATIC "unity.c")
 
-target_sources("unity" PRIVATE "unity.c")
+install(TARGETS unity EXPORT unityConfig
+    ARCHIVE  DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY  DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_INSTALL_LIBDIR}"
+    RUNTIME  DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_INSTALL_BINDIR}"
+    INCLUDES DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+
+
