@@ -343,6 +343,18 @@ _Note:_
 specifying `UNITY_USE_FLUSH_STDOUT`. No other defines are required.
 
 
+##### `UNITY_OUTPUT_FOR_ECLIPSE`
+
+##### `UNITY_OUTPUT_FOR_IAR_WORKBENCH`
+
+##### `UNITY_OUTPUT_FOR_QT_CREATOR`
+
+When managing your own builds, it is often handy to have messages output in a format which is
+recognized by your IDE. These are some standard formats which can be supported. If you're using 
+Ceedling to manage your builds, it is better to stick with the standard format (leaving these
+all undefined) and allow Ceedling to use its own decorators.
+
+
 ##### `UNITY_PTR_ATTRIBUTE`
 
 Some compilers require a custom attribute to be assigned to pointers, like
