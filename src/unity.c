@@ -346,7 +346,7 @@ void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T
     {
         UnityPrintNumberUnsigned((UNITY_UINT)number);
     }
-    else 
+    else
     {
         UNITY_OUTPUT_CHAR('0');
         UNITY_OUTPUT_CHAR('x');
@@ -464,7 +464,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
     UNITY_DOUBLE number = input_number;
 
-    /* print minus sign (including for negative zero) */
+    /* print minus sign (does not handle negative zero) */
     if (number < 0.0f)
     {
         UNITY_OUTPUT_CHAR('-');
@@ -472,7 +472,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     }
 
     /* handle zero, NaN, and +/- infinity */
-    if (number == 0.0f) 
+    if (number == 0.0f)
     {
         UnityPrint("0");
     }
