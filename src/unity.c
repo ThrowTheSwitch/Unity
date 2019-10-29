@@ -1825,6 +1825,12 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 }
 
 /*-----------------------------------------------*/
+void UnitySetTestFile(const char* filename)
+{
+	Unity.TestFile = filename;
+}
+
+/*-----------------------------------------------*/
 void UnityBegin(const char* filename)
 {
     Unity.TestFile = filename;
