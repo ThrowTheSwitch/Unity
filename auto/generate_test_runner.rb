@@ -319,8 +319,6 @@ class UnityTestRunnerGenerator
     output.puts("void #{@options[:test_verify_name]}(void)")
     output.puts('{')
     output.puts('  CMock_Verify();')
-    output.puts('  CMock_Destroy();')
-    output.puts('  CMock_Init();')
     output.puts('}')
   end
 
