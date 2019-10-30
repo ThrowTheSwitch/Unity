@@ -3,7 +3,7 @@ ifeq ($(shell uname -s), Darwin)
 CC = clang
 endif
 #DEBUG = -O0 -g
-CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
+CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror -DUNITY_FIXTURE_NO_EXTRAS
 CFLAGS += $(DEBUG)
 SRC = ../src/unity_fixture.c \
       ../../../src/unity.c   \
