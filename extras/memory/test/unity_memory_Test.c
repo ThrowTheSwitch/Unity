@@ -10,6 +10,31 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* This test module includes the following tests: */
+
+void test_ForceMallocFail(void);
+void test_ReallocSmallerIsUnchanged(void);
+void test_ReallocSameIsUnchanged(void);
+void test_ReallocLargerNeeded(void);
+void test_ReallocNullPointerIsLikeMalloc(void);
+void test_ReallocSizeZeroFreesMemAndReturnsNullPointer(void);
+void test_CallocFillsWithZero(void);
+void test_FreeNULLSafety(void);
+void test_DetectsLeak(void);
+void test_BufferOverrunFoundDuringFree(void);
+void test_BufferOverrunFoundDuringRealloc(void);
+void test_BufferGuardWriteFoundDuringFree(void);
+void test_BufferGuardWriteFoundDuringRealloc(void);
+void test_MallocPastBufferFails(void);
+void test_CallocPastBufferFails(void);
+void test_MallocThenReallocGrowsMemoryInPlace(void);
+void test_ReallocFailDoesNotFreeMem(void);
+
+/* It makes use of the following features */
+void setUp(void);
+void tearDown(void);
+
+/* Let's Go! */
 void setUp(void) 
 { 
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
