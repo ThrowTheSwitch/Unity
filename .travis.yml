@@ -24,7 +24,7 @@ script:
   - cd ../extras/fixture/test && rake ci
   - make -s default noStdlibMalloc
   - make -s C89
-  - cd ../extras/memory/test && rake ci
+  - cd ../../../extras/memory/test && rake ci
   - make -s default noStdlibMalloc
   - make -s C89
   - cd ../../../examples/example_1 && make -s ci
