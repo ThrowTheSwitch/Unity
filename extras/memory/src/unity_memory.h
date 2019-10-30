@@ -1,12 +1,16 @@
-/* Copyright (c) 2010 James Grenning and Contributed to Unity Project
- * ==========================================
+/* ==========================================
  *  Unity Project - A Test Framework for C
  *  Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
  *  [Released under MIT License. Please refer to license.txt for details]
  * ========================================== */
 
-#ifndef UNITY_FIXTURE_MALLOC_OVERRIDES_H_
-#define UNITY_FIXTURE_MALLOC_OVERRIDES_H_
+#ifndef UNITY_MEMORY_OVERRIDES_H_
+#define UNITY_MEMORY_OVERRIDES_H_
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #include <stddef.h>
 
@@ -21,17 +25,17 @@
     #endif
 #endif
 
-/* These functions are used by the Unity Fixture to allocate and release memory
+/* These functions are used by Unity to allocate and release memory
  * on the heap and can be overridden with platform-specific implementations.
- * For example, when using FreeRTOS UNITY_FIXTURE_MALLOC becomes pvPortMalloc()
- * and UNITY_FIXTURE_FREE becomes vPortFree(). */
-#if !defined(UNITY_FIXTURE_MALLOC) || !defined(UNITY_FIXTURE_FREE)
+ * For example, when using FreeRTOS UNITY_MALLOC becomes pvPortMalloc()
+ * and UNITY_FREE becomes vPortFree(). */
+#if !defined(UNITY_MALLOC) || !defined(UNITY_FREE)
     #include <stdlib.h>
-    #define UNITY_FIXTURE_MALLOC(size) malloc(size)
-    #define UNITY_FIXTURE_FREE(ptr)    free(ptr)
+    #define UNITY_MALLOC(size) malloc(size)
+    #define UNITY_FREE(ptr)    free(ptr)
 #else
-    extern void* UNITY_FIXTURE_MALLOC(size_t size);
-    extern void UNITY_FIXTURE_FREE(void* ptr);
+    extern void* UNITY_MALLOC(size_t size);
+    extern void UNITY_FREE(void* ptr);
 #endif
 
 #define malloc  unity_malloc
@@ -44,4 +48,13 @@ void* unity_calloc(size_t num, size_t size);
 void* unity_realloc(void * oldMem, size_t size);
 void unity_free(void * mem);
 
-#endif /* UNITY_FIXTURE_MALLOC_OVERRIDES_H_ */
+/* You must compile with malloc replacement, as defined in unity_fixture_malloc_overrides.h */
+void UnityMalloc_StartTest(void);
+void UnityMalloc_EndTest(void);
+void UnityMalloc_MakeMallocFailAfterCount(int countdown);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif 

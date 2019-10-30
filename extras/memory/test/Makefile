@@ -5,15 +5,21 @@ endif
 #DEBUG = -O0 -g
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 CFLAGS += $(DEBUG)
-SRC = ../src/unity_fixture.c \
+DEFINES = -D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar
+ifeq ($(OS),Windows_NT)
+  DEFINES += -D UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar(int)
+else
+  DEFINES += -D UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar\(int\)
+endif
+SRC = ../src/unity_memory.c \
       ../../../src/unity.c   \
-      unity_fixture_Test.c   \
-      unity_fixture_TestRunner.c \
-      main/AllTests.c
+      unity_memory_Test.c   \
+      unity_memory_TestRunner.c \
+      unity_output_Spy.c     \
 
 INC_DIR = -I../src -I../../../src/
 BUILD_DIR = ../build
-TARGET = ../build/fixture_tests.exe
+TARGET = ../build/memory_tests.exe
 
 all: default noStdlibMalloc 32bits
 
@@ -50,8 +56,8 @@ cov: $(BUILD_DIR)
 	rm -f $(BUILD_DIR)/*.gcda
 	./$(TARGET) > /dev/null ; ./$(TARGET) -v > /dev/null
 	cd $(BUILD_DIR) && \
-	gcov unity_fixture.c | head -3
-	grep '###' $(BUILD_DIR)/unity_fixture.c.gcov -C2 || true # Show uncovered lines
+	gcov unity_memory.c | head -3
+	grep '###' $(BUILD_DIR)/unity_memory.c.gcov -C2 || true # Show uncovered lines
 
 # These extended flags DO get included before any target build runs
 CFLAGS += -Wbad-function-cast
