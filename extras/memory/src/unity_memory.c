@@ -87,7 +87,8 @@ void* unity_malloc(size_t size)
     }
     else
     {
-        guard = (Guard*)&unity_heap[heap_index];
+        /* We know we can get away with this cast because we aligned memory already */
+        guard = (Guard*)(void*)(&unity_heap[heap_index]);
         heap_index += total_size;
     }
 #else
