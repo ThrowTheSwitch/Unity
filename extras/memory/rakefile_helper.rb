@@ -55,7 +55,12 @@ def build_compiler_fields
   defines = if $cfg['compiler']['defines']['items'].nil?
               ''
             else
-              squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'])
+              decl = if $is_windows
+                       'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar(int)'
+                     else
+                       'UNITY_OUTPUT_CHAR_HEADER_DECLARATION=UnityOutputCharSpy_OutputChar\(int\)'
+                     end
+              squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar'] + [decl])
             end
   options = squash('', $cfg['compiler']['options'])
   includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
@@ -141,18 +146,18 @@ def report_summary
   summary.run
 end
 
-def run_tests
+def run_tests(exclude_stdlib=false)
   report 'Running Unity system tests...'
 
   # Tack on TEST define for compiling unit tests
   load_configuration($cfg_file)
   test_defines = ['TEST']
   $cfg['compiler']['defines']['items'] = [] if $cfg['compiler']['defines']['items'].nil?
+  $cfg['compiler']['defines']['items'] << 'UNITY_EXCLUDE_STDLIB_MALLOC' if exclude_stdlib
 
   # Get a list of all source files needed
   src_files  = Dir["#{__dir__}/src/*.c"]
   src_files += Dir["#{__dir__}/test/*.c"]
-  src_files += Dir["#{__dir__}/test/main/*.c"]
   src_files << '../../src/unity.c'
 
   # Build object files

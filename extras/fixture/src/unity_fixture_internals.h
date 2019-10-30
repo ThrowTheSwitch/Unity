@@ -33,8 +33,6 @@ void UnityTestRunner(unityfunction* setup,
                      const char* file, unsigned int line);
 
 void UnityIgnoreTest(const char* printableName, const char* group, const char* name);
-void UnityMalloc_StartTest(void);
-void UnityMalloc_EndTest(void);
 int UnityGetCommandLineOptions(int argc, const char* argv[]);
 void UnityConcludeFixtureTest(void);
 
