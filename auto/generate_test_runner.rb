@@ -41,6 +41,7 @@ class UnityTestRunnerGenerator
       main_name: 'main', # set to :auto to automatically generate each time
       main_export_decl: '',
       cmdline_args: false,
+      omit_begin_end: false,
       use_param_tests: false
     }
   end
@@ -376,14 +377,19 @@ class UnityTestRunnerGenerator
       output.puts('    return parse_status;')
       output.puts('  }')
     else
+      main_return = @options[:omit_begin_end] ? 'void' : 'int'
       if main_name != 'main'
-        output.puts("#{@options[:main_export_decl]} int #{main_name}(void);")
+        output.puts("#{@options[:main_export_decl]} #{main_return} #{main_name}(void);")
       end
-      output.puts("int #{main_name}(void)")
+      output.puts("#{main_return} #{main_name}(void)")
       output.puts('{')
     end
     output.puts('  suiteSetUp();') if @options[:has_suite_setup]
-    output.puts("  UnityBegin(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
+    if @options[:omit_begin_end]
+      output.puts("  UnitySetTestFile(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
+    else
+      output.puts("  UnityBegin(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
+    end
     tests.each do |test|
       if (!@options[:use_param_tests]) || test[:args].nil? || test[:args].empty?
         output.puts("  run_test(#{test[:test]}, \"#{test[:test]}\", #{test[:line_number]});")
@@ -398,9 +404,13 @@ class UnityTestRunnerGenerator
     output.puts
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
     if @options[:has_suite_teardown]
-      output.puts('  return suiteTearDown(UnityEnd());')
+      if @options[:omit_begin_end]
+        output.puts('  (void) suite_teardown(0);')
+      else
+        output.puts('  return suiteTearDown(UnityEnd());')
+      end
     else
-      output.puts('  return UnityEnd();')
+      output.puts('  return UnityEnd();') if not @options[:omit_begin_end]
     end
     output.puts('}')
   end
@@ -473,6 +483,7 @@ if $0 == __FILE__
           '    --suite_setup=""      - code to execute for setup of entire suite',
           '    --suite_teardown=""   - code to execute for teardown of entire suite',
           '    --use_param_tests=1   - enable parameterized tests (disabled by default)',
+          '    --omit_begin_end=1    - omit calls to UnityBegin and UnityEnd (disabled by default)',
           '    --header_file=""      - path/name of test header file to generate too'].join("\n")
     exit 1
   end

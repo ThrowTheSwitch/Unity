@@ -477,6 +477,7 @@ extern struct UNITY_STORAGE_T Unity;
 
 void UnityBegin(const char* filename);
 int  UnityEnd(void);
+void UnitySetTestFile(const char* filename);
 void UnityConcludeTest(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
 
