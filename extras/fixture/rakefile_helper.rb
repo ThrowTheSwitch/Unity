@@ -148,7 +148,7 @@ def run_tests
   load_configuration($cfg_file)
   test_defines = ['TEST']
   $cfg['compiler']['defines']['items'] = [] if $cfg['compiler']['defines']['items'].nil?
-  $cfg['compiler']['defines']['items'] << "UNITY_FIXTURE_NO_EXTRAS"
+  $cfg['compiler']['defines']['items'] << 'UNITY_FIXTURE_NO_EXTRAS'
 
   # Get a list of all source files needed
   src_files  = Dir["#{__dir__}/src/*.c"]

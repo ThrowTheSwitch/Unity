@@ -51,7 +51,12 @@ task :summary do
   report_summary
 end
 
-desc "Build and test Unity"
+namespace :test do 
+  desc "Build and test Unity"
+  task :all => [:clean, :prepare_for_tests, :scripts, :unit, :style, :summary]
+end
+
+# Shorthand for many common tasks
 task :all => [:clean, :prepare_for_tests, :scripts, :unit, :style, :summary]
 task :default => [:clobber, :all]
 task :ci => [:no_color, :default]

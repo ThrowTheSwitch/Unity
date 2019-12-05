@@ -410,7 +410,7 @@ class UnityTestRunnerGenerator
         output.puts('  return suiteTearDown(UnityEnd());')
       end
     else
-      output.puts('  return UnityEnd();') if not @options[:omit_begin_end]
+      output.puts('  return UnityEnd();') unless @options[:omit_begin_end]
     end
     output.puts('}')
   end

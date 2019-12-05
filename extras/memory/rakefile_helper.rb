@@ -146,7 +146,7 @@ def report_summary
   summary.run
 end
 
-def run_tests(exclude_stdlib=false)
+def run_tests(exclude_stdlib = false)
   report 'Running Unity system tests...'
 
   # Tack on TEST define for compiling unit tests

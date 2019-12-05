@@ -479,7 +479,10 @@ void UnityBegin(const char* filename);
 int  UnityEnd(void);
 void UnitySetTestFile(const char* filename);
 void UnityConcludeTest(void);
+
+#ifndef RUN_TEST
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
+#endif
 
 /*-------------------------------------------------------
  * Details Support

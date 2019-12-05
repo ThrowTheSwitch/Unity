@@ -182,10 +182,10 @@ Memory Assertions
 Compare two blocks of memory.  This is a good generic assertion for types that can't be coerced into acting like
 standard types... but since it's a memory compare, you have to be careful that your data types are packed.
 
-_MESSAGE
---------
+\_MESSAGE
+---------
 
-you can append _MESSAGE to any of the macros to make them take an additional argument.  This argument
+you can append \_MESSAGE to any of the macros to make them take an additional argument.  This argument
 is a string that will be printed at the end of the failure strings.  This is useful for specifying more
 information about the problem.
 
