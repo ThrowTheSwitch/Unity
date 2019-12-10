@@ -74,6 +74,20 @@ static const char PROGMEM UnityStrDetail2Name[]            = " " UNITY_DETAIL2_N
  *-----------------------------------------------*/
 
 /*-----------------------------------------------*/
+static int compare_float(float a, float b)
+{
+    return (fabs(a - b) <= UNITY_FLOAT_PRECISION);
+}
+
+#ifndef UNITY_EXCLUDE_DOUBLE
+/*-----------------------------------------------*/
+static int compare_double(double a, double b)
+{
+    return (fabs(a - b) <= UNITY_DOUBLE_PRECISION);
+}
+#endif /* not UNITY_EXCLUDE_DOUBLE */
+
+/*-----------------------------------------------*/
 /* Local helper function to print characters. */
 static void UnityPrintChar(const char* pch)
 {
@@ -468,7 +482,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     }
 
     /* handle zero, NaN, and +/- infinity */
-    if (number == 0.0f)
+    if (compare_double(number, 0.0f))
     {
         UnityPrint("0");
     }
@@ -533,7 +547,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
 #ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
         /* round to even if exactly between two integers */
-        if ((n & 1) && (((UNITY_DOUBLE)n - number) == 0.5f))
+        if ((n & 1) && (compare_double(((UNITY_DOUBLE)n - number), 0.5f)))
             n--;
 #endif
 

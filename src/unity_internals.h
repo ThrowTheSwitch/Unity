@@ -7,9 +7,9 @@
 #ifndef UNITY_INTERNALS_H
 #define UNITY_INTERNALS_H
 
-#ifdef UNITY_INCLUDE_CONFIG_H
-#include "unity_config.h"
-#endif
+/*#ifdef UNITY_INCLUDE_CONFIG_H*/
+#include "../examples/unity_config.h"
+/*#endif*/
 
 #ifndef UNITY_EXCLUDE_SETJMP_H
 #include <setjmp.h>
@@ -208,7 +208,7 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #ifndef isnan
 /* NaN is the only floating point value that does NOT equal itself.
  * Therefore if n != n, then it is NaN. */
-#define isnan(n) ((n != n) ? 1 : 0)
+#define isnan(n) ((fabs(n - n) >= UNITY_FLOAT_PRECISION) ? 1 : 0)
 #endif
 
 #endif

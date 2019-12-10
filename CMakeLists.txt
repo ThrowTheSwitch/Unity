@@ -13,6 +13,15 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(unity LANGUAGES C DESCRIPTION "C Unit testing framework.")
 
+set(custom_compiler_flags)
+
+list(APPEND custom_compiler_flags -Wfloat-equal)
+
+# apply custom compiler flags
+foreach(compiler_flag ${custom_compiler_flags})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${compiler_flag}")
+endforeach()
+
 add_subdirectory(src)
 target_include_directories(unity
     PUBLIC 
