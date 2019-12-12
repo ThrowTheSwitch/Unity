@@ -485,6 +485,10 @@ void UnityConcludeTest(void);
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
 #endif
 
+#ifdef UNITY_PRINT_TEST_CONTEXT
+void UNITY_PRINT_TEST_CONTEXT(void);
+#endif
+
 /*-------------------------------------------------------
  * Details Support
  *-------------------------------------------------------*/

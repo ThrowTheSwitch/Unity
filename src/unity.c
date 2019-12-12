@@ -600,6 +600,27 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 #endif /* ! UNITY_EXCLUDE_FLOAT_PRINT */
 
 /*-----------------------------------------------*/
+static void UnityPrintContext(void)
+{
+#ifdef UNITY_PRINT_TEST_CONTEXT
+    UNITY_PRINT_TEST_CONTEXT();
+#endif
+#ifndef UNITY_EXCLUDE_DETAILS
+    if (Unity.CurrentDetail1)
+    {
+        UnityPrint(UnityStrDetail1Name);
+        UnityPrint(Unity.CurrentDetail1);
+        if (Unity.CurrentDetail2)
+        {
+            UnityPrint(UnityStrDetail2Name);
+            UnityPrint(Unity.CurrentDetail2);
+        }
+        UnityPrint(UnityStrSpacer);
+    }
+#endif
+}
+
+/*-----------------------------------------------*/
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
 #ifdef UNITY_OUTPUT_FOR_ECLIPSE
@@ -680,19 +701,7 @@ static void UnityAddMsgIfSpecified(const char* msg)
     if (msg)
     {
         UnityPrint(UnityStrSpacer);
-#ifndef UNITY_EXCLUDE_DETAILS
-        if (Unity.CurrentDetail1)
-        {
-            UnityPrint(UnityStrDetail1Name);
-            UnityPrint(Unity.CurrentDetail1);
-            if (Unity.CurrentDetail2)
-            {
-                UnityPrint(UnityStrDetail2Name);
-                UnityPrint(Unity.CurrentDetail2);
-            }
-            UnityPrint(UnityStrSpacer);
-        }
-#endif
+        UnityPrintContext();
         UnityPrint(msg);
     }
 }
@@ -1745,20 +1754,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     if (msg != NULL)
     {
         UNITY_OUTPUT_CHAR(':');
-
-#ifndef UNITY_EXCLUDE_DETAILS
-        if (Unity.CurrentDetail1)
-        {
-            UnityPrint(UnityStrDetail1Name);
-            UnityPrint(Unity.CurrentDetail1);
-            if (Unity.CurrentDetail2)
-            {
-                UnityPrint(UnityStrDetail2Name);
-                UnityPrint(Unity.CurrentDetail2);
-            }
-            UnityPrint(UnityStrSpacer);
-        }
-#endif
+        UnityPrintContext();
         if (msg[0] != ' ')
         {
             UNITY_OUTPUT_CHAR(' ');
