@@ -6029,6 +6029,8 @@ void putcharSpy(int c)
             putcharSpyBuffer[indexSpyBuffer++] = (char)c;
     } else
         putchar((char)c);
+#else
+    (void)c;
 #endif
 }
 
@@ -6047,6 +6049,9 @@ void flushSpy(void)
 
 void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 {
+#ifndef USING_OUTPUT_SPY
+    TEST_IGNORE();
+#else
     UNITY_UINT savedFailures = Unity.TestFailures;
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); /* Suppress output */
@@ -6067,6 +6072,7 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     Unity.TestFailures--;
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, failures);
+#endif
 }
 
 void testCstringsEscapeSequence(void)
