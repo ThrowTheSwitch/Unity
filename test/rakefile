@@ -49,7 +49,7 @@ namespace :test do
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.pattern = 'spec/**/*_spec.rb'
   end
-  
+
   desc "Generate test summary"
   task :summary do
     report_summary
@@ -57,7 +57,7 @@ namespace :test do
 end
 
 # Shorthand for many common tasks
-task :all => [:clean, :prepare_for_tests, :scripts, :unit, :style, :summary]
+task :all => ['test:all']
 task :default => [:clobber, :all]
 task :ci => [:no_color, :default]
 task :cruise => [:no_color, :default]

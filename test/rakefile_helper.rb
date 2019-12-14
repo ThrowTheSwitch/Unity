@@ -135,18 +135,20 @@ module RakefileHelpers
   end
 
   def compile(file, defines = [])
-    out_file = File.basename(file, C_EXTENSION) + $cfg[:extension][:object]
+    out_file = File.join('build', File.basename(file, C_EXTENSION)) + $cfg[:extension][:object]
     cmd_str = build_command_string( $cfg[:tools][:test_compiler], [ file, out_file ], defines )
     execute(cmd_str)
     out_file
   end
 
   def link_it(exe_name, obj_list)
+    exe_name = File.join('build', File.basename(exe_name))
     cmd_str = build_command_string( $cfg[:tools][:test_linker], [ obj_list, exe_name ] )
     execute(cmd_str)
   end
 
   def runtest(bin_name, ok_to_fail = false, extra_args = nil)
+    bin_name = File.join('build', File.basename(bin_name))
     extra_args = extra_args.nil? ? "" : " " + extra_args
     if $cfg[:tools][:test_fixture]
       cmd_str = build_command_string( $cfg[:tools][:test_fixture], [ bin_name, extra_args ] )
@@ -193,7 +195,6 @@ module RakefileHelpers
 
     # Build and execute each unit test
     test_files.each do |test|
-      puts "DEBUG: " + test
 
       # Drop Out if we're skipping this type of test
       if $cfg[:skip_tests]
