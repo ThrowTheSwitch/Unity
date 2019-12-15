@@ -39,10 +39,10 @@ module RakefileHelpers
   end
 
   def local_include_dirs
-    include_dirs = $cfg[:paths][:includes].dup || []
-    include_dirs += $cfg[:paths][:source].dup || []
-    include_dirs += $cfg[:paths][:test].dup || []
-    include_dirs += $cfg[:paths][:support].dup || []
+    include_dirs = $cfg[:paths][:includes] || []
+    include_dirs += $cfg[:paths][:source] || []
+    include_dirs += $cfg[:paths][:test] || []
+    include_dirs += $cfg[:paths][:support] || []
     include_dirs.delete_if { |dir| dir.is_a?(Array) }
     include_dirs
   end
