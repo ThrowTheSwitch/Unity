@@ -1,84 +1,94 @@
-# unit testing under iar compiler / simulator for STM32 Cortex-M3
-
-tools_root: &tools_root 'C:\Program Files\IAR Systems\Embedded Workbench 5.4\'
-compiler:
- path: [*tools_root, 'arm\bin\iccarm.exe']
- source_path: '..\src\'
- unit_tests_path: &unit_tests_path 'tests\'
- build_path: &build_path 'build\'
- options:
-   - --dlib_config
-   - [*tools_root, 'arm\inc\DLib_Config_Normal.h']
-   - --no_cse
-   - --no_unroll
-   - --no_inline
-   - --no_code_motion
-   - --no_tbaa
-   - --no_clustering
-   - --no_scheduling
-   - --debug
-   - --cpu_mode thumb
-   - --endian=little
-   - --cpu=Cortex-M3
-   - --interwork
-   - --warnings_are_errors
-   - --fpu=None
-   - --diag_suppress=Pa050
-   - --diag_suppress=Pe111
-   - -e
-   - -On
- includes:
-   prefix: '-I'
-   items:
-     - [*tools_root, 'arm\inc\']
-     - 'src\'
-      - '..\src\'
-      - 'testdata/'
-     - *unit_tests_path
-     - 'vendor\unity\src\'
-     - 'iar\iar_v5\incIAR\'
- defines:
-   prefix: '-D'
-   items:
-     - 'IAR'
-     - 'UNITY_SUPPORT_64'
-     - 'UNITY_SUPPORT_TEST_CASES'
- object_files:
-   prefix: '-o'
-   extension: '.r79'
-   destination: *build_path
-linker:
- path: [*tools_root, 'arm\bin\ilinkarm.exe']
- options:
-   - --redirect _Printf=_PrintfLarge
-   - --redirect _Scanf=_ScanfSmall
-   - --semihosting
-   - --entry __iar_program_start
-   - --config
-   - [*tools_root, 'arm\config\generic_cortex.icf']
- object_files:
-   path: *build_path
-   extension: '.o'
- bin_files:
-   prefix: '-o'
-   extension: '.out'
-   destination: *build_path
-simulator:
- path: [*tools_root, 'common\bin\CSpyBat.exe']
- pre_support:
-   - --silent
-   - [*tools_root, 'arm\bin\armproc.dll']
-   - [*tools_root, 'arm\bin\armsim.dll']
- post_support:
-   - --plugin
-   - [*tools_root, 'arm\bin\armbat.dll']
-   - --backend
-   - -B
-   - -p
-   - [*tools_root, 'arm\config\debugger\ST\iostm32f107xx.ddf']
-   - --cpu=Cortex-M3
-   - -d
-   - sim
+---
+tools_root: C:\Program Files\IAR Systems\Embedded Workbench 5.4\
 colour: true
 :unity:
   :plugins: []
+:tools:
+  :test_compiler:
+    :name: compiler
+    :executable:
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+    - arm\bin\iccarm.exe
+    :arguments:
+    - "--dlib_config"
+    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+      - arm\inc\DLib_Config_Normal.h
+    - "--no_cse"
+    - "--no_unroll"
+    - "--no_inline"
+    - "--no_code_motion"
+    - "--no_tbaa"
+    - "--no_clustering"
+    - "--no_scheduling"
+    - "--debug"
+    - "--cpu_mode thumb"
+    - "--endian=little"
+    - "--cpu=Cortex-M3"
+    - "--interwork"
+    - "--warnings_are_errors"
+    - "--fpu=None"
+    - "--diag_suppress=Pa050"
+    - "--diag_suppress=Pe111"
+    - "-e"
+    - "-On"
+    - '-I"$": COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE'
+    - '-I"$": COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR'
+    - "-D$: COLLECTION_DEFINES_TEST_AND_VENDOR"
+    - "${1}"
+    - "-o ${2}"
+  :test_linker:
+    :name: linker
+    :executable:
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+    - arm\bin\ilinkarm.exe
+    :arguments:
+    - "${1}"
+    - "--redirect _Printf=_PrintfLarge"
+    - "--redirect _Scanf=_ScanfSmall"
+    - "--semihosting"
+    - "--entry __iar_program_start"
+    - "--config"
+    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+      - arm\config\generic_cortex.icf
+    - "-o ${2}"
+  :test_fixture:
+    :name: simulator
+    :executable:
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+    - common\bin\CSpyBat.exe
+    :arguments:
+    - "--silent"
+    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+      - arm\bin\armproc.dll
+    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+      - arm\bin\armsim.dll
+    - "${1}"
+    - "--plugin"
+    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+      - arm\bin\armbat.dll
+    - "--backend"
+    - "-B"
+    - "-p"
+    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+      - arm\config\debugger\ST\iostm32f107xx.ddf
+    - "--cpu=Cortex-M3"
+    - "-d"
+    - sim
+:extension:
+  :object: ".r79"
+  :executable: ".out"
+:paths:
+  :test:
+    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
+      - arm\inc\
+    - src\
+    - "..\\src\\"
+    - testdata/
+    - tests\
+    - vendor\unity\src\
+    - iar\iar_v5\incIAR\
+:defines:
+  :test:
+  - IAR
+  - UNITY_SUPPORT_64
+  - UNITY_SUPPORT_TEST_CASES

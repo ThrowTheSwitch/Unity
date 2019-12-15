@@ -1,47 +1,43 @@
-compiler:
-  path: gcc
-  source_path:     '../src/'
-  unit_tests_path: &unit_tests_path 'tests/'
-  build_path:      &build_path 'build/'
-  options:
-    - '-c'
-    - '-m64'
-    - '-Wall'
-    - '-Wno-address'
-    - '-std=c99'
-    - '-pedantic'
-  includes:
-    prefix: '-I'
-    items:
-      - 'src/'
-      - '../src/'
-      - 'testdata/'
-      - *unit_tests_path
-  defines:
-    prefix: '-D'
-    items:
-      - UNITY_EXCLUDE_STDINT_H
-      - UNITY_INCLUDE_DOUBLE
-      - UNITY_SUPPORT_TEST_CASES
-      - UNITY_SUPPORT_64
-  object_files:
-    prefix: '-o'
-    extension: '.o'
-    destination: *build_path
-linker:
-  path: gcc
-  options:
-    - -lm
-    - '-m64'
-  includes:
-    prefix: '-I'
-  object_files:
-    path: *build_path
-    extension: '.o'
-  bin_files:
-    prefix: '-o'
-    extension: '.exe'
-    destination: *build_path
+---
 colour: true
 :unity:
   :plugins: []
+:tools:
+  :test_compiler:
+    :name: compiler
+    :executable: gcc
+    :arguments:
+    - "-c"
+    - "-m64"
+    - "-Wall"
+    - "-Wno-address"
+    - "-std=c99"
+    - "-pedantic"
+    - '-I"$": COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE'
+    - '-I"$": COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR'
+    - "-D$: COLLECTION_DEFINES_TEST_AND_VENDOR"
+    - "${1}"
+    - "-o ${2}"
+  :test_linker:
+    :name: linker
+    :executable: gcc
+    :arguments:
+    - "${1}"
+    - "-lm"
+    - "-m64"
+    - "-o ${2}"
+:extension:
+  :object: ".o"
+  :executable: ".exe"
+:paths:
+  :test:
+    - src/
+    - "../src/"
+    - testdata/
+    - tests/
+:defines:
+  :test:
+  - UNITY_EXCLUDE_STDINT_H
+  - UNITY_INCLUDE_DOUBLE
+  - UNITY_SUPPORT_TEST_CASES
+  - UNITY_SUPPORT_64

@@ -5,6 +5,7 @@
 # ==========================================
 
 $verbose = false
+$extra_paths = []
 
 require 'rake'
 require 'rake/clean'
@@ -29,38 +30,61 @@ include RakefileHelpers
 DEFAULT_CONFIG_FILE = 'gcc_auto_stdint.yml'
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
-desc "Test unity with its own unit tests"
-task :unit => [:prepare_for_tests] do
-  run_tests unit_test_files
-end
+############# ALL THE SELF-TESTS WE CAN PERFORM
+namespace :test do 
+  desc "Build and test Unity"
+  task :all => [:clean, :prepare_for_tests, 'test:scripts', 'test:unit', :style, 'test:fixture', 'test:memory', 'test:summary']
+  task :ci => [:clean, :prepare_for_tests, 'test:scripts', 'test:unit', :style, 'test:make', 'test:fixture', 'test:memory', 'test:summary']
 
-desc "Test unity's helper scripts"
-task :scripts => [:prepare_for_tests] do
-  Dir['tests/test_*.rb'].each do |scriptfile|
-    require "./"+scriptfile
+  desc "Test unity with its own unit tests"
+  task :unit => [:prepare_for_tests] do
+    run_tests unit_test_files
+  end
+
+  desc "Test unity's helper scripts"
+  task :scripts => [:prepare_for_tests] do
+    Dir['tests/test_*.rb'].each do |scriptfile|
+      require "./"+scriptfile
+    end
+  end
+
+  desc "Test unity triggered from make"
+  task :make => [:prepare_for_tests] do
+    run_make_tests()
+  end
+
+  desc "Test unity fixture addon"
+  task :fixture => [:prepare_for_tests] do 
+    test_fixtures()
+  end
+
+  desc "Test unity memory addon"
+  task :memory => [:prepare_for_tests] do 
+    test_memory()
+  end
+
+  desc "Test unity examples"
+  task :examples => [:prepare_for_tests] do 
+    execute("cd ../examples/example_1 && make -s ci", false)
+    execute("cd ../examples/example_2 && make -s ci", false)
+    execute("cd ../examples/example_3 && rake", false)
+  end
+
+  desc "Run all rspecs"
+  RSpec::Core::RakeTask.new(:spec) do |t|
+    t.pattern = 'spec/**/*_spec.rb'
+  end
+
+  desc "Generate test summary"
+  task :summary do
+    report_summary
   end
 end
 
-desc "Run all rspecs"
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = 'spec/**/*_spec.rb'
-end
-
-desc "Generate test summary"
-task :summary do
-  report_summary
-end
-
-namespace :test do 
-  desc "Build and test Unity"
-  task :all => [:clean, :prepare_for_tests, :scripts, :unit, :style, :summary]
-end
-
-# Shorthand for many common tasks
-task :all => [:clean, :prepare_for_tests, :scripts, :unit, :style, :summary]
+###################### Shorthand for many common tasks
+task :ci => ['test:ci']
+task :all => ['test:all']
 task :default => [:clobber, :all]
-task :ci => [:no_color, :default]
-task :cruise => [:no_color, :default]
 
 desc "Load configuration"
 task :config, :config_file do |t, args|
@@ -75,6 +99,7 @@ task :verbose do
   $verbose = true
 end
 
+################### CODING STYLE VALIDATION
 namespace :style do
   desc "Check style"
   task :check do
@@ -86,7 +111,7 @@ namespace :style do
   namespace :check do
     Dir['../**/*.rb'].each do |f|
       filename = File.basename(f, '.rb')
-      desc "Check Style of #{filename}"
+      #desc "Check Style of #{filename}"
       task filename.to_sym => ['style:clean'] do
         report execute("rubocop #{f} --color --config .rubocop.yml", true)
         report "Style Checked for #{f}"
@@ -102,7 +127,7 @@ namespace :style do
   namespace :c do
     Dir['../{src,extras/**}/*.{c,h}'].each do |f|
       filename = File.basename(f)[0..-3]
-      desc "Check Style of #{filename}"
+      #desc "Check Style of #{filename}"
       task filename.to_sym do
         run_astyle f
       end

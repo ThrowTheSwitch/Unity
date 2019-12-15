@@ -7,7 +7,8 @@ E = -Weverything
 CFLAGS += $E -Wno-unknown-warning-option -Wno-missing-prototypes
 CFLAGS += -Wno-unused-macros -Wno-padded -Wno-missing-noreturn
 endif
-CFLAGS += -std=c99 -pedantic -Wall -Wextra -Wconversion -Werror
+CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
+#CFLAGS += -Wconversion #disabled because if falsely complains about the isinf and isnan macros
 CFLAGS += -Wno-switch-enum -Wno-double-promotion
 CFLAGS += -Wbad-function-cast -Wcast-qual -Wold-style-definition -Wshadow -Wstrict-overflow \
           -Wstrict-prototypes -Wswitch-default -Wundef

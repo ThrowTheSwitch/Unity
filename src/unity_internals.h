@@ -481,8 +481,9 @@ void UnitySetTestFile(const char* filename);
 void UnityConcludeTest(void);
 
 #ifndef RUN_TEST
-#define UNITY_SKIP_DEFAULT_RUNNER
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum);
+#else
+#define UNITY_SKIP_DEFAULT_RUNNER
 #endif
 
 /*-------------------------------------------------------

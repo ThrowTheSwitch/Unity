@@ -22,7 +22,7 @@ module RakefileHelpers
   end
 
   def configure_clean
-    CLEAN.include($cfg['compiler']['build_path'] + '*.*') unless $cfg['compiler']['build_path'].nil?
+    CLEAN.include('build/*.*')
   end
 
   def configure_toolchain(config_file = DEFAULT_CONFIG_FILE)
@@ -33,13 +33,16 @@ module RakefileHelpers
   end
 
   def unit_test_files
-    path = $cfg['compiler']['unit_tests_path'] + 'test*' + C_EXTENSION
+    path = 'tests/test*' + C_EXTENSION
     path.tr!('\\', '/')
     FileList.new(path)
   end
 
   def local_include_dirs
-    include_dirs = $cfg['compiler']['includes']['items'].dup
+    include_dirs = $cfg[:paths][:includes] || []
+    include_dirs += $cfg[:paths][:source] || []
+    include_dirs += $cfg[:paths][:test] || []
+    include_dirs += $cfg[:paths][:support] || []
     include_dirs.delete_if { |dir| dir.is_a?(Array) }
     include_dirs
   end
@@ -86,75 +89,73 @@ module RakefileHelpers
     end
   end
 
-  def build_compiler_fields(inject_defines)
-    command = tackit($cfg['compiler']['path'])
-    defines = if $cfg['compiler']['defines']['items'].nil?
-                ''
-              else
-                squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'] + ['UNITY_OUTPUT_CHAR=putcharSpy'] + ['UNITY_OUTPUT_CHAR_HEADER_DECLARATION="putcharSpy(int)"'] + inject_defines)
-              end
-    options = squash('', $cfg['compiler']['options'])
-    includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
-    includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+  def build_command_string(hash, values, defines = nil)
 
-    { :command => command, :defines => defines, :options => options, :includes => includes }
+    # Replace named and numbered slots
+    args = []
+    hash[:arguments].each do |arg|
+      if arg.include? '$'
+        if arg.include? ': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE' 
+          pattern = arg.gsub(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE','')
+          [ File.join('..','src') ].each do |f|
+            args << pattern.gsub(/\$/,f)
+          end
+
+        elsif arg.include? ': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR' 
+          pattern = arg.gsub(': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR','')
+          [ $extra_paths, 'src', File.join('tests'), File.join('testdata'), $cfg[:paths][:support] ].flatten.uniq.compact.each do |f|
+            args << pattern.gsub(/\$/,f)
+          end
+
+        elsif arg.include? ': COLLECTION_DEFINES_TEST_AND_VENDOR'
+          pattern = arg.gsub(': COLLECTION_DEFINES_TEST_AND_VENDOR','')
+          [ $cfg[:defines][:test], defines ].flatten.uniq.compact.each do |f|
+            args << pattern.gsub(/\$/,f)
+          end
+          
+        elsif arg =~ /\$\{(\d+)\}/
+          i = $1.to_i - 1
+          if (values[i].is_a?(Array))
+            values[i].each {|v| args << arg.gsub(/\$\{\d+\}/, v)}
+          else
+            args << arg.gsub(/\$\{(\d)+\}/, values[i] || '')
+          end
+
+        else
+          args << arg
+
+        end
+      else
+        args << arg
+      end
+    end
+
+    # Build Command
+    return tackit(hash[:executable]) + squash('', args)
   end
 
   def compile(file, defines = [])
-    compiler = build_compiler_fields(defines)
-    cmd_str  = "#{compiler[:command]}#{compiler[:defines]}#{compiler[:options]}#{compiler[:includes]} #{file} " \
-               "#{$cfg['compiler']['object_files']['prefix']}#{$cfg['compiler']['object_files']['destination']}"
-    obj_file = "#{File.basename(file, C_EXTENSION)}#{$cfg['compiler']['object_files']['extension']}"
-    execute(cmd_str + obj_file)
-
-    obj_file
-  end
-
-  def build_linker_fields
-    command = tackit($cfg['linker']['path'])
-    options = if $cfg['linker']['options'].nil?
-                ''
-              else
-                squash('', $cfg['linker']['options'])
-              end
-    includes = if $cfg['linker']['includes'].nil? || $cfg['linker']['includes']['items'].nil?
-                 ''
-               else
-                 squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
-               end.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
-
-    { :command => command, :options => options, :includes => includes }
+    out_file = File.join('build', File.basename(file, C_EXTENSION)) + $cfg[:extension][:object]
+    cmd_str = build_command_string( $cfg[:tools][:test_compiler], [ file, out_file ], defines )
+    execute(cmd_str)
+    out_file
   end
 
   def link_it(exe_name, obj_list)
-    linker = build_linker_fields
-    cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]} " +
-              (obj_list.map { |obj| "#{$cfg['linker']['object_files']['path']}#{obj} " }).join +
-              $cfg['linker']['bin_files']['prefix'] + ' ' +
-              $cfg['linker']['bin_files']['destination'] +
-              exe_name + $cfg['linker']['bin_files']['extension']
+    exe_name = File.join('build', File.basename(exe_name))
+    cmd_str = build_command_string( $cfg[:tools][:test_linker], [ obj_list, exe_name ] )
     execute(cmd_str)
   end
 
-  def build_simulator_fields
-    return nil if $cfg['simulator'].nil?
-    command = if $cfg['simulator']['path'].nil?
-                ''
-              else
-                (tackit($cfg['simulator']['path']) + ' ')
-              end
-    pre_support = if $cfg['simulator']['pre_support'].nil?
-                    ''
-                  else
-                    squash('', $cfg['simulator']['pre_support'])
-                  end
-    post_support = if $cfg['simulator']['post_support'].nil?
-                     ''
-                   else
-                     squash('', $cfg['simulator']['post_support'])
-                   end
-
-    { :command => command, :pre_support => pre_support, :post_support => post_support }
+  def runtest(bin_name, ok_to_fail = false, extra_args = nil)
+    bin_name = File.join('build', File.basename(bin_name))
+    extra_args = extra_args.nil? ? "" : " " + extra_args
+    if $cfg[:tools][:test_fixture]
+      cmd_str = build_command_string( $cfg[:tools][:test_fixture], [ bin_name, extra_args ] )
+    else
+      cmd_str = bin_name + extra_args
+    end
+    execute(cmd_str, ok_to_fail)
   end
 
   def run_astyle(style_what)
@@ -180,21 +181,75 @@ module RakefileHelpers
   def report_summary
     summary = UnityTestSummary.new
     summary.root = __dir__
-    results_glob = "#{$cfg['compiler']['build_path']}*.test*"
+    results_glob = File.join('build','*.test*')
     results_glob.tr!('\\', '/')
     results = Dir[results_glob]
     summary.targets = results
     report summary.run
   end
 
-  def run_tests(test_files)
-    report 'Running Unity system tests...'
+  def save_test_results(test_base, output)
+    test_results = File.join('build',test_base)
+    if output.match(/OK$/m).nil?
+      test_results += '.testfail'
+    else
+      report output unless $verbose # Verbose already prints this line, as does a failure
+      test_results += '.testpass'
+    end
+    File.open(test_results, 'w') { |f| f.print output }
+  end
 
-    # Tack on TEST define for compiling unit tests
-    load_configuration($cfg_file)
-    test_defines = ['TEST']
-    $cfg['compiler']['defines']['items'] ||= []
-    $cfg['compiler']['defines']['items'] << 'TEST'
+  def test_fixtures()
+    report "\nRunning Fixture Addon"
+
+    # Get a list of all source files needed
+    src_files  = Dir[File.join('..','extras','fixture','src','*.c')]
+    src_files += Dir[File.join('..','extras','fixture','test','*.c')]
+    src_files += Dir[File.join('..','extras','fixture','test','main','*.c')]
+    src_files += Dir[File.join('..','extras','memory','src','*.c')]
+    src_files << File.join('..','src','unity.c')
+
+    # Build object files
+    $extra_paths = [File.join('..','extras','fixture','src'), File.join('..','extras','memory','src')]
+    obj_list = src_files.map { |f| compile(f, ['UNITY_SKIP_DEFAULT_RUNNER', 'UNITY_FIXTURE_NO_EXTRAS']) }
+
+    # Link the test executable
+    test_base = File.basename('framework_test', C_EXTENSION)
+    link_it(test_base, obj_list)
+
+    # Run and collect output
+    output = runtest(test_base + " -v -r")
+    save_test_results(test_base, output)
+  end
+
+  def test_memory()
+    { 'w_malloc' => [], 
+      'wo_malloc' => ['UNITY_EXCLUDE_STDLIB_MALLOC'] 
+    }.each_pair do |name, defs|
+      report "\nRunning Memory Addon #{name}"
+
+      # Get a list of all source files needed
+      src_files  = Dir[File.join('..','extras','memory','src','*.c')]
+      src_files += Dir[File.join('..','extras','memory','test','*.c')]
+      src_files += Dir[File.join('..','extras','memory','test','main','*.c')]
+      src_files << File.join('..','src','unity.c')
+
+      # Build object files
+      $extra_paths = [File.join('..','extras','memory','src')]
+      obj_list = src_files.map { |f| compile(f, defs) }
+
+      # Link the test executable
+      test_base = File.basename("memory_test_#{name}", C_EXTENSION)
+      link_it(test_base, obj_list)
+
+      # Run and collect output
+      output = runtest(test_base)
+      save_test_results(test_base, output)
+    end
+  end
+
+  def run_tests(test_files)
+    report "\nRunning Unity system tests"
 
     include_dirs = local_include_dirs
 
@@ -210,12 +265,7 @@ module RakefileHelpers
       end
 
       obj_list = []
-
-      unless $cfg['compiler']['aux_sources'].nil?
-        $cfg['compiler']['aux_sources'].each do |aux|
-          obj_list << compile(aux, test_defines)
-        end
-      end
+      test_defines = []
 
       # Detect dependencies and build required modules
       extract_headers(test).each do |header|
@@ -227,14 +277,8 @@ module RakefileHelpers
 
       # Build the test runner (generate if configured to do so)
       test_base = File.basename(test, C_EXTENSION)
-
       runner_name = test_base + '_Runner.c'
-
-      runner_path = if $cfg['compiler']['runner_path'].nil?
-                      $cfg['compiler']['build_path'] + runner_name
-                    else
-                      $cfg['compiler']['runner_path'] + runner_name
-                    end
+      runner_path = File.join('build',runner_name)
 
       options = $cfg[:unity]
       options[:use_param_tests] = test =~ /parameterized/ ? true : false
@@ -248,22 +292,23 @@ module RakefileHelpers
       link_it(test_base, obj_list)
 
       # Execute unit test and generate results file
-      simulator = build_simulator_fields
-      executable = $cfg['linker']['bin_files']['destination'] + test_base + $cfg['linker']['bin_files']['extension']
-      cmd_str = if simulator.nil?
-                  executable
-                else
-                  "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
-                end
-      output = execute(cmd_str)
-      test_results = $cfg['compiler']['build_path'] + test_base
-      if output.match(/OK$/m).nil?
-        test_results += '.testfail'
-      else
-        report output unless $verbose # Verbose already prints this line, as does a failure
-        test_results += '.testpass'
-      end
-      File.open(test_results, 'w') { |f| f.print output }
+      output = runtest(test_base)
+      save_test_results(test_base, output)
+    end
+  end
+
+  def run_make_tests() 
+    [ "make -s",                               # test with all defaults
+      "make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
+      "make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types
+      "make -s UNITY_INCLUDE_DOUBLE= ",        # test without double
+      "cd #{File.join("..","extras","fixture",'test')} && make -s default noStdlibMalloc",
+      "cd #{File.join("..","extras","fixture",'test')} && make -s C89",
+      "cd #{File.join("..","extras","memory",'test')} && make -s default noStdlibMalloc",
+      "cd #{File.join("..","extras","memory",'test')} && make -s C89",
+    ].each do |cmd|
+      report "Testing '#{cmd}'"
+      execute(cmd, false)
     end
   end
 end
