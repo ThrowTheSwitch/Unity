@@ -302,10 +302,10 @@ module RakefileHelpers
       "make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
       "make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types
       "make -s UNITY_INCLUDE_DOUBLE= ",        # test without double
-      "cd #{File.join("..","extras","fixture")} && make -s default noStdlibMalloc",
-      "cd #{File.join("..","extras","fixture")} && make -s C89",
-      "cd #{File.join("..","extras","memory")} && make -s default noStdlibMalloc",
-      "cd #{File.join("..","extras","memory")} && make -s C89",
+      "cd #{File.join("..","extras","fixture",'test')} && make -s default noStdlibMalloc",
+      "cd #{File.join("..","extras","fixture",'test')} && make -s C89",
+      "cd #{File.join("..","extras","memory",'test')} && make -s default noStdlibMalloc",
+      "cd #{File.join("..","extras","memory",'test')} && make -s C89",
     ].each do |cmd|
       report "Testing '#{cmd}'"
       execute(cmd, false)
