@@ -1801,7 +1801,7 @@ void UnityMessage(const char* msg, const UNITY_LINE_TYPE line)
 
 /*-----------------------------------------------*/
 /* If we have not defined our own test runner, then include our default test runner to make life easier */
-#ifdef UNITY_SKIP_DEFAULT_RUNNER
+#ifndef UNITY_SKIP_DEFAULT_RUNNER
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
 {
     Unity.CurrentTestName = FuncName;

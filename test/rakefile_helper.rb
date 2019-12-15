@@ -103,13 +103,13 @@ module RakefileHelpers
 
         elsif arg.include? ': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR' 
           pattern = arg.gsub(': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR','')
-          [ 'src', File.join('tests'), File.join('testdata'), $cfg[:paths][:support] ].flatten.uniq.compact.each do |f|
+          [ $extra_paths, 'src', File.join('tests'), File.join('testdata'), $cfg[:paths][:support] ].flatten.uniq.compact.each do |f|
             args << pattern.gsub(/\$/,f)
           end
 
         elsif arg.include? ': COLLECTION_DEFINES_TEST_AND_VENDOR'
           pattern = arg.gsub(': COLLECTION_DEFINES_TEST_AND_VENDOR','')
-          [ 'TEST', $cfg[:defines][:test], defines ].flatten.uniq.compact.each do |f|
+          [ $cfg[:defines][:test], defines ].flatten.uniq.compact.each do |f|
             args << pattern.gsub(/\$/,f)
           end
           
@@ -181,15 +181,75 @@ module RakefileHelpers
   def report_summary
     summary = UnityTestSummary.new
     summary.root = __dir__
-    results_glob = "build/*.test*"
+    results_glob = File.join('build','*.test*')
     results_glob.tr!('\\', '/')
     results = Dir[results_glob]
     summary.targets = results
     report summary.run
   end
 
+  def save_test_results(test_base, output)
+    test_results = File.join('build',test_base)
+    if output.match(/OK$/m).nil?
+      test_results += '.testfail'
+    else
+      report output unless $verbose # Verbose already prints this line, as does a failure
+      test_results += '.testpass'
+    end
+    File.open(test_results, 'w') { |f| f.print output }
+  end
+
+  def test_fixtures()
+    report "\nRunning Fixture Addon"
+
+    # Get a list of all source files needed
+    src_files  = Dir[File.join('..','extras','fixture','src','*.c')]
+    src_files += Dir[File.join('..','extras','fixture','test','*.c')]
+    src_files += Dir[File.join('..','extras','fixture','test','main','*.c')]
+    src_files += Dir[File.join('..','extras','memory','src','*.c')]
+    src_files << File.join('..','src','unity.c')
+
+    # Build object files
+    $extra_paths = [File.join('..','extras','fixture','src'), File.join('..','extras','memory','src')]
+    obj_list = src_files.map { |f| compile(f, ['UNITY_SKIP_DEFAULT_RUNNER', 'UNITY_FIXTURE_NO_EXTRAS']) }
+
+    # Link the test executable
+    test_base = File.basename('framework_test', C_EXTENSION)
+    link_it(test_base, obj_list)
+
+    # Run and collect output
+    output = runtest(test_base + " -v -r")
+    save_test_results(test_base, output)
+  end
+
+  def test_memory()
+    { 'w_malloc' => [], 
+      'wo_malloc' => ['UNITY_EXCLUDE_STDLIB_MALLOC'] 
+    }.each_pair do |name, defs|
+      report "\nRunning Memory Addon #{name}"
+
+      # Get a list of all source files needed
+      src_files  = Dir[File.join('..','extras','memory','src','*.c')]
+      src_files += Dir[File.join('..','extras','memory','test','*.c')]
+      src_files += Dir[File.join('..','extras','memory','test','main','*.c')]
+      src_files << File.join('..','src','unity.c')
+
+      # Build object files
+      $extra_paths = [File.join('..','extras','memory','src')]
+      obj_list = src_files.map { |f| compile(f, defs) }
+
+      # Link the test executable
+      test_base = File.basename("memory_test_#{name}", C_EXTENSION)
+      link_it(test_base, obj_list)
+
+      # Run and collect output
+      output = runtest(test_base)
+      save_test_results(test_base, output)
+    end
+  end
+
   def run_tests(test_files)
-    report 'Running Unity system tests...'
+    report "\nRunning Unity system tests"
 
     include_dirs = local_include_dirs
 
@@ -218,7 +278,7 @@ module RakefileHelpers
       # Build the test runner (generate if configured to do so)
       test_base = File.basename(test, C_EXTENSION)
       runner_name = test_base + '_Runner.c'
-      runner_path = 'build/' + runner_name
+      runner_path = File.join('build',runner_name)
 
       options = $cfg[:unity]
       options[:use_param_tests] = test =~ /parameterized/ ? true : false
@@ -233,14 +293,22 @@ module RakefileHelpers
 
       # Execute unit test and generate results file
       output = runtest(test_base)
-      test_results = 'build/' + test_base
-      if output.match(/OK$/m).nil?
-        test_results += '.testfail'
-      else
-        report output unless $verbose # Verbose already prints this line, as does a failure
-        test_results += '.testpass'
-      end
-      File.open(test_results, 'w') { |f| f.print output }
+      save_test_results(test_base, output)
+    end
+  end
+
+  def run_make_tests() 
+    [ "make -s",                               # test with all defaults
+      "make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
+      "make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types
+      "make -s UNITY_INCLUDE_DOUBLE= ",        # test without double
+      "cd #{File.join("..","extras","fixture")} && make -s default noStdlibMalloc",
+      "cd #{File.join("..","extras","fixture")} && make -s C89",
+      "cd #{File.join("..","extras","memory")} && make -s default noStdlibMalloc",
+      "cd #{File.join("..","extras","memory")} && make -s C89",
+    ].each do |cmd|
+      report "Testing '#{cmd}'"
+      execute(cmd, false)
     end
   end
 end
