@@ -25,7 +25,7 @@ void tearDown(void)
 {
 }
 
-void test_%1$s_NeedToImplement(void)
+void test_%4$s_NeedToImplement(void)
 {
     TEST_IGNORE_MESSAGE("Need to Implement %1$s");
 }
@@ -208,7 +208,8 @@ class UnityModuleGenerator
         f.write("#{file[:boilerplate]}\n" % [file[:name]]) unless file[:boilerplate].nil?
         f.write(file[:template] % [file[:name],
                                    file[:includes].map { |ff| "#include \"#{ff}\"\n" }.join,
-                                   file[:name].upcase])
+                                   file[:name].upcase.gsub(/-/, '_'),
+                                   file[:name].gsub(/-/, '_')])
       end
       if @options[:update_svn]
         `svn add \"#{file[:path]}\"`
