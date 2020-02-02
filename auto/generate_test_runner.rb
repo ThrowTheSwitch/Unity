@@ -128,7 +128,7 @@ class UnityTestRunnerGenerator
 
     lines.each_with_index do |line, _index|
       # find tests
-      next unless line =~ /^((?:\s*TEST_CASE\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
+      next unless line =~ /^((?:\s*(?:TEST_CASE|TEST_RANGE)\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
 
       arguments = Regexp.last_match(1)
       name = Regexp.last_match(2)
@@ -139,6 +139,21 @@ class UnityTestRunnerGenerator
       if @options[:use_param_tests] && !arguments.empty?
         args = []
         arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) { |a| args << a[0] }
+
+        arguments.scan(/\s*TEST_RANGE\s*\((.*)\)\s*$/).flatten.each do |range_str|
+          args += range_str.scan(/\[(-?\d+.?\d*), *(-?\d+.?\d*), *(-?\d+.?\d*)\]/)
+            .map { |arg_values_str|
+              arg_values_str.map { |arg_value_str|
+                (arg_value_str.include? ".") ? arg_value_str.to_f : arg_value_str.to_i
+              }
+            }.map { |arg_values|
+              (arg_values[0]..arg_values[1]).step(arg_values[2]).to_a
+            }.reduce { |result, arg_range_expanded|
+              result.product(arg_range_expanded)
+            }.map { |arg_combinations|
+              arg_combinations.flatten.join(", ")
+            }
+        end
       end
 
       tests_and_line_numbers << { test: name, args: args, call: call, params: params, line_number: 0 }
