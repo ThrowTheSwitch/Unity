@@ -8,6 +8,9 @@ matrix:
     - os: linux
       dist: trusty
       compiler: gcc
+    - os: linux
+      dist: trusty
+      compiler: clang
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then rvm install 2.3 && rvm use 2.3 && ruby -v; fi
