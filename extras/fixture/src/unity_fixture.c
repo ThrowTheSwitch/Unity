@@ -153,11 +153,11 @@ void UnityPointer_Init(void)
     pointer_index = 0;
 }
 
-void UnityPointer_Set(void** pointer, void* newValue, UNITY_LINE_TYPE line)
+void UnityPointer_Set(void** pointer, void* newValue, const char* file, UNITY_LINE_TYPE line)
 {
     if (pointer_index >= UNITY_MAX_POINTERS)
     {
-        UNITY_TEST_FAIL(line, "Too many pointers set");
+        UNITY_TEST_FAIL(file, line, "Too many pointers set");
     }
     else
     {
