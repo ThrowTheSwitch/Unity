@@ -186,8 +186,8 @@
  */
 /* #define UNITY_EXCLUDE_STDDEF_H */
 
-/* Define this to enable the unity formatted print function:
- * "UnityPrintFormatted"
+/* Define this to enable the unity formatted print macro:
+ * "TEST_PRINTF"
  */
 /* #define UNITY_INCLUDE_PRINT_FORMATTED */
 

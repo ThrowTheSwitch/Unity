@@ -282,18 +282,18 @@ _Example:_
 #define UNITY_INCLUDE_PRINT_FORMATTED
 
 int a = 0xfab1;
-UnityPrintFormatted("Decimal   %d\n", -7);
-UnityPrintFormatted("Unsigned  %u\n", 987);
-UnityPrintFormatted("Float     %f\n", 3.1415926535897932384);
-UnityPrintFormatted("Binary    %b\n", 0xA);
-UnityPrintFormatted("Hex       %X\n", 0xFAB);
-UnityPrintFormatted("Pointer   %p\n", &a);
-UnityPrintFormatted("Character %c\n", 'F');
-UnityPrintFormatted("String    %s\n", "My string");
-UnityPrintFormatted("Percent   %%\n");
-UnityPrintFormatted("Color Red \033[41mFAIL\033[00m\n");
-UnityPrintFormatted("\n");
-UnityPrintFormatted("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);
+TEST_PRINTF("Decimal   %d\n", -7);
+TEST_PRINTF("Unsigned  %u\n", 987);
+TEST_PRINTF("Float     %f\n", 3.1415926535897932384);
+TEST_PRINTF("Binary    %b\n", 0xA);
+TEST_PRINTF("Hex       %X\n", 0xFAB);
+TEST_PRINTF("Pointer   %p\n", &a);
+TEST_PRINTF("Character %c\n", 'F');
+TEST_PRINTF("String    %s\n", "My string");
+TEST_PRINTF("Percent   %%\n");
+TEST_PRINTF("Color Red \033[41mFAIL\033[00m\n");
+TEST_PRINTF("\n");
+TEST_PRINTF("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);
 ```
 
 
