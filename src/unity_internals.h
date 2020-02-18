@@ -515,7 +515,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 void UnityPrint(const char* string);
 
 #ifdef UNITY_INCLUDE_PRINT_FORMATTED
-void UnityPrintFormatted(const char* format, ...);
+void UnityPrintF(const UNITY_LINE_TYPE line, const char* format, ...);
 #endif
 
 void UnityPrintLen(const char* string, const UNITY_UINT32 length);
