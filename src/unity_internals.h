@@ -421,6 +421,7 @@ typedef enum
     UNITY_GREATER_OR_EQUAL = 0x2 + UNITY_EQUAL_TO,
     UNITY_SMALLER_THAN     = 0x4,
     UNITY_SMALLER_OR_EQUAL = 0x4 + UNITY_EQUAL_TO,
+    UNITY_NOT_EQUAL        = 0x0,
     UNITY_UNKNOWN
 } UNITY_COMPARISON_T;
 
@@ -778,6 +779,19 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_EQUAL_CHAR(expected, actual, line, message)                            UnityAssertEqualNumber((UNITY_INT)(UNITY_INT8 )(expected), (UNITY_INT)(UNITY_INT8 )(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_CHAR)
 #define UNITY_TEST_ASSERT_BITS(mask, expected, actual, line, message)                            UnityAssertBits((UNITY_INT)(mask), (UNITY_INT)(expected), (UNITY_INT)(actual), (message), (UNITY_LINE_TYPE)(line))
 
+#define UNITY_TEST_ASSERT_NOT_EQUAL_INT(threshold, actual, line, message)                        UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold),               (UNITY_INT)(actual),               UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_INT8(threshold, actual, line, message)                       UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_INT8 )(threshold),  (UNITY_INT)(UNITY_INT8 )(actual),  UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT8)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_INT16(threshold, actual, line, message)                      UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_INT16)(threshold),  (UNITY_INT)(UNITY_INT16)(actual),  UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT16)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_INT32(threshold, actual, line, message)                      UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_INT32)(threshold),  (UNITY_INT)(UNITY_INT32)(actual),  UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT32)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_UINT(threshold, actual, line, message)                       UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold),               (UNITY_INT)(actual),               UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_UINT)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_UINT8(threshold, actual, line, message)                      UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_UINT8 )(threshold), (UNITY_INT)(UNITY_UINT8 )(actual), UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_UINT8)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_UINT16(threshold, actual, line, message)                     UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_UINT16)(threshold), (UNITY_INT)(UNITY_UINT16)(actual), UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_UINT16)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_UINT32(threshold, actual, line, message)                     UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_UINT32)(threshold), (UNITY_INT)(UNITY_UINT32)(actual), UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_UINT32)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_HEX8(threshold, actual, line, message)                       UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_UINT8 )(threshold), (UNITY_INT)(UNITY_UINT8 )(actual), UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX8)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_HEX16(threshold, actual, line, message)                      UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_UINT16)(threshold), (UNITY_INT)(UNITY_UINT16)(actual), UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX16)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_HEX32(threshold, actual, line, message)                      UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_UINT32)(threshold), (UNITY_INT)(UNITY_UINT32)(actual), UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX32)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_CHAR(threshold, actual, line, message)                       UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_INT8 )(threshold),  (UNITY_INT)(UNITY_INT8 )(actual),  UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_CHAR)
+
 #define UNITY_TEST_ASSERT_GREATER_THAN_INT(threshold, actual, line, message)                     UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold),              (UNITY_INT)(actual),              UNITY_GREATER_THAN, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT)
 #define UNITY_TEST_ASSERT_GREATER_THAN_INT8(threshold, actual, line, message)                    UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_INT8 )(threshold), (UNITY_INT)(UNITY_INT8 )(actual), UNITY_GREATER_THAN, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT8)
 #define UNITY_TEST_ASSERT_GREATER_THAN_INT16(threshold, actual, line, message)                   UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_INT16)(threshold), (UNITY_INT)(UNITY_INT16)(actual), UNITY_GREATER_THAN, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT16)
@@ -907,6 +921,9 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_INT64_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((delta), (UNITY_INT)(expected), (UNITY_INT)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT64)
 #define UNITY_TEST_ASSERT_UINT64_WITHIN(delta, expected, actual, line, message)                  UnityAssertNumbersWithin((delta), (UNITY_INT)(expected), (UNITY_INT)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_UINT64)
 #define UNITY_TEST_ASSERT_HEX64_WITHIN(delta, expected, actual, line, message)                   UnityAssertNumbersWithin((delta), (UNITY_INT)(expected), (UNITY_INT)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX64)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_INT64(threshold, actual, line, message)                      UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold), (UNITY_INT)(actual), UNITY_NOT_EQUAL,        (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT64)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_UINT64(threshold, actual, line, message)                     UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold), (UNITY_INT)(actual), UNITY_NOT_EQUAL,        (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_UINT64)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_HEX64(threshold, actual, line, message)                      UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold), (UNITY_INT)(actual), UNITY_NOT_EQUAL,        (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX64)
 #define UNITY_TEST_ASSERT_GREATER_THAN_INT64(threshold, actual, line, message)                   UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold), (UNITY_INT)(actual), UNITY_GREATER_THAN,     (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT64)
 #define UNITY_TEST_ASSERT_GREATER_THAN_UINT64(threshold, actual, line, message)                  UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold), (UNITY_INT)(actual), UNITY_GREATER_THAN,     (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_UINT64)
 #define UNITY_TEST_ASSERT_GREATER_THAN_HEX64(threshold, actual, line, message)                   UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold), (UNITY_INT)(actual), UNITY_GREATER_THAN,     (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_HEX64)

@@ -155,6 +155,24 @@ void verifyTest(void);
 #define TEST_ASSERT_BIT_HIGH(bit, actual)                                                          UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(-1), (actual), __LINE__, NULL)
 #define TEST_ASSERT_BIT_LOW(bit, actual)                                                           UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(0), (actual), __LINE__, NULL)
 
+/* Integer Not Equal To (of all sizes) */
+#define TEST_ASSERT_NOT_EQUAL_INT(threshold, actual)                                               UNITY_TEST_ASSERT_NOT_EQUAL_INT((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_INT8(threshold, actual)                                              UNITY_TEST_ASSERT_NOT_EQUAL_INT8((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_INT16(threshold, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_INT16((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_INT32(threshold, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_INT32((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_INT64(threshold, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_INT64((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_UINT(threshold, actual)                                              UNITY_TEST_ASSERT_NOT_EQUAL_UINT((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_UINT8(threshold, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_UINT8((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_UINT16(threshold, actual)                                            UNITY_TEST_ASSERT_NOT_EQUAL_UINT16((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_UINT32(threshold, actual)                                            UNITY_TEST_ASSERT_NOT_EQUAL_UINT32((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_UINT64(threshold, actual)                                            UNITY_TEST_ASSERT_NOT_EQUAL_UINT64((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_size_t(threshold, actual)                                            UNITY_TEST_ASSERT_NOT_EQUAL_UINT((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_HEX8(threshold, actual)                                              UNITY_TEST_ASSERT_NOT_EQUAL_HEX8((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_HEX16(threshold, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_HEX16((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_HEX32(threshold, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_HEX32((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_HEX64(threshold, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_HEX64((threshold), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_CHAR(threshold, actual)                                              UNITY_TEST_ASSERT_NOT_EQUAL_CHAR((threshold), (actual), __LINE__, NULL)
+
 /* Integer Greater Than/ Less Than (of all sizes) */
 #define TEST_ASSERT_GREATER_THAN(threshold, actual)                                                UNITY_TEST_ASSERT_GREATER_THAN_INT((threshold), (actual), __LINE__, NULL)
 #define TEST_ASSERT_GREATER_THAN_INT(threshold, actual)                                            UNITY_TEST_ASSERT_GREATER_THAN_INT((threshold), (actual), __LINE__, NULL)
@@ -404,6 +422,25 @@ void verifyTest(void);
 #define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message)                                         UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(-1), (actual), __LINE__, (message))
 #define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message)                                          UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(0), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_CHAR_MESSAGE(expected, actual, message)                                  UNITY_TEST_ASSERT_EQUAL_CHAR((expected), (actual), __LINE__, (message))
+
+/* Integer Not Equal To (of all sizes) */
+#define TEST_ASSERT_NOT_EQUAL_INT_MESSAGE(threshold, actual, message)                              UNITY_TEST_ASSERT_NOT_EQUAL_INT((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_INT8_MESSAGE(threshold, actual, message)                             UNITY_TEST_ASSERT_NOT_EQUAL_INT8((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_INT16_MESSAGE(threshold, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_INT16((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_INT32_MESSAGE(threshold, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_INT32((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_INT64_MESSAGE(threshold, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_INT64((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_UINT_MESSAGE(threshold, actual, message)                             UNITY_TEST_ASSERT_NOT_EQUAL_UINT((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_UINT8_MESSAGE(threshold, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_UINT8((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_UINT16_MESSAGE(threshold, actual, message)                           UNITY_TEST_ASSERT_NOT_EQUAL_UINT16((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_UINT32_MESSAGE(threshold, actual, message)                           UNITY_TEST_ASSERT_NOT_EQUAL_UINT32((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_UINT64_MESSAGE(threshold, actual, message)                           UNITY_TEST_ASSERT_NOT_EQUAL_UINT64((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_size_t_MESSAGE(threshold, actual, message)                           UNITY_TEST_ASSERT_NOT_EQUAL_UINT((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_HEX8_MESSAGE(threshold, actual, message)                             UNITY_TEST_ASSERT_NOT_EQUAL_HEX8((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_HEX16_MESSAGE(threshold, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_HEX16((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_HEX32_MESSAGE(threshold, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_HEX32((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_HEX64_MESSAGE(threshold, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_HEX64((threshold), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_CHAR_MESSAGE(threshold, actual, message)                             UNITY_TEST_ASSERT_NOT_EQUAL_CHAR((threshold), (actual), __LINE__, (message))
+
 
 /* Integer Greater Than/ Less Than (of all sizes) */
 #define TEST_ASSERT_GREATER_THAN_MESSAGE(threshold, actual, message)                               UNITY_TEST_ASSERT_GREATER_THAN_INT((threshold), (actual), __LINE__, (message))

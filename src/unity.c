@@ -43,6 +43,7 @@ static const char PROGMEM UnityStrWas[]                    = " Was ";
 static const char PROGMEM UnityStrGt[]                     = " to be greater than ";
 static const char PROGMEM UnityStrLt[]                     = " to be less than ";
 static const char PROGMEM UnityStrOrEqual[]                = "or equal to ";
+static const char PROGMEM UnityStrNotEqual[]               = " to be not equal to ";
 static const char PROGMEM UnityStrElement[]                = " Element ";
 static const char PROGMEM UnityStrByte[]                   = " Byte ";
 static const char PROGMEM UnityStrMemory[]                 = " Memory Mismatch.";
@@ -748,9 +749,10 @@ void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
         UnityPrintNumberByStyle(actual, style);
-        if (compare & UNITY_GREATER_THAN) { UnityPrint(UnityStrGt);      }
-        if (compare & UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt);      }
-        if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual); }
+        if (compare & UNITY_GREATER_THAN) { UnityPrint(UnityStrGt);       }
+        if (compare & UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt);       }
+        if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual);  }
+        if (compare == UNITY_NOT_EQUAL)   { UnityPrint(UnityStrNotEqual); }
         UnityPrintNumberByStyle(threshold, style);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;

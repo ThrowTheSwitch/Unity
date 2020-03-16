@@ -336,59 +336,18 @@ Asserts the specified bit of the `actual` parameter is low.
 
 These assertions verify that the `actual` parameter is less than or greater
 than `threshold` (exclusive). For example, if the threshold value is 0 for the
-greater than assertion will fail if it is 0 or less.
-
-##### `TEST_ASSERT_GREATER_THAN (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_INT (threshold, actual)`
+greater than assertion will fail if it is 0 or less. There are assertions for
+all the various sizes of ints, as for the equality assertions. Some examples:
 
 ##### `TEST_ASSERT_GREATER_THAN_INT8 (threshold, actual)`
 
-##### `TEST_ASSERT_GREATER_THAN_INT16 (threshold, actual)`
+##### `TEST_ASSERT_GREATER_OR_EQUAL_INT16 (threshold, actual)`
 
-##### `TEST_ASSERT_GREATER_THAN_INT32 (threshold, actual)`
+##### `TEST_ASSERT_SMALLER_THAN_INT32 (threshold, actual)`
 
-##### `TEST_ASSERT_GREATER_THAN_UINT (threshold, actual)`
+##### `TEST_ASSERT_SMALL_OR_EQUAL_UINT (threshold, actual)`
 
-##### `TEST_ASSERT_GREATER_THAN_UINT8 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_UINT16 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_UINT32 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_HEX8 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_HEX16 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_HEX32 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_CHAR (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_INT (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_INT8 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_INT16 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_INT32 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_UINT (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_UINT8 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_UINT16 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_UINT32 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_HEX8 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_HEX16 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_HEX32 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_CHAR (threshold, actual)`
+##### `TEST_ASSERT_NOT_EQUAL_UINT8 (threshold, actual)`
 
 
 ### Integer Ranges (of all sizes)

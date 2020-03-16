@@ -95,13 +95,13 @@ module RakefileHelpers
     args = []
     hash[:arguments].each do |arg|
       if arg.include? '$'
-        if arg.include? ': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE' 
+        if arg.include? ': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE'
           pattern = arg.gsub(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE','')
           [ File.join('..','src') ].each do |f|
             args << pattern.gsub(/\$/,f)
           end
 
-        elsif arg.include? ': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR' 
+        elsif arg.include? ': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR'
           pattern = arg.gsub(': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR','')
           [ $extra_paths, 'src', File.join('tests'), File.join('testdata'), $cfg[:paths][:support] ].flatten.uniq.compact.each do |f|
             args << pattern.gsub(/\$/,f)
@@ -112,7 +112,7 @@ module RakefileHelpers
           [ $cfg[:defines][:test], defines ].flatten.uniq.compact.each do |f|
             args << pattern.gsub(/\$/,f)
           end
-          
+
         elsif arg =~ /\$\{(\d+)\}/
           i = $1.to_i - 1
           if (values[i].is_a?(Array))
@@ -223,8 +223,8 @@ module RakefileHelpers
   end
 
   def test_memory()
-    { 'w_malloc' => [], 
-      'wo_malloc' => ['UNITY_EXCLUDE_STDLIB_MALLOC'] 
+    { 'w_malloc' => [],
+      'wo_malloc' => ['UNITY_EXCLUDE_STDLIB_MALLOC']
     }.each_pair do |name, defs|
       report "\nRunning Memory Addon #{name}"
 
@@ -264,6 +264,7 @@ module RakefileHelpers
         end
       end
 
+      report "\nRunning Tests in #{test}"
       obj_list = []
       test_defines = []
 
@@ -297,7 +298,7 @@ module RakefileHelpers
     end
   end
 
-  def run_make_tests() 
+  def run_make_tests()
     [ "make -s",                               # test with all defaults
       "make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
       "make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types
