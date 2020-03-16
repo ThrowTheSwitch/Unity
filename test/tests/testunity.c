@@ -258,6 +258,33 @@ void testNotNullShouldFailIfNULL(void)
     VERIFY_FAILS_END
 }
 
+void testIsEmpty(void)
+{
+    const char* ptr1 = "\0";
+    const char* ptr2 = "hello";
+
+    TEST_ASSERT_EMPTY(ptr1);
+    TEST_ASSERT_NOT_EMPTY(ptr2);
+}
+
+void testIsEmptyShouldFailIfNot(void)
+{
+    const char* ptr1 = "hello";
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EMPTY(ptr1);
+    VERIFY_FAILS_END
+}
+
+void testNotEmptyShouldFailIfEmpty(void)
+{
+    const char* ptr1 = "\0";
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EMPTY(ptr1);
+    VERIFY_FAILS_END
+}
+
 void testIgnore(void)
 {
     EXPECT_ABORT_BEGIN

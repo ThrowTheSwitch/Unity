@@ -236,6 +236,15 @@ conditional statements.
 
 ##### `TEST_ASSERT_NOT_NULL (pointer)`
 
+Verify if a pointer is or is not NULL.
+
+##### `TEST_ASSERT_EMPTY (pointer)`
+
+##### `TEST_ASSERT_NOT_EMPTY (pointer)`
+
+Verify if the first element dereferenced from a pointer is or is not zero. This
+is particularly useful for checking for empty (or non-empty) null-terminated
+C strings, but can be just as easily used for other null-terminated arrays.
 
 ### Signed and Unsigned Integers (of all sizes)
 

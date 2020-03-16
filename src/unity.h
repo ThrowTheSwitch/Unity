@@ -128,6 +128,8 @@ void verifyTest(void);
 #define TEST_ASSERT_FALSE(condition)                                                               UNITY_TEST_ASSERT(      !(condition), __LINE__, " Expected FALSE Was TRUE")
 #define TEST_ASSERT_NULL(pointer)                                                                  UNITY_TEST_ASSERT_NULL(    (pointer), __LINE__, " Expected NULL")
 #define TEST_ASSERT_NOT_NULL(pointer)                                                              UNITY_TEST_ASSERT_NOT_NULL((pointer), __LINE__, " Expected Non-NULL")
+#define TEST_ASSERT_EMPTY(pointer)                                                                 UNITY_TEST_ASSERT_EMPTY(    (pointer), __LINE__, " Expected Empty")
+#define TEST_ASSERT_NOT_EMPTY(pointer)                                                             UNITY_TEST_ASSERT_NOT_EMPTY((pointer), __LINE__, " Expected Non-Empty")
 
 /* Integers (of all sizes) */
 #define TEST_ASSERT_EQUAL_INT(expected, actual)                                                    UNITY_TEST_ASSERT_EQUAL_INT((expected), (actual), __LINE__, NULL)
@@ -376,6 +378,8 @@ void verifyTest(void);
 #define TEST_ASSERT_FALSE_MESSAGE(condition, message)                                              UNITY_TEST_ASSERT(      !(condition), __LINE__, (message))
 #define TEST_ASSERT_NULL_MESSAGE(pointer, message)                                                 UNITY_TEST_ASSERT_NULL(    (pointer), __LINE__, (message))
 #define TEST_ASSERT_NOT_NULL_MESSAGE(pointer, message)                                             UNITY_TEST_ASSERT_NOT_NULL((pointer), __LINE__, (message))
+#define TEST_ASSERT_EMPTY_MESSAGE(pointer, message)                                                UNITY_TEST_ASSERT_EMPTY(    (pointer), __LINE__, (message))
+#define TEST_ASSERT_NOT_EMPTY_MESSAGE(pointer, message)                                            UNITY_TEST_ASSERT_NOT_EMPTY((pointer), __LINE__, (message))
 
 /* Integers (of all sizes) */
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, message)                                   UNITY_TEST_ASSERT_EQUAL_INT((expected), (actual), __LINE__, (message))
