@@ -694,11 +694,6 @@ void testNotEqualFloatEachEqualLengthZero(void)
 #endif
 }
 
-#define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) {            \
-        startPutcharSpy(); UnityPrintFloat((actual)); endPutcharSpy();  \
-        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
-        }
-
 void testFloatPrinting(void)
 {
 #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)

@@ -2816,16 +2816,6 @@ void testHexPrintsUpToMaxNumberOfNibbles(void)
 #endif
 }
 
-#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
-        startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
-        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
-        }
-
-#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) {            \
-        startPutcharSpy(); UnityPrintNumberUnsigned((actual)); endPutcharSpy(); \
-        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());            \
-        }
-
 void testPrintNumbers32(void)
 {
 #ifndef USING_OUTPUT_SPY

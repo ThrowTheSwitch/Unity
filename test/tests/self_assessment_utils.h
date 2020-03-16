@@ -129,4 +129,19 @@ void flushSpy(void)
     if (flushSpyEnabled){ flushSpyCalls++; }
 }
 
+#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
+        startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
+        }
+
+#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) {            \
+        startPutcharSpy(); UnityPrintNumberUnsigned((actual)); endPutcharSpy(); \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());            \
+        }
+
+#define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) {            \
+        startPutcharSpy(); UnityPrintFloat((actual)); endPutcharSpy();  \
+        TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
+        }
+
 #endif
