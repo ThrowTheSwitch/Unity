@@ -94,7 +94,7 @@ class UnityTestRunnerGenerator
       create_suite_setup(output)
       create_suite_teardown(output)
       create_reset(output)
-      create_run_test(output)
+      create_run_test(output) unless tests.empty?
       create_args_wrappers(output, tests)
       create_main(output, input_file, tests, used_mocks)
     end
@@ -341,8 +341,8 @@ class UnityTestRunnerGenerator
 
   def create_run_test(output)
     require 'erb'
-    template = ERB.new(File.read(File.join(__dir__, 'run_test.erb')))
-    output.puts(template.result(binding))
+    template = ERB.new(File.read(File.join(__dir__, 'run_test.erb')), nil, '<>')
+    output.puts("\n" + template.result(binding))
   end
 
   def create_args_wrappers(output, tests)
@@ -362,7 +362,7 @@ class UnityTestRunnerGenerator
   end
 
   def create_main(output, filename, tests, used_mocks)
-    output.puts("\n\n/*=======MAIN=====*/")
+    output.puts("\n/*=======MAIN=====*/")
     main_name = @options[:main_name].to_sym == :auto ? "main_#{filename.gsub('.c', '')}" : (@options[:main_name]).to_s
     if @options[:cmdline_args]
       if main_name != 'main'
