@@ -47,9 +47,6 @@ static const UNITY_DOUBLE d_zero = 0.0;
       UNITY_OUTPUT_CHAR('\n');                                                 \
     }
 
-int SetToOneToFailInTearDown;
-int SetToOneMeanWeAlreadyCheckedThisGuy;
-
 /* Tricky series of macros to set USING_OUTPUT_SPY */
 #define USING_SPY_AS(a)           EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
 #define ASSIGN_VALUE(a)           VAL_##a
