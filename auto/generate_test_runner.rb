@@ -42,7 +42,9 @@ class UnityTestRunnerGenerator
       main_export_decl: '',
       cmdline_args: false,
       omit_begin_end: false,
-      use_param_tests: false
+      use_param_tests: false,
+      include_extensions: '(?:hpp|hh|H|h)',
+      source_extensions: '(?:cpp|cc|ino|C|c)'
     }
   end
 
@@ -141,18 +143,17 @@ class UnityTestRunnerGenerator
         arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) { |a| args << a[0] }
 
         arguments.scan(/\s*TEST_RANGE\s*\((.*)\)\s*$/).flatten.each do |range_str|
-          args += range_str.scan(/\[(-?\d+.?\d*), *(-?\d+.?\d*), *(-?\d+.?\d*)\]/)
-            .map { |arg_values_str|
-              arg_values_str.map { |arg_value_str|
-                (arg_value_str.include? ".") ? arg_value_str.to_f : arg_value_str.to_i
-              }
-            }.map { |arg_values|
-              (arg_values[0]..arg_values[1]).step(arg_values[2]).to_a
-            }.reduce { |result, arg_range_expanded|
-              result.product(arg_range_expanded)
-            }.map { |arg_combinations|
-              arg_combinations.flatten.join(", ")
-            }
+          args += range_str.scan(/\[(-?\d+.?\d*), *(-?\d+.?\d*), *(-?\d+.?\d*)\]/).map do |arg_values_str|
+            arg_values_str.map do |arg_value_str|
+              arg_value_str.include?('.') ? arg_value_str.to_f : arg_value_str.to_i
+            end
+          end.map do |arg_values|
+            (arg_values[0]..arg_values[1]).step(arg_values[2]).to_a
+          end.reduce do |result, arg_range_expanded|
+            result.product(arg_range_expanded)
+          end.map do |arg_combinations|
+            arg_combinations.flatten.join(', ')
+          end
         end
       end
 
@@ -185,9 +186,9 @@ class UnityTestRunnerGenerator
 
     # parse out includes
     includes = {
-      local: source.scan(/^\s*#include\s+\"\s*(.+)\.[hH]\s*\"/).flatten,
+      local: source.scan(/^\s*#include\s+\"\s*(.+\.#{@options[:include_extensions]})\s*\"/).flatten,
       system: source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" },
-      linkonly: source.scan(/^TEST_FILE\(\s*\"\s*(.+)\.[cC]\w*\s*\"/).flatten
+      linkonly: source.scan(/^TEST_FILE\(\s*\"\s*(.+\.#{@options[:source_extensions]})\s*\"/).flatten
     }
     includes
   end
@@ -220,14 +221,14 @@ class UnityTestRunnerGenerator
       output.puts("#include \"#{File.basename(@options[:header_file])}\"")
     else
       @options[:includes].flatten.uniq.compact.each do |inc|
-        output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h', '')}.h\""}")
+        output.puts("#include #{inc.include?('<') ? inc : "\"#{inc}\""}")
       end
       testfile_includes.each do |inc|
-        output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h', '')}.h\""}")
+        output.puts("#include #{inc.include?('<') ? inc : "\"#{inc}\""}")
       end
     end
     mocks.each do |mock|
-      output.puts("#include \"#{mock.gsub('.h', '')}.h\"")
+      output.puts("#include \"#{mock}\"")
     end
     output.puts('#include "CException.h"') if @options[:plugins].include?(:cexception)
 
@@ -262,7 +263,7 @@ class UnityTestRunnerGenerator
       output.puts('  GlobalOrderError = NULL;')
     end
 
-    mocks = mock_headers.map { |mock| File.basename(mock) }
+    mocks = mock_headers.map { |mock| File.basename(mock, '.*') }
     mocks.each do |mock|
       mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
       output.puts("  #{mock_clean}_Init();")
@@ -438,10 +439,10 @@ class UnityTestRunnerGenerator
     output.puts("#include \"#{@options[:framework]}.h\"")
     output.puts('#include "cmock.h"') unless used_mocks.empty?
     @options[:includes].flatten.uniq.compact.each do |inc|
-      output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h', '')}.h\""}")
+      output.puts("#include #{inc.include?('<') ? inc : "\"#{inc}\""}")
     end
     testfile_includes.each do |inc|
-      output.puts("#include #{inc.include?('<') ? inc : "\"#{inc.gsub('.h', '')}.h\""}")
+      output.puts("#include #{inc.include?('<') ? inc : "\"#{inc}\""}")
     end
     output.puts "\n"
     tests.each do |test|

@@ -20,6 +20,8 @@ Style/HashSyntax:
   EnforcedStyle: no_mixed_keys
 Style/NumericPredicate:
   Enabled: false
+Style/MultilineBlockChain:
+  Enabled: false
 
 # These are also places we diverge... but we will likely comply down the road
 Style/IfUnlessModifier:
