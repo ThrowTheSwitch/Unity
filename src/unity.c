@@ -566,6 +566,10 @@ static void UnityAddMsgIfSpecified(const char* msg)
     if (msg)
     {
         UnityPrint(UnityStrSpacer);
+
+#ifdef UNITY_PRINT_TEST_CONTEXT
+        UNITY_PRINT_TEST_CONTEXT();
+#endif
 #ifndef UNITY_EXCLUDE_DETAILS
         if (Unity.CurrentDetail1)
         {
@@ -1760,6 +1764,9 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     {
         UNITY_OUTPUT_CHAR(':');
 
+#ifdef UNITY_PRINT_TEST_CONTEXT
+        UNITY_PRINT_TEST_CONTEXT();
+#endif
 #ifndef UNITY_EXCLUDE_DETAILS
         if (Unity.CurrentDetail1)
         {

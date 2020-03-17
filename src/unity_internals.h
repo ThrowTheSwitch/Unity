@@ -509,6 +509,10 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 #endif
 #endif
 
+#ifdef UNITY_PRINT_TEST_CONTEXT
+void UNITY_PRINT_TEST_CONTEXT(void);
+#endif
+
 /*-------------------------------------------------------
  * Test Output
  *-------------------------------------------------------*/
