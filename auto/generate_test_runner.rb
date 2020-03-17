@@ -465,13 +465,13 @@ if $0 == __FILE__
     when '-cexception'
       options[:plugins] = [:cexception]
       true
-    when /\.*\.ya?ml/
+    when /\.*\.ya?ml$/
       options = UnityTestRunnerGenerator.grab_config(arg)
       true
     when /--(\w+)=\"?(.*)\"?/
       options[Regexp.last_match(1).to_sym] = Regexp.last_match(2)
       true
-    when /\.*\.h/
+    when /\.*\.(?:hpp|hh|H|h)$/
       options[:includes] << arg
       true
     else false
