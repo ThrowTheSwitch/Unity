@@ -8,8 +8,8 @@
 #define TEST_INSTANCES
 #include "self_assessment_utils.h"
 
-int SetToOneToFailInTearDown;
-int SetToOneMeanWeAlreadyCheckedThisGuy;
+static int SetToOneToFailInTearDown;
+static int SetToOneMeanWeAlreadyCheckedThisGuy;
 
 void setUp(void)
 {
