@@ -39,6 +39,10 @@ toolchain's search paths). In this file, you will list definitions and macros
 specific to your target. All you must do is define `UNITY_INCLUDE_CONFIG_H` and
 Unity will rely on `unity_config.h` for any further definitions it may need.
 
+Unfortunately, it doesn't usually work well to just #define these things in the
+test itself. These defines need to take effect where ever unity.h is included.
+This would be test test, the test runner (if you're generating one), and from
+unity.c when it's compiled.
 
 ## The Options
 
