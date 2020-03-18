@@ -164,23 +164,25 @@ class UnityModuleGenerator
   end
 
   ############################
-  def create_filename(part1, part2 = '')
-    if part2.empty?
-      case (@options[:naming])
-      when 'bumpy' then part1
-      when 'camel' then part1
-      when 'snake' then part1.downcase
-      when 'caps'  then part1.upcase
-      else              part1
-      end
+  def neutralize_filename(name, start_cap=true)
+    return name if name.empty?
+    name = name.split(/(?:\s+|_|(?=[A-Z][a-z]))|(?<=[a-z])(?=[A-Z])/).map{|v|v.capitalize}.join('_')
+    if start_cap
+      return name
     else
-      case (@options[:naming])
-      when 'bumpy' then part1 + part2
-      when 'camel' then part1 + part2
-      when 'snake' then part1.downcase + '_' + part2.downcase
-      when 'caps'  then part1.upcase + '_' + part2.upcase
-      else              part1 + '_' + part2
-      end
+      return name[0].downcase + name[1..-1]
+    end
+  end
+
+  ############################
+  def create_filename(part1, part2 = '')
+    name = part2.empty? ? part1 : part1 + '_' + part2
+    case (@options[:naming])
+    when 'bumpy' then neutralize_filename(name,false).gsub('_','')
+    when 'camel' then neutralize_filename(name).gsub('_','')
+    when 'snake' then neutralize_filename(name).downcase
+    when 'caps'  then neutralize_filename(name).upcase
+    else              name
     end
   end
 
