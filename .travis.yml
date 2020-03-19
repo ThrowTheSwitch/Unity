@@ -3,9 +3,9 @@ language: ruby c
 
 matrix:
  include:
-    - os: osx
-      compiler: clang
-      osx_image: xcode7.3
+    #- os: osx
+    #  compiler: clang
+    #  osx_image: xcode7.3
     - os: linux
       dist: trusty
       rvm: "2.4"
