@@ -22,6 +22,12 @@ Style/NumericPredicate:
   Enabled: false
 Style/MultilineBlockChain:
   Enabled: false
+Style/Alias:
+  Enabled: false
+Style/EvalWithLocation:
+  Enabled: false
+Style/MixinUsage:
+  Enabled: false
 
 # These are also places we diverge... but we will likely comply down the road
 Style/IfUnlessModifier:
