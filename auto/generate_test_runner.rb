@@ -110,7 +110,7 @@ class UnityTestRunnerGenerator
     tests_and_line_numbers = []
 
     # contains characters which will be substituted from within strings, doing
-    # this prevents these characters from interferring with scrubbers
+    # this prevents these characters from interfering with scrubbers
     # @ is not a valid C character, so there should be no clashes with files genuinely containing these markers
     substring_subs = { '{' => '@co@', '}' => '@cc@', ';' => '@ss@', '/' => '@fs@' }
     substring_re = Regexp.union(substring_subs.keys)
