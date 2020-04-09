@@ -133,6 +133,19 @@ void testFalse(void)
     TEST_ASSERT_UNLESS(0);
 }
 
+void testSingleStatement(void)
+{
+    for(int i = 0; i < 2; i++)
+    {
+        /* TEST_ASSERT_TRUE should expand to a single C statement, minus
+         * the semicolon. This if-else will fail to compile otherwise. */
+        if(i > 0)
+            TEST_ASSERT_TRUE(i);
+        else
+            TEST_ASSERT_FALSE(i);
+    }
+}
+
 void testPreviousPass(void)
 {
     TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
