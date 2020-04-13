@@ -7,7 +7,8 @@
 project('unity', 'c',
     license: 'MIT',
     meson_version: '>=0.53.0',
-    default_options: ['layout=flat', 'warning_level=3', 'werror=true', 'c_std=c11']
+    default_options: ['layout=flat', 'warning_level=3', 'werror=true', 'c_std=c11'],
+    version: '2.5.0'
 )
 lang = 'c'
 cc = meson.get_compiler(lang)
