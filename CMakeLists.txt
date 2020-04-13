@@ -10,8 +10,18 @@
 ###################################################################################
 
 cmake_minimum_required(VERSION 3.12)
+
+# Read root meson.build file and get project version from it
+set(ROOT_MESON_BUILD_FILE "meson.build")
+file(READ "${ROOT_MESON_BUILD_FILE}" ROOT_MESON_BUILD_CONTENT)
+string(REGEX MATCH " *version: '[.0-9]+'" UNITY_VERSION "${ROOT_MESON_BUILD_CONTENT}")
+if(NOT UNITY_VERSION)
+    message(FATAL_ERROR "Cannot define version from meson build file")
+endif()
+string(REGEX REPLACE " *version: '([.0-9]+)'" "\\1" UNITY_VERSION "${UNITY_VERSION}")
+
 project(unity
-    VERSION     2.5.0
+    VERSION     ${UNITY_VERSION}
     LANGUAGES   C
     DESCRIPTION "C Unit testing framework."
 )
@@ -58,32 +68,32 @@ set_target_properties(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME}
     PRIVATE
-        $<$<C_COMPILER_ID:Clang>:-Wcast-align>
-        $<$<C_COMPILER_ID:Clang>:-Wcast-qual>
-        $<$<C_COMPILER_ID:Clang>:-Wconversion>
-        $<$<C_COMPILER_ID:Clang>:-Wexit-time-destructors>
-        $<$<C_COMPILER_ID:Clang>:-Wglobal-constructors>
-        $<$<C_COMPILER_ID:Clang>:-Wmissing-noreturn>
-        $<$<C_COMPILER_ID:Clang>:-Wmissing-prototypes>
-        $<$<C_COMPILER_ID:Clang>:-Wno-missing-braces>
-        $<$<C_COMPILER_ID:Clang>:-Wold-style-cast>
-        $<$<C_COMPILER_ID:Clang>:-Wshadow>
-        $<$<C_COMPILER_ID:Clang>:-Wweak-vtables>
-        $<$<C_COMPILER_ID:GNU>:-Waddress>
-        $<$<C_COMPILER_ID:GNU>:-Waggregate-return>
-        $<$<C_COMPILER_ID:GNU>:-Wformat-nonliteral>
-        $<$<C_COMPILER_ID:GNU>:-Wformat-security>
-        $<$<C_COMPILER_ID:GNU>:-Wformat>
-        $<$<C_COMPILER_ID:GNU>:-Winit-self>
-        $<$<C_COMPILER_ID:GNU>:-Wmissing-declarations>
-        $<$<C_COMPILER_ID:GNU>:-Wmissing-include-dirs>
-        $<$<C_COMPILER_ID:GNU>:-Wno-multichar>
-        $<$<C_COMPILER_ID:GNU>:-Wno-parentheses>
-        $<$<C_COMPILER_ID:GNU>:-Wno-type-limits>
-        $<$<C_COMPILER_ID:GNU>:-Wno-unused-parameter>
-        $<$<C_COMPILER_ID:GNU>:-Wunreachable-code>
-        $<$<C_COMPILER_ID:GNU>:-Wwrite-strings>
-        -Wpointer-arith
+        $<$<C_COMPILER_ID:Clang>:-Wcast-align
+                                 -Wcast-qual
+                                 -Wconversion
+                                 -Wexit-time-destructors
+                                 -Wglobal-constructors
+                                 -Wmissing-noreturn
+                                 -Wmissing-prototypes
+                                 -Wno-missing-braces
+                                 -Wold-style-cast
+                                 -Wshadow
+                                 -Wweak-vtables>
+        $<$<C_COMPILER_ID:GNU>:-Waddress
+                               -Waggregate-return
+                               -Wformat-nonliteral
+                               -Wformat-security
+                               -Wformat
+                               -Winit-self
+                               -Wmissing-declarations
+                               -Wmissing-include-dirs
+                               -Wno-multichar
+                               -Wno-parentheses
+                               -Wno-type-limits
+                               -Wno-unused-parameter
+                               -Wunreachable-code
+                               -Wwrite-strings
+                               -Wpointer-arith>
         -Wall
         -Werror
 )
