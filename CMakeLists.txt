@@ -11,17 +11,32 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-# Read root meson.build file and get project version from it
-set(ROOT_MESON_BUILD_FILE "meson.build")
-file(READ "${ROOT_MESON_BUILD_FILE}" ROOT_MESON_BUILD_CONTENT)
-string(REGEX MATCH " *version: '[.0-9]+'" UNITY_VERSION "${ROOT_MESON_BUILD_CONTENT}")
-if(NOT UNITY_VERSION)
-    message(FATAL_ERROR "Cannot define version from meson build file")
-endif()
-string(REGEX REPLACE " *version: '([.0-9]+)'" "\\1" UNITY_VERSION "${UNITY_VERSION}")
+# Read src/unity.h file and get project version from it
+set(UNITY_HEADER "src/unity.h")
+
+file(STRINGS "${UNITY_HEADER}" UNITY_HEADER_CONTENT 
+    REGEX "^#define UNITY_VERSION_(MAJOR|MINOR|BUILD) +[0-9]+$"
+)
+
+set(UNITY_HEADER_VERSION_MAJOR 0)
+set(UNITY_HEADER_VERSION_MINOR 0)
+set(UNITY_HEADER_VERSION_BUILD 0)
+
+foreach(VERSION_LINE IN LISTS UNITY_HEADER_CONTENT)
+    foreach(VERSION_PART MAJOR MINOR BUILD)
+        string(CONCAT REGEX_STRING "#define UNITY_VERSION_" 
+                                   "${VERSION_PART}" 
+                                   " +([0-9]+)"
+        )
+
+        if(VERSION_LINE MATCHES "${REGEX_STRING}")
+            set(UNITY_HEADER_VERSION_${VERSION_PART} "${CMAKE_MATCH_1}")
+        endif()
+    endforeach()
+endforeach()
 
 project(unity
-    VERSION     ${UNITY_VERSION}
+    VERSION     ${UNITY_HEADER_VERSION_MAJOR}.${UNITY_HEADER_VERSION_MINOR}.${UNITY_HEADER_VERSION_BUILD}
     LANGUAGES   C
     DESCRIPTION "C Unit testing framework."
 )
@@ -33,12 +48,6 @@ add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
 # Includes ---------------------------------------------------------------------
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-
-# Configuration ----------------------------------------------------------------
-configure_file(cmake/templates/${PROJECT_NAME}_version.h.in 
-               ${PROJECT_NAME}_version.h 
-               @ONLY
-)
 
 target_sources(${PROJECT_NAME}
     PRIVATE
@@ -54,7 +63,6 @@ target_include_directories(${PROJECT_NAME}
 
 set(${PROJECT_NAME}_PUBLIC_HEADERS src/unity.h
                                    src/unity_internals.h
-                                   ${CMAKE_CURRENT_BINARY_DIR}/unity_version.h
 )
 
 set_target_properties(${PROJECT_NAME}
