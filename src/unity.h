@@ -17,7 +17,7 @@
 extern "C"
 {
 #endif
-
+#define UNITY_SUPPORT_64
 #include "unity_internals.h"
 
 /*-------------------------------------------------------
