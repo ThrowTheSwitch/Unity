@@ -356,9 +356,9 @@ all the various sizes of ints, as for the equality assertions. Some examples:
 
 ##### `TEST_ASSERT_GREATER_OR_EQUAL_INT16 (threshold, actual)`
 
-##### `TEST_ASSERT_SMALLER_THAN_INT32 (threshold, actual)`
+##### `TEST_ASSERT_LESS_THAN_INT32 (threshold, actual)`
 
-##### `TEST_ASSERT_SMALL_OR_EQUAL_UINT (threshold, actual)`
+##### `TEST_ASSERT_LESS_OR_EQUAL_UINT (threshold, actual)`
 
 ##### `TEST_ASSERT_NOT_EQUAL_UINT8 (threshold, actual)`
 
