@@ -206,7 +206,7 @@ class UnityTestRunnerGenerator
     @options[:has_setup] = source =~ /void\s+#{@options[:setup_name]}\s*\(/
     @options[:has_teardown] = source =~ /void\s+#{@options[:teardown_name]}\s*\(/
     @options[:has_suite_setup] ||= (source =~ /void\s+suiteSetUp\s*\(/)
-    @options[:has_suite_teardown] ||= (source =~ /void\s+suiteTearDown\s*\(/)
+    @options[:has_suite_teardown] ||= (source =~ /int\s+suiteTearDown\s*\(int\s+([a-zA-Z0-9_])+\s*\)/)
   end
 
   def create_header(output, mocks, testfile_includes = [])
