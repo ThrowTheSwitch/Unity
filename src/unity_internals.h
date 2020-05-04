@@ -701,7 +701,7 @@ extern const char UnityStrErrShorthand[];
 #endif
 #endif
 #ifdef UNITY_SUPPORT_VARIADIC_MACROS
-#define RUN_TEST(...) RUN_TEST_AT_LINE(__VA_ARGS__, __LINE__)
+#define RUN_TEST(...) RUN_TEST_AT_LINE(__VA_ARGS__, __LINE__, throwaway)
 #define RUN_TEST_AT_LINE(func, line, ...) UnityDefaultTestRun(func, #func, line)
 #endif
 #endif
