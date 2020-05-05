@@ -98,20 +98,30 @@ void verifyTest(void);
  * Basic Fail and Ignore
  *-------------------------------------------------------*/
 
+#ifndef UNITY_INCLUDE_PRINT_FORMATTED
 #define TEST_FAIL_MESSAGE(message)                                                                 UNITY_TEST_FAIL(__LINE__, (message))
-#define TEST_FAIL()                                                                                UNITY_TEST_FAIL(__LINE__, NULL)
 #define TEST_IGNORE_MESSAGE(message)                                                               UNITY_TEST_IGNORE(__LINE__, (message))
-#define TEST_IGNORE()                                                                              UNITY_TEST_IGNORE(__LINE__, NULL)
-#define TEST_MESSAGE(message)                                                                      UnityMessage((message), __LINE__)
-#define TEST_ONLY()
-#ifdef UNITY_INCLUDE_PRINT_FORMATTED
-#define TEST_PRINTF(message, ...)                                                                  UnityPrintF(__LINE__, (message), __VA_ARGS__)
+#define TEST_MESSAGE(message)                                                                      UnityMessage(__LINE__, (message))
+#else
+#define TEST_FAIL_MESSAGE(...)                                                                     UNITY_TEST_FAIL(__LINE__, __VA_ARGS__)
+#define TEST_IGNORE_MESSAGE(...)                                                                   UNITY_TEST_IGNORE(__LINE__, __VA_ARGS__)
+#define TEST_MESSAGE(...)                                                                          UnityMessage(__LINE__, __VA_ARGS__)
+#define TEST_PRINTF(...)                                                                           UnityMessage(__LINE__, __VA_ARGS__)
 #endif
+
+#define TEST_FAIL()                                                                                UNITY_TEST_FAIL(__LINE__, NULL)
+#define TEST_IGNORE()                                                                              UNITY_TEST_IGNORE(__LINE__, NULL)
+#define TEST_ONLY()
+
 
 /* It is not necessary for you to call PASS. A PASS condition is assumed if nothing fails.
  * This method allows you to abort a test immediately with a PASS state, ignoring the remainder of the test. */
 #define TEST_PASS()                                                                                TEST_ABORT()
-#define TEST_PASS_MESSAGE(message)                                                                 do { UnityMessage((message), __LINE__); TEST_ABORT(); } while(0)
+#ifndef UNITY_INCLUDE_PRINT_FORMATTED
+#define TEST_PASS_MESSAGE(message)                                                                 do { UnityMessage(__LINE__, (message)); TEST_ABORT(); } while(0)
+#else
+#define TEST_PASS_MESSAGE(...)                                                                     do { UnityMessage(__LINE__, __VA_ARGS__); TEST_ABORT(); } while(0)
+#endif
 
 /* This macro does nothing, but it is useful for build tools (like Ceedling) to make use of this to figure out
  * which files should be linked to in order to perform a test. Use it like TEST_FILE("sandwiches.c") */
@@ -390,6 +400,7 @@ void verifyTest(void);
  *-------------------------------------------------------*/
 
 /* Boolean */
+#ifndef UNITY_INCLUDE_PRINT_FORMATTED
 #define TEST_ASSERT_MESSAGE(condition, message)                                                    UNITY_TEST_ASSERT(       (condition), __LINE__, (message))
 #define TEST_ASSERT_TRUE_MESSAGE(condition, message)                                               UNITY_TEST_ASSERT(       (condition), __LINE__, (message))
 #define TEST_ASSERT_UNLESS_MESSAGE(condition, message)                                             UNITY_TEST_ASSERT(      !(condition), __LINE__, (message))
@@ -398,8 +409,19 @@ void verifyTest(void);
 #define TEST_ASSERT_NOT_NULL_MESSAGE(pointer, message)                                             UNITY_TEST_ASSERT_NOT_NULL((pointer), __LINE__, (message))
 #define TEST_ASSERT_EMPTY_MESSAGE(pointer, message)                                                UNITY_TEST_ASSERT_EMPTY(    (pointer), __LINE__, (message))
 #define TEST_ASSERT_NOT_EMPTY_MESSAGE(pointer, message)                                            UNITY_TEST_ASSERT_NOT_EMPTY((pointer), __LINE__, (message))
+#else
+#define TEST_ASSERT_MESSAGE(condition, ...)                                                        UNITY_TEST_ASSERT(       (condition), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_TRUE_MESSAGE(condition, ...)                                                   UNITY_TEST_ASSERT(       (condition), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_UNLESS_MESSAGE(condition, ...)                                                 UNITY_TEST_ASSERT(      !(condition), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_FALSE_MESSAGE(condition, ...)                                                  UNITY_TEST_ASSERT(      !(condition), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_NULL_MESSAGE(pointer, ...)                                                     UNITY_TEST_ASSERT_NULL(    (pointer), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_NOT_NULL_MESSAGE(pointer, ...)                                                 UNITY_TEST_ASSERT_NOT_NULL((pointer), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EMPTY_MESSAGE(pointer, ...)                                                    UNITY_TEST_ASSERT_EMPTY(    (pointer), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_NOT_EMPTY_MESSAGE(pointer, ...)                                                UNITY_TEST_ASSERT_NOT_EMPTY((pointer), __LINE__, __VA_ARGS__)
+#endif
 
 /* Integers (of all sizes) */
+#ifndef UNITY_INCLUDE_PRINT_FORMATTED
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, message)                                   UNITY_TEST_ASSERT_EQUAL_INT((expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_INT8_MESSAGE(expected, actual, message)                                  UNITY_TEST_ASSERT_EQUAL_INT8((expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_INT16_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_EQUAL_INT16((expected), (actual), __LINE__, (message))
@@ -416,6 +438,24 @@ void verifyTest(void);
 #define TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_EQUAL_HEX16((expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_EQUAL_HEX32((expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_HEX64_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_EQUAL_HEX64((expected), (actual), __LINE__, (message))
+#else
+#define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, ...)                                       UNITY_TEST_ASSERT_EQUAL_INT((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_INT8_MESSAGE(expected, actual, ...)                                      UNITY_TEST_ASSERT_EQUAL_INT8((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_INT16_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_INT16((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_INT32_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_INT32((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_INT64_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_INT64((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_UINT_MESSAGE(expected, actual, ...)                                      UNITY_TEST_ASSERT_EQUAL_UINT((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_UINT8_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_UINT8((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_UINT16_MESSAGE(expected, actual, ...)                                    UNITY_TEST_ASSERT_EQUAL_UINT16((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_UINT32_MESSAGE(expected, actual, ...)                                    UNITY_TEST_ASSERT_EQUAL_UINT32((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_UINT64_MESSAGE(expected, actual, ...)                                    UNITY_TEST_ASSERT_EQUAL_UINT64((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_size_t_MESSAGE(expected, actual, ...)                                    UNITY_TEST_ASSERT_EQUAL_UINT((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_HEX_MESSAGE(expected, actual, ...)                                       UNITY_TEST_ASSERT_EQUAL_HEX32((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected, actual, ...)                                      UNITY_TEST_ASSERT_EQUAL_HEX8((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_HEX16((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_HEX32((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_EQUAL_HEX64_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_HEX64((expected), (actual), __LINE__, __VA_ARGS__)
+#endif
 #define TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, message)                                  UNITY_TEST_ASSERT_BITS((mask), (expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, message)                                       UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(-1), (actual), __LINE__, (message))
 #define TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, message)                                        UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(0), (actual), __LINE__, (message))
