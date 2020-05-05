@@ -778,9 +778,9 @@ void UnityAssertEqualNumber(const UNITY_INT expected,
 void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
                                            const UNITY_INT actual,
                                            const UNITY_COMPARISON_T compare,
-                                           const char *msg,
                                            const UNITY_LINE_TYPE lineNumber,
-                                           const UNITY_DISPLAY_STYLE_T style)
+                                           const UNITY_DISPLAY_STYLE_T style,
+                                           const char* msg VA_ARGS_IF_ENABLED)
 {
     int failed = 0;
     RETURN_IF_FAIL_OR_IGNORE;
@@ -809,7 +809,14 @@ void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
         if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual);  }
         if (compare == UNITY_NOT_EQUAL)   { UnityPrint(UnityStrNotEqual); }
         UnityPrintNumberByStyle(threshold, style);
-        UnityAddMsgIfSpecified(msg);
+        #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+        va_list va;
+        va_start(va, msg);
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+        va_end(va);
+        #else
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+        #endif
         UNITY_FAIL_AND_BAIL;
     }
 }
