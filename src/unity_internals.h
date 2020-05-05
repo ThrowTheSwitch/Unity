@@ -573,8 +573,8 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 void UnityAssertBits(const UNITY_INT mask,
                      const UNITY_INT expected,
                      const UNITY_INT actual,
-                     const char* msg,
-                     const UNITY_LINE_TYPE lineNumber);
+                     const UNITY_LINE_TYPE lineNumber,
+                     const char* msg VA_ARGS_IF_ENABLED);
 
 void UnityAssertEqualString(const char* expected,
                             const char* actual,
@@ -813,7 +813,11 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_EQUAL_CHAR(expected, actual, line, ...)                                UnityAssertEqualNumber((UNITY_INT)(UNITY_INT8 )(expected), (UNITY_INT)(UNITY_INT8 )(actual), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_CHAR, __VA_ARGS__)
 #endif
 
-#define UNITY_TEST_ASSERT_BITS(mask, expected, actual, line, message)                            UnityAssertBits((UNITY_INT)(mask), (UNITY_INT)(expected), (UNITY_INT)(actual), (message), (UNITY_LINE_TYPE)(line))
+#ifndef UNITY_INCLUDE_PRINT_FORMATTED
+#define UNITY_TEST_ASSERT_BITS(mask, expected, actual, line, message)                            UnityAssertBits((UNITY_INT)(mask), (UNITY_INT)(expected), (UNITY_INT)(actual), (UNITY_LINE_TYPE)(line), (message))
+#else
+#define UNITY_TEST_ASSERT_BITS(mask, expected, actual, line, ...)                                UnityAssertBits((UNITY_INT)(mask), (UNITY_INT)(expected), (UNITY_INT)(actual), (UNITY_LINE_TYPE)(line), __VA_ARGS__)
+#endif
 
 #define UNITY_TEST_ASSERT_NOT_EQUAL_INT(threshold, actual, line, message)                        UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(threshold),               (UNITY_INT)(actual),               UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT)
 #define UNITY_TEST_ASSERT_NOT_EQUAL_INT8(threshold, actual, line, message)                       UnityAssertGreaterOrLessOrEqualNumber((UNITY_INT)(UNITY_INT8 )(threshold),  (UNITY_INT)(UNITY_INT8 )(actual),  UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT8)

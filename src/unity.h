@@ -438,6 +438,11 @@ void verifyTest(void);
 #define TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_EQUAL_HEX16((expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_EQUAL_HEX32((expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_HEX64_MESSAGE(expected, actual, message)                                 UNITY_TEST_ASSERT_EQUAL_HEX64((expected), (actual), __LINE__, (message))
+#define TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, message)                                  UNITY_TEST_ASSERT_BITS((mask), (expected), (actual), __LINE__, (message))
+#define TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, message)                                       UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(-1), (actual), __LINE__, (message))
+#define TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, message)                                        UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(0), (actual), __LINE__, (message))
+#define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message)                                         UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(-1), (actual), __LINE__, (message))
+#define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message)                                          UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(0), (actual), __LINE__, (message))
 #else
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, ...)                                       UNITY_TEST_ASSERT_EQUAL_INT((expected), (actual), __LINE__, __VA_ARGS__)
 #define TEST_ASSERT_EQUAL_INT8_MESSAGE(expected, actual, ...)                                      UNITY_TEST_ASSERT_EQUAL_INT8((expected), (actual), __LINE__, __VA_ARGS__)
@@ -455,12 +460,13 @@ void verifyTest(void);
 #define TEST_ASSERT_EQUAL_HEX16_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_HEX16((expected), (actual), __LINE__, __VA_ARGS__)
 #define TEST_ASSERT_EQUAL_HEX32_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_HEX32((expected), (actual), __LINE__, __VA_ARGS__)
 #define TEST_ASSERT_EQUAL_HEX64_MESSAGE(expected, actual, ...)                                     UNITY_TEST_ASSERT_EQUAL_HEX64((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, ...)                                      UNITY_TEST_ASSERT_BITS((mask), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, ...)                                           UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(-1), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, ...)                                            UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(0), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, ...)                                             UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(-1), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, ...)                                              UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(0), (actual), __LINE__, __VA_ARGS__)
 #endif
-#define TEST_ASSERT_BITS_MESSAGE(mask, expected, actual, message)                                  UNITY_TEST_ASSERT_BITS((mask), (expected), (actual), __LINE__, (message))
-#define TEST_ASSERT_BITS_HIGH_MESSAGE(mask, actual, message)                                       UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(-1), (actual), __LINE__, (message))
-#define TEST_ASSERT_BITS_LOW_MESSAGE(mask, actual, message)                                        UNITY_TEST_ASSERT_BITS((mask), (UNITY_UINT32)(0), (actual), __LINE__, (message))
-#define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message)                                         UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(-1), (actual), __LINE__, (message))
-#define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message)                                          UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(0), (actual), __LINE__, (message))
+
 #define TEST_ASSERT_EQUAL_CHAR_MESSAGE(expected, actual, message)                                  UNITY_TEST_ASSERT_EQUAL_CHAR((expected), (actual), __LINE__, (message))
 
 /* Integer Not Equal To (of all sizes) */

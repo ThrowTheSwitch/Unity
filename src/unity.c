@@ -722,8 +722,8 @@ static int UnityIsOneArrayNull(UNITY_INTERNAL_PTR expected,
 void UnityAssertBits(const UNITY_INT mask,
                      const UNITY_INT expected,
                      const UNITY_INT actual,
-                     const char* msg,
-                     const UNITY_LINE_TYPE lineNumber)
+                     const UNITY_LINE_TYPE lineNumber,
+                     const char* msg VA_ARGS_IF_ENABLED)
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -734,7 +734,14 @@ void UnityAssertBits(const UNITY_INT mask,
         UnityPrintMask((UNITY_UINT)mask, (UNITY_UINT)expected);
         UnityPrint(UnityStrWas);
         UnityPrintMask((UNITY_UINT)mask, (UNITY_UINT)actual);
-        UnityAddMsgIfSpecified(msg);
+        #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+        va_list va;
+        va_start(va, msg);
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+        va_end(va);
+        #else
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+        #endif
         UNITY_FAIL_AND_BAIL;
     }
 }
