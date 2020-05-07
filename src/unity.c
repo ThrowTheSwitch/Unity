@@ -1290,10 +1290,10 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
                                    UNITY_INTERNAL_PTR expected,
                                    UNITY_INTERNAL_PTR actual,
                                    const UNITY_UINT32 num_elements,
-                                   const char* msg,
                                    const UNITY_LINE_TYPE lineNumber,
                                    const UNITY_DISPLAY_STYLE_T style,
-                                   const UNITY_FLAGS_T flags)
+                                   const UNITY_FLAGS_T flags,
+                                   const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 elements = num_elements;
     unsigned int length   = style & 0xF;
@@ -1393,7 +1393,14 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
             UnityPrintNumberByStyle(expect_val, style);
             UnityPrint(UnityStrWas);
             UnityPrintNumberByStyle(actual_val, style);
-            UnityAddMsgIfSpecified(msg);
+            #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+            va_list va;
+            va_start(va, msg);
+            UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+            va_end(va);
+            #else
+            UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+            #endif
             UNITY_FAIL_AND_BAIL;
         }
         /* Walk through array by incrementing the pointers */
