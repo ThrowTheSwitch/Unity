@@ -444,7 +444,6 @@ void verifyTest(void);
 #define TEST_ASSERT_BIT_HIGH_MESSAGE(bit, actual, message)                                         UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(-1), (actual), __LINE__, (message))
 #define TEST_ASSERT_BIT_LOW_MESSAGE(bit, actual, message)                                          UNITY_TEST_ASSERT_BITS(((UNITY_UINT32)1 << (bit)), (UNITY_UINT32)(0), (actual), __LINE__, (message))
 #define TEST_ASSERT_EQUAL_CHAR_MESSAGE(expected, actual, message)                                  UNITY_TEST_ASSERT_EQUAL_CHAR((expected), (actual), __LINE__, (message))
-
 #else
 #define TEST_ASSERT_EQUAL_INT_MESSAGE(expected, actual, ...)                                       UNITY_TEST_ASSERT_EQUAL_INT((expected), (actual), __LINE__, __VA_ARGS__)
 #define TEST_ASSERT_EQUAL_INT8_MESSAGE(expected, actual, ...)                                      UNITY_TEST_ASSERT_EQUAL_INT8((expected), (actual), __LINE__, __VA_ARGS__)
@@ -937,6 +936,7 @@ void verifyTest(void);
 #define TEST_ASSERT_NOT_EQUAL_MESSAGE(expected, actual, ...)                                       UNITY_TEST_FAIL(__LINE__, UnityStrErrShorthand)
 #endif
 #endif
+
 /* end of UNITY_FRAMEWORK_H */
 #ifdef __cplusplus
 }
