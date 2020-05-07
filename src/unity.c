@@ -832,10 +832,10 @@ void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
 void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                               UNITY_INTERNAL_PTR actual,
                               const UNITY_UINT32 num_elements,
-                              const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_DISPLAY_STYLE_T style,
-                              const UNITY_FLAGS_T flags)
+                              const UNITY_FLAGS_T flags,
+                              const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 elements  = num_elements;
     unsigned int length    = style & 0xF;
@@ -1415,8 +1415,8 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
 /*-----------------------------------------------*/
 void UnityAssertEqualString(const char* expected,
                             const char* actual,
-                            const char* msg,
-                            const UNITY_LINE_TYPE lineNumber)
+                            const UNITY_LINE_TYPE lineNumber,
+                            const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 i;
 
@@ -1446,7 +1446,14 @@ void UnityAssertEqualString(const char* expected,
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrintExpectedAndActualStrings(expected, actual);
-        UnityAddMsgIfSpecified(msg);
+        #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+        va_list va;
+        va_start(va, msg);
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+        va_end(va);
+        #else
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+        #endif
         UNITY_FAIL_AND_BAIL;
     }
 }
@@ -1455,8 +1462,8 @@ void UnityAssertEqualString(const char* expected,
 void UnityAssertEqualStringLen(const char* expected,
                                const char* actual,
                                const UNITY_UINT32 length,
-                               const char* msg,
-                               const UNITY_LINE_TYPE lineNumber)
+                               const UNITY_LINE_TYPE lineNumber,
+                               const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 i;
 
@@ -1486,7 +1493,14 @@ void UnityAssertEqualStringLen(const char* expected,
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrintExpectedAndActualStringsLen(expected, actual, length);
-        UnityAddMsgIfSpecified(msg);
+        #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+        va_list va;
+        va_start(va, msg);
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+        va_end(va);
+        #else
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+        #endif
         UNITY_FAIL_AND_BAIL;
     }
 }
@@ -1495,9 +1509,9 @@ void UnityAssertEqualStringLen(const char* expected,
 void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
                                  const char** actual,
                                  const UNITY_UINT32 num_elements,
-                                 const char* msg,
                                  const UNITY_LINE_TYPE lineNumber,
-                                 const UNITY_FLAGS_T flags)
+                                 const UNITY_FLAGS_T flags,
+                                 const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 i = 0;
     UNITY_UINT32 j = 0;
@@ -1564,7 +1578,14 @@ void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
                 UnityPrintNumberUnsigned(j);
             }
             UnityPrintExpectedAndActualStrings(expd, act);
-            UnityAddMsgIfSpecified(msg);
+            #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+            va_list va;
+            va_start(va, msg);
+            UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+            va_end(va);
+            #else
+            UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+            #endif
             UNITY_FAIL_AND_BAIL;
         }
     } while (++j < num_elements);
@@ -1575,9 +1596,9 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
                             UNITY_INTERNAL_PTR actual,
                             const UNITY_UINT32 length,
                             const UNITY_UINT32 num_elements,
-                            const char* msg,
                             const UNITY_LINE_TYPE lineNumber,
-                            const UNITY_FLAGS_T flags)
+                            const UNITY_FLAGS_T flags,
+                            const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_PTR_ATTRIBUTE const unsigned char* ptr_exp = (UNITY_PTR_ATTRIBUTE const unsigned char*)expected;
     UNITY_PTR_ATTRIBUTE const unsigned char* ptr_act = (UNITY_PTR_ATTRIBUTE const unsigned char*)actual;
@@ -1621,7 +1642,14 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
                 UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE_HEX8);
                 UnityPrint(UnityStrWas);
                 UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE_HEX8);
-                UnityAddMsgIfSpecified(msg);
+                #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+                va_list va;
+                va_start(va, msg);
+                UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+                va_end(va);
+                #else
+                UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+                #endif
                 UNITY_FAIL_AND_BAIL;
             }
             ptr_exp++;
