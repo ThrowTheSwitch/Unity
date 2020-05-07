@@ -653,6 +653,7 @@ void verifyTest(void);
 #define TEST_ASSERT_LESS_OR_EQUAL_CHAR_MESSAGE(threshold, actual, ...)                             UNITY_TEST_ASSERT_SMALLER_OR_EQUAL_CHAR((threshold), (actual), __LINE__, __VA_ARGS__)
 #endif
 /* Integer Ranges (of all sizes) */
+#ifndef UNITY_INCLUDE_PRINT_FORMATTED
 #define TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, message)                           UNITY_TEST_ASSERT_INT_WITHIN((delta), (expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_INT8_WITHIN_MESSAGE(delta, expected, actual, message)                          UNITY_TEST_ASSERT_INT8_WITHIN((delta), (expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_INT16_WITHIN_MESSAGE(delta, expected, actual, message)                         UNITY_TEST_ASSERT_INT16_WITHIN((delta), (expected), (actual), __LINE__, (message))
@@ -670,7 +671,25 @@ void verifyTest(void);
 #define TEST_ASSERT_HEX32_WITHIN_MESSAGE(delta, expected, actual, message)                         UNITY_TEST_ASSERT_HEX32_WITHIN((delta), (expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_HEX64_WITHIN_MESSAGE(delta, expected, actual, message)                         UNITY_TEST_ASSERT_HEX64_WITHIN((delta), (expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_CHAR_WITHIN_MESSAGE(delta, expected, actual, message)                          UNITY_TEST_ASSERT_CHAR_WITHIN((delta), (expected), (actual), __LINE__, (message))
-
+#else
+#define TEST_ASSERT_INT_WITHIN_MESSAGE(delta, expected, actual, ...)                               UNITY_TEST_ASSERT_INT_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_INT8_WITHIN_MESSAGE(delta, expected, actual, ...)                              UNITY_TEST_ASSERT_INT8_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_INT16_WITHIN_MESSAGE(delta, expected, actual, ...)                             UNITY_TEST_ASSERT_INT16_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_INT32_WITHIN_MESSAGE(delta, expected, actual, ...)                             UNITY_TEST_ASSERT_INT32_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_INT64_WITHIN_MESSAGE(delta, expected, actual, ...)                             UNITY_TEST_ASSERT_INT64_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_UINT_WITHIN_MESSAGE(delta, expected, actual, ...)                              UNITY_TEST_ASSERT_UINT_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_UINT8_WITHIN_MESSAGE(delta, expected, actual, ...)                             UNITY_TEST_ASSERT_UINT8_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_UINT16_WITHIN_MESSAGE(delta, expected, actual, ...)                            UNITY_TEST_ASSERT_UINT16_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_UINT32_WITHIN_MESSAGE(delta, expected, actual, ...)                            UNITY_TEST_ASSERT_UINT32_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_UINT64_WITHIN_MESSAGE(delta, expected, actual, ...)                            UNITY_TEST_ASSERT_UINT64_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_size_t_WITHIN_MESSAGE(delta, expected, actual, ...)                            UNITY_TEST_ASSERT_UINT_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_HEX_WITHIN_MESSAGE(delta, expected, actual, ...)                               UNITY_TEST_ASSERT_HEX32_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_HEX8_WITHIN_MESSAGE(delta, expected, actual, ...)                              UNITY_TEST_ASSERT_HEX8_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_HEX16_WITHIN_MESSAGE(delta, expected, actual, ...)                             UNITY_TEST_ASSERT_HEX16_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_HEX32_WITHIN_MESSAGE(delta, expected, actual, ...)                             UNITY_TEST_ASSERT_HEX32_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_HEX64_WITHIN_MESSAGE(delta, expected, actual, ...)                             UNITY_TEST_ASSERT_HEX64_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_CHAR_WITHIN_MESSAGE(delta, expected, actual, ...)                              UNITY_TEST_ASSERT_CHAR_WITHIN((delta), (expected), (actual), __LINE__, __VA_ARGS__)
+#endif
 /* Integer Array Ranges (of all sizes) */
 #define TEST_ASSERT_INT_ARRAY_WITHIN_MESSAGE(delta, expected, actual, num_elements, message)       UNITY_TEST_ASSERT_INT_ARRAY_WITHIN((delta), (expected), (actual), num_elements, __LINE__, (message))
 #define TEST_ASSERT_INT8_ARRAY_WITHIN_MESSAGE(delta, expected, actual, num_elements, message)      UNITY_TEST_ASSERT_INT8_ARRAY_WITHIN((delta), (expected), (actual), num_elements, __LINE__, (message))

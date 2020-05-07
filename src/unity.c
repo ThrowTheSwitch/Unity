@@ -1235,9 +1235,9 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
 void UnityAssertNumbersWithin(const UNITY_UINT delta,
                               const UNITY_INT expected,
                               const UNITY_INT actual,
-                              const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
-                              const UNITY_DISPLAY_STYLE_T style)
+                              const UNITY_DISPLAY_STYLE_T style,
+                              const char* msg VA_ARGS_IF_ENABLED)
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1273,7 +1273,14 @@ void UnityAssertNumbersWithin(const UNITY_UINT delta,
         UnityPrintNumberByStyle(expected, style);
         UnityPrint(UnityStrWas);
         UnityPrintNumberByStyle(actual, style);
-        UnityAddMsgIfSpecified(msg);
+        #ifdef UNITY_INCLUDE_PRINT_FORMATTED
+        va_list va;
+        va_start(va, msg);
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va);
+        va_end(va);
+        #else
+        UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg);
+        #endif
         UNITY_FAIL_AND_BAIL;
     }
 }
