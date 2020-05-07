@@ -566,34 +566,7 @@ void UnityConcludeTest(void)
 static void UnityPrintFVA(const char* format, va_list va);
 #endif
 
-
-static void UnityAddMsgIfSpecified(const char* msg)
-{
-    if (msg)
-    {
-        UnityPrint(UnityStrSpacer);
-
-#ifdef UNITY_PRINT_TEST_CONTEXT
-        UNITY_PRINT_TEST_CONTEXT();
-#endif
-#ifndef UNITY_EXCLUDE_DETAILS
-        if (Unity.CurrentDetail1)
-        {
-            UnityPrint(UnityStrDetail1Name);
-            UnityPrint(Unity.CurrentDetail1);
-            if (Unity.CurrentDetail2)
-            {
-                UnityPrint(UnityStrDetail2Name);
-                UnityPrint(Unity.CurrentDetail2);
-            }
-            UnityPrint(UnityStrSpacer);
-        }
-#endif
-        UnityPrint(msg);
-    }
-}
-
-static void UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(const char* msg VA_LIST_IF_ENABLED)
+static void UnityAddMsgIfSpecified(const char* msg VA_LIST_IF_ENABLED)
 {
     if (msg)
     {
@@ -696,7 +669,7 @@ static void UnityPrintExpectedAndActualStringsLen(const char* expected,
 {                                             \
     va_list va;                               \
     va_start(va, msg);                        \
-    UnityAddMsgIfSpecified_TEMPORARY_VA_TEST(msg, va); \
+    UnityAddMsgIfSpecified(msg, va);          \
     va_end(va);                               \
     UNITY_FAIL_AND_BAIL;                      \
 }
@@ -900,8 +873,7 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             UnityPrintNumberByStyle(expect_val, style);
             UnityPrint(UnityStrWas);
             UnityPrintNumberByStyle(actual_val, style);
-            UnityAddMsgIfSpecified(msg);
-            UNITY_FAIL_AND_BAIL;
+            UnityPrintMsgIfSpecifiedAndBail(msg);
         }
         /* Walk through array by incrementing the pointers */
         if (flags == UNITY_ARRAY_TO_ARRAY)
@@ -952,9 +924,9 @@ static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOA
 void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
                                 UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* actual,
                                 const UNITY_UINT32 num_elements,
-                                const char* msg,
                                 const UNITY_LINE_TYPE lineNumber,
-                                const UNITY_FLAGS_T flags)
+                                const UNITY_FLAGS_T flags,
+                                const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;
@@ -985,8 +957,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
             UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT((UNITY_DOUBLE)*ptr_expected, (UNITY_DOUBLE)*ptr_actual);
-            UnityAddMsgIfSpecified(msg);
-            UNITY_FAIL_AND_BAIL;
+            UnityPrintMsgIfSpecifiedAndBail(msg);
         }
         if (flags == UNITY_ARRAY_TO_ARRAY)
         {
@@ -1000,8 +971,8 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
 void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
                              const UNITY_FLOAT expected,
                              const UNITY_FLOAT actual,
-                             const char* msg,
-                             const UNITY_LINE_TYPE lineNumber)
+                             const UNITY_LINE_TYPE lineNumber,
+                             const char* msg VA_ARGS_IF_ENABLED)
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1010,16 +981,15 @@ void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
     {
         UnityTestResultsFailBegin(lineNumber);
         UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT((UNITY_DOUBLE)expected, (UNITY_DOUBLE)actual);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintMsgIfSpecifiedAndBail(msg);
     }
 }
 
 /*-----------------------------------------------*/
 void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
-                             const char* msg,
                              const UNITY_LINE_TYPE lineNumber,
-                             const UNITY_FLOAT_TRAIT_T style)
+                             const UNITY_FLOAT_TRAIT_T style,
+                             const char* msg VA_ARGS_IF_ENABLED)
 {
     const char* trait_names[] = {UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet};
     UNITY_INT should_be_trait = ((UNITY_INT)style & 1);
@@ -1074,8 +1044,7 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
         }
         UnityPrint(trait_names[trait_index]);
 #endif
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintMsgIfSpecifiedAndBail(msg);
     }
 }
 
@@ -1093,9 +1062,9 @@ static int UnityDoublesWithin(UNITY_DOUBLE delta, UNITY_DOUBLE expected, UNITY_D
 void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expected,
                                  UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* actual,
                                  const UNITY_UINT32 num_elements,
-                                 const char* msg,
                                  const UNITY_LINE_TYPE lineNumber,
-                                 const UNITY_FLAGS_T flags)
+                                 const UNITY_FLAGS_T flags,
+                                 const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;
@@ -1126,8 +1095,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
             UnityPrint(UnityStrElement);
             UnityPrintNumberUnsigned(num_elements - elements - 1);
             UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);
-            UnityAddMsgIfSpecified(msg);
-            UNITY_FAIL_AND_BAIL;
+            UnityPrintMsgIfSpecifiedAndBail(msg);
         }
         if (flags == UNITY_ARRAY_TO_ARRAY)
         {
@@ -1141,8 +1109,8 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
 void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
                               const UNITY_DOUBLE expected,
                               const UNITY_DOUBLE actual,
-                              const char* msg,
-                              const UNITY_LINE_TYPE lineNumber)
+                              const UNITY_LINE_TYPE lineNumber,
+                              const char* msg VA_ARGS_IF_ENABLED)
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1150,16 +1118,15 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
     {
         UnityTestResultsFailBegin(lineNumber);
         UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintMsgIfSpecifiedAndBail(msg);
     }
 }
 
 /*-----------------------------------------------*/
 void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
-                              const char* msg,
                               const UNITY_LINE_TYPE lineNumber,
-                              const UNITY_FLOAT_TRAIT_T style)
+                              const UNITY_FLOAT_TRAIT_T style,
+                              const char* msg VA_ARGS_IF_ENABLED)
 {
     const char* trait_names[] = {UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet};
     UNITY_INT should_be_trait = ((UNITY_INT)style & 1);
@@ -1214,8 +1181,7 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
         }
         UnityPrint(trait_names[trait_index]);
 #endif
-        UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        UnityPrintMsgIfSpecifiedAndBail(msg);
     }
 }
 
