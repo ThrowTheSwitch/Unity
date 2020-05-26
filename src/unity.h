@@ -294,7 +294,6 @@ void verifyTest(void);
 #define TEST_ASSERT_HEX64_ARRAY_WITHIN(delta, expected, actual, num_elements)                      UNITY_TEST_ASSERT_HEX64_ARRAY_WITHIN((delta), (expected), (actual), num_elements, __LINE__, NULL)
 #define TEST_ASSERT_CHAR_ARRAY_WITHIN(delta, expected, actual, num_elements)                       UNITY_TEST_ASSERT_CHAR_ARRAY_WITHIN((delta), (expected), (actual), num_elements, __LINE__, NULL)
 
-
 /* Structs and Strings */
 #define TEST_ASSERT_EQUAL_PTR(expected, actual)                                                    UNITY_TEST_ASSERT_EQUAL_PTR((expected), (actual), __LINE__, NULL)
 #define TEST_ASSERT_EQUAL_STRING(expected, actual)                                                 UNITY_TEST_ASSERT_EQUAL_STRING((expected), (actual), __LINE__, NULL)
@@ -303,6 +302,9 @@ void verifyTest(void);
 
 #define TEST_ASSERT_NOT_EQUAL_PTR(expected, actual)                                                UNITY_TEST_ASSERT_NOT_EQUAL_PTR((expected), (actual), __LINE__, NULL)
 #define TEST_ASSERT_NOT_EQUAL_STRING(expected, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_STRING((expected), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_STRING_LEN(expected, actual, len)                                    UNITY_TEST_ASSERT_NOT_EQUAL_STRING_LEN((expected), (actual), (len), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_MEMORY(expected, actual, len)                                        UNITY_TEST_ASSERT_NOT_EQUAL_MEMORY((expected), (actual), (len), __LINE__, NULL)
+
 /* Arrays */
 #define TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements)                                UNITY_TEST_ASSERT_EQUAL_INT_ARRAY((expected), (actual), (num_elements), __LINE__, NULL)
 #define TEST_ASSERT_EQUAL_INT8_ARRAY(expected, actual, num_elements)                               UNITY_TEST_ASSERT_EQUAL_INT8_ARRAY((expected), (actual), (num_elements), __LINE__, NULL)
@@ -742,6 +744,8 @@ void verifyTest(void);
 
 #define TEST_ASSERT_NOT_EQUAL_PTR_MESSAGE(expected, actual, message)                               UNITY_TEST_ASSERT_NOT_EQUAL_PTR((expected), (actual), __LINE__, (message))
 #define TEST_ASSERT_NOT_EQUAL_STRING_MESSAGE(expected, actual, message)                            UNITY_TEST_ASSERT_NOT_EQUAL_STRING((expected), (actual), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_STRING_LEN_MESSAGE(expected, actual, len, message)                   UNITY_TEST_ASSERT_NOT_EQUAL_STRING_LEN((expected), (actual), (len), __LINE__, (message))
+#define TEST_ASSERT_NOT_EQUAL_MEMORY_MESSAGE(expected, actual, len, message)                       UNITY_TEST_ASSERT_NOT_EQUAL_MEMORY((expected), (actual), (len), __LINE__, (message))
 #else
 #define TEST_ASSERT_EQUAL_PTR_MESSAGE(expected, actual, ...)                                       UNITY_TEST_ASSERT_EQUAL_PTR((expected), (actual), __LINE__, __VA_ARGS__)
 #define TEST_ASSERT_EQUAL_STRING_MESSAGE(expected, actual, ...)                                    UNITY_TEST_ASSERT_EQUAL_STRING((expected), (actual), __LINE__, __VA_ARGS__)
@@ -750,6 +754,8 @@ void verifyTest(void);
 
 #define TEST_ASSERT_NOT_EQUAL_PTR_MESSAGE(expected, actual, ...)                                   UNITY_TEST_ASSERT_NOT_EQUAL_PTR((expected), (actual), __LINE__, __VA_ARGS__)
 #define TEST_ASSERT_NOT_EQUAL_STRING_MESSAGE(expected, actual, ...)                                UNITY_TEST_ASSERT_NOT_EQUAL_STRING((expected), (actual), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_NOT_EQUAL_STRING_LEN_MESSAGE(expected, actual, len, ...)                       UNITY_TEST_ASSERT_NOT_EQUAL_STRING_LEN((expected), (actual), (len), __LINE__, __VA_ARGS__)
+#define TEST_ASSERT_NOT_EQUAL_MEMORY_MESSAGE(expected, actual, len, ...)                           UNITY_TEST_ASSERT_NOT_EQUAL_MEMORY((expected), (actual), (len), __LINE__, __VA_ARGS__)
 #endif
 
 /* Arrays */

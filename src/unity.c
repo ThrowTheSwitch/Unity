@@ -51,6 +51,7 @@ static const char PROGMEM UnityStrDelta[]                  = " Values Not Within
 static const char PROGMEM UnityStrPointless[]              = " You Asked Me To Compare Nothing, Which Was Pointless.";
 static const char PROGMEM UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
 static const char PROGMEM UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
+static const char PROGMEM UnityStrBytesOfMemoryNotEqual[]  = " bytes of memory not to be equal";
 #ifndef UNITY_EXCLUDE_FLOAT
 static const char PROGMEM UnityStrNot[]                    = "Not ";
 static const char PROGMEM UnityStrInf[]                    = "Infinity";
@@ -636,7 +637,8 @@ static void UnityPrintExpectedAndActualStrings(const char* expected, const char*
 /*-----------------------------------------------*/
 static void UnityPrintExpectedAndActualStringsLen(const char* expected,
                                                   const char* actual,
-                                                  const UNITY_UINT32 length)
+                                                  const UNITY_UINT32 length,
+                                                  UNITY_UINT not)
 {
     UnityPrint(UnityStrExpected);
     if (expected != NULL)
@@ -649,7 +651,16 @@ static void UnityPrintExpectedAndActualStringsLen(const char* expected,
     {
         UnityPrint(UnityStrNull);
     }
-    UnityPrint(UnityStrWas);
+
+    if(not)
+    {
+        UnityPrint(UnityStrNotEqual);
+    }
+    else
+    {
+        UnityPrint(UnityStrWas);
+    }
+
     if (actual != NULL)
     {
         UNITY_OUTPUT_CHAR('\'');
@@ -1417,8 +1428,8 @@ void UnityAssertEqualStringLen(const char* expected,
                                const char* msg VA_ARGS_IF_ENABLED)
 {
     UNITY_UINT32 i;
+    UNITY_UINT32 not_equal = 0;
 
-    (void)not;
     RETURN_IF_FAIL_OR_IGNORE;
 
     /* if both pointers not null compare the strings */
@@ -1428,7 +1439,7 @@ void UnityAssertEqualStringLen(const char* expected,
         {
             if (expected[i] != actual[i])
             {
-                Unity.CurrentTestFailed = 1;
+                not_equal = 1;
                 break;
             }
         }
@@ -1437,14 +1448,19 @@ void UnityAssertEqualStringLen(const char* expected,
     { /* handle case of one pointers being null (if both null, test should pass) */
         if (expected != actual)
         {
-            Unity.CurrentTestFailed = 1;
+            not_equal = 1;
         }
+    }
+
+    if(not_equal != not)
+    {
+        Unity.CurrentTestFailed = 1;
     }
 
     if (Unity.CurrentTestFailed)
     {
         UnityTestResultsFailBegin(lineNumber);
-        UnityPrintExpectedAndActualStringsLen(expected, actual, length);
+        UnityPrintExpectedAndActualStringsLen(expected, actual, length, not);
         UnityPrintMsgIfSpecifiedAndBail(msg);
     }
 }
@@ -1541,7 +1557,7 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
     UNITY_PTR_ATTRIBUTE const unsigned char* ptr_act = (UNITY_PTR_ATTRIBUTE const unsigned char*)actual;
     UNITY_UINT32 elements = num_elements;
     UNITY_UINT32 bytes;
-    (void)not;
+
     RETURN_IF_FAIL_OR_IGNORE;
 
     if ((elements == 0) || (length == 0))
@@ -1549,14 +1565,33 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
         UnityPrintPointlessAndBail(msg);
     }
 
-    if (expected == actual)
+    if(not)
     {
-        return; /* Both are NULL or same pointer */
-    }
+        if(expected == NULL && actual == NULL)
+        {
+            UnityTestResultsFailBegin(lineNumber);
+            UnityPrint(UnityStrExpected);
+            UnityPrint(UnityStrNull);
+            UnityPrint(UnityStrNotEqual);
+            UnityPrint(UnityStrNull);
+            UnityPrintMsgIfSpecifiedAndBail(msg);
+        }
 
-    if (UnityIsOneArrayNull(expected, actual, lineNumber))
+        if(expected == NULL || actual == NULL)
+        {
+            return; /* One of the pointers is NULL so clearly they are not equal */
+        }
+    }
+    else
     {
-        UnityPrintMsgIfSpecifiedAndBail(msg);
+        if (expected == actual)
+        {
+            return; /* Both are NULL or same pointer */
+        }
+        if (UnityIsOneArrayNull(expected, actual, lineNumber))
+        {
+            UnityPrintMsgIfSpecifiedAndBail(msg);
+        }
     }
 
     while (elements--)
@@ -1566,20 +1601,27 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
         {
             if (*ptr_exp != *ptr_act)
             {
-                UnityTestResultsFailBegin(lineNumber);
-                UnityPrint(UnityStrMemory);
-                if (num_elements > 1)
+                if(not)
                 {
-                    UnityPrint(UnityStrElement);
-                    UnityPrintNumberUnsigned(num_elements - elements - 1);
+                    return;
                 }
-                UnityPrint(UnityStrByte);
-                UnityPrintNumberUnsigned(length - bytes - 1);
-                UnityPrint(UnityStrExpected);
-                UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE_HEX8);
-                UnityPrint(UnityStrWas);
-                UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE_HEX8);
-                UnityPrintMsgIfSpecifiedAndBail(msg);
+                else
+                {
+                    UnityTestResultsFailBegin(lineNumber);
+                    UnityPrint(UnityStrMemory);
+                    if (num_elements > 1)
+                    {
+                        UnityPrint(UnityStrElement);
+                        UnityPrintNumberUnsigned(num_elements - elements - 1);
+                    }
+                    UnityPrint(UnityStrByte);
+                    UnityPrintNumberUnsigned(length - bytes - 1);
+                    UnityPrint(UnityStrExpected);
+                    UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE_HEX8);
+                    UnityPrint(UnityStrWas);
+                    UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE_HEX8);
+                    UnityPrintMsgIfSpecifiedAndBail(msg);
+                }
             }
             ptr_exp++;
             ptr_act++;
@@ -1588,6 +1630,15 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
         {
             ptr_exp = (UNITY_PTR_ATTRIBUTE const unsigned char*)expected;
         }
+    }
+
+    if(not)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintNumberUnsigned(length);
+        UnityPrint(UnityStrBytesOfMemoryNotEqual);
+        UnityPrintMsgIfSpecifiedAndBail(msg);
     }
 }
 
