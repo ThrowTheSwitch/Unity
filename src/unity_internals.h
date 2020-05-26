@@ -40,6 +40,11 @@
 #include <limits.h>
 #endif
 
+#if defined __GNUC__
+#    define UNITY_FUNCTION_ATTR(a) __attribute__((a))
+#else
+#    define UNITY_FUNCTION_ATTR(a) /* ignore */
+#endif
 /*-------------------------------------------------------
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
@@ -618,8 +623,8 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
                                    const UNITY_FLAGS_T flags,
                                    const char* msg VA_ARGS_IF_ENABLED);
 
-void UnityFail(const UNITY_LINE_TYPE line, const char* message VA_ARGS_IF_ENABLED);
-void UnityIgnore(const UNITY_LINE_TYPE line, const char* message VA_ARGS_IF_ENABLED);
+void UnityFail(const UNITY_LINE_TYPE line, const char* message VA_ARGS_IF_ENABLED) UNITY_FUNCTION_ATTR(noreturn);
+void UnityIgnore(const UNITY_LINE_TYPE line, const char* message VA_ARGS_IF_ENABLED) UNITY_FUNCTION_ATTR(noreturn);
 void UnityMessage(const UNITY_LINE_TYPE line, const char* message VA_ARGS_IF_ENABLED);
 
 #ifndef UNITY_EXCLUDE_FLOAT
