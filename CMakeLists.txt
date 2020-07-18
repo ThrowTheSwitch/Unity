@@ -38,8 +38,7 @@ endforeach()
 project(unity
     VERSION     ${UNITY_HEADER_VERSION_MAJOR}.${UNITY_HEADER_VERSION_MINOR}.${UNITY_HEADER_VERSION_BUILD}
     LANGUAGES   C
-    DESCRIPTION "C Unit testing framework."
-)
+    DESCRIPTION "C Unit testing framework.")
 
 # Main target ------------------------------------------------------------------
 add_library(${PROJECT_NAME} STATIC)
@@ -86,7 +85,9 @@ target_compile_options(${PROJECT_NAME}
                                  -Wno-missing-braces
                                  -Wold-style-cast
                                  -Wshadow
-                                 -Wweak-vtables>
+                                 -Wweak-vtables
+                                 -Werror
+                                 -Wall>
         $<$<C_COMPILER_ID:GNU>:-Waddress
                                -Waggregate-return
                                -Wformat-nonliteral
@@ -101,9 +102,10 @@ target_compile_options(${PROJECT_NAME}
                                -Wno-unused-parameter
                                -Wunreachable-code
                                -Wwrite-strings
-                               -Wpointer-arith>
-        -Wall
-        -Werror
+                               -Wpointer-arith
+                               -Werror
+                               -Wall>
+       $<$<C_COMPILER_ID:MSVC>:/Wall>
 )
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
