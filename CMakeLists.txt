@@ -86,7 +86,9 @@ target_compile_options(${PROJECT_NAME}
                                  -Wno-missing-braces
                                  -Wold-style-cast
                                  -Wshadow
-                                 -Wweak-vtables>
+                                 -Wweak-vtables
+                                 -Werror
+                                 -Wall>
         $<$<C_COMPILER_ID:GNU>:-Waddress
                                -Waggregate-return
                                -Wformat-nonliteral
@@ -101,9 +103,10 @@ target_compile_options(${PROJECT_NAME}
                                -Wno-unused-parameter
                                -Wunreachable-code
                                -Wwrite-strings
-                               -Wpointer-arith>
-        -Wall
-        -Werror
+                               -Wpointer-arith
+                               -Werror
+                               -Wall>
+       $<$<C_COMPILER_ID:MSVC>:/Wall>
 )
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
