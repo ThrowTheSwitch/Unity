@@ -7,7 +7,7 @@
 project('unity', 'c',
     license : 'MIT', 
     version : '2.5.1',
-    meson_version : '>=0.53.0',
+    meson_version : '>=0.55.0',
     default_options : ['layout=flat', 'warning_level=3', 'werror=true', 'c_std=c11']
 )
 lang = 'c'
