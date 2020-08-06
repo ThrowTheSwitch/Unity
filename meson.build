@@ -5,9 +5,10 @@
 # license: MIT
 #
 project('unity', 'c',
-    license: 'MIT',
-    meson_version: '>=0.53.0',
-    default_options: ['layout=flat', 'warning_level=3', 'werror=true', 'c_std=c11']
+    license : 'MIT', 
+    version : '2.5.1',
+    meson_version : '>=0.53.0',
+    default_options : ['layout=flat', 'warning_level=3', 'werror=true', 'c_std=c11']
 )
 lang = 'c'
 cc = meson.get_compiler(lang)
@@ -45,4 +46,7 @@ endif
 #
 # Sub directory to project source code
 subdir('src')
-unity_dep = declare_dependency(link_with: unity_lib, include_directories: unity_dir)
+unity_dep = declare_dependency(
+    link_with : unity_lib, 
+    version : meson.project_version(),
+    include_directories : unity_dir)
