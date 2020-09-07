@@ -13,7 +13,9 @@ require 'fileutils'
 require 'pathname'
 
 # TEMPLATE_TST
-TEMPLATE_TST ||= '#include "unity.h"
+TEMPLATE_TST ||= '#ifdef TEST
+
+#include "unity.h"
 
 %2$s#include "%1$s.h"
 
@@ -29,6 +31,8 @@ void test_%4$s_NeedToImplement(void)
 {
     TEST_IGNORE_MESSAGE("Need to Implement %1$s");
 }
+
+#endif // TEST
 '.freeze
 
 # TEMPLATE_SRC
