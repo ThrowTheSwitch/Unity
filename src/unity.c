@@ -67,9 +67,10 @@ static const char PROGMEM UnityStrBreaker[]                = "------------------
 static const char PROGMEM UnityStrResultsTests[]           = " Tests ";
 static const char PROGMEM UnityStrResultsFailures[]        = " Failures ";
 static const char PROGMEM UnityStrResultsIgnored[]         = " Ignored ";
+#ifndef UNITY_EXCLUDE_DETAILS
 static const char PROGMEM UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
 static const char PROGMEM UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
-
+#endif
 /*-----------------------------------------------
  * Pretty Printers & Test Result Output Handlers
  *-----------------------------------------------*/
