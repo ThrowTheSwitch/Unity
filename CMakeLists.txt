@@ -41,6 +41,8 @@ project(unity
     DESCRIPTION "C Unit testing framework."
 )
 
+option(WITH_ADDONS "Compile with support for addons: fixtures and memory" OFF)
+
 # Main target ------------------------------------------------------------------
 add_library(${PROJECT_NAME} STATIC)
 add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
@@ -64,6 +66,25 @@ target_include_directories(${PROJECT_NAME}
 set(${PROJECT_NAME}_PUBLIC_HEADERS src/unity.h
                                    src/unity_internals.h
 )
+
+if(WITH_ADDONS)
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        extras/fixture/src/unity_fixture.c
+        extras/memory/src/unity_memory.c
+)
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extras/fixture/src>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extras/memory/src>
+)
+
+list(APPEND ${PROJECT_NAME}_PUBLIC_HEADERS extras/fixture/src/unity_fixture.h
+                                    extras/fixture/src/unity_fixture_internals.h
+                                    extras/memory/src/unity_memory.h
+)
+endif()
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES 
