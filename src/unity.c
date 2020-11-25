@@ -912,6 +912,7 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_actual = actual;
+    UNITY_FLOAT delta;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -932,7 +933,12 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
 
     while (elements--)
     {
-        if (!UnityFloatsWithin(*ptr_expected * UNITY_FLOAT_PRECISION, *ptr_expected, *ptr_actual))
+        delta = *ptr_expected * UNITY_FLOAT_PRECISION;
+        if (delta < UNITY_FLOAT_PRECISION && delta > -UNITY_FLOAT_PRECISION)
+        {
+            delta = UNITY_FLOAT_PRECISION;
+        }
+        if (!UnityFloatsWithin(delta, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -1054,6 +1060,7 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_actual = actual;
+    UNITY_DOUBLE delta;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1074,7 +1081,12 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
 
     while (elements--)
     {
-        if (!UnityDoublesWithin(*ptr_expected * UNITY_DOUBLE_PRECISION, *ptr_expected, *ptr_actual))
+        delta = *ptr_expected * UNITY_DOUBLE_PRECISION;
+        if (delta < UNITY_DOUBLE_PRECISION && delta > -UNITY_DOUBLE_PRECISION)
+        {
+            delta = UNITY_DOUBLE_PRECISION;
+        }
+        if (!UnityDoublesWithin(delta, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
