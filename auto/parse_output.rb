@@ -18,6 +18,9 @@
 #    To use this parser use the following command
 #    ruby parseOutput.rb [options] [file]
 #        options: -xml  : produce a JUnit compatible XML file
+#                 -suiteRequiredSuiteName
+#                       : replace default test suite name to
+#                           "RequiredSuiteName" (can be any name)
 #           file: file to scan for results
 #============================================================
 
@@ -33,6 +36,9 @@ class ParseOutput
     @array_list = false
 
     # current suite name and statistics
+    ## testsuite name
+    @real_test_suite_name = 'Unity'
+    ## classname for testcase
     @test_suite = nil
     @total_tests = 0
     @test_passed = 0
@@ -43,6 +49,12 @@ class ParseOutput
   # Set the flag to indicate if there will be an XML output file or not
   def set_xml_output
     @xml_out = true
+  end
+
+  # Set the flag to indicate if there will be an XML output file or not
+  def set_test_suite_name(cli_arg)
+    @real_test_suite_name = cli_arg['-suite'.length..-1]
+    puts 'Real test suite name will be \'' + @real_test_suite_name + '\''
   end
 
   # If write our output to XML
@@ -57,7 +69,7 @@ class ParseOutput
   # Pushes the suite info as xml to the array list, which will be written later
   def push_xml_output_suite_info
     # Insert opening tag at front
-    heading = '<testsuite name="Unity" tests="' + @total_tests.to_s + '" failures="' + @test_failed.to_s + '"' + ' skips="' + @test_ignored.to_s + '">'
+    heading = '<testsuite name="' + @real_test_suite_name + '" tests="' + @total_tests.to_s + '" failures="' + @test_failed.to_s + '"' + ' skips="' + @test_ignored.to_s + '">'
     @array_list.insert(0, heading)
     # Push back the closing tag
     @array_list.push '</testsuite>'
@@ -325,6 +337,8 @@ if ARGV.size >= 1
   ARGV.each do |arg|
     if arg == '-xml'
       parse_my_file.set_xml_output
+    elsif arg.start_with?('-suite')
+      parse_my_file.set_test_suite_name(arg)
     else
       parse_my_file.process(arg)
       break
