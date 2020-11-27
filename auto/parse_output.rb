@@ -29,6 +29,7 @@ class ParseOutput
   def initialize
     # internal data
     @class_name_idx = 0
+    @result_usual_idx = 3
     @path_delim = nil
 
     # xml output related
@@ -250,7 +251,8 @@ class ParseOutput
     puts ''
     puts '=================== RESULTS ====================='
     puts ''
-    File.open(file_name, :encoding => "UTF-8").each do |line|
+    # Apply binary encoding. Bad symbols will be unchanged
+    File.open(file_name, "rb").each do |line|
       # Typical test lines look like these:
       # ----------------------------------------------------
       # 1. normal output:
@@ -305,13 +307,18 @@ class ParseOutput
         test_ignored(line_array)
         @test_ignored += 1
       elsif line_array.size >= 4
-        if line_array[3].include? 'PASS'
+        # ':' symbol will be valid in function args now
+        real_method_name = line_array[@result_usual_idx - 1..-2].join(':')
+        line_array = line_array[0..@result_usual_idx - 2] + [real_method_name] + [line_array[-1]]
+
+        # We will check output from color compilation
+        if line_array[@result_usual_idx].include? 'PASS'
           test_passed(line_array)
           @test_passed += 1
-        elsif line_array[3].include? 'FAIL'
+        elsif line_array[@result_usual_idx].include? 'FAIL'
           test_failed(line_array)
           @test_failed += 1
-        elsif line_array[3].include? 'IGNORE:'
+        elsif line_array[@result_usual_idx].include? 'IGNORE'
           test_ignored(line_array)
           @test_ignored += 1
         end
