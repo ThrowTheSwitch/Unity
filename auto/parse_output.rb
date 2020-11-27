@@ -57,6 +57,10 @@ class ParseOutput
     puts 'Real test suite name will be \'' + @real_test_suite_name + '\''
   end
 
+  def xml_encode_s(s)
+    return s.encode(:xml => :attr)
+  end
+
   # If write our output to XML
   def write_xml_output
     output = File.open('report.xml', 'w')
@@ -69,7 +73,7 @@ class ParseOutput
   # Pushes the suite info as xml to the array list, which will be written later
   def push_xml_output_suite_info
     # Insert opening tag at front
-    heading = '<testsuite name="' + @real_test_suite_name + '" tests="' + @total_tests.to_s + '" failures="' + @test_failed.to_s + '"' + ' skips="' + @test_ignored.to_s + '">'
+    heading = '<testsuite name=' + xml_encode_s(@real_test_suite_name) + ' tests="' + @total_tests.to_s + '" failures="' + @test_failed.to_s + '"' + ' skips="' + @test_ignored.to_s + '">'
     @array_list.insert(0, heading)
     # Push back the closing tag
     @array_list.push '</testsuite>'
@@ -77,19 +81,19 @@ class ParseOutput
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_passed(test_name)
-    @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '"/>'
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + '/>'
   end
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_failed(test_name, reason)
-    @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '">'
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + '>'
     @array_list.push '        <failure type="ASSERT FAILED">' + reason + '</failure>'
     @array_list.push '    </testcase>'
   end
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_ignored(test_name, reason)
-    @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '">'
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + '>'
     @array_list.push '        <skipped type="TEST IGNORED">' + reason + '</skipped>'
     @array_list.push '    </testcase>'
   end
