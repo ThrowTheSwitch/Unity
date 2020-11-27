@@ -250,7 +250,7 @@ class ParseOutput
     puts ''
     puts '=================== RESULTS ====================='
     puts ''
-    File.open(file_name).each do |line|
+    File.open(file_name, :encoding => "UTF-8").each do |line|
       # Typical test lines look like these:
       # ----------------------------------------------------
       # 1. normal output:
