@@ -288,6 +288,17 @@ class ParseOutput
         line_array.push('No reason given')
         test_ignored(line_array)
         @test_ignored += 1
+      elsif line_array.size >= 4
+        if line_array[3].include? 'PASS'
+          test_passed(line_array)
+          @test_passed += 1
+        elsif line_array[3].include? 'FAIL'
+          test_failed(line_array)
+          @test_failed += 1
+        elsif line_array[3].include? 'IGNORE:'
+          test_ignored(line_array)
+          @test_ignored += 1
+        end
       end
       @total_tests = @test_passed + @test_failed + @test_ignored
     end
