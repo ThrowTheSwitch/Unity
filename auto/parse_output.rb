@@ -169,6 +169,10 @@ class ParseOutput
 
   # Test was flagged as having passed so format the output
   def test_passed(array)
+    # ':' symbol will be valid in function args now
+    real_method_name = array[@result_usual_idx - 1..-2].join(':')
+    array = array[0..@result_usual_idx - 2] + [real_method_name] + [array[-1]]
+
     last_item = array.length - 1
     test_name = array[last_item - 1]
     test_suite_verify(array[@class_name_idx])
@@ -181,6 +185,10 @@ class ParseOutput
 
   # Test was flagged as having failed so format the line
   def test_failed(array)
+    # ':' symbol will be valid in function args now
+    real_method_name = array[@result_usual_idx - 1..-3].join(':')
+    array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..-1]
+
     last_item = array.length - 1
     test_name = array[last_item - 2]
     reason = array[last_item].chomp.lstrip + ' at line: ' + array[last_item - 3]
@@ -204,6 +212,10 @@ class ParseOutput
 
   # Test was flagged as being ignored so format the output
   def test_ignored(array)
+    # ':' symbol will be valid in function args now
+    real_method_name = array[@result_usual_idx - 1..-3].join(':')
+    array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..-1]
+
     last_item = array.length - 1
     test_name = array[last_item - 2]
     reason = array[last_item].chomp.lstrip
@@ -307,18 +319,18 @@ class ParseOutput
         test_ignored(line_array)
         @test_ignored += 1
       elsif line_array.size >= 4
-        # ':' symbol will be valid in function args now
-        real_method_name = line_array[@result_usual_idx - 1..-2].join(':')
-        line_array = line_array[0..@result_usual_idx - 2] + [real_method_name] + [line_array[-1]]
-
         # We will check output from color compilation
-        if line_array[@result_usual_idx].include? 'PASS'
+        if line_array[@result_usual_idx..-1].any? {|l| l.include? 'PASS'}
           test_passed(line_array)
           @test_passed += 1
-        elsif line_array[@result_usual_idx].include? 'FAIL'
+        elsif line_array[@result_usual_idx..-1].any? {|l| l.include? 'FAIL'}
           test_failed(line_array)
           @test_failed += 1
-        elsif line_array[@result_usual_idx].include? 'IGNORE'
+        elsif line_array[@result_usual_idx..-2].any? {|l| l.include? 'IGNORE'}
+          test_ignored(line_array)
+          @test_ignored += 1
+        elsif line_array[@result_usual_idx..-1].any? {|l| l.include? 'IGNORE'}
+          line_array.push('No reason given')
           test_ignored(line_array)
           @test_ignored += 1
         end
