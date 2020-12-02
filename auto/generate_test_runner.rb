@@ -130,7 +130,7 @@ class UnityTestRunnerGenerator
 
     lines.each_with_index do |line, _index|
       # find tests
-      next unless line =~ /^((?:\s*(?:TEST_CASE|TEST_RANGE)\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
+      next unless line =~ /^((?:\s*(?:TEST_CASE|TEST_RANGE|TEST_MATRIX)\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
 
       arguments = Regexp.last_match(1)
       name = Regexp.last_match(2)
@@ -149,6 +149,27 @@ class UnityTestRunnerGenerator
             end
           end.map do |arg_values|
             (arg_values[0]..arg_values[1]).step(arg_values[2]).to_a
+          end.reduce do |result, arg_range_expanded|
+            result.product(arg_range_expanded)
+          end.map do |arg_combinations|
+            arg_combinations.flatten.join(', ')
+          end
+        end
+
+        # Based on:
+        ## https://en.cppreference.com/w/cpp/language/integer_literal
+        ## https://en.cppreference.com/w/cpp/language/character_literal
+        ## https://en.cppreference.com/w/cpp/language/floating_literal
+        ## https://en.cppreference.com/w/cpp/language/escape
+        ## Strings & chars with '[', ']', '(', ')'
+        ## Empty args
+
+        one_arg_regex_string = /(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^"',\s\]][^,\s\]]*|)/.source
+
+        arguments.scan(/\s*TEST_MATRIX\s*\((.*)\)\s*$/).flatten.each do |values|
+          args += values.scan(/\[\s*((?:#{one_arg_regex_string}\s*,\s*)*#{one_arg_regex_string})\s*\]/).flatten.map do |one_arg_values|
+            # Force appending comma for usual regular matching
+            (one_arg_values + ',').scan(/(#{one_arg_regex_string})\s*,/)
           end.reduce do |result, arg_range_expanded|
             result.product(arg_range_expanded)
           end.map do |arg_combinations|
