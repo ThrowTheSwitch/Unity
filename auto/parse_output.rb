@@ -82,19 +82,19 @@ class ParseOutput
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_passed(test_name, execution_time = 0)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s(execution_time.to_s) + ' />'
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s((execution_time / 1000.0).to_s) + ' />'
   end
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_failed(test_name, reason, execution_time = 0)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s(execution_time.to_s) + '>'
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s((execution_time / 1000.0).to_s) + '>'
     @array_list.push '        <failure type="ASSERT FAILED">' + reason + '</failure>'
     @array_list.push '    </testcase>'
   end
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_ignored(test_name, reason, execution_time = 0)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s(execution_time.to_s) + '>'
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s((execution_time / 1000.0).to_s) + '>'
     @array_list.push '        <skipped type="TEST IGNORED">' + reason + '</skipped>'
     @array_list.push '    </testcase>'
   end
@@ -240,6 +240,7 @@ class ParseOutput
     push_xml_output_ignored(test_name, reason, test_time) if @xml_out
   end
 
+  # Test time will be in ms
   def get_test_time(value_with_time)
     test_time_array = value_with_time.scan(/\((-?\d+.?\d*) ms\)\s*$/).flatten.map do |arg_value_str|
       arg_value_str.include?('.') ? arg_value_str.to_f : arg_value_str.to_i
