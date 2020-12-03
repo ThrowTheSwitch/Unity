@@ -81,20 +81,20 @@ class ParseOutput
   end
 
   # Pushes xml output data to the array list, which will be written later
-  def push_xml_output_passed(test_name)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + '/>'
+  def push_xml_output_passed(test_name, execution_time = 0)
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s(execution_time.to_s) + ' />'
   end
 
   # Pushes xml output data to the array list, which will be written later
-  def push_xml_output_failed(test_name, reason)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + '>'
+  def push_xml_output_failed(test_name, reason, execution_time = 0)
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s(execution_time.to_s) + '>'
     @array_list.push '        <failure type="ASSERT FAILED">' + reason + '</failure>'
     @array_list.push '    </testcase>'
   end
 
   # Pushes xml output data to the array list, which will be written later
-  def push_xml_output_ignored(test_name, reason)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + '>'
+  def push_xml_output_ignored(test_name, reason, execution_time = 0)
+    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s(execution_time.to_s) + '>'
     @array_list.push '        <skipped type="TEST IGNORED">' + reason + '</skipped>'
     @array_list.push '    </testcase>'
   end
@@ -174,13 +174,14 @@ class ParseOutput
     array = array[0..@result_usual_idx - 2] + [real_method_name] + [array[-1]]
 
     last_item = array.length - 1
+    test_time = get_test_time(array[last_item])
     test_name = array[last_item - 1]
     test_suite_verify(array[@class_name_idx])
-    printf "%-40s PASS\n", test_name
+    printf "%-40s PASS %10d ms\n", test_name, test_time
 
     return unless @xml_out
 
-    push_xml_output_passed(test_name) if @xml_out
+    push_xml_output_passed(test_name, test_time) if @xml_out
   end
 
   # Test was flagged as having failed so format the line
@@ -190,6 +191,7 @@ class ParseOutput
     array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..-1]
 
     last_item = array.length - 1
+    test_time = get_test_time(array[last_item])
     test_name = array[last_item - 2]
     reason = array[last_item].chomp.lstrip + ' at line: ' + array[last_item - 3]
     class_name = array[@class_name_idx]
@@ -205,9 +207,9 @@ class ParseOutput
     end
 
     test_suite_verify(class_name)
-    printf "%-40s FAILED\n", test_name
+    printf "%-40s FAILED %10d ms\n", test_name, test_time
 
-    push_xml_output_failed(test_name, reason) if @xml_out
+    push_xml_output_failed(test_name, reason, test_time) if @xml_out
   end
 
   # Test was flagged as being ignored so format the output
@@ -217,6 +219,7 @@ class ParseOutput
     array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..-1]
 
     last_item = array.length - 1
+    test_time = get_test_time(array[last_item])
     test_name = array[last_item - 2]
     reason = array[last_item].chomp.lstrip
     class_name = array[@class_name_idx]
@@ -232,9 +235,17 @@ class ParseOutput
     end
 
     test_suite_verify(class_name)
-    printf "%-40s IGNORED\n", test_name
+    printf "%-40s IGNORED %10d ms\n", test_name, test_time
 
-    push_xml_output_ignored(test_name, reason) if @xml_out
+    push_xml_output_ignored(test_name, reason, test_time) if @xml_out
+  end
+
+  def get_test_time(value_with_time)
+    test_time_array = value_with_time.scan(/\((-?\d+.?\d*) ms\)\s*$/).flatten.map do |arg_value_str|
+      arg_value_str.include?('.') ? arg_value_str.to_f : arg_value_str.to_i
+    end
+
+    test_time_array.any? ? test_time_array[0] : 0
   end
 
   # Adjusts the os specific members according to the current path style
@@ -330,7 +341,7 @@ class ParseOutput
           test_ignored(line_array)
           @test_ignored += 1
         elsif line_array[@result_usual_idx..-1].any? {|l| l.include? 'IGNORE'}
-          line_array.push('No reason given')
+          line_array.push('No reason given (' + get_test_time(line_array[@result_usual_idx..-1]).to_s + ' ms)')
           test_ignored(line_array)
           @test_ignored += 1
         end
