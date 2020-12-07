@@ -167,7 +167,7 @@ class UnityTestRunnerGenerator
         ## Args with spaces (not strings or char sequences)
         ## String concatenations: "Hello" "World"
 
-        one_number_or_text_regex_string = /(?:[^"',\s\]](?:[^"',\]]*[^"',\s\]])*|(?:(?:\+\-)\s*)?\d+(?:'\d+)*)/.source
+        one_number_or_text_regex_string = /(?:[^"',\s\]](?:[^"',\]][^"',\s\]]?)*|(?:(?:\+\-)\s*)?\d+(?:'\d+)*)/.source
         one_arg_regex_string = /(?:(?:(?:#{one_number_or_text_regex_string}\s*|)"(?:[^"\\]|\\.)*")+|(?:#{one_number_or_text_regex_string}\s*|)'(?:[^'\\]|\\.)*'|(?:#{one_number_or_text_regex_string}|))\s*/.source
 
         arguments.scan(/\s*TEST_MATRIX\s*\((.*)\)\s*$/).flatten.each do |values|
