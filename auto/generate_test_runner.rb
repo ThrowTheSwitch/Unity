@@ -129,8 +129,10 @@ class UnityTestRunnerGenerator
                            .map { |line| line.gsub(substring_unre, substring_unsubs) } # unhide the problematic characters previously removed
 
     lines.each_with_index do |line, _index|
+      tests_regex_string = /\s*(?:TEST_CASE|TEST_RANGE|TEST_MATRIX)\s*\(.*?\)\s*/.source
+
       # find tests
-      next unless line =~ /^((?:\s*(?:TEST_CASE|TEST_RANGE|TEST_MATRIX)\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
+      next unless line =~ /^((?:#{tests_regex_string})*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
 
       arguments = Regexp.last_match(1)
       name = Regexp.last_match(2)
@@ -140,9 +142,9 @@ class UnityTestRunnerGenerator
 
       if @options[:use_param_tests] && !arguments.empty?
         args = []
-        arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/m) { |a| args << a[0] }
+        arguments.scan(/\s*TEST_CASE\s*\(((?:(?!#{tests_regex_string}).)*)\)\s*$/m) { |a| args << a[0] }
 
-        arguments.scan(/\s*TEST_RANGE\s*\((.*)\)\s*$/m).flatten.each do |range_str|
+        arguments.scan(/\s*TEST_RANGE\s*\(((?:(?!#{tests_regex_string}).)*)\)\s*$/m).flatten.each do |range_str|
           args += range_str.scan(/\[\s*(-?\d+.?\d*),\s*(-?\d+.?\d*),\s*(-?\d+.?\d*)\s*\]/m).map do |arg_values_str|
             arg_values_str.map do |arg_value_str|
               arg_value_str.include?('.') ? arg_value_str.to_f : arg_value_str.to_i
@@ -173,7 +175,7 @@ class UnityTestRunnerGenerator
         one_char_regex_string = /'(?:[^'\\]|\\.)*'/.source
         one_arg_regex_string = /(?:(?:(?:#{one_number_or_text_regex_string}\s*)?#{one_string_regex_string})+|(?:#{one_number_or_text_regex_string}\s*)?#{one_char_regex_string}|(?:#{one_number_or_text_regex_string}))/.source
 
-        arguments.scan(/\s*TEST_MATRIX\s*\((.*)\)\s*$/m).flatten.each do |values|
+        arguments.scan(/\s*TEST_MATRIX\s*\(((?:(?!#{tests_regex_string}).)*)\)\s*$/m).flatten.each do |values|
           args += values.scan(/\[\s*((?:#{one_arg_regex_string}\s*,\s*)*#{one_arg_regex_string})\s*\]/m).flatten.map do |one_arg_values|
             # Force appending comma for usual regular matching
             (one_arg_values + ',').scan(/(#{one_arg_regex_string})\s*,/m)
