@@ -166,9 +166,12 @@ class UnityTestRunnerGenerator
         ## Empty args
         ## Args with spaces (not strings or char sequences)
         ## String concatenations: "Hello" "World"
+        # Not supported: array addressing (with [])
 
-        one_number_or_text_regex_string = /(?:[^"',\s\]](?:[^"',\]][^"',\s\]]?)*|(?:(?:\+\-)\s*)?\d+(?:'\d+)*)/.source
-        one_arg_regex_string = /(?:(?:(?:#{one_number_or_text_regex_string}\s*|)"(?:[^"\\]|\\.)*")+|(?:#{one_number_or_text_regex_string}\s*|)'(?:[^'\\]|\\.)*'|(?:#{one_number_or_text_regex_string}|))\s*/.source
+        one_number_or_text_regex_string = /[^"',\s\]](?:['\s]*[^"',\s\]])*/.source
+        one_string_regex_string = /"(?:[^"\\]|\\.)*"/.source
+        one_char_regex_string = /'(?:[^'\\]|\\.)*'/.source
+        one_arg_regex_string = /(?:(?:(?:#{one_number_or_text_regex_string}\s*)?#{one_string_regex_string})+|(?:#{one_number_or_text_regex_string}\s*)?#{one_char_regex_string}|(?:#{one_number_or_text_regex_string}))/.source
 
         arguments.scan(/\s*TEST_MATRIX\s*\((.*)\)\s*$/).flatten.each do |values|
           args += values.scan(/\[\s*((?:#{one_arg_regex_string}\s*,\s*)*#{one_arg_regex_string})\s*\]/).flatten.map do |one_arg_values|
