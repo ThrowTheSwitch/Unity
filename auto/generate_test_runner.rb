@@ -197,7 +197,7 @@ class UnityTestRunnerGenerator
     mock_headers = []
     includes.each do |include_path|
       include_file = File.basename(include_path)
-      mock_headers << include_path if include_file =~ /^#{@options[:mock_prefix]}.*#{@options[:mock_suffix]}$/i
+      mock_headers << include_path if include_file =~ /^#{@options[:mock_prefix]}.*#{@options[:mock_suffix]}\.h$/i
     end
     mock_headers
   end
