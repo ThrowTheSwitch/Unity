@@ -41,6 +41,22 @@ project(unity
     DESCRIPTION "C Unit testing framework."
 )
 
+# Options to Build With Extras -------------------------------------------------
+option(UNITY_EXTENSION_FIXTURE "Compiles Unity with the \"fixture\" extension." OFF)
+option(UNITY_EXTENSION_MEMORY "Compiles Unity with the \"memory\" extension." OFF)
+
+# Fixture is a dependant of memory
+set(UNITY_EXTENSION_FIXTURE_ENABLED ${UNITY_EXTENSION_FIXTURE})
+set(UNITY_EXTENSION_MEMORY_ENABLED $<OR:$<BOOL:${UNITY_EXTENSION_MEMORY}>,$<BOOL:${UNITY_EXTENSION_FIXTURE}>>)
+
+if(${UNITY_EXTENSION_FIXTURE})
+    message(STATUS "Unity: Bulding with the fixture extension.")
+endif()
+
+if(${UNITY_EXTENSION_MEMORY})
+    message(STATUS "Unity: Bulding with the memory extension.")
+endif()
+
 # Main target ------------------------------------------------------------------
 add_library(${PROJECT_NAME} STATIC)
 add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
@@ -52,6 +68,8 @@ include(CMakePackageConfigHelpers)
 target_sources(${PROJECT_NAME}
     PRIVATE
         src/unity.c
+        $<$<BOOL:${UNITY_EXTENSION_FIXTURE_ENABLED}>:extras/fixture/src/unity_fixture.c>
+        $<$<BOOL:${UNITY_EXTENSION_MEMORY_ENABLED}>:extras/memory/src/unity_memory.c>
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -59,10 +77,17 @@ target_include_directories(${PROJECT_NAME}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+        $<BUILD_INTERFACE:$<$<BOOL:${UNITY_EXTENSION_MEMORY_ENABLED}>:${CMAKE_CURRENT_SOURCE_DIR}/extras/memory/src>>
+        $<BUILD_INTERFACE:$<$<BOOL:${UNITY_EXTENSION_FIXTURE_ENABLED}>:${CMAKE_CURRENT_SOURCE_DIR}/extras/fixture/src>>
 )
 
-set(${PROJECT_NAME}_PUBLIC_HEADERS src/unity.h
-                                   src/unity_internals.h
+set(${PROJECT_NAME}_PUBLIC_HEADERS
+        src/unity.h
+        src/unity_internals.h
+        $<$<BOOL:${UNITY_EXTENSION_FIXTURE_ENABLED}>:extras/fixture/src/unity_fixture.h
+                                             extras/fixture/src/unity_fixture_internals.h>
+        $<$<BOOL:${UNITY_EXTENSION_MEMORY_ENABLED}>:extras/memory/src/unity_memory.h
+                                            extras/memory/src/unity_memory_internals.h>
 )
 
 set_target_properties(${PROJECT_NAME}
