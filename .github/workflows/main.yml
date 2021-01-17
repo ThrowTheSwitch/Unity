@@ -19,8 +19,8 @@ jobs:
       # Install Ruby Testing Tools
       - name: Setup Ruby Testing Tools
         run: |
-          gem install rspec
-          gem install rubocop -v 0.57.2
+          sudo gem install rspec
+          sudo gem install rubocop -v 0.57.2
 
       # Run Tests
       - name: Run All Unit Tests
