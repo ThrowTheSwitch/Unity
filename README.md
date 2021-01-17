@@ -1,8 +1,17 @@
-Unity Test API
-==============
+Unity Test ![CI](https://github.com/ThrowTheSwitch/Unity/workflows/CI/badge.svg)
+==========
+__Copyright (c) 2007 - 2021 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
-[![Unity Build Status](https://api.travis-ci.org/ThrowTheSwitch/Unity.png?branch=master)](https://travis-ci.org/ThrowTheSwitch/Unity)
-__Copyright (c) 2007 - 2020 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
+Welcome to the Unity Test Project, one of the main projects of ThrowTheSwitch.org. Unity Test is a 
+unit testing framework built for C, with a focus on working with embedded toolchains. 
+
+This project is made to test code targetting microcontrollers big and small. The core project is a 
+single C file and a pair of headers, allowing it to the added to your existing build setup without 
+too much headache. You may use any compiler you wish, and may use most existing build systems
+including make, cmake, etc. If you'd like to leave the hard work to us, you might be interested
+in Ceedling, a build tool also by ThrowTheSwitch.org. 
+
+If you're new to Unity, we encourage you to tour the [getting started guide](docs/UnityGettingStartedGuide.md)
 
 Getting Started
 ===============

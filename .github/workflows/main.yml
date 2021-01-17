@@ -1,0 +1,41 @@
+---
+# Continuous Integration Workflow: Test case suite run + validation build check
+name: CI
+
+# Controls when the action will run.
+# Triggers the workflow on push or pull request events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # Job: Unit test suite
+  unit-tests:
+    name: "Unit Tests"
+    runs-on: ubuntu-latest
+    steps:
+      # Install Ruby Testing Tools
+      - name: Setup Ruby Testing Tools
+        run: |
+          gem install rspec
+          gem install rubocop -v 0.57.2
+
+      # Run Tests
+      - name: Run All Unit Tests
+        run: |
+          cd test && rake ci
+
+      # Slack notification
+      - uses: 8398a7/action-slack@v3
+        with:
+          icon_emoji: ':octocat:'
+          status: ${{ job.status }}
+          # Github Actions limit visibility into renamed jobs; explicit job names here solve this limitation
+          job_name: "Unit Tests"
+          fields: repo,author,eventName,workflow,job
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_CI_CHANNEL_WEBHOOK }}
+        if: always() # Pick up events even if the job fails or is canceled.
