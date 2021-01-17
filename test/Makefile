@@ -10,6 +10,7 @@ endif
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 #CFLAGS += -Wconversion #disabled because if falsely complains about the isinf and isnan macros
 CFLAGS += -Wno-switch-enum -Wno-double-promotion
+CFLAGS += -Wno-poison-system-directories
 CFLAGS += -Wbad-function-cast -Wcast-qual -Wold-style-definition -Wshadow -Wstrict-overflow \
           -Wstrict-prototypes -Wswitch-default -Wundef
 #DEBUG = -O0 -g

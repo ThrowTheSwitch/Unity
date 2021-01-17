@@ -300,8 +300,8 @@ module RakefileHelpers
 
   def run_make_tests()
     [ "make -s",                               # test with all defaults
-      "make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
-      "make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types
+      #"make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
+      #"make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types
       "make -s UNITY_INCLUDE_DOUBLE= ",        # test without double
       "cd #{File.join("..","extras","fixture",'test')} && make -s default noStdlibMalloc",
       "cd #{File.join("..","extras","fixture",'test')} && make -s C89",
