@@ -19,23 +19,14 @@ jobs:
       # Install Ruby Testing Tools
       - name: Setup Ruby Testing Tools
         run: |
-          gem install rspec
-          gem install rubocop -v 0.57.2
+          sudo gem install rspec
+          sudo gem install rubocop -v 0.57.2
+
+      # Checks out repository under $GITHUB_WORKSPACE
+      - name: Checkout Latest Repo
+        uses: actions/checkout@v2
 
       # Run Tests
       - name: Run All Unit Tests
         run: |
           cd test && rake ci
-
-      # Slack notification
-      - uses: 8398a7/action-slack@v3
-        with:
-          icon_emoji: ':octocat:'
-          status: ${{ job.status }}
-          # Github Actions limit visibility into renamed jobs; explicit job names here solve this limitation
-          job_name: "Unit Tests"
-          fields: repo,author,eventName,workflow,job
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_CI_CHANNEL_WEBHOOK }}
-        if: always() # Pick up events even if the job fails or is canceled.
