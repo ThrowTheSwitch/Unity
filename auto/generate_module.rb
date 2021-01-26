@@ -171,11 +171,8 @@ class UnityModuleGenerator
   def neutralize_filename(name, start_cap = true)
     return name if name.empty?
     name = name.split(/(?:\s+|_|(?=[A-Z][a-z]))|(?<=[a-z])(?=[A-Z])/).map { |v| v.capitalize }.join('_')
-    return if start_cap
-      name
-    else
-      name[0].downcase + name[1..-1]
-    end
+    name = name[0].downcase + name[1..-1] unless start_cap
+    return name
   end
 
   ############################
