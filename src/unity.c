@@ -71,6 +71,14 @@ static const char PROGMEM UnityStrResultsIgnored[]         = " Ignored ";
 static const char PROGMEM UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
 static const char PROGMEM UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
 #endif
+
+void unity_register_test_(const char description[], const char file[], unsigned line)
+{
+    Unity.TestFile = file;
+    Unity.CurrentTestName = description;
+    Unity.CurrentTestLineNumber = line;
+}
+
 /*-----------------------------------------------
  * Pretty Printers & Test Result Output Handlers
  *-----------------------------------------------*/

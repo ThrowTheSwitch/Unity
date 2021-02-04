@@ -118,6 +118,27 @@ void verifyTest(void);
 #define TEST_FILE(a)
 
 /*-------------------------------------------------------
+ * Test macros for experimental no-register mode
+ *-------------------------------------------------------*/
+
+void unity_register_test_(const char description[], const char file[], unsigned line);
+
+#define TEST_SUITE(DESC_LITERAL)                                \
+static const char * unity_suite_desc_ = "" DESC_LITERAL "";     \
+void unity_suite_func_(void);                                   \
+int main(int unity_argc_, const char * unity_argv_[]) {         \
+    unity_suite_func_();                                        \
+}                                                               \
+void setUp(void) {}                                             \
+void tearDown(void) {}                                          \
+void unity_suite_func_(void)
+// This disabling of setup and tear down is only temporary while suite is being
+// fully fleshed out
+
+#define TEST(DESC_LITERAL)                                      \
+unity_register_test_("" DESC_LITERAL "", __FILE__, __LINE__);
+
+/*-------------------------------------------------------
  * Test Asserts (simple)
  *-------------------------------------------------------*/
 
