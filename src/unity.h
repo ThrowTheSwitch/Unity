@@ -122,12 +122,16 @@ void verifyTest(void);
  *-------------------------------------------------------*/
 
 void unity_register_test_(const char description[], const char file[], unsigned line);
+void unity_deregister_test_(void);
 
 #define TEST_SUITE(DESC_LITERAL)                                \
 static const char * unity_suite_desc_ = "" DESC_LITERAL "";     \
 void unity_suite_func_(void);                                   \
 int main(int unity_argc_, const char * unity_argv_[]) {         \
+    UNITY_BEGIN();                                              \
     unity_suite_func_();                                        \
+    unity_deregister_test_();                                   \
+    return UNITY_END();                                         \
 }                                                               \
 void setUp(void) {}                                             \
 void tearDown(void) {}                                          \
@@ -136,6 +140,7 @@ void unity_suite_func_(void)
 // fully fleshed out
 
 #define TEST(DESC_LITERAL)                                      \
+unity_deregister_test_();                                       \
 unity_register_test_("" DESC_LITERAL "", __FILE__, __LINE__);
 
 /*-------------------------------------------------------
