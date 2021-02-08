@@ -21,7 +21,7 @@ void UNITY_OUTPUT_CHAR(int);
 /* Helpful macros for us to use here in Assert functions */
 #define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }
-#define RETURN_IF_FAIL_OR_IGNORE if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) TEST_ABORT()
+#define RETURN_IF_FAIL_OR_IGNORE if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored || Unity.CurrentTestDone) return
 
 struct UNITY_STORAGE_T Unity;
 
@@ -79,9 +79,9 @@ void unity_register_test_(const char description[], const char file[], unsigned 
     Unity.CurrentTestLineNumber = line;
     ++Unity.NumberOfTests;
     UNITY_CLR_DETAILS();
+    UNITY_EXEC_TIME_START();
     if (TEST_PROTECT())
         setUp();
-    UNITY_EXEC_TIME_START();
     // Remember that all of this is only half of the test being run.  There is
     // another function (not yet defined) that does all the cleanup _after_ the
     // test is done.
@@ -94,10 +94,11 @@ void unity_deregister_test_(void)
     // without having to manually register them separately.
     if (0 == Unity.NumberOfTests)
         return;
-    UNITY_EXEC_TIME_STOP();
-    if (TEST_PROTECT())
+    if (TEST_PROTECT()) {
         tearDown();
-    UnityConcludeTest();
+        UnityConcludeTest();
+    }
+    UNITY_EXEC_TIME_STOP();
 }
 
 /*-----------------------------------------------
@@ -1877,7 +1878,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 /*-----------------------------------------------*/
 void UnitySetTestFile(const char* filename)
 {
-	Unity.TestFile = filename;
+    Unity.TestFile = filename;
 }
 
 /*-----------------------------------------------*/
@@ -1891,6 +1892,7 @@ void UnityBegin(const char* filename)
     Unity.TestIgnores = 0;
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
+    Unity.CurrentTestDone = 0;
 
     UNITY_CLR_DETAILS();
     UNITY_OUTPUT_START();

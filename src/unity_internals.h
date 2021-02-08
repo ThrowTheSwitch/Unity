@@ -467,6 +467,7 @@ struct UNITY_STORAGE_T
     UNITY_COUNTER_TYPE TestIgnores;
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
+    UNITY_COUNTER_TYPE CurrentTestDone;
 #ifdef UNITY_INCLUDE_EXEC_TIME
     UNITY_TIME_TYPE CurrentTestStartTime;
     UNITY_TIME_TYPE CurrentTestStopTime;
@@ -617,13 +618,8 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
                                    const UNITY_DISPLAY_STYLE_T style,
                                    const UNITY_FLAGS_T flags);
 
-#ifndef UNITY_EXCLUDE_SETJMP_H
-void UnityFail(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);
-void UnityIgnore(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);
-#else
 void UnityFail(const char* message, const UNITY_LINE_TYPE line);
 void UnityIgnore(const char* message, const UNITY_LINE_TYPE line);
-#endif
 
 void UnityMessage(const char* message, const UNITY_LINE_TYPE line);
 
@@ -699,7 +695,7 @@ extern const char UnityStrErrShorthand[];
 
 #ifndef UNITY_EXCLUDE_SETJMP_H
 #define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
-#define TEST_ABORT() longjmp(Unity.AbortFrame, 1)
+#define TEST_ABORT() do { Unity.CurrentTestDone = 1; } while (0)
 #else
 #define TEST_PROTECT() 1
 #define TEST_ABORT() return
