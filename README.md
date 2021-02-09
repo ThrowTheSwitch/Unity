@@ -11,7 +11,19 @@ too much headache. You may use any compiler you wish, and may use most existing 
 including make, cmake, etc. If you'd like to leave the hard work to us, you might be interested
 in Ceedling, a build tool also by ThrowTheSwitch.org. 
 
+This particular branch focuses on creating an interface to the Unity test
+framework that does not make you have to register each and every test after you
+write it.  Instead, this branch uses pure C to make testing easier and more
+straightforward by putting all your tests of a suite into a single function, and
+instead using internal state to figure out what is going on in your test.
+
 If you're new to Unity, we encourage you to tour the [getting started guide](docs/UnityGettingStartedGuide.md)
+
+A Quick Heads-Up
+----------------
+
+This branch of the Unity repository is for testing purposes and should therefore
+not be used in any production code as of yet.
 
 Getting Started
 ===============

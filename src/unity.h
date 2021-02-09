@@ -121,27 +121,28 @@ void verifyTest(void);
  * Test macros for experimental no-register mode
  *-------------------------------------------------------*/
 
-void unity_register_test_(const char description[], const char file[], unsigned line);
-void unity_deregister_test_(void);
+void UnityRegisterTest(const char description[], const char file[], unsigned line);
+void UnityDeregisterTest(void);
 
 #define TEST_SUITE(DESC_LITERAL)                                \
-static const char * unity_suite_desc_ = "" DESC_LITERAL "";     \
-void unity_suite_func_(void);                                   \
+static const char * UnitySuiteDesc = "" DESC_LITERAL "";        \
+void UnitySuiteFunc(void);                                      \
 int main(int unity_argc_, const char * unity_argv_[]) {         \
     UNITY_BEGIN();                                              \
-    unity_suite_func_();                                        \
-    unity_deregister_test_();                                   \
+    UNITY_SUITE_NAME(UnitySuiteDesc);                           \
+    UnitySuiteFunc();                                           \
+    UnityDeregisterTest();                                      \
     return UNITY_END();                                         \
 }                                                               \
 void setUp(void) {}                                             \
 void tearDown(void) {}                                          \
-void unity_suite_func_(void)
+void UnitySuiteFunc(void)
 // This disabling of setup and tear down is only temporary while suite is being
 // fully fleshed out
 
 #define TEST(DESC_LITERAL)                                      \
-unity_deregister_test_();                                       \
-unity_register_test_("" DESC_LITERAL "", __FILE__, __LINE__);
+UnityDeregisterTest();                                          \
+UnityRegisterTest("" DESC_LITERAL "", __FILE__, __LINE__);
 
 /*-------------------------------------------------------
  * Test Asserts (simple)

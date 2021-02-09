@@ -468,6 +468,7 @@ struct UNITY_STORAGE_T
     UNITY_COUNTER_TYPE CurrentTestFailed;
     UNITY_COUNTER_TYPE CurrentTestIgnored;
     UNITY_COUNTER_TYPE CurrentTestDone;
+    const char* SuiteName;
 #ifdef UNITY_INCLUDE_EXEC_TIME
     UNITY_TIME_TYPE CurrentTestStartTime;
     UNITY_TIME_TYPE CurrentTestStopTime;
@@ -484,6 +485,7 @@ extern struct UNITY_STORAGE_T Unity;
  *-------------------------------------------------------*/
 
 void UnityBegin(const char* filename);
+void UnitySuiteName(const char* suiteName);
 int  UnityEnd(void);
 void UnitySetTestFile(const char* filename);
 void UnityConcludeTest(void);
@@ -732,6 +734,10 @@ extern const char UnityStrErrShorthand[];
 
 #ifndef UNITY_BEGIN
 #define UNITY_BEGIN() UnityBegin(__FILE__)
+#endif
+
+#ifndef UNITY_SUITE_NAME
+#define UNITY_SUITE_NAME(NAME) UnitySuiteName(NAME)
 #endif
 
 #ifndef UNITY_END
