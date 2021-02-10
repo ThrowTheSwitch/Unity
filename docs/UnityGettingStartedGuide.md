@@ -96,7 +96,7 @@ Both functions accept no arguments and return nothing. You may leave either or
 both of these blank if you have no need for them.
 
 If you're using Ceedling or the test runner generator script, you may leave these off
-completely. Not sure? Give it a try. If you compiler complains that it can't
+completely. Not sure? Give it a try. If your compiler complains that it can't
 find setUp or tearDown when it links, you'll know you need to at least include
 an empty function for these.
 
