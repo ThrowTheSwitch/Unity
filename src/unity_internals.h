@@ -40,10 +40,10 @@
 #include <limits.h>
 #endif
 
-#if defined __GNUC__
-#    define UNITY_FUNCTION_ATTR(a) __attribute__((a))
+#if defined(__GNUC__) || defined(__clang__)
+  #define UNITY_FUNCTION_ATTR(a)    __attribute__((a))
 #else
-#    define UNITY_FUNCTION_ATTR(a) /* ignore */
+  #define UNITY_FUNCTION_ATTR(a)    /* ignore */
 #endif
 
 /*-------------------------------------------------------
