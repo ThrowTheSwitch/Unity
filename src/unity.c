@@ -369,10 +369,12 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     }
     else
     {
-        UNITY_INT32 n_int = 0, n;
-        int exponent = 0;
-        int decimals, digits;
-        char buf[16] = {0};
+        UNITY_INT32 n_int = 0;
+        UNITY_INT32 n;
+        int         exponent = 0;
+        int         decimals;
+        int         digits;
+        char        buf[16] = {0};
 
         /*
          * Scale up or down by powers of 10.  To minimize rounding error,
@@ -445,14 +447,19 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
         /* build up buffer in reverse order */
         digits = 0;
-        while ((n != 0) || (digits < (decimals + 1)))
+        while ((n != 0) || (digits <= decimals))
         {
             buf[digits++] = (char)('0' + n % 10);
             n /= 10;
         }
+
+        /* print out buffer (backwards) */
         while (digits > 0)
         {
-            if (digits == decimals) { UNITY_OUTPUT_CHAR('.'); }
+            if (digits == decimals)
+            {
+                UNITY_OUTPUT_CHAR('.');
+            }
             UNITY_OUTPUT_CHAR(buf[--digits]);
         }
 
