@@ -103,6 +103,7 @@ target_compile_options(${PROJECT_NAME}
                                  -Wcast-qual
                                  -Wconversion
                                  -Wexit-time-destructors
+                                 -Wextra-semi-stmt
                                  -Wglobal-constructors
                                  -Wmissing-noreturn
                                  -Wmissing-prototypes
