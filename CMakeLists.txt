@@ -41,6 +41,16 @@ project(unity
     DESCRIPTION "C Unit testing framework."
 )
 
+# Build Unity's internal tests -------------------------------------------------
+option(UNITY_BUILD_TESTS "Builds unity's internal tests." OFF)
+
+if (UNITY_BUILD_TESTS)
+    enable_testing()
+    add_executable(no_register_test no_register_test.c)
+    target_link_libraries(no_register_test unity)
+    add_test(NAME no_register_test COMMAND no_register_test)
+endif ()
+
 # Options to Build With Extras -------------------------------------------------
 option(UNITY_EXTENSION_FIXTURE "Compiles Unity with the \"fixture\" extension." OFF)
 option(UNITY_EXTENSION_MEMORY "Compiles Unity with the \"memory\" extension." OFF)
