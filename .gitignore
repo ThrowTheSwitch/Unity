@@ -2,6 +2,7 @@ build/
 builddir/
 test/sandbox
 .DS_Store
+examples/example_1/subprojects/unity
 examples/example_1/test1.exe
 examples/example_1/test2.exe
 examples/example_2/all_tests.exe
