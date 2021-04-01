@@ -151,6 +151,7 @@ RUNNER_TESTS = [
                     'paratest_ShouldHandleParameterizedTests\(5\)',
                     'paratest_ShouldHandleParameterizedTests2\(7\)',
                     'paratest_ShouldHandleNonParameterizedTestsWhenParameterizationValid',
+                    'paratest_WorksWithFunctionPointers\(isArgumentOne\)',
                   ],
       :to_fail => [ 'paratest_ShouldHandleParameterizedTestsThatFail\(17\)' ],
       :to_ignore => [ ],
@@ -168,6 +169,7 @@ RUNNER_TESTS = [
                     'paratest_ShouldHandleParameterizedTests\(5\)',
                     'paratest_ShouldHandleParameterizedTests2\(7\)',
                     'paratest_ShouldHandleNonParameterizedTestsWhenParameterizationValid',
+                    'paratest_WorksWithFunctionPointers\(isArgumentOne\)',
                   ],
       :to_fail => [ 'paratest_ShouldHandleParameterizedTestsThatFail\(17\)' ],
       :to_ignore => [ ],
@@ -188,6 +190,7 @@ RUNNER_TESTS = [
                     'paratest_ShouldHandleParameterizedTests\(5\)',
                     'paratest_ShouldHandleParameterizedTests2\(7\)',
                     'paratest_ShouldHandleNonParameterizedTestsWhenParameterizationValid',
+                    'paratest_WorksWithFunctionPointers\(isArgumentOne\)',
                   ],
       :to_fail => [ 'paratest_ShouldHandleParameterizedTestsThatFail\(17\)' ],
       :to_ignore => [ ],
@@ -1108,7 +1111,8 @@ RUNNER_TESTS = [
                   'paratest_ShouldHandleParameterizedTests\(5\)',
                   'paratest_ShouldHandleParameterizedTests2\(7\)',
                   'paratest_ShouldHandleNonParameterizedTestsWhenParameterizationValid',
-                  'paratest_ShouldHandleParameterizedTestsThatFail\(17\)'
+                  'paratest_ShouldHandleParameterizedTestsThatFail\(17\)',
+                  'paratest_WorksWithFunctionPointers\(isArgumentOne\)',
                ],
     }
   },
