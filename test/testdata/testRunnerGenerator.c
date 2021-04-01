@@ -167,6 +167,17 @@ void paratest_ShouldHandleParameterizedTestsThatFail(int Num)
     TEST_ASSERT_EQUAL_MESSAGE(3, Num, "This call should fail");
 }
 
+int isArgumentOne(int i)
+{
+    return i == 1;
+}
+
+TEST_CASE(isArgumentOne)
+void paratest_WorksWithFunctionPointers(int function(int))
+{
+    TEST_ASSERT_TRUE_MESSAGE(function(1), "Function should return True");
+}
+
 #ifdef USE_CEXCEPTION
 void extest_ShouldHandleCExceptionInTest(void)
 {
