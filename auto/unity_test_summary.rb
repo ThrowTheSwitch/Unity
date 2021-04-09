@@ -86,7 +86,7 @@ class UnityTestSummary
   def get_details(_result_file, lines)
     results = { failures: [], ignores: [], successes: [] }
     lines.each do |line|
-      status_match = line.match(/^[^:]+:[^:]+:\w+(?:\([^\)]*\)):([^:]+):?/)
+      status_match = line.match(/^[^:]+:[^:]+:\w+(?:\([^\)]*\))?:([^:]+):?/)
       if not status_match
         next
       end
