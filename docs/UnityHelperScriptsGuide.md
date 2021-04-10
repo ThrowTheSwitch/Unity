@@ -48,7 +48,7 @@ ruby generate_test_runner.rb TestFile.c NameOfRunner.c
 ```
 
 Alternatively, if you include only the test file parameter, the script will copy
-the name of the test file and automatically append "_Runner" to the name of the
+the name of the test file and automatically append `_Runner` to the name of the
 generated file. The example immediately below will create TestFile_Runner.c.
 
 ```Shell
@@ -193,6 +193,18 @@ Or as a yaml file:
 If you are using CMock, it is very likely that you are already passing an array
 of plugins to CMock. You can just use the same array here. This script will just
 ignore the plugins that don't require additional support.
+
+##### `:include_extensions`
+
+This option specifies the pattern for matching acceptable header file extensions.
+By default it will accept hpp, hh, H, and h files. If you need a different combination
+of files to search, update this from the default `'(?:hpp|hh|H|h)'`.
+
+##### `:source_extensions`
+
+This option specifies the pattern for matching acceptable source file extensions.
+By default it will accept cpp, cc, C, c, and ino files. If you need a different combination
+of files to search, update this from the default `'(?:cpp|cc|ino|C|c)'`.
 
 
 ### `unity_test_summary.rb`

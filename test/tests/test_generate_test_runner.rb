@@ -786,7 +786,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGeneratorSma*",
+    :cmdline_args => "-n=testRunnerGeneratorSma*",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'spec_ThisTestPassesWhenNormalSetupRan',
@@ -1183,15 +1183,7 @@ def runner_test(test, runner, expected, test_defines, cmdline_args, features)
   link_it(test_base, obj_list)
 
   # Execute unit test and generate results file
-  simulator = build_simulator_fields
-  cmdline_args ||= ""
-  executable = $cfg['linker']['bin_files']['destination'] + test_base + $cfg['linker']['bin_files']['extension'] + " #{cmdline_args}"
-  cmd_str = if simulator.nil?
-              executable
-            else
-              "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
-            end
-  output = execute(cmd_str, true)
+  output = runtest(test_base, true, cmdline_args)
 
   #compare to the expected pass/fail
   allgood = expected[:to_pass].inject(true)      {|s,v| s && verify_match(/#{v}:PASS/,   output) }

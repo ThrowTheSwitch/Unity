@@ -192,7 +192,42 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
 
     for (i = 1; i < argc; )
     {
-        if (strcmp(argv[i], "-v") == 0)
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
+        {
+            /* Usage */
+            UnityPrint("Runs a series of unit tests.");
+            UNITY_PRINT_EOL();
+            UNITY_PRINT_EOL();
+            UnityPrint("When no flag is specified, all tests are run.");
+            UNITY_PRINT_EOL();
+            UNITY_PRINT_EOL();
+            UnityPrint("Optional flags:");
+            UNITY_PRINT_EOL();
+            UnityPrint("  -v          Verbose output: show all tests executed even if they pass");
+            UNITY_PRINT_EOL();
+            UnityPrint("  -s          Silent mode: minimal output showing only test failures");
+            UNITY_PRINT_EOL();
+            UnityPrint("  -g NAME     Only run tests in groups that contain the string NAME");
+            UNITY_PRINT_EOL();
+            UnityPrint("  -n NAME     Only run tests whose name contains the string NAME");
+            UNITY_PRINT_EOL();
+            UnityPrint("  -r NUMBER   Repeatedly run all tests NUMBER times");
+            UNITY_PRINT_EOL();
+            UnityPrint("  -h, --help  Display this help message");
+            UNITY_PRINT_EOL();
+            UNITY_PRINT_EOL();
+#ifdef UNITY_CUSTOM_HELP_MSG
+            /* User-defined help message, e.g. to point to project-specific documentation */
+            UnityPrint(UNITY_CUSTOM_HELP_MSG);
+            UNITY_PRINT_EOL();
+#else
+            /* Default help suffix if a custom one is not defined */
+            UnityPrint("More information about Unity: https://www.throwtheswitch.org/unity");
+            UNITY_PRINT_EOL();
+#endif
+            return 1;  /* Exit without running the tests */
+        }
+        else if (strcmp(argv[i], "-v") == 0)
         {
             UnityFixture.Verbose = 1;
             i++;

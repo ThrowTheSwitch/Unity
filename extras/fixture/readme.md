@@ -15,3 +15,15 @@ Fixtures, by default, uses the Memory addon as well. This is to make it simple f
 follow along with James' book. Using them together is completely optional. You may choose to use 
 Fixtures without Memory handling by defining `UNITY_FIXTURE_NO_EXTRAS`. It will then stop automatically
 pulling in extras and leave you to do it as desired.
+
+# Usage information
+
+By default the test executables produced by Unity Fixtures run all tests once, but the behavior can
+be configured with command-line flags. Run the test executable with the `--help` flag for more
+information.
+
+It's possible to add a custom line at the end of the help message, typically to point to
+project-specific or company-specific unit test documentation. Define `UNITY_CUSTOM_HELP_MSG` to
+provide a custom message, e.g.:
+
+    #define UNITY_CUSTOM_HELP_MSG "If any test fails see https://example.com/troubleshooting"

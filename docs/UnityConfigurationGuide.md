@@ -39,6 +39,10 @@ toolchain's search paths). In this file, you will list definitions and macros
 specific to your target. All you must do is define `UNITY_INCLUDE_CONFIG_H` and
 Unity will rely on `unity_config.h` for any further definitions it may need.
 
+Unfortunately, it doesn't usually work well to just #define these things in the
+test itself. These defines need to take effect where ever unity.h is included.
+This would be test test, the test runner (if you're generating one), and from
+unity.c when it's compiled.
 
 ## The Options
 
@@ -282,18 +286,18 @@ _Example:_
 #define UNITY_INCLUDE_PRINT_FORMATTED
 
 int a = 0xfab1;
-UnityPrintFormatted("Decimal   %d\n", -7);
-UnityPrintFormatted("Unsigned  %u\n", 987);
-UnityPrintFormatted("Float     %f\n", 3.1415926535897932384);
-UnityPrintFormatted("Binary    %b\n", 0xA);
-UnityPrintFormatted("Hex       %X\n", 0xFAB);
-UnityPrintFormatted("Pointer   %p\n", &a);
-UnityPrintFormatted("Character %c\n", 'F');
-UnityPrintFormatted("String    %s\n", "My string");
-UnityPrintFormatted("Percent   %%\n");
-UnityPrintFormatted("Color Red \033[41mFAIL\033[00m\n");
-UnityPrintFormatted("\n");
-UnityPrintFormatted("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);
+TEST_PRINTF("Decimal   %d\n", -7);
+TEST_PRINTF("Unsigned  %u\n", 987);
+TEST_PRINTF("Float     %f\n", 3.1415926535897932384);
+TEST_PRINTF("Binary    %b\n", 0xA);
+TEST_PRINTF("Hex       %X\n", 0xFAB);
+TEST_PRINTF("Pointer   %p\n", &a);
+TEST_PRINTF("Character %c\n", 'F');
+TEST_PRINTF("String    %s\n", "My string");
+TEST_PRINTF("Percent   %%\n");
+TEST_PRINTF("Color Red \033[41mFAIL\033[00m\n");
+TEST_PRINTF("\n");
+TEST_PRINTF("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);
 ```
 
 
@@ -350,7 +354,7 @@ specifying `UNITY_USE_FLUSH_STDOUT`. No other defines are required.
 ##### `UNITY_OUTPUT_FOR_QT_CREATOR`
 
 When managing your own builds, it is often handy to have messages output in a format which is
-recognized by your IDE. These are some standard formats which can be supported. If you're using 
+recognized by your IDE. These are some standard formats which can be supported. If you're using
 Ceedling to manage your builds, it is better to stick with the standard format (leaving these
 all undefined) and allow Ceedling to use its own decorators.
 
@@ -375,7 +379,7 @@ system. Feel free to override this and to make it whatever you wish.
 
 _Example:_
 ```C
-#define UNITY_PRINT_EOL { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n') }
+#define UNITY_PRINT_EOL { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n'); }
 ```
 
 
@@ -392,6 +396,24 @@ _Example:_
 #define UNITY_EXCLUDE_DETAILS
 ```
 
+##### `UNITY_PRINT_TEST_CONTEXT`
+
+This option allows you to specify your own function to print additional context
+as part of the error message when a test has failed. It can be useful if you
+want to output some specific information about the state of the test at the point
+of failure, and `UNITY_SET_DETAILS` isn't flexible enough for your needs.
+
+_Example:_
+```C
+#define UNITY_PRINT_TEST_CONTEXT PrintIterationCount
+
+extern int iteration_count;
+
+void PrintIterationCount(void)
+{
+  UnityPrintFormatted("At iteration #%d: ", iteration_count);
+}
+```
 
 ##### `UNITY_EXCLUDE_SETJMP`
 
@@ -441,12 +463,12 @@ will allow you to specify how Unity will treat these assertions.
 
 #### `UNITY_SUPPORT_VARIADIC_MACROS`
 
-This will force Unity to support variadic macros when using its own built-in 
+This will force Unity to support variadic macros when using its own built-in
 RUN_TEST macro. This will rarely be necessary. Most often, Unity will automatically
 detect if the compiler supports variadic macros by checking to see if it's C99+
 compatible. In the event that the compiler supports variadic macros, but is primarily
-C89 (ANSI), defining this option will allow you to use them. This option is also not 
-necessary when using Ceedling or the test runner generator script. 
+C89 (ANSI), defining this option will allow you to use them. This option is also not
+necessary when using Ceedling or the test runner generator script.
 
 ## Getting Into The Guts
 

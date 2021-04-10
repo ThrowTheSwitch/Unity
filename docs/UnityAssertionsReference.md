@@ -67,18 +67,20 @@ to be well designed code.
 
 The convention of assertion parameters generally follows this order:
 
-    TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/count} )
+```
+TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/count} )
+```
 
-The very simplest assertion possible uses only a single "actual" parameter (e.g.
+The very simplest assertion possible uses only a single `actual` parameter (e.g.
 a simple null check).
 
-"Actual" is the value being tested and unlike the other parameters in an
-assertion construction is the only parameter present in all assertion variants.
-"Modifiers" are masks, ranges, bit flag specifiers, floating point deltas.
-"Expected" is your expected value (duh) to compare to an "actual" value; it's
-marked as an optional parameter because some assertions only need a single
-"actual" parameter (e.g. null check).
-"Size/count" refers to string lengths, number of array elements, etc.
+ - `Actual` is the value being tested and unlike the other parameters in an
+    assertion construction is the only parameter present in all assertion variants.
+ - `Modifiers` are masks, ranges, bit flag specifiers, floating point deltas.
+ - `Expected` is your expected value (duh) to compare to an `actual` value; it's
+    marked as an optional parameter because some assertions only need a single
+    `actual` parameter (e.g. null check).
+ - `Size/count` refers to string lengths, number of array elements, etc.
 
 Many of Unity's assertions are clear duplications in that the same data type
 is handled by several assertions. The differences among these are in how failure
@@ -98,11 +100,15 @@ the reference list below and add a string as the final parameter.
 
 _Example:_
 
-    TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/count} )
+```
+TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/count} )
+```
 
 becomes messageified like thus...
 
-    TEST_ASSERT_X_MESSAGE( {modifiers}, {expected}, actual, {size/count}, message )
+```
+TEST_ASSERT_X_MESSAGE( {modifiers}, {expected}, actual, {size/count}, message )
+```
 
 Notes:
 - The `_MESSAGE` variants intentionally do not support `printf` style formatting
@@ -122,18 +128,21 @@ with the `_MESSAGE`variants of Unity's Asserts in that for pretty much any Unity
 type assertion you can tack on `_ARRAY` and run assertions on an entire block of
 memory.
 
+```
     TEST_ASSERT_EQUAL_TYPEX_ARRAY( expected, actual, {size/count} )
+```
 
-"Expected" is an array itself.
-"Size/count" is one or two parameters necessary to establish the number of array
-elements and perhaps the length of elements within the array.
+ - `Expected` is an array itself.
+ - `Size/count` is one or two parameters necessary to establish the number of array
+    elements and perhaps the length of elements within the array.
 
 Notes:
-- The `_MESSAGE` variant convention still applies here to array assertions. The
-`_MESSAGE` variants of the `_ARRAY` assertions have names ending with
-`_ARRAY_MESSAGE`.
-- Assertions for handling arrays of floating point values are grouped with float
-and double assertions (see immediately following section).
+
+ - The `_MESSAGE` variant convention still applies here to array assertions. The
+   `_MESSAGE` variants of the `_ARRAY` assertions have names ending with
+   `_ARRAY_MESSAGE`.
+ - Assertions for handling arrays of floating point values are grouped with float
+   and double assertions (see immediately following section).
 
 
 ### TEST_ASSERT_EACH_EQUAL_X Variants
@@ -142,19 +151,22 @@ Unity provides a collection of assertions for arrays containing a variety of
 types which can be compared to a single value as well. These are documented in
 the Each Equal section below. these are almost on par with the `_MESSAGE`
 variants of Unity's Asserts in that for pretty much any Unity type assertion you
-can inject _EACH_EQUAL and run assertions on an entire block of memory.
+can inject `_EACH_EQUAL` and run assertions on an entire block of memory.
 
-    TEST_ASSERT_EACH_EQUAL_TYPEX( expected, actual, {size/count} )
+```
+TEST_ASSERT_EACH_EQUAL_TYPEX( expected, actual, {size/count} )
+```
 
-"Expected" is a single value to compare to.
-"Actual" is an array where each element will be compared to the expected value.
-"Size/count" is one of two parameters necessary to establish the number of array
-elements and perhaps the length of elements within the array.
+ - `Expected` is a single value to compare to.
+ - `Actual` is an array where each element will be compared to the expected value.
+ - `Size/count` is one of two parameters necessary to establish the number of array
+    elements and perhaps the length of elements within the array.
 
 Notes:
-- The `_MESSAGE` variant convention still applies here to Each Equal assertions.
-- Assertions for handling Each Equal of floating point values are grouped with
-float and double assertions (see immediately following section).
+
+ - The `_MESSAGE` variant convention still applies here to Each Equal assertions.
+ - Assertions for handling Each Equal of floating point values are grouped with
+   float and double assertions (see immediately following section).
 
 
 ### Configuration
@@ -189,6 +201,7 @@ performing logic beyond a simple assertion. That is, in practice, `TEST_FAIL()`
 will always be found inside a conditional code block.
 
 _Examples:_
+
 - Executing a state machine multiple times that increments a counter your test
 code then verifies as a final step.
 - Triggering an exception and verifying it (as in Try / Catch / Throw - see the
@@ -236,6 +249,15 @@ conditional statements.
 
 ##### `TEST_ASSERT_NOT_NULL (pointer)`
 
+Verify if a pointer is or is not NULL.
+
+##### `TEST_ASSERT_EMPTY (pointer)`
+
+##### `TEST_ASSERT_NOT_EMPTY (pointer)`
+
+Verify if the first element dereferenced from a pointer is or is not zero. This
+is particularly useful for checking for empty (or non-empty) null-terminated
+C strings, but can be just as easily used for other null-terminated arrays.
 
 ### Signed and Unsigned Integers (of all sizes)
 
@@ -327,59 +349,18 @@ Asserts the specified bit of the `actual` parameter is low.
 
 These assertions verify that the `actual` parameter is less than or greater
 than `threshold` (exclusive). For example, if the threshold value is 0 for the
-greater than assertion will fail if it is 0 or less.
-
-##### `TEST_ASSERT_GREATER_THAN (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_INT (threshold, actual)`
+greater than assertion will fail if it is 0 or less. There are assertions for
+all the various sizes of ints, as for the equality assertions. Some examples:
 
 ##### `TEST_ASSERT_GREATER_THAN_INT8 (threshold, actual)`
 
-##### `TEST_ASSERT_GREATER_THAN_INT16 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_INT32 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_UINT (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_UINT8 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_UINT16 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_UINT32 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_HEX8 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_HEX16 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_HEX32 (threshold, actual)`
-
-##### `TEST_ASSERT_GREATER_THAN_CHAR (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_INT (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_INT8 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_INT16 (threshold, actual)`
+##### `TEST_ASSERT_GREATER_OR_EQUAL_INT16 (threshold, actual)`
 
 ##### `TEST_ASSERT_LESS_THAN_INT32 (threshold, actual)`
 
-##### `TEST_ASSERT_LESS_THAN_UINT (threshold, actual)`
+##### `TEST_ASSERT_LESS_OR_EQUAL_UINT (threshold, actual)`
 
-##### `TEST_ASSERT_LESS_THAN_UINT8 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_UINT16 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_UINT32 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_HEX8 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_HEX16 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_HEX32 (threshold, actual)`
-
-##### `TEST_ASSERT_LESS_THAN_CHAR (threshold, actual)`
+##### `TEST_ASSERT_NOT_EQUAL_UINT8 (threshold, actual)`
 
 
 ### Integer Ranges (of all sizes)
