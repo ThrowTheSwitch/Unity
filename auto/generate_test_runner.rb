@@ -143,12 +143,13 @@ class UnityTestRunnerGenerator
         arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) { |a| args << a[0] }
 
         arguments.scan(/\s*TEST_RANGE\s*\((.*)\)\s*$/).flatten.each do |range_str|
-          args += range_str.scan(/\[\s*(-?\d+.?\d*),\s*(-?\d+.?\d*),\s*(-?\d+.?\d*)\s*\]/).map do |arg_values_str|
-            arg_values_str.map do |arg_value_str|
+          args += range_str.scan(/(\[|<)\s*(-?\d+.?\d*),\s*(-?\d+.?\d*),\s*(-?\d+.?\d*)\s*(\]|>)/).map do |arg_values_str|
+            exclude_end = arg_values_str[0] == '<' && arg_values_str[-1] == '>'
+            arg_values_str[1...-1].map do |arg_value_str|
               arg_value_str.include?('.') ? arg_value_str.to_f : arg_value_str.to_i
-            end
+            end.push(exclude_end)
           end.map do |arg_values|
-            (arg_values[0]..arg_values[1]).step(arg_values[2]).to_a
+            Range.new(arg_values[0], arg_values[1], arg_values[3]).step(arg_values[2]).to_a
           end.reduce do |result, arg_range_expanded|
             result.product(arg_range_expanded)
           end.map do |arg_combinations|
