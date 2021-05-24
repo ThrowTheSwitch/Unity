@@ -580,7 +580,7 @@ equality are not guaranteed.
 
 ##### `TEST_ASSERT_EQUAL_FLOAT (expected, actual)`
 
-Asserts that the ?actual?value is "close enough to be considered equal" to the
+Asserts that the `actual` value is "close enough to be considered equal" to the
 `expected` value. If you are curious about the details, refer to the Advanced
 Asserting section for more details on this. Omitting a user-specified delta in a
 floating point assertion is both a shorthand convenience and a requirement of
@@ -590,7 +590,7 @@ code generation conventions for CMock.
 ##### `TEST_ASSERT_EQUAL_FLOAT_ARRAY (expected, actual, num_elements)`
 
 See Array assertion section for details. Note that individual array element
-float comparisons are executed using T?EST_ASSERT_EQUAL_FLOAT?.That is, user
+float comparisons are executed using `TEST_ASSERT_EQUAL_FLOAT`.That is, user
 specified delta comparison values requires a custom-implemented floating point
 array assertion.
 
@@ -614,7 +614,7 @@ Asserts that `actual` parameter is a Not A Number floating point representation.
 
 ##### `TEST_ASSERT_FLOAT_IS_DETERMINATE (actual)`
 
-Asserts that ?actual?parameter is a floating point representation usable for
+Asserts that `actual` parameter is a floating point representation usable for
 mathematical operations. That is, the `actual` parameter is neither positive
 infinity nor negative infinity nor Not A Number floating point representations.
 
@@ -690,7 +690,7 @@ Asserts that `actual` parameter is a Not A Number floating point representation.
 ##### `TEST_ASSERT_DOUBLE_IS_DETERMINATE (actual)`
 
 Asserts that `actual` parameter is a floating point representation usable for
-mathematical operations. That is, the ?actual?parameter is neither positive
+mathematical operations. That is, the `actual` parameter is neither positive
 infinity nor negative infinity nor Not A Number floating point representations.
 
 
@@ -821,11 +821,11 @@ What about the times where you suddenly need to deal with something odd, like a
 affect you:
 
 1. When Unity displays errors for you, it's going to pad the upper unused bits
-with zeros.
+   with zeros.
 2. You're going to have to be careful of assertions that perform signed
-operations, particularly `TEST_ASSERT_INT_WITHIN`.Such assertions might wrap
-your `int` in the wrong place, and you could experience false failures. You can
-always back down to a simple `TEST_ASSERT` and do the operations yourself.
+   operations, particularly `TEST_ASSERT_INT_WITHIN`. Such assertions might wrap
+   your `int` in the wrong place, and you could experience false failures. You can
+   always back down to a simple `TEST_ASSERT` and do the operations yourself.
 
 
 *Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*
