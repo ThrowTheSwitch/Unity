@@ -151,6 +151,13 @@ Asserts that the actual value is within plus or minus delta of the expected valu
 
 Asserts that two floating point values are "equal" within a small % delta of the expected value.
 
+    TEST_ASSERT_LESS_THAN_FLOAT(threshold, actual)
+    TEST_ASSERT_LESS_THAN_DOUBLE(threshold, actual)
+    TEST_ASSERT_GREATER_THAN_FLOAT(threshold, actual)
+    TEST_ASSERT_GREATER_THAN_DOUBLE(threshold, actual)
+
+Asserts that the actual value is less than or greater than the threshold.
+
 String Assertions
 -----------------
 

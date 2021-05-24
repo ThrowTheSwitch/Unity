@@ -595,6 +595,20 @@ specified delta comparison values requires a custom-implemented floating point
 array assertion.
 
 
+##### `TEST_ASSERT_LESS_THAN_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is less than `threshold` (exclusive).
+For example, if the threshold value is 1.0f, the assertion will fail if it is
+greater than 1.0f.
+
+
+##### `TEST_ASSERT_GREATER_THAN_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than `threshold` (exclusive).
+For example, if the threshold value is 1.0f, the assertion will fail if it is
+less than 1.0f.
+
+
 ##### `TEST_ASSERT_FLOAT_IS_INF (actual)`
 
 Asserts that `actual` parameter is equivalent to positive infinity floating
@@ -668,6 +682,20 @@ See Array assertion section for details. Note that individual array element
 double comparisons are executed using `TEST_ASSERT_EQUAL_DOUBLE`.That is, user
 specified delta comparison values requires a custom implemented double array
 assertion.
+
+
+##### `TEST_ASSERT_LESS_THAN_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is less than `threshold` (exclusive).
+For example, if the threshold value is 1.0, the assertion will fail if it is
+greater than 1.0.
+
+
+##### `TEST_ASSERT_GREATER_THAN_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than `threshold` (exclusive).
+For example, if the threshold value is 1.0, the assertion will fail if it is
+less than 1.0.
 
 
 ##### `TEST_ASSERT_DOUBLE_IS_INF (actual)`
