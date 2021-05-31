@@ -333,7 +333,7 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
         UnityPrintNumberUnsigned(execTimeMs); \
         UnityPrint(" ms)"); \
         }
-    #elif defined(__unix__)
+    #elif defined(__unix__) || defined(__APPLE__)
       #include <time.h>
       #define UNITY_TIME_TYPE struct timespec
       #define UNITY_GET_TIME(t) clock_gettime(CLOCK_MONOTONIC, &t)
