@@ -46,6 +46,20 @@
   #define UNITY_FUNCTION_ATTR(a)    /* ignore */
 #endif
 
+#ifndef UNITY_NORETURN
+  #if defined(__cplusplus)
+    #if __cplusplus >= 201103L
+      #define UNITY_NORETURN [[ noreturn ]]
+    #endif
+  #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    #include <stdnoreturn.h>
+    #define UNITY_NORETURN noreturn
+  #endif
+#endif
+#ifndef UNITY_NORETURN
+  #define UNITY_NORETURN UNITY_FUNCTION_ATTR(noreturn)
+#endif
+
 /*-------------------------------------------------------
  * Guess Widths If Not Specified
  *-------------------------------------------------------*/
@@ -618,8 +632,8 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
                                    const UNITY_FLAGS_T flags);
 
 #ifndef UNITY_EXCLUDE_SETJMP_H
-void UnityFail(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);
-void UnityIgnore(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);
+UNITY_NORETURN void UnityFail(const char* message, const UNITY_LINE_TYPE line);
+UNITY_NORETURN void UnityIgnore(const char* message, const UNITY_LINE_TYPE line);
 #else
 void UnityFail(const char* message, const UNITY_LINE_TYPE line);
 void UnityIgnore(const char* message, const UNITY_LINE_TYPE line);
