@@ -34,7 +34,7 @@ execution and reports an error through some appropriate I/O channel (e.g.
 stdout, GUI, file, blinky light).
 
 Fundamentally, for dynamic verification all you need is a single assertion
-mechanism. In fact, that's what the [assert() macro in C's standard library](http://en.wikipedia.org/en/wiki/Assert.h)
+mechanism. In fact, that's what the [assert() macro][] in C's standard library
 is for. So why not just use it? Well, we can do far better in the reporting
 department. C's `assert()` is pretty dumb as-is and is particularly poor for
 handling common data types like arrays, structs, etc. And, without some other
@@ -781,4 +781,7 @@ operations, particularly `TEST_ASSERT_INT_WITHIN`.Such assertions might wrap
 your `int` in the wrong place, and you could experience false failures. You can
 always back down to a simple `TEST_ASSERT` and do the operations yourself.
 
-*Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*
+*Find The Latest of This And More at [ThrowTheSwitch.org][]*
+
+[assert() macro]: http://en.wikipedia.org/en/wiki/Assert.h
+[ThrowTheSwitch.org]: https://throwtheswitch.org

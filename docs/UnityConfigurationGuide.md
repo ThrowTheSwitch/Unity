@@ -559,4 +559,6 @@ The defines and macros in this guide should help you port Unity to just about
 any C target we can imagine. If you run into a snag or two, don't be afraid of
 asking for help on the forums. We love a good challenge!
 
-*Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*
+*Find The Latest of This And More at [ThrowTheSwitch.org][]*
+
+[ThrowTheSwitch.org]: https://throwtheswitch.org

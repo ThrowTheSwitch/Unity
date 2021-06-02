@@ -187,4 +187,6 @@ that happens, we like to indent further to line things up in nice tidy columns.
 Egad. Really? We use mark down and we like pdf files because they can be made to
 look nice while still being portable. Good enough?
 
-*Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*
+*Find The Latest of This And More at [ThrowTheSwitch.org][]*
+
+[ThrowTheSwitch.org]: https://throwtheswitch.org

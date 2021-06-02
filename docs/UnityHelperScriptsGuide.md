@@ -6,7 +6,7 @@ Sometimes what it takes to be a really efficient C programmer is a little non-C.
 The Unity project includes a couple of Ruby scripts for making your life just a tad
 easier. They are completely optional. If you choose to use them, you'll need a
 copy of Ruby, of course. Just install whatever the latest version is, and it is
-likely to work. You can find Ruby at [ruby-lang.org](https://ruby-labg.org/).
+likely to work. You can find Ruby at [ruby-lang.org][].
 
 ### `generate_test_runner.rb`
 
@@ -54,7 +54,7 @@ generated file. The example immediately below will create TestFile_Runner.c.
 ruby generate_test_runner.rb TestFile.c
 ```
 
-You can also add a [YAML](http://www.yaml.org/) file to configure extra options.
+You can also add a [YAML][] file to configure extra options.
 Conveniently, this YAML file is of the same format as that used by Unity and
 CMock. So if you are using YAML files already, you can simply pass the very same
 file into the generator script.
@@ -216,8 +216,8 @@ ignored and failing tests in this project generate corresponding entries in the
 summary report.
 
 If you're interested in other (prettier?) output formats, check into the
-Ceedling build tool project (ceedling.sourceforge.net) that works with Unity and
-CMock and supports xunit-style xml as well as other goodies.
+[Ceedling][] build tool project that works with Unity and CMock and supports
+xunit-style xml as well as other goodies.
 
 This script assumes the existence of files ending with the extensions
 `.testpass` and `.testfail`.The contents of these files includes the test
@@ -267,4 +267,9 @@ OVERALL UNITY TEST SUMMARY
 
 How convenient is that?
 
-*Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*
+*Find The Latest of This And More at [ThrowTheSwitch.org][]*
+
+[ruby-lang.org]: https://ruby-labg.org/
+[YAML]: http://www.yaml.org/
+[Ceedling]: http://www.throwtheswitch.org/ceedling
+[ThrowTheSwitch.org]: https://throwtheswitch.org

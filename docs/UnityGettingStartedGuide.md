@@ -108,7 +108,7 @@ call.
 
 Remembering to add each test to the main function can get to be tedious. If you
 enjoy using helper scripts in your build process, you might consider making use
-of our handy [generate_test_runner.rb](../auto/generate_test_runner.rb) script.
+of our handy [generate_test_runner.rb][] script.
 This will create the main function and all the calls for you, assuming that you
 have followed the suggested naming conventions. In this case, there is no need
 for you to include the main function in your test file at all.
@@ -252,4 +252,7 @@ This flexibility of separating tests into individual executables allows us to
 much more thoroughly unit test our system and it keeps all the test code out of
 our final release!
 
-*Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*
+*Find The Latest of This And More at [ThrowTheSwitch.org][]*
+
+[generate_test_runner.rb]: ../auto/generate_test_runner.rb
+[ThrowTheSwitch.org]: https://throwtheswitch.org

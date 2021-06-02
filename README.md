@@ -1,4 +1,4 @@
-# Unity Test ![CI](https://github.com/ThrowTheSwitch/Unity/workflows/CI/badge.svg)
+# Unity Test ![CI][]
 
 __Copyright (c) 2007 - 2021 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
@@ -11,16 +11,16 @@ too much headache. You may use any compiler you wish, and may use most existing 
 including Make, CMake, etc. If you'd like to leave the hard work to us, you might be interested
 in Ceedling, a build tool also by ThrowTheSwitch.org.
 
-If you're new to Unity, we encourage you to tour the [getting started guide](docs/UnityGettingStartedGuide.md)
+If you're new to Unity, we encourage you to tour the [getting started guide][].
 
 ## Getting Started
 
-The [docs](docs/) folder contains a [getting started guide](docs/UnityGettingStartedGuide.md)
+The [docs][] folder contains a [getting started guide][]
 and much more tips about using Unity.
 
 ## Unity Assertion Summary
 
-For the full list, see [UnityAssertionsReference.md](docs/UnityAssertionsReference.md).
+For the full list, see [UnityAssertionsReference.md][].
 
 ### Basic Validity Tests
 
@@ -185,3 +185,8 @@ standard types... but since it's a memory compare, you have to be careful that y
 you can append `\_MESSAGE` to any of the macros to make them take an additional argument.  This argument
 is a string that will be printed at the end of the failure strings.  This is useful for specifying more
 information about the problem.
+
+[CI]: https://github.com/ThrowTheSwitch/Unity/workflows/CI/badge.svg
+[getting started guide]: docs/UnityGettingStartedGuide.md
+[docs]: docs/
+[UnityAssertionsReference.md]: docs/UnityAssertionsReference.md
