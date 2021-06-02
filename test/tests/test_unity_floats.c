@@ -196,6 +196,226 @@ void testFloatsNotEqualPlusMinusInf(void)
 #endif
 }
 
+void testFloatsGreaterThan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_THAN_FLOAT(1.0f, 2.0f);
+    TEST_ASSERT_GREATER_THAN_FLOAT(-1.0f, 1.0f);
+    TEST_ASSERT_GREATER_THAN_FLOAT(-2.0f, -1.0f);
+#endif
+}
+
+void testFloatsGreaterThanInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_THAN_FLOAT(1.0f, 1.0f / f_zero);
+    TEST_ASSERT_GREATER_THAN_FLOAT(-1.0f / f_zero, 1.0f / f_zero);
+    TEST_ASSERT_GREATER_THAN_FLOAT(-1.0f / f_zero, 1.0f);
+#endif
+}
+
+void testFloatsNotGreaterThan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(2.0f, 1.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotGreaterThanNanActual(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(1.0f, 0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotGreaterThanNanThreshold(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(0.0f / f_zero, 1.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotGreaterThanNanBoth(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(0.0f / f_zero, 0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotGreaterThanInfActual(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(1.0f / f_zero, 1.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotGreaterThanNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(1.0f, -1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotGreaterThanBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(1.0f / f_zero, 1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotGreaterThanBothNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_FLOAT(-1.0f / f_zero, -1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsLessThan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_THAN_FLOAT(2.0f, 1.0f);
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f, -1.0f);
+    TEST_ASSERT_LESS_THAN_FLOAT(-1.0f, -2.0f);
+#endif
+}
+
+void testFloatsLessThanInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f / f_zero, 1.0f);
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f / f_zero, -1.0f / f_zero);
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f, -1.0f / f_zero);
+#endif
+}
+
+void testFloatsNotLessThan(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f, 2.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotLessThanNanActual(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f, 0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotLessThanNanThreshold(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(0.0f / f_zero, 1.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotLessThanNanBoth(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(0.0f / f_zero, 0.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotLessThanInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f, 1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotLessThanNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(-1.0f / f_zero, 1.0f);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotLessThanBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(1.0f / f_zero, 1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testFloatsNotLessThanBothNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_FLOAT(-1.0f / f_zero, -1.0f / f_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testFloatIsPosInf1(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
