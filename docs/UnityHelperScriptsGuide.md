@@ -74,7 +74,7 @@ to love the next section of this document.
     - stdio.h
     - microdefs.h
   :cexception: 1
-  :suit_setup: "blah = malloc(1024);"
+  :suite_setup: "blah = malloc(1024);"
   :suite_teardown: "free(blah);"
 ```
 
