@@ -17,7 +17,6 @@ rules. Unity has been used with many compilers, including GCC, IAR, Clang,
 Green Hills, Microchip, and MS Visual Studio. It's not much work to get it to
 work with a new target.
 
-
 ### Overview of the Documents
 
 #### Unity Assertions reference
@@ -26,20 +25,17 @@ This document will guide you through all the assertion options provided by
 Unity. This is going to be your unit testing bread and butter. You'll spend more
 time with assertions than any other part of Unity.
 
-
 #### Unity Assertions Cheat Sheet
 
 This document contains an abridged summary of the assertions described in the
 previous document. It's perfect for printing and referencing while you
 familiarize yourself with Unity's options.
 
-
 #### Unity Configuration Guide
 
 This document is the one to reference when you are going to use Unity with a new
 target or compiler. It'll guide you through the configuration options and will
 help you customize your testing experience to meet your needs.
-
 
 #### Unity Helper Scripts
 
@@ -49,14 +45,12 @@ included in the auto directory of your Unity installation. Neither Ruby nor
 these scripts are necessary for using Unity. They are provided as a convenience
 for those who wish to use them.
 
-
 #### Unity License
 
 What's an open source project without a license file? This brief document
 describes the terms you're agreeing to when you use this software. Basically, we
 want it to be useful to you in whatever context you want to use it, but please
 don't blame us if you run into problems.
-
 
 ### Overview of the Folders
 
@@ -81,7 +75,6 @@ who gets to port Unity to a new toolchain, this is a good place to verify
 everything is configured properly.
 - `auto` - Here you will find helpful Ruby scripts for simplifying your test
 workflow. They are purely optional and are not required to make use of Unity.
-
 
 ## How to Create A Test File
 
@@ -156,21 +149,27 @@ For that sort of thing, you're going to want to look at the configuration guide.
 This should be enough to get you going, though.
 
 ### Running Test Functions
+
 When writing your own `main()` functions, for a test-runner. There are two ways
 to execute the test.
 
 The classic variant
+
 ``` c
 RUN_TEST(func, linenum)
 ```
+
 or its simpler replacement that starts at the beginning of the function.
+
 ``` c
 RUN_TEST(func)
 ```
+
 These macros perform the necessary setup before the test is called and
-handles cleanup and result tabulation afterwards.
+handles clean-up and result tabulation afterwards.
 
 ### Ignoring Test Functions
+
 There are times when a test is incomplete or not valid for some reason.
 At these times, TEST_IGNORE can be called. Control will immediately be
 returned to the caller of the test, and no failures will be returned.
@@ -182,25 +181,31 @@ TEST_IGNORE()
 
 Ignore this test and return immediately
 
-``` c
+```c
 TEST_IGNORE_MESSAGE (message)
 ```
 
 Ignore this test and return immediately. Output a message stating why the test was ignored.
 
 ### Aborting Tests
+
 There are times when a test will contain an infinite loop on error conditions, or there may be reason to escape from the test early without executing the rest of the test.  A pair of macros support this functionality in Unity.  The first `TEST_PROTECT` sets up the feature, and handles emergency abort cases. `TEST_ABORT` can then be used at any time within the tests to return to the last `TEST_PROTECT` call.
 
+```c
     TEST_PROTECT()
+```
 
 Setup and Catch macro
 
+```c
     TEST_ABORT()
+```
 
 Abort Test macro
 
 Example:
 
+```c
     main()
     {
         if (TEST_PROTECT())
@@ -208,10 +213,9 @@ Example:
             MyTest();
         }
     }
+```
 
 If MyTest calls `TEST_ABORT`, program control will immediately return to `TEST_PROTECT` with a return value of zero.
-
-
 
 ## How to Build and Run A Test File
 
@@ -225,6 +229,7 @@ You have two really good options for toolchains. Depending on where you're
 coming from, it might surprise you that neither of these options is running the
 unit tests on your hardware.
 There are many reasons for this, but here's a short version:
+
 - On hardware, you have too many constraints (processing power, memory, etc),
 - On hardware, you don't have complete control over all registers,
 - On hardware, unit testing is more challenging,
@@ -246,6 +251,5 @@ test set for that module. Then, this process is repeated for the next test file.
 This flexibility of separating tests into individual executables allows us to
 much more thoroughly unit test our system and it keeps all the test code out of
 our final release!
-
 
 *Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*

@@ -22,7 +22,6 @@ challenging to build. From a more positive perspective, it is also proof that a
 great deal of complexity can be centralized primarily to one place to
 provide a more consistent and simple experience elsewhere.
 
-
 ### Using These Options
 
 It doesn't matter if you're using a target-specific compiler and a simulator or
@@ -58,8 +57,7 @@ certainly not every compiler you are likely to encounter. Therefore, Unity has a
 number of features for helping to adjust itself to match your required integer
 sizes. It starts off by trying to do it automatically.
 
-
-##### `UNITY_EXCLUDE_STDINT_H`
+#### `UNITY_EXCLUDE_STDINT_H`
 
 The first thing that Unity does to guess your types is check `stdint.h`.
 This file includes defines like `UINT_MAX` that Unity can use to
@@ -70,18 +68,19 @@ That way, Unity will know to skip the inclusion of this file and you won't
 be left with a compiler error.
 
 _Example:_
+
 ```C
 #define UNITY_EXCLUDE_STDINT_H
 ```
 
-
-##### `UNITY_EXCLUDE_LIMITS_H`
+#### `UNITY_EXCLUDE_LIMITS_H`
 
 The second attempt to guess your types is to check `limits.h`. Some compilers
 that don't support `stdint.h` could include `limits.h` instead. If you don't
 want Unity to check this file either, define this to make it skip the inclusion.
 
 _Example:_
+
 ```C
 #define UNITY_EXCLUDE_LIMITS_H
 ```
@@ -91,19 +90,18 @@ do the configuration yourself. Don't worry. Even this isn't too bad... there are
 just a handful of defines that you are going to specify if you don't like the
 defaults.
 
-
-##### `UNITY_INT_WIDTH`
+#### `UNITY_INT_WIDTH`
 
 Define this to be the number of bits an `int` takes up on your system. The
 default, if not autodetected, is 32 bits.
 
 _Example:_
+
 ```C
 #define UNITY_INT_WIDTH 16
 ```
 
-
-##### `UNITY_LONG_WIDTH`
+#### `UNITY_LONG_WIDTH`
 
 Define this to be the number of bits a `long` takes up on your system. The
 default, if not autodetected, is 32 bits. This is used to figure out what kind
@@ -112,12 +110,12 @@ of 64-bit support your system can handle. Does it need to specify a `long` or a
 ignored.
 
 _Example:_
+
 ```C
 #define UNITY_LONG_WIDTH 16
 ```
 
-
-##### `UNITY_POINTER_WIDTH`
+#### `UNITY_POINTER_WIDTH`
 
 Define this to be the number of bits a pointer takes up on your system. The
 default, if not autodetected, is 32-bits. If you're getting ugly compiler
@@ -129,6 +127,7 @@ width of 23-bit), choose the next power of two (in this case 32-bit).
 _Supported values:_ 16, 32 and 64
 
 _Example:_
+
 ```C
 // Choose on of these #defines to set your pointer width (if not autodetected)
 //#define UNITY_POINTER_WIDTH 16
@@ -136,8 +135,7 @@ _Example:_
 #define UNITY_POINTER_WIDTH 64 // Set UNITY_POINTER_WIDTH to 64-bit
 ```
 
-
-##### `UNITY_SUPPORT_64`
+#### `UNITY_SUPPORT_64`
 
 Unity will automatically include 64-bit support if it auto-detects it, or if
 your `int`, `long`, or pointer widths are greater than 32-bits. Define this to
@@ -146,10 +144,10 @@ can be a significant size and speed impact to enabling 64-bit support on small
 targets, so don't define it if you don't need it.
 
 _Example:_
+
 ```C
 #define UNITY_SUPPORT_64
 ```
-
 
 ### Floating Point Types
 
@@ -160,14 +158,13 @@ are always available in at least one size. Floating point, on the other hand, is
 sometimes not available at all. Trying to include `float.h` on these platforms
 would result in an error. This leaves manual configuration as the only option.
 
+#### `UNITY_INCLUDE_FLOAT`
 
-##### `UNITY_INCLUDE_FLOAT`
+#### `UNITY_EXCLUDE_FLOAT`
 
-##### `UNITY_EXCLUDE_FLOAT`
+#### `UNITY_INCLUDE_DOUBLE`
 
-##### `UNITY_INCLUDE_DOUBLE`
-
-##### `UNITY_EXCLUDE_DOUBLE`
+#### `UNITY_EXCLUDE_DOUBLE`
 
 By default, Unity guesses that you will want single precision floating point
 support, but not double precision. It's easy to change either of these using the
@@ -176,14 +173,14 @@ suits your needs. For features that are enabled, the following floating point
 options also become available.
 
 _Example:_
+
 ```C
 //what manner of strange processor is this?
 #define UNITY_EXCLUDE_FLOAT
 #define UNITY_INCLUDE_DOUBLE
 ```
 
-
-##### `UNITY_EXCLUDE_FLOAT_PRINT`
+#### `UNITY_EXCLUDE_FLOAT_PRINT`
 
 Unity aims for as small of a footprint as possible and avoids most standard
 library calls (some embedded platforms don’t have a standard library!). Because
@@ -196,24 +193,24 @@ can use this define to instead respond to a failed assertion with a message like
 point assertions, use these options to give more explicit failure messages.
 
 _Example:_
+
 ```C
 #define UNITY_EXCLUDE_FLOAT_PRINT
 ```
 
-
-##### `UNITY_FLOAT_TYPE`
+#### `UNITY_FLOAT_TYPE`
 
 If enabled, Unity assumes you want your `FLOAT` asserts to compare standard C
 floats. If your compiler supports a specialty floating point type, you can
 always override this behavior by using this definition.
 
 _Example:_
+
 ```C
 #define UNITY_FLOAT_TYPE float16_t
 ```
 
-
-##### `UNITY_DOUBLE_TYPE`
+#### `UNITY_DOUBLE_TYPE`
 
 If enabled, Unity assumes you want your `DOUBLE` asserts to compare standard C
 doubles. If you would like to change this, you can specify something else by
@@ -222,14 +219,14 @@ could enable gargantuan floating point types on your 64-bit processor instead of
 the standard `double`.
 
 _Example:_
+
 ```C
 #define UNITY_DOUBLE_TYPE long double
 ```
 
+#### `UNITY_FLOAT_PRECISION`
 
-##### `UNITY_FLOAT_PRECISION`
-
-##### `UNITY_DOUBLE_PRECISION`
+#### `UNITY_DOUBLE_PRECISION`
 
 If you look up `UNITY_ASSERT_EQUAL_FLOAT` and `UNITY_ASSERT_EQUAL_DOUBLE` as
 documented in the big daddy Unity Assertion Guide, you will learn that they are
@@ -243,14 +240,14 @@ For further details on how this works, see the appendix of the Unity Assertion
 Guide.
 
 _Example:_
+
 ```C
 #define UNITY_FLOAT_PRECISION 0.001f
 ```
 
-
 ### Miscellaneous
 
-##### `UNITY_EXCLUDE_STDDEF_H`
+#### `UNITY_EXCLUDE_STDDEF_H`
 
 Unity uses the `NULL` macro, which defines the value of a null pointer constant,
 defined in `stddef.h` by default. If you want to provide
@@ -258,10 +255,10 @@ your own macro for this, you should exclude the `stddef.h` header file by adding
 define to your configuration.
 
 _Example:_
+
 ```C
 #define UNITY_EXCLUDE_STDDEF_H
 ```
-
 
 #### `UNITY_INCLUDE_PRINT_FORMATTED`
 
@@ -282,6 +279,7 @@ which is able to print a string modified by the following format string modifier
 - __%%__ - The "%" symbol (escaped)
 
 _Example:_
+
 ```C
 #define UNITY_INCLUDE_PRINT_FORMATTED
 
@@ -300,7 +298,6 @@ TEST_PRINTF("\n");
 TEST_PRINTF("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);
 ```
 
-
 ### Toolset Customization
 
 In addition to the options listed above, there are a number of other options
@@ -310,14 +307,13 @@ certain platforms, particularly those running in simulators, may need to jump
 through extra hoops to run properly. These macros will help in those
 situations.
 
+#### `UNITY_OUTPUT_CHAR(a)`
 
-##### `UNITY_OUTPUT_CHAR(a)`
+#### `UNITY_OUTPUT_FLUSH()`
 
-##### `UNITY_OUTPUT_FLUSH()`
+#### `UNITY_OUTPUT_START()`
 
-##### `UNITY_OUTPUT_START()`
-
-##### `UNITY_OUTPUT_COMPLETE()`
+#### `UNITY_OUTPUT_COMPLETE()`
 
 By default, Unity prints its results to `stdout` as it runs. This works
 perfectly fine in most situations where you are using a native compiler for
@@ -333,6 +329,7 @@ _Example:_
 Say you are forced to run your test suite on an embedded processor with no
 `stdout` option. You decide to route your test result output to a custom serial
 `RS232_putc()` function you wrote like thus:
+
 ```C
 #include "RS232_header.h"
 ...
@@ -346,44 +343,43 @@ _Note:_
 `UNITY_OUTPUT_FLUSH()` can be set to the standard out flush function simply by
 specifying `UNITY_USE_FLUSH_STDOUT`. No other defines are required.
 
+#### `UNITY_OUTPUT_FOR_ECLIPSE`
 
-##### `UNITY_OUTPUT_FOR_ECLIPSE`
+#### `UNITY_OUTPUT_FOR_IAR_WORKBENCH`
 
-##### `UNITY_OUTPUT_FOR_IAR_WORKBENCH`
-
-##### `UNITY_OUTPUT_FOR_QT_CREATOR`
+#### `UNITY_OUTPUT_FOR_QT_CREATOR`
 
 When managing your own builds, it is often handy to have messages output in a format which is
 recognized by your IDE. These are some standard formats which can be supported. If you're using
 Ceedling to manage your builds, it is better to stick with the standard format (leaving these
 all undefined) and allow Ceedling to use its own decorators.
 
-
-##### `UNITY_PTR_ATTRIBUTE`
+#### `UNITY_PTR_ATTRIBUTE`
 
 Some compilers require a custom attribute to be assigned to pointers, like
 `near` or `far`. In these cases, you can give Unity a safe default for these by
 defining this option with the attribute you would like.
 
 _Example:_
+
 ```C
 #define UNITY_PTR_ATTRIBUTE __attribute__((far))
 #define UNITY_PTR_ATTRIBUTE near
 ```
 
-##### `UNITY_PRINT_EOL`
+#### `UNITY_PRINT_EOL`
 
 By default, Unity outputs \n at the end of each line of output. This is easy
 to parse by the scripts, by Ceedling, etc, but it might not be ideal for YOUR
 system. Feel free to override this and to make it whatever you wish.
 
 _Example:_
+
 ```C
 #define UNITY_PRINT_EOL { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n'); }
 ```
 
-
-##### `UNITY_EXCLUDE_DETAILS`
+#### `UNITY_EXCLUDE_DETAILS`
 
 This is an option for if you absolutely must squeeze every byte of memory out of
 your system. Unity stores a set of internal scratchpads which are used to pass
@@ -392,11 +388,12 @@ report which function or argument flagged an error. If you're not using CMock an
 you're not using these details for other things, then you can exclude them.
 
 _Example:_
+
 ```C
 #define UNITY_EXCLUDE_DETAILS
 ```
 
-##### `UNITY_PRINT_TEST_CONTEXT`
+#### `UNITY_PRINT_TEST_CONTEXT`
 
 This option allows you to specify your own function to print additional context
 as part of the error message when a test has failed. It can be useful if you
@@ -404,6 +401,7 @@ want to output some specific information about the state of the test at the poin
 of failure, and `UNITY_SET_DETAILS` isn't flexible enough for your needs.
 
 _Example:_
+
 ```C
 #define UNITY_PRINT_TEST_CONTEXT PrintIterationCount
 
@@ -415,7 +413,7 @@ void PrintIterationCount(void)
 }
 ```
 
-##### `UNITY_EXCLUDE_SETJMP`
+#### `UNITY_EXCLUDE_SETJMP`
 
 If your embedded system doesn't support the standard library setjmp, you can
 exclude Unity's reliance on this by using this define. This dropped dependence
@@ -425,23 +423,28 @@ compiler doesn't support setjmp, you wouldn't have had the memory space for thos
 things anyway, though... so this option exists for those situations.
 
 _Example:_
+
 ```C
 #define UNITY_EXCLUDE_SETJMP
 ```
 
-##### `UNITY_OUTPUT_COLOR`
+#### `UNITY_OUTPUT_COLOR`
 
 If you want to add color using ANSI escape codes you can use this define.
 
 _Example:_
+
 ```C
 #define UNITY_OUTPUT_COLOR
 ```
 
-##### `UNITY_SHORTHAND_AS_INT`
-##### `UNITY_SHORTHAND_AS_MEM`
-##### `UNITY_SHORTHAND_AS_RAW`
-##### `UNITY_SHORTHAND_AS_NONE`
+#### `UNITY_SHORTHAND_AS_INT`
+
+#### `UNITY_SHORTHAND_AS_MEM`
+
+#### `UNITY_SHORTHAND_AS_RAW`
+
+#### `UNITY_SHORTHAND_AS_NONE`
 
 These options  give you control of the `TEST_ASSERT_EQUAL` and the
 `TEST_ASSERT_NOT_EQUAL` shorthand assertions. Historically, Unity treated the
@@ -450,15 +453,15 @@ comparison using `!=`. This assymetry was confusing, but there was much
 disagreement as to how best to treat this pair of assertions. These four options
 will allow you to specify how Unity will treat these assertions.
 
-  - AS INT - the values will be cast to integers and directly compared. Arguments
-             that don't cast easily to integers will cause compiler errors.
-  - AS MEM - the address of both values will be taken and the entire object's
-             memory footprint will be compared byte by byte. Directly placing
-             constant numbers like `456` as expected values will cause errors.
-  - AS_RAW - Unity assumes that you can compare the two values using `==` and `!=`
-             and will do so. No details are given about mismatches, because it
-             doesn't really know what type it's dealing with.
-  - AS_NONE - Unity will disallow the use of these shorthand macros altogether,
+- AS INT - the values will be cast to integers and directly compared. Arguments
+            that don't cast easily to integers will cause compiler errors.
+- AS MEM - the address of both values will be taken and the entire object's
+            memory footprint will be compared byte by byte. Directly placing
+            constant numbers like `456` as expected values will cause errors.
+- AS_RAW - Unity assumes that you can compare the two values using `==` and `!=`
+            and will do so. No details are given about mismatches, because it
+            doesn't really know what type it's dealing with.
+- AS_NONE - Unity will disallow the use of these shorthand macros altogether,
              insisting that developers choose a more descriptive option.
 
 #### `UNITY_SUPPORT_VARIADIC_MACROS`
@@ -482,8 +485,7 @@ require special help. This special help will usually reside in one of two
 places: the `main()` function or the `RUN_TEST` macro. Let's look at how these
 work.
 
-
-##### `main()`
+### `main()`
 
 Each test module is compiled and run on its own, separate from the other test
 files in your project. Each test file, therefore, has a `main` function. This
@@ -515,8 +517,7 @@ after all the test cases have completed. This allows you to do any needed
 system-wide setup or teardown that might be required for your special
 circumstances.
 
-
-##### `RUN_TEST`
+#### `RUN_TEST`
 
 The `RUN_TEST` macro is called with each test case function. Its job is to
 perform whatever setup and teardown is necessary for executing a single test
@@ -552,12 +553,10 @@ each result set. Again, you could do this by adding lines to this macro. Updates
 to this macro are for the occasions when you need an action before or after
 every single test case throughout your entire suite of tests.
 
-
 ## Happy Porting
 
 The defines and macros in this guide should help you port Unity to just about
 any C target we can imagine. If you run into a snag or two, don't be afraid of
 asking for help on the forums. We love a good challenge!
-
 
 *Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*

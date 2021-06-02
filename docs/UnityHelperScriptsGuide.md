@@ -8,7 +8,6 @@ easier. They are completely optional. If you choose to use them, you'll need a
 copy of Ruby, of course. Just install whatever the latest version is, and it is
 likely to work. You can find Ruby at [ruby-lang.org](https://ruby-labg.org/).
 
-
 ### `generate_test_runner.rb`
 
 Are you tired of creating your own `main` function in your test file? Do you
@@ -114,20 +113,18 @@ test_files.each do |f|
 end
 ```
 
-#### Options accepted by generate_test_runner.rb:
+#### Options accepted by generate_test_runner.rb
 
 The following options are available when executing `generate_test_runner`. You
 may pass these as a Ruby hash directly or specify them in a YAML file, both of
 which are described above. In the `examples` directory, Example 3's Rakefile
 demonstrates using a Ruby hash.
 
-
 ##### `:includes`
 
 This option specifies an array of file names to be `#include`'d at the top of
 your runner C file. You might use it to reference custom types or anything else
 universally needed in your generated runners.
-
 
 ##### `:suite_setup`
 
@@ -137,7 +134,6 @@ Alternatively, if your C compiler supports weak symbols, you can leave this
 option unset and instead provide a `void suiteSetUp(void)` function in your test
 suite.  The linker will look for this symbol and fall back to a Unity-provided
 stub if it is not found.
-
 
 ##### `:suite_teardown`
 
@@ -151,14 +147,12 @@ option unset and instead provide a `int suiteTearDown(int num_failures)`
 function in your test suite.  The linker will look for this symbol and fall
 back to a Unity-provided stub if it is not found.
 
-
 ##### `:enforce_strict_ordering`
 
 This option should be defined if you have the strict order feature enabled in
 CMock (see CMock documentation). This generates extra variables required for
 everything to run smoothly. If you provide the same YAML to the generator as
 used in CMock's configuration, you've already configured the generator properly.
-
 
 ##### `:externc`
 
@@ -205,7 +199,6 @@ of files to search, update this from the default `'(?:hpp|hh|H|h)'`.
 This option specifies the pattern for matching acceptable source file extensions.
 By default it will accept cpp, cc, C, c, and ino files. If you need a different combination
 of files to search, update this from the default `'(?:cpp|cc|ino|C|c)'`.
-
 
 ### `unity_test_summary.rb`
 
@@ -273,6 +266,5 @@ OVERALL UNITY TEST SUMMARY
 ```
 
 How convenient is that?
-
 
 *Find The Latest of This And More at [ThrowTheSwitch.org](https://throwtheswitch.org)*

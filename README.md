@@ -1,29 +1,28 @@
-Unity Test ![CI](https://github.com/ThrowTheSwitch/Unity/workflows/CI/badge.svg)
-==========
+# Unity Test ![CI](https://github.com/ThrowTheSwitch/Unity/workflows/CI/badge.svg)
+
 __Copyright (c) 2007 - 2021 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
-Welcome to the Unity Test Project, one of the main projects of ThrowTheSwitch.org. Unity Test is a 
-unit testing framework built for C, with a focus on working with embedded toolchains. 
+Welcome to the Unity Test Project, one of the main projects of ThrowTheSwitch.org. Unity Test is a
+unit testing framework built for C, with a focus on working with embedded toolchains.
 
-This project is made to test code targetting microcontrollers big and small. The core project is a 
-single C file and a pair of headers, allowing it to the added to your existing build setup without 
+This project is made to test code targetting microcontrollers big and small. The core project is a
+single C file and a pair of headers, allowing it to the added to your existing build setup without
 too much headache. You may use any compiler you wish, and may use most existing build systems
-including make, cmake, etc. If you'd like to leave the hard work to us, you might be interested
-in Ceedling, a build tool also by ThrowTheSwitch.org. 
+including Make, CMake, etc. If you'd like to leave the hard work to us, you might be interested
+in Ceedling, a build tool also by ThrowTheSwitch.org.
 
 If you're new to Unity, we encourage you to tour the [getting started guide](docs/UnityGettingStartedGuide.md)
 
-Getting Started
-===============
-The [docs](docs/) folder contains a [getting started guide](docs/UnityGettingStartedGuide.md)
-and much more tips about using Unity. 
+## Getting Started
 
-Unity Assertion Summary
-=======================
+The [docs](docs/) folder contains a [getting started guide](docs/UnityGettingStartedGuide.md)
+and much more tips about using Unity.
+
+## Unity Assertion Summary
+
 For the full list, see [UnityAssertionsReference.md](docs/UnityAssertionsReference.md).
 
-Basic Validity Tests
---------------------
+### Basic Validity Tests
 
     TEST_ASSERT_TRUE(condition)
 
@@ -46,8 +45,7 @@ Another way of calling `TEST_ASSERT_FALSE`
 
 This test is automatically marked as a failure. The message is output stating why.
 
-Numerical Assertions: Integers
-------------------------------
+### Numerical Assertions: Integers
 
     TEST_ASSERT_EQUAL_INT(expected, actual)
     TEST_ASSERT_EQUAL_INT8(expected, actual)
@@ -87,19 +85,15 @@ Another way of calling TEST_ASSERT_EQUAL_INT
 Asserts that the actual value is within plus or minus delta of the expected value. This also comes in
 size specific variants.
 
-
     TEST_ASSERT_GREATER_THAN(threshold, actual)
 
 Asserts that the actual value is greater than the threshold. This also comes in size specific variants.
-
 
     TEST_ASSERT_LESS_THAN(threshold, actual)
 
 Asserts that the actual value is less than the threshold. This also comes in size specific variants.
 
-
-Arrays
-------
+### Arrays
 
     _ARRAY
 
@@ -116,8 +110,7 @@ value. You do this by specifying the EACH_EQUAL macro. For example:
 
     TEST_ASSERT_EACH_EQUAL_INT32(expected, actual, elements)
 
-Numerical Assertions: Bitwise
------------------------------
+### Numerical Assertions: Bitwise
 
     TEST_ASSERT_BITS(mask, expected, actual)
 
@@ -139,8 +132,7 @@ Test a single bit and verify that it is high.  The bit is specified 0-31 for a 3
 
 Test a single bit and verify that it is low.  The bit is specified 0-31 for a 32-bit integer.
 
-Numerical Assertions: Floats
-----------------------------
+### Numerical Assertions: Floats
 
     TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual)
 
@@ -151,8 +143,7 @@ Asserts that the actual value is within plus or minus delta of the expected valu
 
 Asserts that two floating point values are "equal" within a small % delta of the expected value.
 
-String Assertions
------------------
+### String Assertions
 
     TEST_ASSERT_EQUAL_STRING(expected, actual)
 
@@ -170,8 +161,7 @@ Compare two null-terminate strings.  Fail if any character is different or if th
 
 Compare two strings. Fail if any character is different, stop comparing after len characters. Output a custom message on failure.
 
-Pointer Assertions
-------------------
+### Pointer Assertions
 
 Most pointer operations can be performed by simply using the integer comparisons above. However, a couple of special cases are added for clarity.
 
@@ -183,18 +173,15 @@ Fails if the pointer is not equal to NULL
 
 Fails if the pointer is equal to NULL
 
-Memory Assertions
------------------
+### Memory Assertions
 
     TEST_ASSERT_EQUAL_MEMORY(expected, actual, len)
 
 Compare two blocks of memory.  This is a good generic assertion for types that can't be coerced into acting like
 standard types... but since it's a memory compare, you have to be careful that your data types are packed.
 
-\_MESSAGE
----------
+### \_MESSAGE
 
-you can append \_MESSAGE to any of the macros to make them take an additional argument.  This argument
+you can append `\_MESSAGE` to any of the macros to make them take an additional argument.  This argument
 is a string that will be printed at the end of the failure strings.  This is useful for specifying more
 information about the problem.
-
