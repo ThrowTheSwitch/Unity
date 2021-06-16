@@ -149,8 +149,8 @@ class UnityTestRunnerGenerator
             end
           end.map do |arg_values|
             (arg_values[0]..arg_values[1]).step(arg_values[2]).to_a
-          end.reduce do |result, arg_range_expanded|
-            result.product(arg_range_expanded)
+          end.reduce(nil) do |result, arg_range_expanded|
+            result.nil? ? arg_range_expanded.map { |a| [a] } : result.product(arg_range_expanded)
           end.map do |arg_combinations|
             arg_combinations.flatten.join(', ')
           end
