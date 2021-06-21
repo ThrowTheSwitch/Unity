@@ -170,16 +170,16 @@ class UnityModuleGenerator
   ############################
   def neutralize_filename(name, start_cap = true)
     return name if name.empty?
-    name = name.split(/(?:\s+|_|(?=[A-Z][a-z]))|(?<=[a-z])(?=[A-Z])/).map { |v| v.capitalize }.join('_')
+    name = name.split(/(?:\s+|_|(?=[A-Z][a-z]))|(?<=[a-z])(?=[A-Z])/).map(&:capitalize).join('_')
     name = name[0].downcase + name[1..-1] unless start_cap
-    return name
+    name
   end
 
   ############################
   def create_filename(part1, part2 = '')
     name = part2.empty? ? part1 : part1 + '_' + part2
     case (@options[:naming])
-    when 'bumpy' then neutralize_filename(name,false).delete('_')
+    when 'bumpy' then neutralize_filename(name, false).delete('_')
     when 'camel' then neutralize_filename(name).delete('_')
     when 'snake' then neutralize_filename(name).downcase
     when 'caps'  then neutralize_filename(name).upcase
@@ -211,8 +211,8 @@ class UnityModuleGenerator
         f.write("#{file[:boilerplate]}\n" % [file[:name]]) unless file[:boilerplate].nil?
         f.write(file[:template] % [file[:name],
                                    file[:includes].map { |ff| "#include \"#{ff}\"\n" }.join,
-                                   file[:name].upcase.gsub(/-/, '_'),
-                                   file[:name].gsub(/-/, '_')])
+                                   file[:name].upcase.tr('-', '_'),
+                                   file[:name].tr('-', '_')])
       end
       if @options[:update_svn]
         `svn add \"#{file[:path]}\"`
