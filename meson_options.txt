@@ -1,0 +1,2 @@
+option('extension_fixture', type: 'feature', value: 'disabled')
+option('extension_memory', type: 'feature', value: 'disabled')
