@@ -104,12 +104,12 @@ void verifyTest(void);
  * Basic Fail and Ignore
  *-------------------------------------------------------*/
 
-#define TEST_FAIL_MESSAGE(message)																	UNITY_TEST_FAIL(																									__LINE__,	(message))
-#define TEST_FAIL()																					UNITY_TEST_FAIL(																									__LINE__,	NULL)
-#define TEST_IGNORE_MESSAGE(message)																UNITY_TEST_IGNORE(																									__LINE__,	(message))
-#define TEST_IGNORE()																				UNITY_TEST_IGNORE(																									__LINE__,	NULL)
-#define TEST_MESSAGE(message)																		UnityMessage(																							(message),	__LINE__)
 #define TEST_ONLY()
+#define TEST_FAIL()																					UNITY_TEST_FAIL(																									__LINE__,	NULL)
+#define TEST_FAIL_MESSAGE(message)																	UNITY_TEST_FAIL(																									__LINE__,	(message))
+#define TEST_IGNORE()																				UNITY_TEST_IGNORE(																									__LINE__,	NULL)
+#define TEST_IGNORE_MESSAGE(message)																UNITY_TEST_IGNORE(																									__LINE__,	(message))
+#define TEST_MESSAGE(message)																		UnityMessage(																							(message),	__LINE__)
 #ifdef UNITY_INCLUDE_PRINT_FORMATTED
 #define TEST_PRINTF(message, ...)																	UnityPrintF(																										__LINE__, (message), __VA_ARGS__)
 #endif	/* UNITY_INCLUDE_PRINT_FORMATTED */
