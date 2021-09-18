@@ -379,7 +379,7 @@ void testFloatTraitFailsOnInvalidTrait(void)
     TEST_IGNORE();
 #else
     EXPECT_ABORT_BEGIN
-    UnityAssertFloatSpecial(1.0f, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
+    UnityAssertFloatSpecial(1.0f, NULL, __LINE__, UNITY_FLOAT_TRAIT__UNKNOWN);
     VERIFY_FAILS_END
 #endif
 }

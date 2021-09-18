@@ -385,11 +385,11 @@ typedef UNITY_FLOAT_TYPE			UNITY_FLOAT;
  *-------------------------------------------------------*/
 
 #ifndef UNITY_LINE_TYPE
-	#define UNITY_LINE_TYPE		UNITY_UINT
+	#define UNITY_LINE_TYPE			UNITY_UINT
 #endif	/* UNITY_LINE_TYPE */
 
 #ifndef UNITY_COUNTER_TYPE
-	#define UNITY_COUNTER_TYPE	UNITY_UINT
+	#define UNITY_COUNTER_TYPE		UNITY_UINT
 #endif	/* UNITY_COUNTER_TYPE */
 
 /*-------------------------------------------------------
@@ -405,7 +405,7 @@ typedef void (*UnityTestFunction)(void);
 
 typedef enum
 {
-	UNITY_DISPLAY_STYLE__INT		= (UNITY_INT_WIDTH / 8) + UNITY_DISPLAY_RANGE__INT,
+	UNITY_DISPLAY_STYLE__INT	= (UNITY_INT_WIDTH / 8) + UNITY_DISPLAY_RANGE__INT,
 	UNITY_DISPLAY_STYLE__INT8	= 1 + UNITY_DISPLAY_RANGE__INT,
 	UNITY_DISPLAY_STYLE__INT16	= 2 + UNITY_DISPLAY_RANGE__INT,
 	UNITY_DISPLAY_STYLE__INT32	= 4 + UNITY_DISPLAY_RANGE__INT,
@@ -753,9 +753,9 @@ extern const char UnityStrErrShorthand[];
 #define TEST_LINE_NUM		(Unity.CurrentTestLineNumber)
 #define TEST_IS_IGNORED		(Unity.CurrentTestIgnored)
 #define UNITY_NEW_TEST(a)												\
-			Unity.CurrentTestName = (a);								\
-			Unity.CurrentTestLineNumber = (UNITY_LINE_TYPE)(__LINE__);	\
-			Unity.NumberOfTests++;
+			Unity.CurrentTestName		= (a);							\
+			Unity.CurrentTestLineNumber	= (UNITY_LINE_TYPE)(__LINE__);	\
+			Unity.NumberOfTests			+= 1;
 
 #ifndef UNITY_BEGIN
 	#define UNITY_BEGIN()	UnityBegin(__FILE__)

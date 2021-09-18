@@ -380,7 +380,7 @@ void testDoubleTraitFailsOnInvalidTrait(void)
     TEST_IGNORE();
 #else
     EXPECT_ABORT_BEGIN
-    UnityAssertDoubleSpecial(1.0, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
+    UnityAssertDoubleSpecial(1.0, NULL, __LINE__, UNITY_FLOAT_TRAIT__UNKNOWN);
     VERIFY_FAILS_END
 #endif
 }
