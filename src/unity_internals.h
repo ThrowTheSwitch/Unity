@@ -81,7 +81,7 @@
 		#endif	/* (UINT_MAX == 0xFFFF) */
 	#else /* Set to default */
 		#define UNITY_INT_WIDTH		(32)
-	#endif /* UINT_MAX */
+	#endif	/* UINT_MAX */
 #endif	/* UNITY_INT_WIDTH */
 
 /* Determine the size of a long, if not already specified. */
@@ -96,7 +96,7 @@
 		#endif	/* (ULONG_MAX == 0xFFFF) */
 	#else /* Set to default */
 		#define UNITY_LONG_WIDTH		(32)
-	#endif /* ULONG_MAX */
+	#endif	/* ULONG_MAX */
 #endif	/* UNITY_LONG_WIDTH */
 
 /* Determine the size of a pointer, if not already specified. */
@@ -111,7 +111,7 @@
 		#endif	/* (UINTPTR_MAX <= 0xFFFF) */
 	#else /* Set to default */
 		#define UNITY_POINTER_WIDTH		UNITY_LONG_WIDTH
-	#endif /* UINTPTR_MAX */
+	#endif	/* UINTPTR_MAX */
 #endif	/* UNITY_POINTER_WIDTH */
 
 /*-------------------------------------------------------

@@ -494,7 +494,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 		}
 	}
 }
-#endif /* ! UNITY_EXCLUDE_FLOAT_PRINT */
+#endif	/* ! UNITY_EXCLUDE_FLOAT_PRINT */
 
 /*-----------------------------------------------*/
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
@@ -944,7 +944,7 @@ void UnityAssertEqualIntArray(	UNITY_INTERNAL_PTR expected,
 #else	/* UNITY_EXCLUDE_FLOAT_PRINT */
 	#define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual)		\
 				UnityPrint(UnityStrDelta)
-#endif /* UNITY_EXCLUDE_FLOAT_PRINT */
+#endif	/* UNITY_EXCLUDE_FLOAT_PRINT */
 
 /*-----------------------------------------------*/
 static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOAT actual)
@@ -1102,7 +1102,7 @@ void UnityAssertFloatSpecial(	const UNITY_FLOAT actual,
 	}
 }
 
-#endif /* UNITY_EXCLUDE_FLOAT */
+#endif	/* UNITY_EXCLUDE_FLOAT */
 
 /*-----------------------------------------------*/
 #ifndef UNITY_EXCLUDE_DOUBLE
@@ -1228,8 +1228,8 @@ void UnityAssertDoubleSpecial(	const UNITY_DOUBLE actual,
 		}
 		default: /* including UNITY_FLOAT_TRAIT__UNKNOWN */
 		{
-			trait_index = 0;
-			trait_names[0] = UnityStrInvalidFloatTrait;
+			trait_index		= 0;
+			trait_names[0]	= UnityStrInvalidFloatTrait;
 			break;
 		}
 	}
@@ -1261,7 +1261,7 @@ void UnityAssertDoubleSpecial(	const UNITY_DOUBLE actual,
 	}
 }
 
-#endif /* UNITY_EXCLUDE_DOUBLE */
+#endif	/* UNITY_EXCLUDE_DOUBLE */
 
 /*-----------------------------------------------*/
 void UnityAssertNumbersWithin(	const UNITY_UINT delta,
@@ -1880,7 +1880,7 @@ void UnityPrintF(const UNITY_LINE_TYPE line, const char* format, ...)
 
 	UNITY_PRINT_EOL();
 }
-#endif /* UNITY_INCLUDE_PRINT_FORMATTED */
+#endif	/* UNITY_INCLUDE_PRINT_FORMATTED */
 
 
 /*-----------------------------------------------
@@ -2289,5 +2289,5 @@ int UnityTestMatches(void)
 	return retval;
 }
 
-#endif /* UNITY_USE_COMMAND_LINE_ARGS */
+#endif	/* UNITY_USE_COMMAND_LINE_ARGS */
 /*-----------------------------------------------*/
