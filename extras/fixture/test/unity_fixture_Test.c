@@ -78,8 +78,8 @@ TEST(UnityFixture, ConcludeTestIncrementsFailCount)
     UnityConcludeFixtureTest(); /* Resets TestFailed for this test to pass */
     Unity.CurrentTestIgnored = 1;
     UnityConcludeFixtureTest(); /* Resets TestIgnored */
-    TEST_ASSERT_EQUAL(savedFails + 1, Unity.TestFailures);
-    TEST_ASSERT_EQUAL(savedIgnores + 1, Unity.TestIgnores);
+    TEST_ASSERT__EQUAL(savedFails + 1, Unity.TestFailures);
+    TEST_ASSERT__EQUAL(savedIgnores + 1, Unity.TestIgnores);
     Unity.TestFailures = savedFails;
     Unity.TestIgnores = savedIgnores;
 }
@@ -117,10 +117,10 @@ static const char* noOptions[] = {
 TEST(UnityCommandOptions, DefaultOptions)
 {
     UnityGetCommandLineOptions(1, noOptions);
-    TEST_ASSERT_EQUAL(0, UnityFixture.Verbose);
+    TEST_ASSERT__EQUAL(0, UnityFixture.Verbose);
     TEST_ASSERT_POINTERS_EQUAL(0, UnityFixture.GroupFilter);
     TEST_ASSERT_POINTERS_EQUAL(0, UnityFixture.NameFilter);
-    TEST_ASSERT_EQUAL(1, UnityFixture.RepeatCount);
+    TEST_ASSERT__EQUAL(1, UnityFixture.RepeatCount);
 }
 
 static const char* verbose[] = {
@@ -130,8 +130,8 @@ static const char* verbose[] = {
 
 TEST(UnityCommandOptions, OptionVerbose)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(2, verbose));
-    TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(2, verbose));
+    TEST_ASSERT__EQUAL(1, UnityFixture.Verbose);
 }
 
 static const char* group[] = {
@@ -141,7 +141,7 @@ static const char* group[] = {
 
 TEST(UnityCommandOptions, OptionSelectTestByGroup)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(3, group));
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(3, group));
     STRCMP_EQUAL("groupname", UnityFixture.GroupFilter);
 }
 
@@ -152,7 +152,7 @@ static const char* name[] = {
 
 TEST(UnityCommandOptions, OptionSelectTestByName)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(3, name));
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(3, name));
     STRCMP_EQUAL("testname", UnityFixture.NameFilter);
 }
 
@@ -163,14 +163,14 @@ static const char* repeat[] = {
 
 TEST(UnityCommandOptions, OptionSelectRepeatTestsDefaultCount)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(2, repeat));
-    TEST_ASSERT_EQUAL(2, UnityFixture.RepeatCount);
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(2, repeat));
+    TEST_ASSERT__EQUAL(2, UnityFixture.RepeatCount);
 }
 
 TEST(UnityCommandOptions, OptionSelectRepeatTestsSpecificCount)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(3, repeat));
-    TEST_ASSERT_EQUAL(99, UnityFixture.RepeatCount);
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(3, repeat));
+    TEST_ASSERT__EQUAL(99, UnityFixture.RepeatCount);
 }
 
 static const char* multiple[] = {
@@ -183,11 +183,11 @@ static const char* multiple[] = {
 
 TEST(UnityCommandOptions, MultipleOptions)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(8, multiple));
-    TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(8, multiple));
+    TEST_ASSERT__EQUAL(1, UnityFixture.Verbose);
     STRCMP_EQUAL("groupname", UnityFixture.GroupFilter);
     STRCMP_EQUAL("testname", UnityFixture.NameFilter);
-    TEST_ASSERT_EQUAL(98, UnityFixture.RepeatCount);
+    TEST_ASSERT__EQUAL(98, UnityFixture.RepeatCount);
 }
 
 static const char* dashRNotLast[] = {
@@ -200,11 +200,11 @@ static const char* dashRNotLast[] = {
 
 TEST(UnityCommandOptions, MultipleOptionsDashRNotLastAndNoValueSpecified)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(7, dashRNotLast));
-    TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(7, dashRNotLast));
+    TEST_ASSERT__EQUAL(1, UnityFixture.Verbose);
     STRCMP_EQUAL("gggg", UnityFixture.GroupFilter);
     STRCMP_EQUAL("tttt", UnityFixture.NameFilter);
-    TEST_ASSERT_EQUAL(2, UnityFixture.RepeatCount);
+    TEST_ASSERT__EQUAL(2, UnityFixture.RepeatCount);
 }
 
 static const char* unknownCommand[] = {
@@ -217,26 +217,26 @@ static const char* unknownCommand[] = {
 };
 TEST(UnityCommandOptions, UnknownCommandIsIgnored)
 {
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(9, unknownCommand));
-    TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(9, unknownCommand));
+    TEST_ASSERT__EQUAL(1, UnityFixture.Verbose);
     STRCMP_EQUAL("groupname", UnityFixture.GroupFilter);
     STRCMP_EQUAL("testname", UnityFixture.NameFilter);
-    TEST_ASSERT_EQUAL(98, UnityFixture.RepeatCount);
+    TEST_ASSERT__EQUAL(98, UnityFixture.RepeatCount);
 }
 
 TEST(UnityCommandOptions, GroupOrNameFilterWithoutStringFails)
 {
-    TEST_ASSERT_EQUAL(1, UnityGetCommandLineOptions(3, unknownCommand));
-    TEST_ASSERT_EQUAL(1, UnityGetCommandLineOptions(5, unknownCommand));
-    TEST_ASSERT_EQUAL(1, UnityMain(3, unknownCommand, NULL));
+    TEST_ASSERT__EQUAL(1, UnityGetCommandLineOptions(3, unknownCommand));
+    TEST_ASSERT__EQUAL(1, UnityGetCommandLineOptions(5, unknownCommand));
+    TEST_ASSERT__EQUAL(1, UnityMain(3, unknownCommand, NULL));
 }
 
 TEST(UnityCommandOptions, GroupFilterReallyFilters)
 {
     UNITY_UINT saved = Unity.NumberOfTests;
-    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(4, unknownCommand));
+    TEST_ASSERT__EQUAL(0, UnityGetCommandLineOptions(4, unknownCommand));
     UnityIgnoreTest(NULL, "non-matching", NULL);
-    TEST_ASSERT_EQUAL(saved, Unity.NumberOfTests);
+    TEST_ASSERT__EQUAL(saved, Unity.NumberOfTests);
 }
 
 IGNORE_TEST(UnityCommandOptions, TestShouldBeIgnored)

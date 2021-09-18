@@ -88,7 +88,7 @@ void testUnitySizeInitializationReminder(void)
      *
      * This accounts for alignment, padding, and packing issues that might come
      * up between different architectures. */
-    TEST_ASSERT_EQUAL_MESSAGE(sizeof(_Expected_Unity), sizeof(Unity), message);
+    TEST_ASSERT__EQUAL__MESSAGE(sizeof(_Expected_Unity), sizeof(Unity), message);
 }
 
 void testPassShouldEndImmediatelyWithPass(void)
@@ -123,32 +123,32 @@ void testTrue(void)
 {
     TEST_ASSERT(1);
 
-    TEST_ASSERT_TRUE(1);
+    TEST_ASSERT__TRUE(1);
 }
 
 void testFalse(void)
 {
-    TEST_ASSERT_FALSE(0);
+    TEST_ASSERT__FALSE(0);
 
-    TEST_ASSERT_UNLESS(0);
+    TEST_ASSERT__UNLESS(0);
 }
 
 void testSingleStatement(void)
 {
     for(int i = 0; i < 2; i++)
     {
-        /* TEST_ASSERT_TRUE should expand to a single C statement, minus
+        /* TEST_ASSERT__TRUE should expand to a single C statement, minus
          * the semicolon. This if-else will fail to compile otherwise. */
         if(i > 0)
-            TEST_ASSERT_TRUE(i);
+            TEST_ASSERT__TRUE(i);
         else
-            TEST_ASSERT_FALSE(i);
+            TEST_ASSERT__FALSE(i);
     }
 }
 
 void testPreviousPass(void)
 {
-    TEST_ASSERT_EQUAL_INT(0U, Unity.TestFailures);
+    TEST_ASSERT__EQUAL__INT(0U, Unity.TestFailures);
 }
 
 void testNotVanilla(void)
@@ -161,28 +161,28 @@ void testNotVanilla(void)
 void testNotTrue(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_TRUE(0);
+    TEST_ASSERT__TRUE(0);
     VERIFY_FAILS_END
 }
 
 void testNotFalse(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_FALSE(1);
+    TEST_ASSERT__FALSE(1);
     VERIFY_FAILS_END
 }
 
 void testNotUnless(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_UNLESS(1);
+    TEST_ASSERT__UNLESS(1);
     VERIFY_FAILS_END
 }
 
 void testNotNotEqual(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_NOT_EQUAL(10, 10);
+    TEST_ASSERT__NOT_EQUAL(10, 10);
     VERIFY_FAILS_END
 }
 
@@ -198,8 +198,8 @@ void testIsNull(void)
     char* ptr1 = NULL;
     const char* ptr2 = "hello";
 
-    TEST_ASSERT_NULL(ptr1);
-    TEST_ASSERT_NOT_NULL(ptr2);
+    TEST_ASSERT__NULL(ptr1);
+    TEST_ASSERT__NOT_NULL(ptr2);
 }
 
 void testIsNullShouldFailIfNot(void)
@@ -207,7 +207,7 @@ void testIsNullShouldFailIfNot(void)
     const char* ptr1 = "hello";
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_NULL(ptr1);
+    TEST_ASSERT__NULL(ptr1);
     VERIFY_FAILS_END
 }
 
@@ -216,7 +216,7 @@ void testNotNullShouldFailIfNULL(void)
     char* ptr1 = NULL;
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_NOT_NULL(ptr1);
+    TEST_ASSERT__NOT_NULL(ptr1);
     VERIFY_FAILS_END
 }
 
@@ -225,8 +225,8 @@ void testIsEmpty(void)
     const char* ptr1 = "\0";
     const char* ptr2 = "hello";
 
-    TEST_ASSERT_EMPTY(ptr1);
-    TEST_ASSERT_NOT_EMPTY(ptr2);
+    TEST_ASSERT__EMPTY(ptr1);
+    TEST_ASSERT__NOT_EMPTY(ptr2);
 }
 
 void testIsEmptyShouldFailIfNot(void)
@@ -234,7 +234,7 @@ void testIsEmptyShouldFailIfNot(void)
     const char* ptr1 = "hello";
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EMPTY(ptr1);
+    TEST_ASSERT__EMPTY(ptr1);
     VERIFY_FAILS_END
 }
 
@@ -243,7 +243,7 @@ void testNotEmptyShouldFailIfEmpty(void)
     const char* ptr1 = "\0";
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_NOT_EMPTY(ptr1);
+    TEST_ASSERT__NOT_EMPTY(ptr1);
     VERIFY_FAILS_END
 }
 
@@ -278,7 +278,7 @@ void testProtection(void)
         mask |= 2;
     }
 
-    TEST_ASSERT_EQUAL(3, mask);
+    TEST_ASSERT__EQUAL(3, mask);
 }
 
 void testIgnoredAndThenFailInTearDown(void)
@@ -296,14 +296,14 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); /* Suppress output */
     startFlushSpy();
-    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
+    TEST_ASSERT__EQUAL(0, getFlushSpyCalls());
     UnityConcludeTest();
     endPutcharSpy();
-    TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
+    TEST_ASSERT__EQUAL(savedFailures + 1, Unity.TestFailures);
 #if defined(UNITY_OUTPUT_FLUSH) && defined(UNITY_OUTPUT_FLUSH_HEADER_DECLARATION)
-    TEST_ASSERT_EQUAL(1, getFlushSpyCalls());
+    TEST_ASSERT__EQUAL(1, getFlushSpyCalls());
 #else
-    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
+    TEST_ASSERT__EQUAL(0, getFlushSpyCalls());
 #endif
     endFlushSpy();
 
@@ -311,7 +311,7 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     int failures = UnityEnd();
     Unity.TestFailures--;
     endPutcharSpy();
-    TEST_ASSERT_EQUAL(savedFailures + 1, failures);
+    TEST_ASSERT__EQUAL(savedFailures + 1, failures);
 #endif
 }
 
@@ -325,7 +325,7 @@ void testThatDetailsCanBeHandleOneDetail(void)
     UNITY_SET_DETAIL("Detail1");
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_INT_MESSAGE(5, 6, "Should Fail And Say Detail1");
+    TEST_ASSERT__EQUAL__INT_MESSAGE(5, 6, "Should Fail And Say Detail1");
     VERIFY_FAILS_END
 #endif
 }
@@ -351,7 +351,7 @@ void testThatDetailsCanBeHandleTwoDetails(void)
     UNITY_SET_DETAILS("Detail1","Detail2");
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_HEX8_MESSAGE(7, 8, "Should Fail And Say Detail1 and Detail2");
+    TEST_ASSERT__EQUAL__HEX8_MESSAGE(7, 8, "Should Fail And Say Detail1 and Detail2");
     VERIFY_FAILS_END
 #endif
 }
@@ -365,7 +365,7 @@ void testThatDetailsCanBeHandleSingleDetailClearingTwoDetails(void)
     UNITY_SET_DETAIL("DetailNew");
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_STRING_MESSAGE("MEH", "GUH", "Should Fail And Say DetailNew");
+    TEST_ASSERT__EQUAL__STRING_MESSAGE("MEH", "GUH", "Should Fail And Say DetailNew");
     VERIFY_FAILS_END
 #endif
 }

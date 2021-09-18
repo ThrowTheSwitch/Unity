@@ -37,45 +37,45 @@ void testEqualMemory(void)
 {
     const char *testString = "whatever";
 
-    TEST_ASSERT_EQUAL_MEMORY(testString, testString, 8);
-    TEST_ASSERT_EQUAL_MEMORY("whatever", "whatever", 8);
-    TEST_ASSERT_EQUAL_MEMORY("whatever", testString, 8);
-    TEST_ASSERT_EQUAL_MEMORY(testString, "whatever", 8);
-    TEST_ASSERT_EQUAL_MEMORY(testString, "whatever", 2);
-    TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 1);
+    TEST_ASSERT__EQUAL__MEMORY(testString, testString, 8);
+    TEST_ASSERT__EQUAL__MEMORY("whatever", "whatever", 8);
+    TEST_ASSERT__EQUAL__MEMORY("whatever", testString, 8);
+    TEST_ASSERT__EQUAL__MEMORY(testString, "whatever", 8);
+    TEST_ASSERT__EQUAL__MEMORY(testString, "whatever", 2);
+    TEST_ASSERT__EQUAL__MEMORY(NULL, NULL, 1);
 }
 
 void testNotEqualMemory1(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY("foo", "bar", 3);
+    TEST_ASSERT__EQUAL__MEMORY("foo", "bar", 3);
     VERIFY_FAILS_END
 }
 
 void testNotEqualMemory2(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY("fool", "food", 4);
+    TEST_ASSERT__EQUAL__MEMORY("fool", "food", 4);
     VERIFY_FAILS_END
 }
 
 void testNotEqualMemory3(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY(NULL, "food", 4);
+    TEST_ASSERT__EQUAL__MEMORY(NULL, "food", 4);
     VERIFY_FAILS_END
 }
 
 void testNotEqualMemory4(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY("fool", NULL, 4);
+    TEST_ASSERT__EQUAL__MEMORY("fool", NULL, 4);
     VERIFY_FAILS_END
 }
 
 void testNotEqualMemoryLengthZero(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 0);
+    TEST_ASSERT__EQUAL__MEMORY(NULL, NULL, 0);
     VERIFY_FAILS_END
 }

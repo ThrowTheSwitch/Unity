@@ -76,37 +76,37 @@ void test_ThisTestAlwaysIgnored(void)
 
 void qwiktest_ThisTestPassesWhenNoSetupRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(0, CounterSetup, "Setup Was Unexpectedly Run");
+    TEST_ASSERT__EQUAL__MESSAGE(0, CounterSetup, "Setup Was Unexpectedly Run");
 }
 
 void qwiktest_ThisTestPassesWhenNoTeardownRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(0, CounterTeardown, "Teardown Was Unexpectedly Run");
+    TEST_ASSERT__EQUAL__MESSAGE(0, CounterTeardown, "Teardown Was Unexpectedly Run");
 }
 
 void spec_ThisTestPassesWhenNormalSuiteSetupAndTeardownRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(0, CounterSuiteSetup, "Suite Setup Was Unexpectedly Run");
+    TEST_ASSERT__EQUAL__MESSAGE(0, CounterSuiteSetup, "Suite Setup Was Unexpectedly Run");
 }
 
 void spec_ThisTestPassesWhenNormalSetupRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(1, CounterSetup, "Normal Setup Wasn't Run");
+    TEST_ASSERT__EQUAL__MESSAGE(1, CounterSetup, "Normal Setup Wasn't Run");
 }
 
 void spec_ThisTestPassesWhenNormalTeardownRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(1, CounterTeardown, "Normal Teardown Wasn't Run");
+    TEST_ASSERT__EQUAL__MESSAGE(1, CounterTeardown, "Normal Teardown Wasn't Run");
 }
 
 void custtest_ThisTestPassesWhenCustomSetupRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(2, CounterSetup, "Custom Setup Wasn't Run");
+    TEST_ASSERT__EQUAL__MESSAGE(2, CounterSetup, "Custom Setup Wasn't Run");
 }
 
 void custtest_ThisTestPassesWhenCustomTeardownRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(2, CounterTeardown, "Custom Teardown Wasn't Run");
+    TEST_ASSERT__EQUAL__MESSAGE(2, CounterTeardown, "Custom Teardown Wasn't Run");
 }
 
 #ifndef UNITY_EXCLUDE_TESTING_NEW_COMMENTS
@@ -120,24 +120,24 @@ void test_NotBeConfusedByLongComplicatedStrings(void)
 {
     const char* crazyString = "GET / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nConnection: keep-alive\r\nCache-Control: no-cache\r\nUser-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36\r\nPostman-Token: 768c7149-c3fb-f704-71a2-63918d9195b2\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, sdch\r\nAccept-Language: en-GB,en-US;q=0.8,en;q=0.6\r\n\r\n";
 
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(crazyString, crazyString, "These Strings Are The Same");
+    TEST_ASSERT__EQUAL__STRING_MESSAGE(crazyString, crazyString, "These Strings Are The Same");
 }
 
 void test_NotDisappearJustBecauseTheTestBeforeAndAfterHaveCrazyStrings(void)
 {
-    TEST_ASSERT_TRUE_MESSAGE(1, "1 Should be True");
+    TEST_ASSERT__TRUE_MESSAGE(1, "1 Should be True");
 }
 
 void test_StillNotBeConfusedByLongComplicatedStrings(void)
 {
     const char* crazyString = "GET / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nConnection: keep-alive\r\nCache-Control: no-cache\r\nUser-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36\r\nPostman-Token: 768c7149-c3fb-f704-71a2-63918d9195b2\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, sdch\r\nAccept-Language: en-GB,en-US;q=0.8,en;q=0.6\r\n\r\n";
 
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(crazyString, crazyString, "These Strings Are Still The Same");
+    TEST_ASSERT__EQUAL__STRING_MESSAGE(crazyString, crazyString, "These Strings Are Still The Same");
 }
 
 void should_RunTestsStartingWithShouldByDefault(void)
 {
-    TEST_ASSERT_TRUE_MESSAGE(1, "1 Should be True");
+    TEST_ASSERT__TRUE_MESSAGE(1, "1 Should be True");
 }
 
 TEST_CASE(25)
@@ -145,13 +145,13 @@ TEST_CASE(125)
 TEST_CASE(5)
 void paratest_ShouldHandleParameterizedTests(int Num)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(0, (Num % 5), "All The Values Are Divisible By 5");
+    TEST_ASSERT__EQUAL__MESSAGE(0, (Num % 5), "All The Values Are Divisible By 5");
 }
 
 TEST_CASE(7)
 void paratest_ShouldHandleParameterizedTests2(int Num)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(7, Num, "The Only Call To This Passes");
+    TEST_ASSERT__EQUAL__MESSAGE(7, Num, "The Only Call To This Passes");
 }
 
 void paratest_ShouldHandleNonParameterizedTestsWhenParameterizationValid(void)
@@ -162,13 +162,13 @@ void paratest_ShouldHandleNonParameterizedTestsWhenParameterizationValid(void)
 TEST_CASE(17)
 void paratest_ShouldHandleParameterizedTestsThatFail(int Num)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(3, Num, "This call should fail");
+    TEST_ASSERT__EQUAL__MESSAGE(3, Num, "This call should fail");
 }
 
 #ifdef USE_CEXCEPTION
 void extest_ShouldHandleCExceptionInTest(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(1, CEXCEPTION_BEING_USED, "Should be pulling in CException");
+    TEST_ASSERT__EQUAL__MESSAGE(1, CEXCEPTION_BEING_USED, "Should be pulling in CException");
 }
 #endif
 
@@ -183,15 +183,15 @@ int main(void)
 
 void suitetest_ThisTestPassesWhenCustomSuiteSetupAndTeardownRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(1, CounterSuiteSetup, "Suite Setup Should Have Run");
+    TEST_ASSERT__EQUAL__MESSAGE(1, CounterSuiteSetup, "Suite Setup Should Have Run");
 }
 
 void test_ShouldCallMockInitAndVerifyFunctionsForEachTest(void)
 {
     int passesOrIgnores = (int)(Unity.NumberOfTests - Unity.TestFailures);
-    TEST_ASSERT_EQUAL_MESSAGE(Unity.NumberOfTests,     mockMock_Init_Counter,    "Mock Init Should Be Called Once Per Test Started");
-    TEST_ASSERT_EQUAL_MESSAGE(passesOrIgnores,         mockMock_Verify_Counter,  "Mock Verify Should Be Called Once Per Test Passed");
-    TEST_ASSERT_EQUAL_MESSAGE(Unity.NumberOfTests - 1, mockMock_Destroy_Counter, "Mock Destroy Should Be Called Once Per Test Completed");
-    TEST_ASSERT_EQUAL_MESSAGE(0,                       CMockMemFreeFinalCounter, "Mock MemFreeFinal Should Not Be Called Until End");
+    TEST_ASSERT__EQUAL__MESSAGE(Unity.NumberOfTests,     mockMock_Init_Counter,    "Mock Init Should Be Called Once Per Test Started");
+    TEST_ASSERT__EQUAL__MESSAGE(passesOrIgnores,         mockMock_Verify_Counter,  "Mock Verify Should Be Called Once Per Test Passed");
+    TEST_ASSERT__EQUAL__MESSAGE(Unity.NumberOfTests - 1, mockMock_Destroy_Counter, "Mock Destroy Should Be Called Once Per Test Completed");
+    TEST_ASSERT__EQUAL__MESSAGE(0,                       CMockMemFreeFinalCounter, "Mock MemFreeFinal Should Not Be Called Until End");
 }
 

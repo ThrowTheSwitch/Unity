@@ -60,11 +60,11 @@ void test_ThisTestAlwaysIgnored(void)
 
 void spec_ThisTestPassesWhenNormalSetupRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(1, CounterSetup, "Normal Setup Wasn't Run");
+    TEST_ASSERT__EQUAL__MESSAGE(1, CounterSetup, "Normal Setup Wasn't Run");
 }
 
 void spec_ThisTestPassesWhenNormalTeardownRan(void)
 {
-    TEST_ASSERT_EQUAL_MESSAGE(1, CounterTeardown, "Normal Teardown Wasn't Run");
+    TEST_ASSERT__EQUAL__MESSAGE(1, CounterTeardown, "Normal Teardown Wasn't Run");
 }
 

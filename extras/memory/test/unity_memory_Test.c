@@ -35,8 +35,8 @@ void setUp(void);
 void tearDown(void);
 
 /* Let's Go! */
-void setUp(void) 
-{ 
+void setUp(void)
+{
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     UnityOutputCharSpy_Create(200);
 #else
@@ -45,8 +45,8 @@ void setUp(void)
     UnityMalloc_StartTest();
 }
 
-void tearDown(void) 
-{ 
+void tearDown(void)
+{
     UnityMalloc_EndTest();
     UnityOutputCharSpy_Destroy();
 }
@@ -57,9 +57,9 @@ void test_ForceMallocFail(void)
     void* mfails;
     UnityMalloc_MakeMallocFailAfterCount(1);
     m = malloc(10);
-    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT__NOT_NULL(m);
     mfails = malloc(10);
-    TEST_ASSERT_EQUAL_PTR(0, mfails);
+    TEST_ASSERT__EQUAL__PTR(0, mfails);
     free(m);
 }
 
@@ -67,8 +67,8 @@ void test_ReallocSmallerIsUnchanged(void)
 {
     void* m1 = malloc(10);
     void* m2 = realloc(m1, 5);
-    TEST_ASSERT_NOT_NULL(m1);
-    TEST_ASSERT_EQUAL_PTR(m1, m2);
+    TEST_ASSERT__NOT_NULL(m1);
+    TEST_ASSERT__EQUAL__PTR(m1, m2);
     free(m2);
 }
 
@@ -76,8 +76,8 @@ void test_ReallocSameIsUnchanged(void)
 {
     void* m1 = malloc(10);
     void* m2 = realloc(m1, 10);
-    TEST_ASSERT_NOT_NULL(m1);
-    TEST_ASSERT_EQUAL_PTR(m1, m2);
+    TEST_ASSERT__NOT_NULL(m1);
+    TEST_ASSERT__EQUAL__PTR(m1, m2);
     free(m2);
 }
 
@@ -85,17 +85,17 @@ void test_ReallocLargerNeeded(void)
 {
     void* m2;
     void* m1 = malloc(10);
-    TEST_ASSERT_NOT_NULL(m1);
+    TEST_ASSERT__NOT_NULL(m1);
     strcpy((char*)m1, "123456789");
     m2 = realloc(m1, 15);
-    TEST_ASSERT_EQUAL_STRING("123456789", m2);
+    TEST_ASSERT__EQUAL__STRING("123456789", m2);
     free(m2);
 }
 
 void test_ReallocNullPointerIsLikeMalloc(void)
 {
     void* m = realloc(0, 15);
-    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT__NOT_NULL(m);
     free(m);
 }
 
@@ -103,17 +103,17 @@ void test_ReallocSizeZeroFreesMemAndReturnsNullPointer(void)
 {
     void* m1 = malloc(10);
     void* m2 = realloc(m1, 0);
-    TEST_ASSERT_EQUAL_PTR(0, m2);
+    TEST_ASSERT__EQUAL__PTR(0, m2);
 }
 
 void test_CallocFillsWithZero(void)
 {
     void* m = calloc(3, sizeof(char));
     char* s = (char*)m;
-    TEST_ASSERT_NOT_NULL(m);
-    TEST_ASSERT_EQUAL_HEX8(0, s[0]);
-    TEST_ASSERT_EQUAL_HEX8(0, s[1]);
-    TEST_ASSERT_EQUAL_HEX8(0, s[2]);
+    TEST_ASSERT__NOT_NULL(m);
+    TEST_ASSERT__EQUAL__HEX8(0, s[0]);
+    TEST_ASSERT__EQUAL__HEX8(0, s[1]);
+    TEST_ASSERT__EQUAL__HEX8(0, s[2]);
     free(m);
 }
 
@@ -157,21 +157,21 @@ void test_FreeNULLSafety(void)
   #define USING_OUTPUT_SPY
 #endif
 #undef UnityOutputCharSpy_OutputChar
-  
+
 #endif /* __STDC_VERSION__ */
 
 void test_DetectsLeak(void)
 {
 #ifdef USING_OUTPUT_SPY
     void* m = malloc(10);
-    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT__NOT_NULL(m);
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
     UnityMalloc_EndTest();
     EXPECT_ABORT_END
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
-    TEST_ASSERT_NOT_NULL(strstr(UnityOutputCharSpy_Get(), "This test leaks!"));
+    TEST_ASSERT__NOT_NULL(strstr(UnityOutputCharSpy_Get(), "This test leaks!"));
     free(m);
 #else
     TEST_IGNORE_MESSAGE("Enable USING_OUTPUT_SPY To Run This Test");
@@ -183,7 +183,7 @@ void test_BufferOverrunFoundDuringFree(void)
 #ifdef USING_OUTPUT_SPY
     void* m = malloc(10);
     char* s = (char*)m;
-    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT__NOT_NULL(m);
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
@@ -191,7 +191,7 @@ void test_BufferOverrunFoundDuringFree(void)
     EXPECT_ABORT_END
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
-    TEST_ASSERT_NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
+    TEST_ASSERT__NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
 #else
     TEST_IGNORE_MESSAGE("Enable USING_OUTPUT_SPY To Run This Test");
 #endif
@@ -202,7 +202,7 @@ void test_BufferOverrunFoundDuringRealloc(void)
 #ifdef USING_OUTPUT_SPY
     void* m = malloc(10);
     char* s = (char*)m;
-    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT__NOT_NULL(m);
     s[10] = (char)0xFF;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
@@ -210,7 +210,7 @@ void test_BufferOverrunFoundDuringRealloc(void)
     EXPECT_ABORT_END
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
-    TEST_ASSERT_NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
+    TEST_ASSERT__NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
 #else
     TEST_IGNORE_MESSAGE("Enable USING_OUTPUT_SPY To Run This Test");
 #endif
@@ -221,7 +221,7 @@ void test_BufferGuardWriteFoundDuringFree(void)
 #ifdef USING_OUTPUT_SPY
     void* m = malloc(10);
     char* s = (char*)m;
-    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT__NOT_NULL(m);
     s[-1] = (char)0x00; /* Will not detect 0 */
     s[-2] = (char)0x01;
     UnityOutputCharSpy_Enable(1);
@@ -230,7 +230,7 @@ void test_BufferGuardWriteFoundDuringFree(void)
     EXPECT_ABORT_END
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
-    TEST_ASSERT_NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
+    TEST_ASSERT__NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
 #else
     TEST_IGNORE_MESSAGE("Enable USING_OUTPUT_SPY To Run This Test");
 #endif
@@ -241,7 +241,7 @@ void test_BufferGuardWriteFoundDuringRealloc(void)
 #ifdef USING_OUTPUT_SPY
     void* m = malloc(10);
     char* s = (char*)m;
-    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT__NOT_NULL(m);
     s[-1] = (char)0x0A;
     UnityOutputCharSpy_Enable(1);
     EXPECT_ABORT_BEGIN
@@ -249,7 +249,7 @@ void test_BufferGuardWriteFoundDuringRealloc(void)
     EXPECT_ABORT_END
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
-    TEST_ASSERT_NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
+    TEST_ASSERT__NOT_NULL(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
 #else
     TEST_IGNORE_MESSAGE("Enable USING_OUTPUT_SPY To Run This Test");
 #endif
@@ -259,7 +259,7 @@ void test_BufferGuardWriteFoundDuringRealloc(void)
 
 #define TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(first_mem_ptr, ptr) \
     ptr = malloc(10); free(ptr);                                   \
-    TEST_ASSERT_EQUAL_PTR_MESSAGE(first_mem_ptr, ptr, "Memory was stranded, free in LIFO order");
+    TEST_ASSERT__EQUAL__PTR_MESSAGE(first_mem_ptr, ptr, "Memory was stranded, free in LIFO order");
 
 void test_MallocPastBufferFails(void)
 {
@@ -267,8 +267,8 @@ void test_MallocPastBufferFails(void)
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
     void* n = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
     free(m);
-    TEST_ASSERT_NOT_NULL(m);
-    TEST_ASSERT_NULL(n);
+    TEST_ASSERT__NOT_NULL(m);
+    TEST_ASSERT__NULL(n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
 #else
     TEST_IGNORE_MESSAGE("Enable UNITY_EXCLUDE_STDLIB_MALLOC to Run This Test");
@@ -281,8 +281,8 @@ void test_CallocPastBufferFails(void)
     void* m = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
     void* n = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
     free(m);
-    TEST_ASSERT_NOT_NULL(m);
-    TEST_ASSERT_NULL(n);
+    TEST_ASSERT__NOT_NULL(m);
+    TEST_ASSERT__NULL(n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
 #else
     TEST_IGNORE_MESSAGE("Enable UNITY_EXCLUDE_STDLIB_MALLOC to Run This Test");
@@ -295,8 +295,8 @@ void test_MallocThenReallocGrowsMemoryInPlace(void)
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
     void* n = realloc(m, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 9);
     free(n);
-    TEST_ASSERT_NOT_NULL(m);
-    TEST_ASSERT_EQUAL(m, n);
+    TEST_ASSERT__NOT_NULL(m);
+    TEST_ASSERT__EQUAL(m, n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
 #else
     TEST_IGNORE_MESSAGE("Enable UNITY_EXCLUDE_STDLIB_MALLOC to Run This Test");
@@ -315,9 +315,9 @@ void test_ReallocFailDoesNotFreeMem(void)
     if (out_of_mem == NULL) free(n1);
     free(m);
 
-    TEST_ASSERT_NOT_NULL(m);       /* Got a real memory location */
-    TEST_ASSERT_NULL(out_of_mem);  /* The realloc should have failed */
-    TEST_ASSERT_NOT_EQUAL(n2, n1); /* If n1 != n2 then realloc did not free n1 */
+    TEST_ASSERT__NOT_NULL(m);       /* Got a real memory location */
+    TEST_ASSERT__NULL(out_of_mem);  /* The realloc should have failed */
+    TEST_ASSERT__NOT_EQUAL(n2, n1); /* If n1 != n2 then realloc did not free n1 */
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n2);
 #else
     TEST_IGNORE_MESSAGE("Enable UNITY_EXCLUDE_STDLIB_MALLOC to Run This Test");

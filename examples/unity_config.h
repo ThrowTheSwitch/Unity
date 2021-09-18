@@ -159,7 +159,7 @@
  */
 /* #define UNITY_DOUBLE_TYPE long double */
 
-/* If you look up `UNITY_ASSERT_EQUAL_FLOAT` and `UNITY_ASSERT_EQUAL_DOUBLE` as
+/* If you look up `UNITY_ASSERT__EQUAL__FLOAT` and `UNITY_ASSERT__EQUAL__DOUBLE` as
  * documented in the Unity Assertion Guide, you will learn that they are not
  * really asserting that two values are equal but rather that two values are
  * "close enough" to equal. "Close enough" is controlled by these precision

@@ -3,7 +3,7 @@
 #include "unity.h"
 
 /* These should be ignored because they are commented out in various ways:
-#include "whatever.h" 
+#include "whatever.h"
 */
 //#include "somethingelse.h"
 

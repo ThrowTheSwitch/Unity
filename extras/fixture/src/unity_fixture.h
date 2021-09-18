@@ -71,13 +71,13 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 #ifndef UNITY_EXCLUDE_CPPUTEST_ASSERTS
 /* Sets a pointer and automatically restores it to its old value after teardown */
 #define UT_PTR_SET(ptr, newPointerValue)               UnityPointer_Set((void**)&(ptr), (void*)(newPointerValue), __LINE__)
-#define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT_EQUAL_PTR((expected), (actual))
-#define TEST_ASSERT_BYTES_EQUAL(expected, actual)      TEST_ASSERT_EQUAL_HEX8(0xff & (expected), 0xff & (actual))
+#define TEST_ASSERT_POINTERS_EQUAL(expected, actual)   TEST_ASSERT__EQUAL__PTR((expected), (actual))
+#define TEST_ASSERT_BYTES_EQUAL(expected, actual)      TEST_ASSERT__EQUAL__HEX8(0xff & (expected), 0xff & (actual))
 #define FAIL(message)                                  TEST_FAIL_MESSAGE((message))
-#define CHECK(condition)                               TEST_ASSERT_TRUE((condition))
-#define LONGS_EQUAL(expected, actual)                  TEST_ASSERT_EQUAL_INT((expected), (actual))
-#define STRCMP_EQUAL(expected, actual)                 TEST_ASSERT_EQUAL_STRING((expected), (actual))
-#define DOUBLES_EQUAL(expected, actual, delta)         TEST_ASSERT_DOUBLE_WITHIN((delta), (expected), (actual))
+#define CHECK(condition)                               TEST_ASSERT__TRUE((condition))
+#define LONGS_EQUAL(expected, actual)                  TEST_ASSERT__EQUAL__INT((expected), (actual))
+#define STRCMP_EQUAL(expected, actual)                 TEST_ASSERT__EQUAL__STRING((expected), (actual))
+#define DOUBLES_EQUAL(expected, actual, delta)         TEST_ASSERT__WITHIN__DOUBLE((delta), (expected), (actual))
 #endif
 
 #endif /* UNITY_FIXTURE_H_ */

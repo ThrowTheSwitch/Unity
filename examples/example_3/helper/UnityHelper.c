@@ -5,6 +5,6 @@
 
 void AssertEqualExampleStruct(const EXAMPLE_STRUCT_T expected, const EXAMPLE_STRUCT_T actual, const unsigned short line)
 {
-    UNITY_TEST_ASSERT_EQUAL_INT(expected.x, actual.x, line, "Example Struct Failed For Field x");
-    UNITY_TEST_ASSERT_EQUAL_INT(expected.y, actual.y, line, "Example Struct Failed For Field y");
+    UNITY_TEST_ASSERT__EQUAL__INT(expected.x, actual.x, line, "Example Struct Failed For Field x");
+    UNITY_TEST_ASSERT__EQUAL__INT(expected.y, actual.y, line, "Example Struct Failed For Field y");
 }

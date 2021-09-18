@@ -190,11 +190,11 @@ void UnityPrintLen(const char* string, const UNITY_UINT32 length)
 }
 
 /*-----------------------------------------------*/
-void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T style)
+void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE__T style)
 {
 	if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
 	{
-		if (style == UNITY_DISPLAY_STYLE_CHAR)
+		if (style == UNITY_DISPLAY_STYLE__CHAR)
 		{
 			/* printable characters plus CR & LF are printed */
 			UNITY_OUTPUT_CHAR('\'');
@@ -713,7 +713,7 @@ void UnityAssertEqualNumber(const UNITY_INT expected,
 							const UNITY_INT actual,
 							const char* msg,
 							const UNITY_LINE_TYPE lineNumber,
-							const UNITY_DISPLAY_STYLE_T style)
+							const UNITY_DISPLAY_STYLE__T style)
 {
 	RETURN_IF_FAIL_OR_IGNORE;
 
@@ -735,7 +735,7 @@ void UnityAssertGreaterOrLessOrEqualNumber(	const UNITY_INT threshold,
 											const UNITY_COMPARISON_T compare,
 											const char *msg,
 											const UNITY_LINE_TYPE lineNumber,
-											const UNITY_DISPLAY_STYLE_T style)
+											const UNITY_DISPLAY_STYLE__T style)
 {
 	int	failed	= 0;
 
@@ -782,7 +782,7 @@ void UnityAssertEqualIntArray(	UNITY_INTERNAL_PTR expected,
 								const UNITY_UINT32 num_elements,
 								const char* msg,
 								const UNITY_LINE_TYPE lineNumber,
-								const UNITY_DISPLAY_STYLE_T style,
+								const UNITY_DISPLAY_STYLE__T style,
 								const UNITY_FLAGS_T flags)
 {
 	UNITY_UINT32	elements	= num_elements;
@@ -1184,7 +1184,7 @@ void UnityAssertNumbersWithin(	const UNITY_UINT delta,
 								const UNITY_INT actual,
 								const char* msg,
 								const UNITY_LINE_TYPE lineNumber,
-								const UNITY_DISPLAY_STYLE_T style)
+								const UNITY_DISPLAY_STYLE__T style)
 {
 	RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1232,7 +1232,7 @@ void UnityAssertNumbersArrayWithin(	const UNITY_UINT delta,
 									const UNITY_UINT32 num_elements,
 									const char* msg,
 									const UNITY_LINE_TYPE lineNumber,
-									const UNITY_DISPLAY_STYLE_T style,
+									const UNITY_DISPLAY_STYLE__T style,
 									const UNITY_FLAGS_T flags)
 {
 	UNITY_UINT32	elements	= num_elements;
@@ -1552,9 +1552,9 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
 				UnityPrint(UnityStrByte);
 				UnityPrintNumberUnsigned(length - bytes - 1);
 				UnityPrint(UnityStrExpected);
-				UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE_HEX8);
+				UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE__HEX8);
 				UnityPrint(UnityStrWas);
-				UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE_HEX8);
+				UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE__HEX8);
 				UnityAddMsgIfSpecified(msg);
 				UNITY_FAIL_AND_BAIL;
 			}

@@ -77,7 +77,7 @@ TEST_CASE(44)
 TEST_CASE((90)+9)
 void test_TheseShouldAllPass(int Num)
 {
-    TEST_ASSERT_TRUE(Num < 100);
+    TEST_ASSERT__TRUE(Num < 100);
 }
 
 TEST_CASE(3)
@@ -86,7 +86,7 @@ TEST_CASE( (99) + 1 - (1))
 void test_TheseShouldAllFail(int Num)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_TRUE(Num > 100);
+    TEST_ASSERT__TRUE(Num > 100);
     VERIFY_FAILS_END
 }
 
@@ -99,24 +99,24 @@ void test_TheseAreEveryOther(int Num)
     if (Num & 1)
     {
         EXPECT_ABORT_BEGIN
-        TEST_ASSERT_TRUE(Num > 100);
+        TEST_ASSERT__TRUE(Num > 100);
         VERIFY_FAILS_END
     }
     else
     {
-        TEST_ASSERT_TRUE(Num < 100);
+        TEST_ASSERT__TRUE(Num < 100);
     }
 }
 
 void test_NormalPassesStillWork(void)
 {
-    TEST_ASSERT_TRUE(1);
+    TEST_ASSERT__TRUE(1);
 }
 
 void test_NormalFailsStillWork(void)
 {
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT_TRUE(0);
+    TEST_ASSERT__TRUE(0);
     VERIFY_FAILS_END
 }
 
@@ -137,9 +137,9 @@ void test_StringsArePreserved(unsigned index, const char * str)
     };
 
     /* Ensure that no test cases are skipped by tracking the next expected index */
-    TEST_ASSERT_EQUAL_UINT32(NextExpectedStringIndex, index);
-    TEST_ASSERT_LESS_THAN(sizeof(expected) / sizeof(expected[0]), index);
-    TEST_ASSERT_EQUAL_STRING(expected[index], str);
+    TEST_ASSERT__EQUAL__UINT32(NextExpectedStringIndex, index);
+    TEST_ASSERT__LESS_THAN(sizeof(expected) / sizeof(expected[0]), index);
+    TEST_ASSERT__EQUAL__STRING(expected[index], str);
 
     NextExpectedStringIndex++;
 }
@@ -163,9 +163,9 @@ void test_CharsArePreserved(unsigned index, char c)
     };
 
     /* Ensure that no test cases are skipped by tracking the next expected index */
-    TEST_ASSERT_EQUAL_UINT32(NextExpectedCharIndex, index);
-    TEST_ASSERT_LESS_THAN(sizeof(expected) / sizeof(expected[0]), index);
-    TEST_ASSERT_EQUAL(expected[index], c);
+    TEST_ASSERT__EQUAL__UINT32(NextExpectedCharIndex, index);
+    TEST_ASSERT__LESS_THAN(sizeof(expected) / sizeof(expected[0]), index);
+    TEST_ASSERT__EQUAL(expected[index], c);
 
     NextExpectedCharIndex++;
 }
