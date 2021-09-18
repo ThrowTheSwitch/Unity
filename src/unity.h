@@ -6,6 +6,7 @@
 
 #ifndef UNITY_FRAMEWORK_H
 #define UNITY_FRAMEWORK_H
+
 #define UNITY
 
 #define UNITY_VERSION_MAJOR	2
@@ -16,7 +17,7 @@
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif	/* __cplusplus */
 
 #include "unity_internals.h"
 
@@ -106,7 +107,7 @@ void verifyTest(void);
 #define TEST_ONLY()
 #ifdef UNITY_INCLUDE_PRINT_FORMATTED
 #define TEST_PRINTF(message, ...)																	UnityPrintF(																										__LINE__, (message), __VA_ARGS__)
-#endif
+#endif	/* UNITY_INCLUDE_PRINT_FORMATTED */
 
 /* It is not necessary for you to call PASS. A PASS condition is assumed if nothing fails.
  * This method allows you to abort a test immediately with a PASS state, ignoring the remainder of the test. */
@@ -605,38 +606,42 @@ void verifyTest(void);
 
 #define TEST_ASSERT__EQUAL__MESSAGE(expected, actual, message)										UNITY_TEST_ASSERT__EQUAL__INT(								(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__NOT_EQUAL__MESSAGE(expected, actual, message)									UNITY_TEST_ASSERT(											((expected) !=		(actual)),							__LINE__,	(message))
-#endif
+#endif	/* UNITY_SHORTHAND_AS_OLD */
+
 #ifdef UNITY_SHORTHAND_AS_INT
 #define TEST_ASSERT__EQUAL(expected, actual)														UNITY_TEST_ASSERT__EQUAL__INT(								(expected),			(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__NOT_EQUAL(expected, actual)													UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
 
 #define TEST_ASSERT__EQUAL__MESSAGE(expected, actual, message)										UNITY_TEST_ASSERT__EQUAL__INT(								(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__NOT_EQUAL__MESSAGE(expected, actual, message)									UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
-#endif
+#endif	/* UNITY_SHORTHAND_AS_INT */
+
 #ifdef UNITY_SHORTHAND_AS_MEM
 #define TEST_ASSERT__EQUAL(expected, actual)														UNITY_TEST_ASSERT__EQUAL__MEMORY(							(&expected),		(&actual),	sizeof(expected),		__LINE__,	NULL)
 #define TEST_ASSERT__NOT_EQUAL(expected, actual)													UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
 
 #define TEST_ASSERT__EQUAL__MESSAGE(expected, actual, message)										UNITY_TEST_ASSERT__EQUAL__MEMORY(							(&expected),		(&actual),	sizeof(expected),		__LINE__,	(message))
 #define TEST_ASSERT__NOT_EQUAL__MESSAGE(expected, actual, message)									UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
-#endif
+#endif	/* UNITY_SHORTHAND_AS_MEM */
+
 #ifdef UNITY_SHORTHAND_AS_RAW
 #define TEST_ASSERT__EQUAL(expected, actual)														UNITY_TEST_ASSERT(											((expected) ==		(actual)),							__LINE__,	" Expected Equal")
 #define TEST_ASSERT__NOT_EQUAL(expected, actual)													UNITY_TEST_ASSERT(											((expected) !=		(actual)),							__LINE__,	" Expected Not-Equal")
 
 #define TEST_ASSERT__EQUAL__MESSAGE(expected, actual, message)										UNITY_TEST_ASSERT(											((expected) ==		(actual)),							__LINE__,	(message))
 #define TEST_ASSERT__NOT_EQUAL__MESSAGE(expected, actual, message)									UNITY_TEST_ASSERT(											((expected) !=		(actual)),							__LINE__,	(message))
-#endif
+#endif	/* UNITY_SHORTHAND_AS_RAW */
+
 #ifdef UNITY_SHORTHAND_AS_NONE
 #define TEST_ASSERT__EQUAL(expected, actual)														UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
 #define TEST_ASSERT__NOT_EQUAL(expected, actual)													UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
 
 #define TEST_ASSERT__EQUAL__MESSAGE(expected, actual, message)										UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
 #define TEST_ASSERT__NOT_EQUAL__MESSAGE(expected, actual, message)									UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
-#endif
+#endif	/* UNITY_SHORTHAND_AS_NONE */
 
-/* end of UNITY_FRAMEWORK_H */
 #ifdef __cplusplus
 }
-#endif
-#endif
+#endif	/* __cplusplus */
+
+#endif	/* UNITY_FRAMEWORK_H */
