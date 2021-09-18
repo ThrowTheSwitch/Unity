@@ -1,6 +1,6 @@
 /* =========================================================================
 	Unity Project - A Test Framework for C
-	Copyright (c) 2007-21 Mike Karlesky, Mark VanderVoord, Greg Williams
+	Copyright (c) 2007-21 Mike Karlesky, Mark VanderVoord, Greg Williams, David Koch
 	[Released under MIT License. Please refer to license.txt for details]
 ============================================================================ */
 
@@ -76,6 +76,17 @@ static const char PROGMEM UnityStrDetail1Name[]				= UNITY_DETAIL1_NAME " ";
 static const char PROGMEM UnityStrDetail2Name[]				= " " UNITY_DETAIL2_NAME " ";
 #endif	/* UNITY_EXCLUDE_DETAILS */
 
+#ifdef UNITY_INCLUDE_FRAMEWORK
+static const char UnityStrStarting[]						= "Starting ";
+static const char UnityStrResuming[]						= "Resuming ";
+static const char UnityStrFailed[]							= "Failed ";
+static const char UnityStrTest[]							= "test ";
+static const char UnityStrPlan[]							= "plan ";
+static const char UnityStrFixture[]							= "fixture ";
+static const char UnityStrCase[]							= "case ";
+static const char UnityStrDots[]							= "... ";
+#endif	/* UNITY_INCLUDE_FRAMEWORK */
+
 /*-----------------------------------------------
  * Pretty Printers & Test Result Output Handlers
  *-----------------------------------------------*/
@@ -89,24 +100,26 @@ static void UnityPrintChar(const char* pch)
 	{
 		UNITY_OUTPUT_CHAR(*pch);
 	}
-	/* write escaped carriage returns */
-	else if ('\r' == *pch)
-	{
-		UNITY_OUTPUT_CHAR('\\');
-		UNITY_OUTPUT_CHAR('r');
-	}
-	/* write escaped line feeds */
-	else if ('\n' == *pch)
-	{
-		UNITY_OUTPUT_CHAR('\\');
-		UNITY_OUTPUT_CHAR('n');
-	}
-	/* unprintable characters are shown as codes */
 	else
 	{
 		UNITY_OUTPUT_CHAR('\\');
-		UNITY_OUTPUT_CHAR('x');
-		UnityPrintNumberHex((UNITY_UINT)*pch, 2);
+
+		/* write escaped carriage returns */
+		if ('\r' == *pch)
+		{
+			UNITY_OUTPUT_CHAR('r');
+		}
+		/* write escaped line feeds */
+		else if ('\n' == *pch)
+		{
+			UNITY_OUTPUT_CHAR('n');
+		}
+		/* unprintable characters are shown as codes */
+		else
+		{
+			UNITY_OUTPUT_CHAR('x');
+			UnityPrintNumberHex((UNITY_UINT)*pch, 2);
+		}
 	}
 }
 
@@ -118,12 +131,14 @@ static UNITY_UINT UnityPrintAnsiEscapeString(const char* string)
 	const	char*		pch		= string;
 			UNITY_UINT	count	= 0;
 
-	while (*pch && ('m' != *pch))
+	while (('\0' != *pch) && ('m' != *pch))
 	{
 		UNITY_OUTPUT_CHAR(*pch);
+
 		pch += 1;
 		count += 1;
 	}
+
 	UNITY_OUTPUT_CHAR('m');
 	count += 1;
 
@@ -138,7 +153,7 @@ void UnityPrint(const char* string)
 
 	if (NULL != pch)
 	{
-		while (*pch)
+		while ('\0' != *pch)
 		{
 #ifdef UNITY_OUTPUT_COLOR
 			/* print ANSI escape code */
@@ -160,31 +175,33 @@ void UnityPrintLen(const char* string, const UNITY_UINT32 length)
 
 	if (NULL != pch)
 	{
-		while (*pch && ((UNITY_UINT32)(pch - string) < length))
+		while (('\0' != *pch) && ((UNITY_UINT32)(pch - string) < length))
 		{
 			/* printable characters plus CR & LF are printed */
 			if ((32 <= *pch) && (*pch <= 126))
 			{
 				UNITY_OUTPUT_CHAR(*pch);
 			}
-			/* write escaped carriage returns */
-			else if ('\r' == *pch)
-			{
-				UNITY_OUTPUT_CHAR('\\');
-				UNITY_OUTPUT_CHAR('r');
-			}
-			/* write escaped line feeds */
-			else if ('\n' == *pch)
-			{
-				UNITY_OUTPUT_CHAR('\\');
-				UNITY_OUTPUT_CHAR('n');
-			}
-			/* unprintable characters are shown as codes */
 			else
 			{
 				UNITY_OUTPUT_CHAR('\\');
-				UNITY_OUTPUT_CHAR('x');
-				UnityPrintNumberHex((UNITY_UINT)*pch, 2);
+
+				/* write escaped carriage returns */
+				if ('\r' == *pch)
+				{
+					UNITY_OUTPUT_CHAR('r');
+				}
+				/* write escaped line feeds */
+				else if ('\n' == *pch)
+				{
+					UNITY_OUTPUT_CHAR('n');
+				}
+				/* unprintable characters are shown as codes */
+				else
+				{
+					UNITY_OUTPUT_CHAR('x');
+					UnityPrintNumberHex((UNITY_UINT)*pch, 2);
+				}
 			}
 
 			pch += 1;
@@ -201,29 +218,33 @@ void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE__
 		{
 			/* printable characters plus CR & LF are printed */
 			UNITY_OUTPUT_CHAR('\'');
+
 			if ((32 <= number) && (number <= 126))
 			{
 				UNITY_OUTPUT_CHAR((int)number);
 			}
-			/* write escaped carriage returns */
-			else if ('\r' == number)
-			{
-				UNITY_OUTPUT_CHAR('\\');
-				UNITY_OUTPUT_CHAR('r');
-			}
-			/* write escaped line feeds */
-			else if ('\n' == number)
-			{
-				UNITY_OUTPUT_CHAR('\\');
-				UNITY_OUTPUT_CHAR('n');
-			}
-			/* unprintable characters are shown as codes */
 			else
 			{
 				UNITY_OUTPUT_CHAR('\\');
-				UNITY_OUTPUT_CHAR('x');
-				UnityPrintNumberHex((UNITY_UINT)number, 2);
+
+				/* write escaped carriage returns */
+				if ('\r' == number)
+				{
+					UNITY_OUTPUT_CHAR('r');
+				}
+				/* write escaped line feeds */
+				else if ('\n' == number)
+				{
+					UNITY_OUTPUT_CHAR('n');
+				}
+				/* unprintable characters are shown as codes */
+				else
+				{
+					UNITY_OUTPUT_CHAR('x');
+					UnityPrintNumberHex((UNITY_UINT)number, 2);
+				}
 			}
+
 			UNITY_OUTPUT_CHAR('\'');
 		}
 		else
@@ -284,14 +305,14 @@ void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print)
 	int		nibble;
 	char	nibbles	= nibbles_to_print;
 
-	if ((unsigned)nibbles > UNITY_MAX_NIBBLES)
+	if (UNITY_MAX_NIBBLES < (unsigned)nibbles)
 	{
 		nibbles = UNITY_MAX_NIBBLES;
 	}
 
 	while (0 < nibbles)
 	{
-		nibbles--;
+		nibbles -= 1;
 		nibble = (int)(number >> (nibbles * 4)) & 0x0F;
 		if (9 >= nibble)
 		{
@@ -312,9 +333,9 @@ void UnityPrintMask(const UNITY_UINT mask, const UNITY_UINT number)
 
 	for (i = 0; i < UNITY_INT_WIDTH; i += 1)
 	{
-		if (current_bit & mask)
+		if (0 != (current_bit & mask))
 		{
-			if (current_bit & number)
+			if (0 != (current_bit & number))
 			{
 				UNITY_OUTPUT_CHAR('1');
 			}
@@ -362,7 +383,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 	}
 
 	/* handle zero, NaN, and +/- infinity */
-	if (number == 0.0f)
+	if (0.0f == number)
 	{
 		UnityPrint("0");
 	}
@@ -376,9 +397,11 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 	}
 	else
 	{
-		UNITY_INT32	n_int		= 0, n;
+		UNITY_INT32	n_int		= 0;
+		UNITY_INT32	n;
 		int			exponent	= 0;
-		int			decimals, digits;
+		int			decimals;
+		int			digits;
 		char		buf[16]		= {0};
 
 		/*
@@ -393,7 +416,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 			UNITY_DOUBLE	factor	= 1.0f;
 
 			while (number < (UNITY_DOUBLE)max_scaled / 1e10f)  { number *= 1e10f; exponent -= 10; }
-			while (number * factor < (UNITY_DOUBLE)min_scaled) { factor *= 10.0f; exponent--; }
+			while (number * factor < (UNITY_DOUBLE)min_scaled) { factor *= 10.0f; exponent -= 1; }
 
 			number *= factor;
 		}
@@ -418,7 +441,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 			n_int = (UNITY_INT32)number;
 			number -= (UNITY_DOUBLE)n_int;
 
-			while (n_int < min_scaled)	{ n_int *= 10; factor *= 10.0f; exponent--; }
+			while (n_int < min_scaled)	{ n_int *= 10; factor *= 10.0f; exponent -= 1; }
 
 			number *= factor;
 		}
@@ -457,7 +480,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 		digits = 0;
 		while ((0 != n) || (digits <= decimals))
 		{
-			buf[digits++] = (char)('0' + n % 10);
+			buf[digits++] = (char)('0' + (n % 10));
 			n /= 10;
 		}
 		while (0 < digits)
@@ -484,7 +507,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 			digits = 0;
 			while ((0 != exponent) || (2 > digits))
 			{
-				buf[digits++] = (char)('0' + exponent % 10);
+				buf[digits++] = (char)('0' + (exponent % 10));
 				exponent /= 10;
 			}
 			while (0 < digits)
@@ -599,6 +622,7 @@ static void UnityAddMsgIfSpecified(const char* msg)
 			UnityPrint(UnityStrSpacer);
 		}
 #endif	/* UNITY_EXCLUDE_DETAILS */
+
 		UnityPrint(msg);
 	}
 }
@@ -781,13 +805,14 @@ void UnityAssertGreaterOrLessOrEqualNumber(	const UNITY_INT threshold,
 		if ((actual > threshold) && (compare & UNITY_COMPARISON__SMALLER_THAN))	{ failed = 1; }
 		if ((actual < threshold) && (compare & UNITY_COMPARISON__GREATER_THAN))	{ failed = 1; }
 	}
-	else /* UINT or HEX */
+	else
+	/* UINT or HEX */
 	{
 		if (((UNITY_UINT)actual > (UNITY_UINT)threshold) && (compare & UNITY_COMPARISON__SMALLER_THAN))	{ failed = 1; }
 		if (((UNITY_UINT)actual < (UNITY_UINT)threshold) && (compare & UNITY_COMPARISON__GREATER_THAN))	{ failed = 1; }
 	}
 
-	if (failed)
+	if (0 != failed)
 	{
 		UnityTestResultsFailBegin(lineNumber);
 
@@ -1220,13 +1245,15 @@ void UnityAssertDoubleSpecial(	const UNITY_DOUBLE actual,
 			is_trait = isnan(actual) ? 1 : 0;
 			break;
 		}
-		case UNITY_FLOAT_TRAIT__IS_DET: /* A determinate number is non infinite and not NaN. */
+		/* A determinate number is non infinite and not NaN. */
+		case UNITY_FLOAT_TRAIT__IS_DET:
 		case UNITY_FLOAT_TRAIT__IS_NOT_DET:
 		{
 			is_trait = !isinf(actual) && !isnan(actual);
 			break;
 		}
-		default: /* including UNITY_FLOAT_TRAIT__UNKNOWN */
+		default:
+		/* including UNITY_FLOAT_TRAIT__UNKNOWN */
 		{
 			trait_index		= 0;
 			trait_names[0]	= UnityStrInvalidFloatTrait;
@@ -1568,6 +1595,7 @@ void UnityAssertEqualStringArray(	UNITY_INTERNAL_PTR expected,
 	do
 	{
 		act = actual[j];
+
 		if (flags == UNITY_FLAGS__ARRAY_TO_ARRAY)
 		{
 			expd = ((const char* const*)expected)[j];
@@ -1647,17 +1675,20 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
 	while (elements--)
 	{
 		bytes = length;
+
 		while (bytes--)
 		{
 			if (*ptr_exp != *ptr_act)
 			{
 				UnityTestResultsFailBegin(lineNumber);
 				UnityPrint(UnityStrMemory);
+
 				if (1 < num_elements)
 				{
 					UnityPrint(UnityStrElement);
 					UnityPrintNumberUnsigned(num_elements - elements - 1);
 				}
+
 				UnityPrint(UnityStrByte);
 				UnityPrintNumberUnsigned(length - bytes - 1);
 				UnityPrint(UnityStrExpected);
@@ -1667,6 +1698,7 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
 				UnityAddMsgIfSpecified(msg);
 				UNITY_FAIL_AND_BAIL;
 			}
+
 			ptr_exp += 1;
 			ptr_act += 1;
 		}
@@ -2157,12 +2189,12 @@ int IsStringInBiggerString(const char* longstring, const char* shortstring)
 		return 1;
 	}
 
-	while (*lptr)
+	while ('\0' != *lptr)
 	{
 		lnext = lptr + 1;
 
 		/* If they current bytes match, go on to the next bytes */
-		while (*lptr && *sptr && (*lptr == *sptr))
+		while (('\0' != *lptr) && ('\0' != *sptr) && (*lptr == *sptr))
 		{
 			lptr += 1;
 			sptr += 1;
@@ -2291,3 +2323,314 @@ int UnityTestMatches(void)
 
 #endif	/* UNITY_USE_COMMAND_LINE_ARGS */
 /*-----------------------------------------------*/
+
+
+#ifdef UNITY_INCLUDE_FRAMEWORK
+/*-----------------------------------------------
+ * Test Plan
+ *-----------------------------------------------*/
+
+/*-----------------------------------------------*/
+void UnityPlanExe(const UNITY_PLAN_T* plan)
+{
+	UNITY_COUNTER_TYPE current_fixture;
+
+	if (NULL != plan)
+	/* Plan pointer is valid */
+	{
+		if ((plan->FixtureMax < plan->Vars->CurrentFixture) ||
+			(0 == TEST_CASE__REBOOT_CHECK()) ||
+			(0 == plan->Vars->CurrentFixture))
+		/* Start the plan (simulating constructor) */
+		{
+			if (0 == UnityCaseRebootCheck())
+			/* Reinit plan after reset */
+			{
+				plan->Vars->CurrentFixture = 0;
+			}
+
+			/* "Starting test plan %s... " */
+			if (0 == plan->Vars->CurrentFixture)
+			{
+				UnityPrint(UnityStrStarting);
+			}
+			else
+			{
+				UnityPrint(UnityStrResuming);
+			}
+			UnityPrint(UnityStrTest);
+			UnityPrint(UnityStrPlan);
+			UnityPrint(plan->Name);
+			UnityPrint(UnityStrDots);
+			UNITY_PRINT_EOL();
+		}
+
+		for
+		( current_fixture  = plan->Vars->CurrentFixture
+		; current_fixture <  plan->FixtureMax
+		; current_fixture += 1
+		, plan->Vars->CurrentFixture = current_fixture
+		)
+		{
+			if (NULL != plan->Fixtures)
+			{
+				UnityFixtExe(plan->Fixtures[current_fixture]);
+			}
+		}
+	}
+	else
+	/* Plan pointer is not valid */
+	{
+		/* "Failed test plan (NULL)" */
+		UnityPrint(UnityStrFailed);
+		UnityPrint(UnityStrTest);
+		UnityPrint(UnityStrPlan);
+		UNITY_OUTPUT_CHAR('(');
+		UnityPrint(UnityStrNull);
+		UNITY_OUTPUT_CHAR(')');
+		UNITY_PRINT_EOL();
+	}
+}
+
+/*-----------------------------------------------
+ * Test Fixture
+ *-----------------------------------------------*/
+
+static const UNITY_FIXT_T*	UnityFixtures = NULL;
+
+/* Called by Unity, should be declared as 'extern' */
+void setUp(void)	{ if (NULL != UnityFixtures) { (*UnityFixtures->setUp)(); } }
+void funcCall(void)	{ if (NULL != UnityFixtures) { (*UnityFixtures->Vars->funcCall)(); } }
+void tearDown(void)	{ if (NULL != UnityFixtures) { (*UnityFixtures->tearDown)(); } }
+
+/*-----------------------------------------------*/
+void UnityFixtExe(const UNITY_FIXT_T* fixt)
+{
+	UNITY_COUNTER_TYPE current_case;
+
+	if (NULL != fixt)
+	/* Fixture pointer is valid */
+	{
+		/* Set current fixture pointer to be used by Unity */
+		UnityFixtures = fixt;
+
+		if (fixt->CaseMax < fixt->Vars->CurrentCase)
+		/* Start the fixture */
+		{
+			if (0 == TEST_CASE__REBOOT_CHECK())
+			/* Reinit fixture after reset */
+			{
+				fixt->Vars->CurrentCase = 0;
+				fixt->Vars->CurrentStep = 0;
+				fixt->Vars->Fails = 0;
+			}
+
+			/* "Starting test fixture %s... " */
+			if (0 == fixt->Vars->CurrentCase)
+			{
+				UnityPrint(UnityStrStarting);
+			}
+			else
+			{
+				UnityPrint(UnityStrResuming);
+			}
+			UnityPrint(UnityStrTest);
+			UnityPrint(UnityStrFixture);
+			UnityPrint(fixt->Name);
+			UnityPrint(UnityStrDots);
+			UNITY_PRINT_EOL();
+
+			TEST__START();
+		}
+
+		for
+		( current_case  = fixt->Vars->CurrentCase
+		; current_case <  fixt->CaseMax
+		; current_case += 1
+		, fixt->Vars->CurrentCase = current_case
+		)
+		{
+			if ((NULL != fixt->Cases) && (NULL != fixt->Cases[current_case].funcCase))
+			{
+				if (UNITY_CASE_STATE__READY == fixt->Cases[current_case].Vars->State)
+				{
+					/* Set case pointer to be called by Unity */
+					fixt->Vars->funcCall = fixt->Cases[current_case].funcCase;
+
+					/* "Starting test case %s::%s... " */
+					if (0 == current_case)
+					{
+						UnityPrint(UnityStrStarting);
+					}
+					else
+					{
+						UnityPrint(UnityStrResuming);
+					}
+					UnityPrint(UnityStrTest);
+					UnityPrint(UnityStrCase);
+					UnityPrint(fixt->Name);
+					UNITY_OUTPUT_CHAR(':');
+					UNITY_OUTPUT_CHAR(':');
+					UnityPrint(fixt->Cases[current_case].Name);
+					UnityPrint(UnityStrDots);
+					UNITY_PRINT_EOL();
+
+					/* This calls the extern function above */
+					TEST__RUN
+					( funcCall
+					, fixt->Cases[current_case].Name
+					, fixt->Cases[current_case].LineNumber
+					);
+				}
+			}
+		} // for
+
+		TEST__END();
+	}
+	else
+	/* Fixture pointer is not valid */
+	{
+		/* "Failed test fixture (NULL)" */
+		UnityPrint(UnityStrFailed);
+		UnityPrint(UnityStrTest);
+		UnityPrint(UnityStrFixture);
+		UNITY_OUTPUT_CHAR('(');
+		UnityPrint(UnityStrNull);
+		UNITY_OUTPUT_CHAR(')');
+		UNITY_PRINT_EOL();
+	}
+}
+
+/*-----------------------------------------------
+ * Test Case
+ *-----------------------------------------------*/
+
+/*-----------------------------------------------*/
+int UnityCaseStart(void)
+{
+	int	result = 0;
+
+	if (NULL != UnityFixtures)
+	{
+		UnityFixtures->Cases[UnityFixtures->Vars->CurrentCase].Vars->CurrentStep = 0;
+		UnityFixtures->Vars->Fails = TEST__GET_FAIL();
+
+		result = 1;
+	}
+
+	return result;
+}
+
+/*-----------------------------------------------*/
+void UnityCaseCheck(int check)
+{
+	UNITY_CASE_STATE_T state;
+
+	if (NULL != UnityFixtures)
+	{
+		if (0 != check)
+		{
+			state = UNITY_CASE_STATE__PASSED;
+		}
+		else
+		{
+			state = UNITY_CASE_STATE__FAILED;
+		}
+
+		UnityFixtures->Cases[UnityFixtures->Vars->CurrentCase].Vars->State = state;
+	}
+}
+
+/*-----------------------------------------------*/
+void UnityCaseExitOnFail(int check)
+{
+	if (NULL != UnityFixtures)
+	{
+		UnityFixtures->Vars->ExitOnFail = check;
+	}
+}
+
+/*-----------------------------------------------*/
+int UnityCaseExitOn(int check)
+{
+	int result = 0;
+
+	if (NULL != UnityFixtures)
+	{
+		if ((0 != UnityFixtures->Vars->ExitOnFail) &&
+			(0 != check))
+		{
+			UnityCaseCheck(check);
+
+			result = 1;
+		}
+	}
+
+	return result;
+}
+
+/*-----------------------------------------------*/
+int UnityCaseRebootCheck(void)
+{
+	int result = 0;
+
+#if 0
+	result = CheckReboot();
+#endif	// 0
+
+	return result;
+}
+
+/*-----------------------------------------------*/
+void UnityCaseEnd(void)
+{
+	if (NULL != UnityFixtures)
+	{
+		TEST_CASE__CHECK(TEST__GET_FAIL() == UnityFixtures->Vars->Fails);
+	}
+}
+
+/*-----------------------------------------------
+ * Test Step
+ *-----------------------------------------------*/
+
+/*-----------------------------------------------*/
+int UnityStepStart(void)
+{
+	int result = 0;
+
+	if (NULL != UnityFixtures)
+	{
+		if (UnityFixtures->Vars->CurrentStep ==
+			UnityFixtures->Cases[UnityFixtures->Vars->CurrentCase].Vars->CurrentStep)
+		{
+			result = 1;
+		}
+	}
+
+	return result;
+}
+
+/*-----------------------------------------------*/
+void UnityStepEnd(UNITY_UINT32 time_ms)
+{
+	if (NULL != UnityFixtures)
+	{
+		if (0 > (UNITY_INT32) time_ms)
+		{
+			UnityFixtures->Vars->CurrentStep += 1;
+		}
+		else
+		{
+			UnityFixtures->Cases[UnityFixtures->Vars->CurrentCase].Vars->CurrentStep += 1;
+
+			if (0 < time_ms)
+			{
+#if 0
+
+#endif	// 0
+			}
+		}
+	}
+}
+#endif	/* UNITY_INCLUDE_FRAMEWORK */

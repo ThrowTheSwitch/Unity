@@ -1,11 +1,11 @@
 /* ==========================================
 	Unity Project - A Test Framework for C
-	Copyright (c) 2007-21 Mike Karlesky, Mark VanderVoord, Greg Williams
+	Copyright (c) 2007-21 Mike Karlesky, Mark VanderVoord, Greg Williams, David Koch
 	[Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
-#ifndef UNITY_FRAMEWORK_H
-#define UNITY_FRAMEWORK_H
+#ifndef UNITY_H
+#define UNITY_H
 
 #define UNITY
 
@@ -20,6 +20,10 @@ extern "C"
 #endif	/* __cplusplus */
 
 #include "unity_internals.h"
+
+#ifdef UNITY_INCLUDE_FRAMEWORK
+#include "unity_framework.h"
+#endif	/* UNITY_INCLUDE_FRAMEWORK */
 
 /*-------------------------------------------------------
  * Test Setup / Teardown
@@ -644,4 +648,4 @@ void verifyTest(void);
 }
 #endif	/* __cplusplus */
 
-#endif	/* UNITY_FRAMEWORK_H */
+#endif	/* UNITY_H */
