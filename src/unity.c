@@ -23,7 +23,9 @@ void UNITY_OUTPUT_CHAR(int);
 #define UNITY_IGNORE_AND_BAIL		{ Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }
 #define RETURN_IF_FAIL_OR_IGNORE	if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) { TEST_ABORT(); }
 
-struct	UNITY_STORAGE_T	Unity;
+UNITY_LOG_DECLARE();
+
+UNITY_STORAGE_T	Unity;
 
 #ifdef UNITY_OUTPUT_COLOR
 const char PROGMEM UnityStrOk[]								= "\033[42mOK\033[00m";
@@ -77,14 +79,14 @@ static const char PROGMEM UnityStrDetail2Name[]				= " " UNITY_DETAIL2_NAME " ";
 #endif	/* UNITY_EXCLUDE_DETAILS */
 
 #ifdef UNITY_INCLUDE_FRAMEWORK
-static const char UnityStrStarting[]						= "Starting ";
-static const char UnityStrResuming[]						= "Resuming ";
-static const char UnityStrFailed[]							= "Failed ";
-static const char UnityStrTest[]							= "test ";
-static const char UnityStrPlan[]							= "plan ";
-static const char UnityStrFixture[]							= "fixture ";
-static const char UnityStrCase[]							= "case ";
-static const char UnityStrDots[]							= "... ";
+static const char PROGMEM UnityStrStarting[]				= "Starting ";
+static const char PROGMEM UnityStrResuming[]				= "Resuming ";
+static const char PROGMEM UnityStrFailed[]					= "Failed ";
+static const char PROGMEM UnityStrTest[]					= "test ";
+static const char PROGMEM UnityStrPlan[]					= "plan ";
+static const char PROGMEM UnityStrFixture[]					= "fixture ";
+static const char PROGMEM UnityStrCase[]					= "case ";
+static const char PROGMEM UnityStrDots[]					= "... ";
 #endif	/* UNITY_INCLUDE_FRAMEWORK */
 
 /*-----------------------------------------------
@@ -518,6 +520,16 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 	}
 }
 #endif	/* ! UNITY_EXCLUDE_FLOAT_PRINT */
+
+#ifdef UNITY_INCLUDE_LOG
+/*-----------------------------------------------*/
+void UnityPrintLog(void)
+{
+	UNITY_LOG_PRINT();
+
+	Unity.LogIndex = 0;
+}
+#endif
 
 /*-----------------------------------------------*/
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
@@ -1662,8 +1674,8 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
 	}
 
 	if (expected == actual)
+	/* Both are NULL or same pointer */
 	{
-		/* Both are NULL or same pointer */
 		return;
 	}
 
@@ -2036,7 +2048,11 @@ void UnityBegin(const char* filename)
 	Unity.TestIgnores			= 0;
 	Unity.CurrentTestFailed		= 0;
 	Unity.CurrentTestIgnored	= 0;
+#ifdef UNITY_INCLUDE_LOG
+	Unity.LogIndex				= 0;
+#endif
 
+	UNITY_LOG_REGISTER();
 	UNITY_CLR_DETAILS();
 	UNITY_OUTPUT_START();
 }

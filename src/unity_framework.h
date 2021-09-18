@@ -215,12 +215,20 @@ void UnityCaseEnd(void);
 
 #define TEST_CASE__START(cause)												\
 			TEST_CASE__START_CNTX(cause, TEST_CONTEXT__NONE)
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#define TEST_CASE__START_INIT(init)											\
+				{ .State			= init									\
+				, .CurrentStep		= 0										\
+				}
+#else	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_CASE__START_INIT(init)											\
+				{					  init									\
+				,					  0										\
+				}
+#endif	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
 #define TEST_CASE__START_CNTX(cause, cntx)									\
 			UNITY_CASE_VARS_T TEST_CASE__VARS(cause) cntx					\
-			= (UNITY_CASE_VARS_T)											\
-				{ .State		= UNITY_CASE_STATE__READY					\
-				, .CurrentStep	= 0											\
-				};															\
+			= TEST_CASE__START_INIT(UNITY_CASE_STATE__READY);				\
 			TEST_CASE__FUNC(cause)											\
 			{	if (0 != UnityCaseStart())									\
 				{	TEST__SETUP()
@@ -327,31 +335,47 @@ void UnityFixtExe(const UNITY_FIXT_T* fixt);
 
 #define TEST_FIXT__START(fixt)												\
 			TEST_FIXT__START_CNTX(fixt, TEST_CONTEXT__NONE)
-#define TEST_FIXT__START_CNTX(fixt, cntx)									\
-			UNITY_FIXT_VARS_T TEST_FIXT__VARS(fixt) cntx					\
-			= (UNITY_FIXT_VARS_T)											\
-				{ .funcCall			= NULL									\
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#define TEST_FIXT__START_INIT(init)											\
+				{ .funcCall			= init									\
 				, .Fails			= 0										\
-				, .ExitOnFail		= false									\
+				, .ExitOnFail		= 0										\
 				, .CurrentCase		= (UNITY_COUNTER_TYPE) (-1)				\
 				, .CurrentStep		= 0										\
-				};															\
+				}
+#else	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_FIXT__START_INIT(init)											\
+				{					  init									\
+				,					  0										\
+				,					  0										\
+				,					  (UNITY_COUNTER_TYPE) (-1)				\
+				,					  0										\
+				}
+#endif	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_FIXT__START_CNTX(fixt, cntx)									\
+			UNITY_FIXT_VARS_T TEST_FIXT__VARS(fixt) cntx					\
+			= TEST_FIXT__START_INIT(NULL);									\
 			const UNITY_CASE_T TEST_FIXT__CASE(fixt)[]						\
 			=	{
 
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 #define TEST_FIXT__CASE_ADD(cause)											\
 					{ .funcCase		= TEST_CASE__NAME(cause)				\
 					, .Name			= #cause								\
 					, .Vars			= &TEST_CASE__VARS(cause)				\
 					, .LineNumber	= __LINE__								\
 					},
+#else	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_FIXT__CASE_ADD(cause)											\
+					{				  TEST_CASE__NAME(cause)				\
+					,				  #cause								\
+					,				  &TEST_CASE__VARS(cause)				\
+					,				  __LINE__								\
+					},
+#endif	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
 
-#define TEST_FIXT__END(fixt)												\
-				};															\
-			UNITY_WEAK_ATTRIBUTE	TEST_FIXT__SETUP_FUNC(fixt)		{ ; }	\
-			UNITY_WEAK_ATTRIBUTE	TEST_FIXT__TEARDOWN_FUNC(fixt)	{ ; }	\
-			const UNITY_FIXT_T TEST_FIXT__NAME(fixt)						\
-			= (UNITY_FIXT_T)												\
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#define TEST_FIXT__END_INIT(fixt)											\
 				{ .setUp			= TEST_FIXT__SETUP_NAME(fixt)			\
 				, .tearDown			= TEST_FIXT__TEARDOWN_NAME(fixt)		\
 				, .Name				= #fixt									\
@@ -360,7 +384,25 @@ void UnityFixtExe(const UNITY_FIXT_T* fixt);
 				, .CaseMax			= (sizeof(TEST_FIXT__CASE(fixt)) /		\
 										sizeof(TEST_FIXT__CASE(fixt)[0]))	\
 				, .LineNumber		= __LINE__								\
-				};
+				}
+#else	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_FIXT__END_INIT(fixt)											\
+				{					  TEST_FIXT__SETUP_NAME(fixt)			\
+				,					  TEST_FIXT__TEARDOWN_NAME(fixt)		\
+				,					  #fixt									\
+				,					  &TEST_FIXT__VARS(fixt)				\
+				,					  TEST_FIXT__CASE(fixt)					\
+				,					  (sizeof(TEST_FIXT__CASE(fixt)) /		\
+										sizeof(TEST_FIXT__CASE(fixt)[0]))	\
+				,					  __LINE__								\
+				}
+#endif	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_FIXT__END(fixt)												\
+				};															\
+			UNITY_WEAK_ATTRIBUTE	TEST_FIXT__SETUP_FUNC(fixt)		{ ; }	\
+			UNITY_WEAK_ATTRIBUTE	TEST_FIXT__TEARDOWN_FUNC(fixt)	{ ; }	\
+			const UNITY_FIXT_T TEST_FIXT__NAME(fixt)						\
+			= TEST_FIXT__END_INIT(fixt);
 
 #define	TEST_FIXT__EXE(fixt)	UnityFixtExe( &TEST_FIXT__NAME(fixt) );
 #define TEST_FIXT__RUN(fixt)	{ TEST_FIXT__EXE(fixt); }
@@ -371,16 +413,16 @@ void UnityFixtExe(const UNITY_FIXT_T* fixt);
 
 typedef struct
 {
-	UNITY_COUNTER_TYPE	CurrentFixture;
+	UNITY_COUNTER_TYPE		CurrentFixture;
 } UNITY_PLAN_VARS_T;
 
 typedef struct
 {
-	const char*			Name;
-	UNITY_PLAN_VARS_T*	Vars;
-	const UNITY_FIXT_T*	Fixtures;
-	UNITY_COUNTER_TYPE	FixtureMax;
-	UNITY_LINE_TYPE		LineNumber;
+	const char*				Name;
+	UNITY_PLAN_VARS_T*		Vars;
+	const UNITY_FIXT_T**	Fixtures;
+	UNITY_COUNTER_TYPE		FixtureMax;
+	UNITY_LINE_TYPE			LineNumber;
 } UNITY_PLAN_T;
 
 void UnityPlanExe(const UNITY_PLAN_T* plan);
@@ -392,28 +434,47 @@ void UnityPlanExe(const UNITY_PLAN_T* plan);
 
 #define TEST_PLAN__START(plan)												\
 			TEST_PLAN__START_CNTX(plan, TEST_CONTEXT__NONE)
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#define TEST_PLAN__START_INIT(init)											\
+				{ .CurrentFixture	= (UNITY_COUNTER_TYPE) init				\
+				}
+#else	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_PLAN__START_INIT(init)											\
+				{					  (UNITY_COUNTER_TYPE) init				\
+				}
+#endif	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
 #define TEST_PLAN__START_CNTX(plan, cntx)									\
 			UNITY_PLAN_VARS_T TEST_PLAN__VARS(plan)	cntx					\
-			= (UNITY_PLAN_VARS_T)											\
-				{ .CurrentFixture	= (UNITY_COUNTER_TYPE) (-1)				\
-				};															\
+			= TEST_PLAN__START_INIT(-1);									\
 			const UNITY_FIXT_T* TEST_PLAN__FIXT(plan)[]						\
 			=	{
 
 #define TEST_PLAN__FIXT_ADD(fixt)											\
 					&TEST_FIXT__NAME(fixt),
 
-#define TEST_PLAN__END(plan)												\
-				}; 															\
-			const UNITY_PLAN_T TEST_PLAN__NAME(plan)						\
-			= (UNITY_PLAN_T)												\
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#define TEST_PLAN__END_INIT(plan)											\
 				{ .Name				= #plan									\
 				, .Vars				= &TEST_PLAN__VARS(plan)				\
 				, .Fixtures			= &TEST_PLAN__FIXT(plan)[0]				\
 				, .FixtureMax		= (sizeof(TEST_PLAN__FIXT(plan)) /		\
 										sizeof(TEST_PLAN__FIXT(plan)[0]))	\
 				, .LineNumber		= __LINE__								\
-				};
+				}
+#else	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_PLAN__END_INIT(plan)											\
+				{					  #plan									\
+				,					  &TEST_PLAN__VARS(plan)				\
+				,					  &TEST_PLAN__FIXT(plan)[0]				\
+				,					  (sizeof(TEST_PLAN__FIXT(plan)) /		\
+										sizeof(TEST_PLAN__FIXT(plan)[0]))	\
+				,					  __LINE__								\
+				}
+#endif	/* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) */
+#define TEST_PLAN__END(plan)												\
+				}; 															\
+			const UNITY_PLAN_T TEST_PLAN__NAME(plan)						\
+			= TEST_PLAN__END_INIT(plan);
 
 #define	TEST_PLAN__EXE(plan)	UnityPlanExe( &TEST_PLAN__NAME(plan) );
 #define TEST_PLAN__RUN(plan)	{ TEST_PLAN__EXE(plan); }

@@ -282,6 +282,13 @@
 	#define UNITY_INCLUDE_EXEC_TIME
 #endif
 
+/* Add logging features a set of macros to replace by encapsulating the output
+ * into a buffer that can be sent using another mechanism.
+ */
+#if 0
+	#define UNITY_INCLUDE_LOG
+#endif
+
 
 /* ****************************** TEST FRAMEWORK *******************************
  * Use of the embedded test framework

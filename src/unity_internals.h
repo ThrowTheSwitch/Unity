@@ -393,6 +393,34 @@ typedef UNITY_FLOAT_TYPE			UNITY_FLOAT;
 #endif	/* UNITY_COUNTER_TYPE */
 
 /*-------------------------------------------------------
+ * Logging Features
+ *-------------------------------------------------------*/
+
+#if !defined(UNITY_LOG_ID)
+	#define UNITY_LOG_ID
+#endif
+
+#if !defined(UNITY_LOG_CONTEXT)
+	#define UNITY_LOG_CONTEXT
+#endif
+
+#if !defined(UNITY_LOG_BUFFER_SIZE)
+	#define UNITY_LOG_BUFFER_SIZE	240
+#endif
+
+#if !defined(UNITY_LOG_DECLARE)
+	#define UNITY_LOG_DECLARE()
+#endif
+
+#if !defined(UNITY_LOG_REGISTER)
+	#define UNITY_LOG_REGISTER()
+#endif
+
+#if !defined(UNITY_LOG_PRINT)
+	#define UNITY_LOG_PRINT()
+#endif
+
+/*-------------------------------------------------------
  * Internal Structs Needed
  *-------------------------------------------------------*/
 
@@ -475,7 +503,7 @@ typedef enum
 	UNITY_FLAGS
 } UNITY_FLAGS_T;
 
-struct UNITY_STORAGE_T
+typedef struct
 {
 	const char*			TestFile;
 	const char*			CurrentTestName;
@@ -493,12 +521,16 @@ struct UNITY_STORAGE_T
 	UNITY_TIME_TYPE		CurrentTestStartTime;
 	UNITY_TIME_TYPE		CurrentTestStopTime;
 #endif	/* UNITY_INCLUDE_EXEC_TIME */
+#ifdef UNITY_INCLUDE_LOG
+	char				LogBuffer[UNITY_LOG_BUFFER_SIZE];
+	UNITY_COUNTER_TYPE	LogIndex;
+#endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
 	jmp_buf				AbortFrame;
 #endif	/* UNITY_EXCLUDE_SETJMP_H */
-};
+} UNITY_STORAGE_T;
 
-extern struct UNITY_STORAGE_T	Unity;
+extern UNITY_STORAGE_T	Unity;
 
 /*-------------------------------------------------------
  * Test Suite Management
@@ -561,6 +593,10 @@ void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print);
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
 	void UnityPrintFloat(const UNITY_DOUBLE input_number);
 #endif	/* UNITY_EXCLUDE_FLOAT_PRINT */
+
+#ifdef UNITY_INCLUDE_LOG
+	void UnityPrintLog(void);
+#endif
 
 /*-------------------------------------------------------
  * Test Assertion Functions

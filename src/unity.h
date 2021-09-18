@@ -19,6 +19,7 @@ extern "C"
 {
 #endif	/* __cplusplus */
 
+#include "unity_target.h"
 #include "unity_internals.h"
 
 #ifdef UNITY_INCLUDE_FRAMEWORK
