@@ -49,15 +49,15 @@
 #ifndef UNITY_NORETURN
 	#if defined(__cplusplus)
 		#if __cplusplus >= 201103L
-			#define UNITY_NORETURN [[ noreturn ]]
+			#define UNITY_NORETURN	[[ noreturn ]]
 		#endif	/* __cplusplus >= 201103L */
 	#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 		#include <stdnoreturn.h>
-		#define UNITY_NORETURN noreturn
+		#define UNITY_NORETURN	noreturn
 	#endif	/* defined(__cplusplus) */
 #endif	/* UNITY_NORETURN */
 #ifndef UNITY_NORETURN
-	#define UNITY_NORETURN UNITY_FUNCTION_ATTR(noreturn)
+	#define UNITY_NORETURN	UNITY_FUNCTION_ATTR(noreturn)
 #endif	/* UNITY_NORETURN */
 
 /*-------------------------------------------------------
@@ -396,29 +396,29 @@ typedef UNITY_FLOAT_TYPE			UNITY_FLOAT;
  * Logging Features
  *-------------------------------------------------------*/
 
-#if !defined(UNITY_LOG_ID)
+#ifndef UNITY_LOG_ID
 	#define UNITY_LOG_ID
-#endif
+#endif	/* UNITY_LOG_ID */
 
-#if !defined(UNITY_LOG_CONTEXT)
+#ifndef UNITY_LOG_CONTEXT
 	#define UNITY_LOG_CONTEXT
-#endif
+#endif	/* UNITY_LOG_CONTEXT */
 
-#if !defined(UNITY_LOG_BUFFER_SIZE)
+#ifndef UNITY_LOG_BUFFER_SIZE
 	#define UNITY_LOG_BUFFER_SIZE	240
-#endif
+#endif	/* UNITY_LOG_BUFFER_SIZE */
 
-#if !defined(UNITY_LOG_DECLARE)
+#ifndef UNITY_LOG_DECLARE
 	#define UNITY_LOG_DECLARE()
-#endif
+#endif	/* UNITY_LOG_DECLARE */
 
-#if !defined(UNITY_LOG_REGISTER)
+#ifndef UNITY_LOG_REGISTER
 	#define UNITY_LOG_REGISTER()
-#endif
+#endif	/* UNITY_LOG_REGISTER */
 
-#if !defined(UNITY_LOG_PRINT)
+#ifndef UNITY_LOG_PRINT
 	#define UNITY_LOG_PRINT()
-#endif
+#endif	/* UNITY_LOG_PRINT */
 
 /*-------------------------------------------------------
  * Internal Structs Needed
@@ -524,7 +524,7 @@ typedef struct
 #ifdef UNITY_INCLUDE_LOG
 	char				LogBuffer[UNITY_LOG_BUFFER_SIZE];
 	UNITY_COUNTER_TYPE	LogIndex;
-#endif
+#endif	/* UNITY_INCLUDE_LOG */
 #ifndef UNITY_EXCLUDE_SETJMP_H
 	jmp_buf				AbortFrame;
 #endif	/* UNITY_EXCLUDE_SETJMP_H */
@@ -596,7 +596,7 @@ void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print);
 
 #ifdef UNITY_INCLUDE_LOG
 	void UnityPrintLog(void);
-#endif
+#endif	/* UNITY_INCLUDE_LOG */
 
 /*-------------------------------------------------------
  * Test Assertion Functions
@@ -768,13 +768,12 @@ extern const char UnityStrErrShorthand[];
 	#ifdef __STDC_VERSION__
 		#if __STDC_VERSION__ >= 199901L
 			#define UNITY_SUPPORT_VARIADIC_MACROS
-		#endif	/* UNITY_SUPPORT_VARIADIC_MACROS */
+		#endif	/* __STDC_VERSION__ >= 199901L */
 	#endif	/* __STDC_VERSION__ */
-		#ifdef UNITY_SUPPORT_VARIADIC_MACROS
-			#define RUN_TEST(...)						RUN_TEST_AT_LINE(__VA_ARGS__, __LINE__, throwaway)
-			#define RUN_TEST_AT_LINE(func, line, ...)	UnityDefaultTestRun(func, #func, line)
-		#endif	/* UNITY_SUPPORT_VARIADIC_MACROS */
-	#endif	/* __STDC_VERSION__ */
+	#ifdef UNITY_SUPPORT_VARIADIC_MACROS
+		#define RUN_TEST(...)						RUN_TEST_AT_LINE(__VA_ARGS__, __LINE__, throwaway)
+		#define RUN_TEST_AT_LINE(func, line, ...)	UnityDefaultTestRun(func, #func, line)
+	#endif	/* UNITY_SUPPORT_VARIADIC_MACROS */
 #endif	/* RUN_TEST */
 
 /* If we can't do the tricky version, we'll just have to require them to always include the line number */

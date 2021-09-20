@@ -133,15 +133,15 @@ void verifyTest(void);
 #define TEST_ASSERT__UNLESS(condition)																UNITY_TEST_ASSERT(																!(condition),						__LINE__,	" Expression Evaluated To TRUE")
 #define TEST_ASSERT__FALSE(condition)																UNITY_TEST_ASSERT(																!(condition),						__LINE__,	" Expected FALSE Was TRUE")
 
-#define TEST_ASSERT__NULL(pointer)																	UNITY_TEST_ASSERT__NULL(														(pointer),							__LINE__,	" Expected NULL")
-#define TEST_ASSERT__EMPTY(pointer)																	UNITY_TEST_ASSERT__EMPTY(														(pointer),							__LINE__,	" Expected Empty")
-#define TEST_ASSERT__NOT_NULL(pointer)																UNITY_TEST_ASSERT__NOT_NULL(													(pointer),							__LINE__,	" Expected Non-NULL")
-#define TEST_ASSERT__NOT_EMPTY(pointer)																UNITY_TEST_ASSERT__NOT_EMPTY(													(pointer),							__LINE__,	" Expected Non-Empty")
-
 #define TEST_ASSERT__MESSAGE(condition, message)													UNITY_TEST_ASSERT(																(condition),						__LINE__,	(message))
 #define TEST_ASSERT__TRUE_MESSAGE(condition, message)												UNITY_TEST_ASSERT(																(condition),						__LINE__,	(message))
 #define TEST_ASSERT__UNLESS_MESSAGE(condition, message)												UNITY_TEST_ASSERT(																!(condition),						__LINE__,	(message))
 #define TEST_ASSERT__FALSE_MESSAGE(condition, message)												UNITY_TEST_ASSERT(																!(condition),						__LINE__,	(message))
+
+#define TEST_ASSERT__NULL(pointer)																	UNITY_TEST_ASSERT__NULL(														(pointer),							__LINE__,	" Expected NULL")
+#define TEST_ASSERT__EMPTY(pointer)																	UNITY_TEST_ASSERT__EMPTY(														(pointer),							__LINE__,	" Expected Empty")
+#define TEST_ASSERT__NOT_NULL(pointer)																UNITY_TEST_ASSERT__NOT_NULL(													(pointer),							__LINE__,	" Expected Non-NULL")
+#define TEST_ASSERT__NOT_EMPTY(pointer)																UNITY_TEST_ASSERT__NOT_EMPTY(													(pointer),							__LINE__,	" Expected Non-Empty")
 
 #define TEST_ASSERT__NULL_MESSAGE(pointer, message)													UNITY_TEST_ASSERT__NULL(														(pointer),							__LINE__,	(message))
 #define TEST_ASSERT__EMPTY_MESSAGE(pointer, message)												UNITY_TEST_ASSERT__EMPTY(														(pointer),							__LINE__,	(message))
@@ -171,6 +171,8 @@ void verifyTest(void);
 #define TEST_ASSERT__EQUAL__BITS_LOW(mask, actual)													UNITY_TEST_ASSERT__EQUAL__BITS(	(mask),						(UNITY_UINT)(0),	(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__EQUAL__BIT_HIGH(bit, actual)													UNITY_TEST_ASSERT__EQUAL__BITS(	((UNITY_UINT)1 << (bit)),	(UNITY_UINT)(-1),	(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__EQUAL__BIT_LOW(bit, actual)													UNITY_TEST_ASSERT__EQUAL__BITS(	((UNITY_UINT)1 << (bit)),	(UNITY_UINT)(0),	(actual),							__LINE__,	NULL)
+#define TEST_ASSERT__EQUAL__FLOAT(expected, actual)													UNITY_TEST_ASSERT__EQUAL__FLOAT(							(expected),			(actual),							__LINE__,	NULL)
+#define TEST_ASSERT__EQUAL__DOUBLE(expected, actual)												UNITY_TEST_ASSERT__EQUAL__DOUBLE(							(expected),			(actual),							__LINE__,	NULL)
 
 #define TEST_ASSERT__EQUAL__INT_MESSAGE(expected, actual, message)									UNITY_TEST_ASSERT__EQUAL__INT(								(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__EQUAL__INT8_MESSAGE(expected, actual, message)									UNITY_TEST_ASSERT__EQUAL__INT8(								(expected),			(actual),							__LINE__,	(message))
@@ -194,6 +196,8 @@ void verifyTest(void);
 #define TEST_ASSERT__EQUAL__BITS_LOW_MESSAGE(mask, actual, message)									UNITY_TEST_ASSERT__EQUAL__BITS(	(mask),						(UNITY_UINT32)(0),	(actual),							__LINE__,	(message))
 #define TEST_ASSERT__EQUAL__BIT_HIGH_MESSAGE(bit, actual, message)									UNITY_TEST_ASSERT__EQUAL__BITS(	((UNITY_UINT32)1 << (bit)),	(UNITY_UINT32)(-1),	(actual),							__LINE__,	(message))
 #define TEST_ASSERT__EQUAL__BIT_LOW_MESSAGE(bit, actual, message)									UNITY_TEST_ASSERT__EQUAL__BITS(	((UNITY_UINT32)1 << (bit)),	(UNITY_UINT32)(0),	(actual),							__LINE__,	(message))
+#define TEST_ASSERT__EQUAL__FLOAT_MESSAGE(expected, actual, message)								UNITY_TEST_ASSERT__EQUAL__FLOAT(							(expected),			(actual),							__LINE__,	(message))
+#define TEST_ASSERT__EQUAL__DOUBLE_MESSAGE(expected, actual, message)								UNITY_TEST_ASSERT__EQUAL__DOUBLE(							(expected),			(actual),							__LINE__,	(message))
 
 /* Structs and Strings */
 #define TEST_ASSERT__EQUAL__PTR(expected, actual)													UNITY_TEST_ASSERT__EQUAL__PTR(								(expected),			(actual),							__LINE__,	NULL)
@@ -227,6 +231,8 @@ void verifyTest(void);
 #define TEST_ASSERT__EQUAL_ARRAY__STRING(expected, actual, num_elements)							UNITY_TEST_ASSERT__EQUAL_ARRAY__STRING(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
 #define TEST_ASSERT__EQUAL_ARRAY__MEMORY(expected, actual, len, num_elements)						UNITY_TEST_ASSERT__EQUAL_ARRAY__MEMORY(						(expected),			(actual),	(len),	(num_elements),	__LINE__,	NULL)
 #define TEST_ASSERT__EQUAL_ARRAY__CHAR(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_ARRAY__CHAR(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
+#define TEST_ASSERT__EQUAL_ARRAY__FLOAT(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_ARRAY__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
+#define TEST_ASSERT__EQUAL_ARRAY__DOUBLE(expected, actual, num_elements)							UNITY_TEST_ASSERT__EQUAL_ARRAY__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
 
 #define TEST_ASSERT__EQUAL_ARRAY__INT_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_ARRAY__INT(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
 #define TEST_ASSERT__EQUAL_ARRAY__INT8_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_ARRAY__INT8(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
@@ -248,6 +254,8 @@ void verifyTest(void);
 #define TEST_ASSERT__EQUAL_ARRAY__STRING_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_ARRAY__STRING(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
 #define TEST_ASSERT__EQUAL_ARRAY__MEMORY_MESSAGE(expected, actual, len, num_elements, message)		UNITY_TEST_ASSERT__EQUAL_ARRAY__MEMORY(						(expected),			(actual),	(len),	(num_elements),	__LINE__,	(message))
 #define TEST_ASSERT__EQUAL_ARRAY__CHAR_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_ARRAY__CHAR(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
+#define TEST_ASSERT__EQUAL_ARRAY__FLOAT_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_ARRAY__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
+#define TEST_ASSERT__EQUAL_ARRAY__DOUBLE_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_ARRAY__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
 
 /* Arrays Compared To Single Value */
 #define TEST_ASSERT__EQUAL_EACH__INT(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_EACH__INT(							(expected),			(actual),			(num_elements),	__LINE__,	NULL)
@@ -270,6 +278,8 @@ void verifyTest(void);
 #define TEST_ASSERT__EQUAL_EACH__STRING(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_EACH__STRING(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
 #define TEST_ASSERT__EQUAL_EACH__MEMORY(expected, actual, len, num_elements)						UNITY_TEST_ASSERT__EQUAL_EACH__MEMORY(						(expected),			(actual),	(len),	(num_elements),	__LINE__,	NULL)
 #define TEST_ASSERT__EQUAL_EACH__CHAR(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_EACH__CHAR(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
+#define TEST_ASSERT__EQUAL_EACH__FLOAT(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_EACH__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
+#define TEST_ASSERT__EQUAL_EACH__DOUBLE(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_EACH__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
 
 #define TEST_ASSERT__EQUAL_EACH__INT_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_EACH__INT(							(expected),			(actual),			(num_elements),	__LINE__,	(message))
 #define TEST_ASSERT__EQUAL_EACH__INT8_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_EACH__INT8(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
@@ -291,7 +301,8 @@ void verifyTest(void);
 #define TEST_ASSERT__EQUAL_EACH__STRING_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_EACH__STRING(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
 #define TEST_ASSERT__EQUAL_EACH__MEMORY_MESSAGE(expected, actual, len, num_elements, message)		UNITY_TEST_ASSERT__EQUAL_EACH__MEMORY(						(expected),			(actual),	(len),	(num_elements),	__LINE__,	(message))
 #define TEST_ASSERT__EQUAL_EACH__CHAR_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_EACH__CHAR(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
-
+#define TEST_ASSERT__EQUAL_EACH__FLOAT_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_EACH__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
+#define TEST_ASSERT__EQUAL_EACH__DOUBLE_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_EACH__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
 
 /* Integer Not Equal To (of all sizes) */
 #define TEST_ASSERT__NOT_EQUAL__INT(threshold, actual)												UNITY_TEST_ASSERT__NOT_EQUAL__INT(							(threshold),		(actual),							__LINE__,	NULL)
@@ -494,6 +505,8 @@ void verifyTest(void);
 #define TEST_ASSERT__WITHIN__HEX32(delta, expected, actual)											UNITY_TEST_ASSERT__WITHIN__HEX32(			(delta),		(expected),			(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__WITHIN__HEX64(delta, expected, actual)											UNITY_TEST_ASSERT__WITHIN__HEX64(			(delta),		(expected),			(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__WITHIN__CHAR(delta, expected, actual)											UNITY_TEST_ASSERT__WITHIN__CHAR(			(delta),		(expected),			(actual),							__LINE__,	NULL)
+#define TEST_ASSERT__WITHIN__FLOAT(delta, expected, actual)											UNITY_TEST_ASSERT__WITHIN__FLOAT(			(delta),		(expected),			(actual),							__LINE__,	NULL)
+#define TEST_ASSERT__WITHIN__DOUBLE(delta, expected, actual)										UNITY_TEST_ASSERT__WITHIN__DOUBLE(			(delta),		(expected),			(actual),							__LINE__,	NULL)
 
 #define TEST_ASSERT__WITHIN__INT_MESSAGE(delta, expected, actual, message)							UNITY_TEST_ASSERT__WITHIN__INT(				(delta),		(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__WITHIN__INT8_MESSAGE(delta, expected, actual, message)							UNITY_TEST_ASSERT__WITHIN__INT8(			(delta),		(expected),			(actual),							__LINE__,	(message))
@@ -512,6 +525,8 @@ void verifyTest(void);
 #define TEST_ASSERT__WITHIN__HEX32_MESSAGE(delta, expected, actual, message)						UNITY_TEST_ASSERT__WITHIN__HEX32(			(delta),		(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__WITHIN__HEX64_MESSAGE(delta, expected, actual, message)						UNITY_TEST_ASSERT__WITHIN__HEX64(			(delta),		(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__WITHIN__CHAR_MESSAGE(delta, expected, actual, message)							UNITY_TEST_ASSERT__WITHIN__CHAR(			(delta),		(expected),			(actual),							__LINE__,	(message))
+#define TEST_ASSERT__WITHIN__FLOAT_MESSAGE(delta, expected, actual, message)						UNITY_TEST_ASSERT__WITHIN__FLOAT(			(delta),		(expected),			(actual),							__LINE__,	(message))
+#define TEST_ASSERT__WITHIN__DOUBLE_MESSAGE(delta, expected, actual, message)						UNITY_TEST_ASSERT__WITHIN__DOUBLE(			(delta),		(expected),			(actual),							__LINE__,	(message))
 
 /* Integer Array Ranges (of all sizes) */
 #define TEST_ASSERT__WITHIN_ARRAY__INT(delta, expected, actual, num_elements)						UNITY_TEST_ASSERT__WITHIN_ARRAY__INT(		(delta),		(expected),			(actual),			(num_elements),	__LINE__,	NULL)
@@ -551,10 +566,6 @@ void verifyTest(void);
 #define TEST_ASSERT__WITHIN_ARRAY__CHAR_MESSAGE(delta, expected, actual, num_elements, message)		UNITY_TEST_ASSERT__WITHIN_ARRAY__CHAR(		(delta),		(expected),			(actual),			(num_elements),	__LINE__,	(message))
 
 /* Floating Point (If Enabled) */
-#define TEST_ASSERT__EQUAL__FLOAT(expected, actual)													UNITY_TEST_ASSERT__EQUAL__FLOAT(							(expected),			(actual),							__LINE__,	NULL)
-#define TEST_ASSERT__EQUAL_ARRAY__FLOAT(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_ARRAY__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
-#define TEST_ASSERT__EQUAL_EACH__FLOAT(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_EACH__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
-#define TEST_ASSERT__WITHIN__FLOAT(delta, expected, actual)											UNITY_TEST_ASSERT__WITHIN__FLOAT(			(delta),		(expected),			(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__FLOAT__IS_INF(actual)															UNITY_TEST_ASSERT__FLOAT__IS_INF(												(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__FLOAT__IS_NEG_INF(actual)														UNITY_TEST_ASSERT__FLOAT__IS_NEG_INF(											(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__FLOAT__IS_NAN(actual)															UNITY_TEST_ASSERT__FLOAT__IS_NAN(												(actual),							__LINE__,	NULL)
@@ -564,10 +575,6 @@ void verifyTest(void);
 #define TEST_ASSERT__FLOAT__IS_NOT_NAN(actual)														UNITY_TEST_ASSERT__FLOAT__IS_NOT_NAN(											(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__FLOAT__IS_NOT_DETERMINATE(actual)												UNITY_TEST_ASSERT__FLOAT__IS_NOT_DETERMINATE(									(actual),							__LINE__,	NULL)
 
-#define TEST_ASSERT__EQUAL__FLOAT_MESSAGE(expected, actual, message)								UNITY_TEST_ASSERT__EQUAL__FLOAT(							(expected),			(actual),							__LINE__,	(message))
-#define TEST_ASSERT__EQUAL_ARRAY__FLOAT_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_ARRAY__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
-#define TEST_ASSERT__EQUAL_EACH__FLOAT_MESSAGE(expected, actual, num_elements, message)				UNITY_TEST_ASSERT__EQUAL_EACH__FLOAT(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
-#define TEST_ASSERT__WITHIN__FLOAT_MESSAGE(delta, expected, actual, message)						UNITY_TEST_ASSERT__WITHIN__FLOAT(			(delta),		(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__FLOAT__IS_INF_MESSAGE(actual, message)											UNITY_TEST_ASSERT__FLOAT__IS_INF(												(actual),							__LINE__,	(message))
 #define TEST_ASSERT__FLOAT__IS_NEG_INF_MESSAGE(actual, message)										UNITY_TEST_ASSERT__FLOAT__IS_NEG_INF(											(actual),							__LINE__,	(message))
 #define TEST_ASSERT__FLOAT__IS_NAN_MESSAGE(actual, message)											UNITY_TEST_ASSERT__FLOAT__IS_NAN(												(actual),							__LINE__,	(message))
@@ -578,10 +585,6 @@ void verifyTest(void);
 #define TEST_ASSERT__FLOAT__IS_NOT_DETERMINATE_MESSAGE(actual, message)								UNITY_TEST_ASSERT__FLOAT__IS_NOT_DETERMINATE(									(actual),							__LINE__,	(message))
 
 /* Double (If Enabled) */
-#define TEST_ASSERT__EQUAL__DOUBLE(expected, actual)												UNITY_TEST_ASSERT__EQUAL__DOUBLE(							(expected),			(actual),							__LINE__,	NULL)
-#define TEST_ASSERT__EQUAL_ARRAY__DOUBLE(expected, actual, num_elements)							UNITY_TEST_ASSERT__EQUAL_ARRAY__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
-#define TEST_ASSERT__EQUAL_EACH__DOUBLE(expected, actual, num_elements)								UNITY_TEST_ASSERT__EQUAL_EACH__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	NULL)
-#define TEST_ASSERT__WITHIN__DOUBLE(delta, expected, actual)										UNITY_TEST_ASSERT__WITHIN__DOUBLE(			(delta),		(expected),			(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__DOUBLE__IS_INF(actual)															UNITY_TEST_ASSERT__DOUBLE__IS_INF(												(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__DOUBLE__IS_NEG_INF(actual)														UNITY_TEST_ASSERT__DOUBLE__IS_NEG_INF(											(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__DOUBLE__IS_NAN(actual)															UNITY_TEST_ASSERT__DOUBLE__IS_NAN(												(actual),							__LINE__,	NULL)
@@ -591,10 +594,6 @@ void verifyTest(void);
 #define TEST_ASSERT__DOUBLE__IS_NOT_NAN(actual)														UNITY_TEST_ASSERT__DOUBLE__IS_NOT_NAN(											(actual),							__LINE__,	NULL)
 #define TEST_ASSERT__DOUBLE__IS_NOT_DETERMINATE(actual)												UNITY_TEST_ASSERT__DOUBLE__IS_NOT_DETERMINATE(									(actual),							__LINE__,	NULL)
 
-#define TEST_ASSERT__EQUAL__DOUBLE_MESSAGE(expected, actual, message)								UNITY_TEST_ASSERT__EQUAL__DOUBLE(							(expected),			(actual),							__LINE__,	(message))
-#define TEST_ASSERT__EQUAL_ARRAY__DOUBLE_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_ARRAY__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
-#define TEST_ASSERT__EQUAL_EACH__DOUBLE_MESSAGE(expected, actual, num_elements, message)			UNITY_TEST_ASSERT__EQUAL_EACH__DOUBLE(						(expected),			(actual),			(num_elements),	__LINE__,	(message))
-#define TEST_ASSERT__WITHIN__DOUBLE_MESSAGE(delta, expected, actual, message)						UNITY_TEST_ASSERT__WITHIN__DOUBLE(			(delta),		(expected),			(actual),							__LINE__,	(message))
 #define TEST_ASSERT__DOUBLE__IS_INF_MESSAGE(actual, message)										UNITY_TEST_ASSERT__DOUBLE__IS_INF(												(actual),							__LINE__,	(message))
 #define TEST_ASSERT__DOUBLE__IS_NEG_INF_MESSAGE(actual, message)									UNITY_TEST_ASSERT__DOUBLE__IS_NEG_INF(											(actual),							__LINE__,	(message))
 #define TEST_ASSERT__DOUBLE__IS_NAN_MESSAGE(actual, message)										UNITY_TEST_ASSERT__DOUBLE__IS_NAN(												(actual),							__LINE__,	(message))
@@ -644,6 +643,8 @@ void verifyTest(void);
 #define TEST_ASSERT__EQUAL__MESSAGE(expected, actual, message)										UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
 #define TEST_ASSERT__NOT_EQUAL__MESSAGE(expected, actual, message)									UNITY_TEST_FAIL(																									__LINE__,	UnityStrErrShorthand)
 #endif	/* UNITY_SHORTHAND_AS_NONE */
+
+#include "unity_legacy.h"
 
 #ifdef __cplusplus
 }
