@@ -49,11 +49,11 @@ set(UNITY_EXTENSION_FIXTURE_ENABLED $<BOOL:${UNITY_EXTENSION_FIXTURE}>)
 set(UNITY_EXTENSION_MEMORY_ENABLED $<OR:${UNITY_EXTENSION_FIXTURE_ENABLED},$<BOOL:${UNITY_EXTENSION_MEMORY}>>)
 
 if(${UNITY_EXTENSION_FIXTURE})
-    message(STATUS "Unity: Bulding with the fixture extension.")
+    message(STATUS "Unity: Building with the fixture extension.")
 endif()
 
 if(${UNITY_EXTENSION_MEMORY})
-    message(STATUS "Unity: Bulding with the memory extension.")
+    message(STATUS "Unity: Building with the memory extension.")
 endif()
 
 # Main target ------------------------------------------------------------------
