@@ -395,12 +395,12 @@ void testEqualDoubleArrays(void)
     double p2[] = {1.0, -8.0,  25.4, -0.2};
     double p3[] = {1.0, -23.0, 25.0, -0.26};
 
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p0, 1);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p0, 4);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p2, 3);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p3, 1);
-    TEST_ASSERT__EQUAL_ARRAY__w+(NULL, NULL, 1);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p0, 1);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p0, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p2, 3);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p3, 1);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(NULL, NULL, 1);
 #endif
 }
 
@@ -413,7 +413,7 @@ void testNotEqualDoubleArraysExpectedNull(void)
     double p1[] = {1.0, 8.0, 25.4, 0.252};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -427,7 +427,7 @@ void testNotEqualDoubleArraysActualNull(void)
     double* p1 = NULL;
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -441,7 +441,7 @@ void testNotEqualDoubleArrays1(void)
     double p1[] = {1.0, 8.0, 25.4, 0.25666666666};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -455,7 +455,7 @@ void testNotEqualDoubleArrays2(void)
     double p1[] = {2.0, 8.0, 25.4, 0.253};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -469,7 +469,7 @@ void testNotEqualDoubleArrays3(void)
     double p1[] = {1.0, 8.0, 25.5, 0.253};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -483,7 +483,7 @@ void testNotEqualDoubleArraysNegative1(void)
     double p1[] = {-1.0, -8.0, -25.4, -0.2566666666};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -497,7 +497,7 @@ void testNotEqualDoubleArraysNegative2(void)
     double p1[] = {-2.0, -8.0, -25.4, -0.253};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -511,7 +511,7 @@ void testNotEqualDoubleArraysNegative3(void)
     double p1[] = {-1.0, -8.0, -25.5, -0.253};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -524,7 +524,7 @@ void testEqualDoubleArraysNaN(void)
     double p0[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
 
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
 #endif
 }
 
@@ -536,7 +536,7 @@ void testEqualDoubleArraysInf(void)
     double p0[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
 
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 4);
 #endif
 }
 
@@ -549,7 +549,7 @@ void testNotEqualDoubleArraysLengthZero(void)
     double p1[1] = {0.0};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 0);
+    TEST_ASSERT__EQUAL_ARRAY__DOUBLE(p0, p1, 0);
     VERIFY_FAILS_END
 #endif
 }

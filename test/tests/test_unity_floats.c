@@ -394,12 +394,12 @@ void testEqualFloatArrays(void)
     float p2[] = {1.0f, -8.0f,  25.4f, -0.2f};
     float p3[] = {1.0f, -23.0f, 25.0f, -0.26f};
 
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p0, 1);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p0, 4);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p2, 3);
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p3, 1);
-    TEST_ASSERT__EQUAL_ARRAY__w+(NULL, NULL, 1);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p0, 1);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p0, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p2, 3);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p3, 1);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(NULL, NULL, 1);
 #endif
 }
 
@@ -412,7 +412,7 @@ void testNotEqualFloatArraysExpectedNull(void)
     float p1[] = {1.0f, 8.0f, 25.4f, 0.252f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -426,7 +426,7 @@ void testNotEqualFloatArraysActualNull(void)
     float* p1 = NULL;
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -440,7 +440,7 @@ void testNotEqualFloatArrays1(void)
     float p1[] = {1.0f, 8.0f, 25.4f, 0.252f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -454,7 +454,7 @@ void testNotEqualFloatArrays2(void)
     float p1[] = {2.0f, 8.0f, 25.4f, 0.253f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -468,7 +468,7 @@ void testNotEqualFloatArrays3(void)
     float p1[] = {1.0f, 8.0f, 25.5f, 0.253f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -482,7 +482,7 @@ void testNotEqualFloatArraysNegative1(void)
     float p1[] = {-1.0f, -8.0f, -25.4f, -0.252f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -496,7 +496,7 @@ void testNotEqualFloatArraysNegative2(void)
     float p1[] = {-2.0f, -8.0f, -25.4f, -0.253f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -510,7 +510,7 @@ void testNotEqualFloatArraysNegative3(void)
     float p1[] = {-1.0f, -8.0f, -25.5f, -0.253f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
     VERIFY_FAILS_END
 #endif
 }
@@ -523,7 +523,7 @@ void testEqualFloatArraysNaN(void)
     float p0[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
 
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
 #endif
 }
 
@@ -535,7 +535,7 @@ void testEqualFloatArraysInf(void)
     float p0[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
 
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 4);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 4);
 #endif
 }
 
@@ -548,7 +548,7 @@ void testNotEqualFloatArraysLengthZero(void)
     float p1[1] = {0.0f};
 
     EXPECT_ABORT_BEGIN
-    TEST_ASSERT__EQUAL_ARRAY__w+(p0, p1, 0);
+    TEST_ASSERT__EQUAL_ARRAY__FLOAT(p0, p1, 0);
     VERIFY_FAILS_END
 #endif
 }
