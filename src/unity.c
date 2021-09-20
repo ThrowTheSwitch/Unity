@@ -23,7 +23,7 @@ void UNITY_OUTPUT_CHAR(int);
 #define UNITY_IGNORE_AND_BAIL		{ Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }
 #define RETURN_IF_FAIL_OR_IGNORE	if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) { TEST_ABORT(); }
 
-UNITY_LOG_DECLARE();
+UNITY_LOG_DECLARE()
 
 UNITY_STORAGE_T	Unity;
 
