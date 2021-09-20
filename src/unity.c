@@ -64,10 +64,10 @@ static const char PROGMEM UnityStrDet[]						= "Determinate";
 static const char PROGMEM UnityStrInvalidFloatTrait[]		= "Invalid Float Trait";
 #endif	/* UNITY_EXCLUDE_FLOAT */
 
-extern const char PROGMEM UnityStrErrShorthand[]			= "Unity Shorthand Support Disabled";
-extern const char PROGMEM UnityStrErrFloat[]				= "Unity Floating Point Disabled";
-extern const char PROGMEM UnityStrErrDouble[]				= "Unity Double Precision Disabled";
-extern const char PROGMEM UnityStrErr64[]					= "Unity 64-bit Support Disabled";
+		const char PROGMEM UnityStrErrShorthand[]			= "Unity Shorthand Support Disabled";
+		const char PROGMEM UnityStrErrFloat[]				= "Unity Floating Point Disabled";
+		const char PROGMEM UnityStrErrDouble[]				= "Unity Double Precision Disabled";
+		const char PROGMEM UnityStrErr64[]					= "Unity 64-bit Support Disabled";
 
 static const char PROGMEM UnityStrBreaker[]					= "-----------------------";
 static const char PROGMEM UnityStrResultsTests[]			= " Tests ";
