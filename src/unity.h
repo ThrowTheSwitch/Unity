@@ -645,6 +645,7 @@ void verifyTest(void);
 #endif	/* UNITY_SHORTHAND_AS_NONE */
 
 #include "unity_legacy.h"
+#include "unity_compact.h"
 
 #ifdef __cplusplus
 }
