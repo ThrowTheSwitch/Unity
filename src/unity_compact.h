@@ -462,11 +462,11 @@
 #define ASSERT_FLOAT_IS_INF_MSG(actual, message)									TEST_ASSERT__FLOAT__IS_INF_MESSAGE((actual), (message))
 #define ASSERT_FLOAT_IS_NEG_INF_MSG(actual, message)								TEST_ASSERT__FLOAT__IS_NEG_INF_MESSAGE((actual), (message))
 #define ASSERT_FLOAT_IS_NAN_MSG(actual, message)									TEST_ASSERT__FLOAT__IS_NAN_MESSAGE((actual), (message))
-#define ASSERT_FLOAT_IS_DETERMINATE_MSG(actual, message)							TEST_ASSERT__FLOAT__IS_DETERMINATE_MESSAGE((actual), (message))
+#define ASSERT_FLOAT_IS_DET_MSG(actual, message)									TEST_ASSERT__FLOAT__IS_DETERMINATE_MESSAGE((actual), (message))
 #define ASSERT_FLOAT_IS_NOT_INF_MSG(actual, message)								TEST_ASSERT__FLOAT__IS_NOT_INF_MESSAGE((actual), (message))
 #define ASSERT_FLOAT_IS_NOT_NEG_INF_MSG(actual, message)							TEST_ASSERT__FLOAT__IS_NOT_NEG_INF_MESSAGE((actual), (message))
 #define ASSERT_FLOAT_IS_NOT_NAN_MSG(actual, message)								TEST_ASSERT__FLOAT__IS_NOT_NAN_MESSAGE((actual), (message))
-#define ASSERT_FLOAT_IS_NOT_DETERMINATE_MSG(actual, message)						TEST_ASSERT__FLOAT__IS_NOT_DETERMINATE_MESSAGE((actual), (message))
+#define ASSERT_FLOAT_IS_NOT_DET_MSG(actual, message)								TEST_ASSERT__FLOAT__IS_NOT_DETERMINATE_MESSAGE((actual), (message))
 
 /* Double (If Enabled) */
 #define ASSERT_DOUBLE_IS_INF(actual)												TEST_ASSERT__DOUBLE__IS_INF((actual))
@@ -481,11 +481,11 @@
 #define ASSERT_DOUBLE_IS_INF_MSG(actual, message)									TEST_ASSERT__DOUBLE__IS_INF_MESSAGE((actual), (message))
 #define ASSERT_DOUBLE_IS_NEG_INF_MSG(actual, message)								TEST_ASSERT__DOUBLE__IS_NEG_INF_MESSAGE((actual), (message))
 #define ASSERT_DOUBLE_IS_NAN_MSG(actual, message)									TEST_ASSERT__DOUBLE__IS_NAN_MESSAGE((actual), (message))
-#define ASSERT_DOUBLE_IS_DETERMINATE_MSG(actual, message)							TEST_ASSERT__DOUBLE__IS_DETERMINATE_MESSAGE((actual), (message))
+#define ASSERT_DOUBLE_IS_DET_MSG(actual, message)									TEST_ASSERT__DOUBLE__IS_DETERMINATE_MESSAGE((actual), (message))
 #define ASSERT_DOUBLE_IS_NOT_INF_MSG(actual, message)								TEST_ASSERT__DOUBLE__IS_NOT_INF_MESSAGE((actual), (message))
 #define ASSERT_DOUBLE_IS_NOT_NEG_INF_MSG(actual, message)							TEST_ASSERT__DOUBLE__IS_NOT_NEG_INF_MESSAGE((actual), (message))
 #define ASSERT_DOUBLE_IS_NOT_NAN_MSG(actual, message)								TEST_ASSERT__DOUBLE__IS_NOT_NAN_MESSAGE((actual), (message))
-#define ASSERT_DOUBLE_IS_NOT_DETERMINATE_MSG(actual, message)						TEST_ASSERT__DOUBLE__IS_NOT_DETERMINATE_MESSAGE((actual), (message))
+#define ASSERT_DOUBLE_IS_NOT_DET_MSG(actual, message)								TEST_ASSERT__DOUBLE__IS_NOT_DETERMINATE_MESSAGE((actual), (message))
 
 /* Shorthand */
 #ifdef UNITY_SHORTHAND_AS_OLD
