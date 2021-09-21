@@ -1106,8 +1106,8 @@ void UnityAssertFloatSpecial(	const UNITY_FLOAT actual,
 		/* including UNITY_FLOAT_TRAIT__UNKNOWN */
 		default:
 		{
-			trait_index = 0;
-			trait_names[0] = UnityStrInvalidFloatTrait;
+			trait_index		= 0;
+			trait_names[0]	= UnityStrInvalidFloatTrait;
 			break;
 		}
 	}
@@ -1264,8 +1264,8 @@ void UnityAssertDoubleSpecial(	const UNITY_DOUBLE actual,
 			is_trait = !isinf(actual) && !isnan(actual);
 			break;
 		}
-		default:
 		/* including UNITY_FLOAT_TRAIT__UNKNOWN */
+		default:
 		{
 			trait_index		= 0;
 			trait_names[0]	= UnityStrInvalidFloatTrait;
