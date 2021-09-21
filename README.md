@@ -204,9 +204,9 @@ This is useful for specifying more information about the problem.
 ### Integrated framework
 
 The integrated framework is able to construct a test plan out of test fixtures including test cases.
-To do so, it is required to TEST_PLAN__OPEN(plan), add test fixtures with TEST_PLAN__FIXT_ADD(fixt) before closing using TEST_PLAN__CLOSE(name).
-The same for TEST_FIXT__OPEN(fixt) and TEST_CASE__OPEN(test).
-For the test cases, it is required to add testing code like a normal function, yet finished with TEST_CASE__CLOSE(test).
+To do so, it is required to `TEST_PLAN__OPEN(plan)`, add test fixtures with `TEST_PLAN__FIXT_ADD(fixt)` before closing using `TEST_PLAN__CLOSE(name)`.
+The same for `TEST_FIXT__OPEN(fixt)` and `TEST_CASE__OPEN(test)`.
+For the test cases, it is required to add testing code like a normal function, yet finished with `TEST_CASE__CLOSE(test)`.
 
     TEST_CASE__OPEN(MyTestCase)
         TEST_ASSERT__TRUE_MESSAGE(FALSE, "Gotcha!");
@@ -214,7 +214,7 @@ For the test cases, it is required to add testing code like a normal function, y
 
     TEST_FIXT__OPEN(MyTestFixture)
         TEST_FIXT__CASE_ADD(MyTestCase)
-    TEST_FIXT__CLOSE(MyTestFixture
+    TEST_FIXT__CLOSE(MyTestFixture)
 
     TEST_PLAN__OPEN(MyTestPlan)
         TEST_PLAN__FIXT_ADD(MyTestFixt)
@@ -225,7 +225,7 @@ For the test cases, it is required to add testing code like a normal function, y
         TEST_PLAN__RUN(MyTestPlan);
     }
 
-It is not required to finish lines with a semicolon, but TEST_ASSERT__ and __RUN lines.
+It is not required to finish lines with a semicolon, but `TEST_ASSERT__*` and `*__RUN` lines.
 Conditional compilation can be used to modify the test plan/fixture/case sequencing.
 
 [CI]: https://github.com/ThrowTheSwitch/Unity/workflows/CI/badge.svg
