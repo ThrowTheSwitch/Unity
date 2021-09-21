@@ -12,7 +12,7 @@
     Try { \
       setUp(); \
       TestFunc(); \
-    } Catch(e) { TEST_ASSERT__EQUAL__HEX32_MESSAGE(CEXCEPTION_NONE, e, "Unhandled Exception!"); } \
+    } Catch(e) { TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, "Unhandled Exception!"); } \
   } \
   if (TEST_PROTECT() && !TEST_IS_IGNORED) \
   { \

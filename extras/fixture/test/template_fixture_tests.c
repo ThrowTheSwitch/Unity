@@ -23,17 +23,17 @@ TEST_TEAR_DOWN(mygroup)
 
 TEST(mygroup, test1)
 {
-    TEST_ASSERT__EQUAL__INT(0, data);
+    TEST_ASSERT_EQUAL_INT(0, data);
 }
 
 TEST(mygroup, test2)
 {
-    TEST_ASSERT__EQUAL__INT(0, data);
+    TEST_ASSERT_EQUAL_INT(0, data);
     data = 5;
 }
 
 TEST(mygroup, test3)
 {
     data = 7;
-    TEST_ASSERT__EQUAL__INT(7, data);
+    TEST_ASSERT_EQUAL_INT(7, data);
 }
