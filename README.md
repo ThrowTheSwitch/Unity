@@ -196,7 +196,7 @@ This is a good generic assertion for types that can't be coerced into acting lik
 
 ### \_MESSAGE
 
-You can append `\_MESSAGE` to any of the macros to make them take an additional argument.
+You can append `_MESSAGE` to any of the macros to make them take an additional argument.
 This argument is a string that will be printed at the end of the failure strings.
 This is useful for specifying more information about the problem.
 
