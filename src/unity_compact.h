@@ -298,7 +298,7 @@
 #define ASSERT_LT_CHAR_MSG(threshold, actual, message)								TEST_ASSERT__LESS_THAN__CHAR_MESSAGE((threshold), (actual), (message))
 
 /* Integer Greater Or Equal (of all sizes) */
-#define ASSERT_GREATER_OR_EQUAL(threshold, actual)									TEST_ASSERT__GREATER_OR_EQUAL((threshold), (actual))
+#define ASSERT_GE(threshold, actual)												TEST_ASSERT__GREATER_OR_EQUAL((threshold), (actual))
 #define ASSERT_GE_INT(threshold, actual)											TEST_ASSERT__GREATER_OR_EQUAL__INT((threshold), (actual))
 #define ASSERT_GE_INT8(threshold, actual)											TEST_ASSERT__GREATER_OR_EQUAL__INT8((threshold), (actual))
 #define ASSERT_GE_INT16(threshold, actual)											TEST_ASSERT__GREATER_OR_EQUAL__INT16((threshold), (actual))
