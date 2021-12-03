@@ -42,6 +42,10 @@ void testDoublesWithinDelta(void)
     TEST_ASSERT_DOUBLE_WITHIN(1.0, 187245.0, 187246.0);
     TEST_ASSERT_DOUBLE_WITHIN(0.05, 9273.2549, 9273.2049);
     TEST_ASSERT_DOUBLE_WITHIN(0.007, -726.93725, -726.94424);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_NOT_WITHIN(0.05, 9273.2549, 9273.2049);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -50,6 +54,8 @@ void testDoublesNotWithinDelta(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_DOUBLE_NOT_WITHIN(0.05, 9273.2649, 9273.2049);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_WITHIN(0.05, 9273.2649, 9273.2049);
     VERIFY_FAILS_END
@@ -66,6 +72,10 @@ void testDoublesEqual(void)
     TEST_ASSERT_EQUAL_DOUBLE(187241234567.5, 187241234567.6);
     TEST_ASSERT_EQUAL_DOUBLE(9273.2512345649, 9273.25123455699);
     TEST_ASSERT_EQUAL_DOUBLE(-726.12345693724, -726.1234569374);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(-726.12345693724, -726.1234569374);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -74,6 +84,8 @@ void testDoublesNotEqual(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(9273.9649, 9273.0049);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(9273.9649, 9273.0049);
     VERIFY_FAILS_END
@@ -85,6 +97,8 @@ void testDoublesNotEqualNegative1(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(-9273.9649, -9273.0049);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.9649, -9273.0049);
     VERIFY_FAILS_END
@@ -96,6 +110,8 @@ void testDoublesNotEqualNegative2(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(-9273.0049, -9273.9649);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.0049, -9273.9649);
     VERIFY_FAILS_END
@@ -107,6 +123,8 @@ void testDoublesNotEqualActualNaN(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(85.963, 0.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(85.963, 0.0 / d_zero);
     VERIFY_FAILS_END
@@ -118,6 +136,8 @@ void testDoublesNotEqualExpectedNaN(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(0.0 / d_zero, 85.963);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 85.963);
     VERIFY_FAILS_END
@@ -130,6 +150,10 @@ void testDoublesEqualBothNaN(void)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -138,6 +162,8 @@ void testDoublesNotEqualInfNaN(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, 0.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 0.0 / d_zero);
     VERIFY_FAILS_END
@@ -149,6 +175,8 @@ void testDoublesNotEqualNaNInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(0.0 / d_zero, 1.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 1.0 / d_zero);
     VERIFY_FAILS_END
@@ -160,6 +188,8 @@ void testDoublesNotEqualActualInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(321.642, 1.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(321.642, 1.0 / d_zero);
     VERIFY_FAILS_END
@@ -171,6 +201,8 @@ void testDoublesNotEqualExpectedInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, 321.642);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 321.642);
     VERIFY_FAILS_END
@@ -183,6 +215,10 @@ void testDoublesEqualBothInf(void)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -191,6 +227,8 @@ void testDoublesNotEqualPlusMinusInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
     VERIFY_FAILS_END

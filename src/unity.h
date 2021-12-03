@@ -337,7 +337,9 @@ void verifyTest(void);
 
 /* Floating Point (If Enabled) */
 #define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual)                                          UNITY_TEST_ASSERT_FLOAT_WITHIN((delta), (expected), (actual), __LINE__, NULL)
+#define TEST_ASSERT_FLOAT_NOT_WITHIN(delta, expected, actual)                                      UNITY_TEST_ASSERT_FLOAT_NOT_WITHIN((delta), (expected), (actual), __LINE__, NULL)
 #define TEST_ASSERT_EQUAL_FLOAT(expected, actual)                                                  UNITY_TEST_ASSERT_EQUAL_FLOAT((expected), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_FLOAT(expected, actual)                                              UNITY_TEST_ASSERT_NOT_EQUAL_FLOAT((expected), (actual), __LINE__, NULL)
 #define TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements)                              UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY((expected), (actual), (num_elements), __LINE__, NULL)
 #define TEST_ASSERT_EACH_EQUAL_FLOAT(expected, actual, num_elements)                               UNITY_TEST_ASSERT_EACH_EQUAL_FLOAT((expected), (actual), (num_elements), __LINE__, NULL)
 #define TEST_ASSERT_GREATER_THAN_FLOAT(threshold, actual)                                          UNITY_TEST_ASSERT_GREATER_THAN_FLOAT((threshold), (actual), __LINE__, NULL)
@@ -353,7 +355,9 @@ void verifyTest(void);
 
 /* Double (If Enabled) */
 #define TEST_ASSERT_DOUBLE_WITHIN(delta, expected, actual)                                         UNITY_TEST_ASSERT_DOUBLE_WITHIN((delta), (expected), (actual), __LINE__, NULL)
+#define TEST_ASSERT_DOUBLE_NOT_WITHIN(delta, expected, actual)                                     UNITY_TEST_ASSERT_DOUBLE_NOT_WITHIN((delta), (expected), (actual), __LINE__, NULL)
 #define TEST_ASSERT_EQUAL_DOUBLE(expected, actual)                                                 UNITY_TEST_ASSERT_EQUAL_DOUBLE((expected), (actual), __LINE__, NULL)
+#define TEST_ASSERT_NOT_EQUAL_DOUBLE(expected, actual)                                             UNITY_TEST_ASSERT_NOT_EQUAL_DOUBLE((expected), (actual), __LINE__, NULL)
 #define TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected, actual, num_elements)                             UNITY_TEST_ASSERT_EQUAL_DOUBLE_ARRAY((expected), (actual), (num_elements), __LINE__, NULL)
 #define TEST_ASSERT_EACH_EQUAL_DOUBLE(expected, actual, num_elements)                              UNITY_TEST_ASSERT_EACH_EQUAL_DOUBLE((expected), (actual), (num_elements), __LINE__, NULL)
 #define TEST_ASSERT_GREATER_THAN_DOUBLE(threshold, actual)                                         UNITY_TEST_ASSERT_GREATER_THAN_DOUBLE((threshold), (actual), __LINE__, NULL)

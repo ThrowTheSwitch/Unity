@@ -978,6 +978,27 @@ void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
 }
 
 /*-----------------------------------------------*/
+void UnityAssertFloatsNotWithin(const UNITY_FLOAT delta,
+                                const UNITY_FLOAT expected,
+                                const UNITY_FLOAT actual,
+                                const char* msg,
+                                const UNITY_LINE_TYPE lineNumber)
+{
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (UnityFloatsWithin(delta, expected, actual))
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintFloat((UNITY_DOUBLE)expected);
+        UnityPrint(UnityStrNotEqual);
+        UnityPrintFloat((UNITY_DOUBLE)actual);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
 void UnityAssertGreaterOrLessFloat(const UNITY_FLOAT threshold,
                                    const UNITY_FLOAT actual,
                                    const UNITY_COMPARISON_T compare,
@@ -1140,6 +1161,27 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
     {
         UnityTestResultsFailBegin(lineNumber);
         UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
+void UnityAssertDoublesNotWithin(const UNITY_DOUBLE delta,
+                                 const UNITY_DOUBLE expected,
+                                 const UNITY_DOUBLE actual,
+                                 const char* msg,
+                                 const UNITY_LINE_TYPE lineNumber)
+{
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (UnityDoublesWithin(delta, expected, actual))
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintFloat((UNITY_DOUBLE)expected);
+        UnityPrint(UnityStrNotEqual);
+        UnityPrintFloat((UNITY_DOUBLE)actual);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }

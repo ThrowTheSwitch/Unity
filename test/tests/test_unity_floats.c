@@ -42,6 +42,10 @@ void testFloatsWithinDelta(void)
     TEST_ASSERT_FLOAT_WITHIN(1.0f, 187245.0f, 187246.0f);
     TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2549f, 9273.2049f);
     TEST_ASSERT_FLOAT_WITHIN(0.007f, -726.93724f, -726.94424f);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_NOT_WITHIN(0.05f, 9273.2549f, 9273.2049f);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -50,6 +54,8 @@ void testFloatsNotWithinDelta(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_FLOAT_NOT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
     VERIFY_FAILS_END
@@ -65,6 +71,10 @@ void testFloatsEqual(void)
     TEST_ASSERT_EQUAL_FLOAT(18724.5f, 18724.6f);
     TEST_ASSERT_EQUAL_FLOAT(9273.2549f, 9273.2599f);
     TEST_ASSERT_EQUAL_FLOAT(-726.93724f, -726.9374f);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_FLOAT(-726.93724f, -726.9374f);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -73,6 +83,8 @@ void testFloatsNotEqual(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(9273.9649f, 9273.0049f);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(9273.9649f, 9273.0049f);
     VERIFY_FAILS_END
@@ -84,6 +96,8 @@ void testFloatsNotEqualNegative1(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(-9273.9649f, -9273.0049f);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(-9273.9649f, -9273.0049f);
     VERIFY_FAILS_END
@@ -95,6 +109,8 @@ void testFloatsNotEqualNegative2(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(-9273.0049f, -9273.9649f);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(-9273.0049f, -9273.9649f);
     VERIFY_FAILS_END
@@ -106,6 +122,8 @@ void testFloatsNotEqualActualNaN(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(85.963f, 0.0f / f_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(85.963f, 0.0f / f_zero);
     VERIFY_FAILS_END
@@ -117,6 +135,8 @@ void testFloatsNotEqualExpectedNaN(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(0.0f / f_zero, 85.963f);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 85.963f);
     VERIFY_FAILS_END
@@ -129,6 +149,10 @@ void testFloatsEqualBothNaN(void)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 0.0f / f_zero);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_FLOAT(0.0f / f_zero, 0.0f / f_zero);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -137,6 +161,8 @@ void testFloatsNotEqualInfNaN(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(1.0f / f_zero, 0.0f / f_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 0.0f / f_zero);
     VERIFY_FAILS_END
@@ -148,6 +174,8 @@ void testFloatsNotEqualNaNInf(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(0.0f / f_zero, 1.0f / f_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 1.0f / f_zero);
     VERIFY_FAILS_END
@@ -159,6 +187,8 @@ void testFloatsNotEqualActualInf(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(321.642f, 1.0f / f_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(321.642f, 1.0f / f_zero);
     VERIFY_FAILS_END
@@ -170,6 +200,8 @@ void testFloatsNotEqualExpectedInf(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(1.0f / f_zero, 321.642f);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 321.642f);
     VERIFY_FAILS_END
@@ -182,6 +214,10 @@ void testFloatsEqualBothInf(void)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 1.0f / f_zero);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_FLOAT(1.0f / f_zero, 1.0f / f_zero);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -190,6 +226,8 @@ void testFloatsNotEqualPlusMinusInf(void)
 #ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_FLOAT(1.0f / f_zero, -1.0f / f_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, -1.0f / f_zero);
     VERIFY_FAILS_END

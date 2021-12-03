@@ -555,6 +555,10 @@ Asserts that the `actual` value is within +/- `delta` of the `expected` value.
 The nature of floating point representation is such that exact evaluations of
 equality are not guaranteed.
 
+#### `TEST_ASSERT_FLOAT_WITHIN (delta, expected, actual)`
+
+Asserts that the `actual` value is NOT within +/- `delta` of the `expected` value.
+
 #### `TEST_ASSERT_EQUAL_FLOAT (expected, actual)`
 
 Asserts that the `actual` value is "close enough to be considered equal" to the
@@ -562,6 +566,11 @@ Asserts that the `actual` value is "close enough to be considered equal" to the
 Asserting section for more details on this. Omitting a user-specified delta in a
 floating point assertion is both a shorthand convenience and a requirement of
 code generation conventions for CMock.
+
+#### `TEST_ASSERT_NOT_EQUAL_FLOAT (expected, actual)`
+
+Asserts that the `actual` value is NOT "close enough to be considered equal" to the
+`expected` value.
 
 #### `TEST_ASSERT_EQUAL_FLOAT_ARRAY (expected, actual, num_elements)`
 
@@ -631,6 +640,10 @@ Asserts that the `actual` value is within +/- `delta` of the `expected` value.
 The nature of floating point representation is such that exact evaluations of
 equality are not guaranteed.
 
+#### `TEST_ASSERT_DOUBLE_NOT_WITHIN (delta, expected, actual)`
+
+Asserts that the `actual` value is NOT within +/- `delta` of the `expected` value.
+
 #### `TEST_ASSERT_EQUAL_DOUBLE (expected, actual)`
 
 Asserts that the `actual` value is "close enough to be considered equal" to the
@@ -638,6 +651,11 @@ Asserts that the `actual` value is "close enough to be considered equal" to the
 Asserting section for more details. Omitting a user-specified delta in a
 floating point assertion is both a shorthand convenience and a requirement of
 code generation conventions for CMock.
+
+#### `TEST_ASSERT_NOT_EQUAL_DOUBLE (expected, actual)`
+
+Asserts that the `actual` value is NOT "close enough to be considered equal" to the
+`expected` value.
 
 #### `TEST_ASSERT_EQUAL_DOUBLE_ARRAY (expected, actual, num_elements)`
 

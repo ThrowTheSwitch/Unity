@@ -648,6 +648,12 @@ void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber);
 
+void UnityAssertFloatsNotWithin(const UNITY_FLOAT delta,
+                                const UNITY_FLOAT expected,
+                                const UNITY_FLOAT actual,
+                                const char* msg,
+                                const UNITY_LINE_TYPE lineNumber);
+
 void UnityAssertGreaterOrLessFloat(const UNITY_FLOAT threshold,
                                    const UNITY_FLOAT actual,
                                    const UNITY_COMPARISON_T compare,
@@ -673,6 +679,12 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
                               const UNITY_DOUBLE actual,
                               const char* msg,
                               const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertDoublesNotWithin(const UNITY_DOUBLE delta,
+                                 const UNITY_DOUBLE expected,
+                                 const UNITY_DOUBLE actual,
+                                 const char* msg,
+                                 const UNITY_LINE_TYPE lineNumber);
 
 void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
                                     const UNITY_DOUBLE actual,
@@ -1007,6 +1019,7 @@ int UnityTestMatches(void);
 
 #ifdef UNITY_EXCLUDE_FLOAT
 #define UNITY_TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual, line, message)                   UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFloat)
+#define UNITY_TEST_ASSERT_FLOAT_NOT_WITHIN(delta, expected, actual, line, message)               UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFloat)
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT(expected, actual, line, message)                           UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFloat)
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements, line, message)       UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFloat)
 #define UNITY_TEST_ASSERT_EACH_EQUAL_FLOAT(expected, actual, num_elements, line, message)        UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFloat)
@@ -1022,7 +1035,9 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(actual, line, message)                        UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrFloat)
 #else
 #define UNITY_TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual, line, message)                   UnityAssertFloatsWithin((UNITY_FLOAT)(delta), (UNITY_FLOAT)(expected), (UNITY_FLOAT)(actual), (message), (UNITY_LINE_TYPE)(line))
+#define UNITY_TEST_ASSERT_FLOAT_NOT_WITHIN(delta, expected, actual, line, message)               UnityAssertFloatsNotWithin((UNITY_FLOAT)(delta), (UNITY_FLOAT)(expected), (UNITY_FLOAT)(actual), (message), (UNITY_LINE_TYPE)(line))
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT(expected, actual, line, message)                           UNITY_TEST_ASSERT_FLOAT_WITHIN((UNITY_FLOAT)(expected) * (UNITY_FLOAT)UNITY_FLOAT_PRECISION, (UNITY_FLOAT)(expected), (UNITY_FLOAT)(actual), (UNITY_LINE_TYPE)(line), (message))
+#define UNITY_TEST_ASSERT_NOT_EQUAL_FLOAT(expected, actual, line, message)                       UNITY_TEST_ASSERT_FLOAT_NOT_WITHIN((UNITY_FLOAT)(expected) * (UNITY_FLOAT)UNITY_FLOAT_PRECISION, (UNITY_FLOAT)(expected), (UNITY_FLOAT)(actual), (UNITY_LINE_TYPE)(line), (message))
 #define UNITY_TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num_elements, line, message)       UnityAssertEqualFloatArray((UNITY_FLOAT*)(expected), (UNITY_FLOAT*)(actual), (UNITY_UINT32)(num_elements), (message), (UNITY_LINE_TYPE)(line), UNITY_ARRAY_TO_ARRAY)
 #define UNITY_TEST_ASSERT_EACH_EQUAL_FLOAT(expected, actual, num_elements, line, message)        UnityAssertEqualFloatArray(UnityFloatToPtr(expected), (UNITY_FLOAT*)(actual), (UNITY_UINT32)(num_elements), (message), (UNITY_LINE_TYPE)(line), UNITY_ARRAY_TO_VAL)
 #define UNITY_TEST_ASSERT_GREATER_THAN_FLOAT(threshold, actual, line, message)                   UnityAssertGreaterOrLessFloat((UNITY_FLOAT)(threshold), (UNITY_FLOAT)(actual), UNITY_GREATER_THAN, (message), (UNITY_LINE_TYPE)(line))
@@ -1054,7 +1069,9 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, line, message)                       UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrDouble)
 #else
 #define UNITY_TEST_ASSERT_DOUBLE_WITHIN(delta, expected, actual, line, message)                  UnityAssertDoublesWithin((UNITY_DOUBLE)(delta), (UNITY_DOUBLE)(expected), (UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line))
+#define UNITY_TEST_ASSERT_DOUBLE_NOT_WITHIN(delta, expected, actual, line, message)              UnityAssertDoublesNotWithin((UNITY_DOUBLE)(delta), (UNITY_DOUBLE)(expected), (UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line))
 #define UNITY_TEST_ASSERT_EQUAL_DOUBLE(expected, actual, line, message)                          UNITY_TEST_ASSERT_DOUBLE_WITHIN((UNITY_DOUBLE)(expected) * (UNITY_DOUBLE)UNITY_DOUBLE_PRECISION, (UNITY_DOUBLE)(expected), (UNITY_DOUBLE)(actual), (UNITY_LINE_TYPE)(line), (message))
+#define UNITY_TEST_ASSERT_NOT_EQUAL_DOUBLE(expected, actual, line, message)                      UNITY_TEST_ASSERT_DOUBLE_NOT_WITHIN((UNITY_DOUBLE)(expected) * (UNITY_DOUBLE)UNITY_DOUBLE_PRECISION, (UNITY_DOUBLE)(expected), (UNITY_DOUBLE)(actual), (UNITY_LINE_TYPE)(line), (message))
 #define UNITY_TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected, actual, num_elements, line, message)      UnityAssertEqualDoubleArray((UNITY_DOUBLE*)(expected), (UNITY_DOUBLE*)(actual), (UNITY_UINT32)(num_elements), (message), (UNITY_LINE_TYPE)(line), UNITY_ARRAY_TO_ARRAY)
 #define UNITY_TEST_ASSERT_EACH_EQUAL_DOUBLE(expected, actual, num_elements, line, message)       UnityAssertEqualDoubleArray(UnityDoubleToPtr(expected), (UNITY_DOUBLE*)(actual), (UNITY_UINT32)(num_elements), (message), (UNITY_LINE_TYPE)(line), UNITY_ARRAY_TO_VAL)
 #define UNITY_TEST_ASSERT_GREATER_THAN_DOUBLE(threshold, actual, line, message)                  UnityAssertGreaterOrLessDouble((UNITY_DOUBLE)(threshold), (UNITY_DOUBLE)(actual), UNITY_GREATER_THAN, (message), (UNITY_LINE_TYPE)(line))
