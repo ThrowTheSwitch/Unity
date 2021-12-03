@@ -287,10 +287,10 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
   #ifdef UNITY_USE_FLUSH_STDOUT
     /* We want to use the stdout flush utility */
     #include <stdio.h>
-    #define UNITY_OUTPUT_FLUSH() (void)fflush(stdout)
+    #define UNITY_OUTPUT_FLUSH()    (void)fflush(stdout)
   #else
     /* We've specified nothing, therefore flush should just be ignored */
-    #define UNITY_OUTPUT_FLUSH()
+    #define UNITY_OUTPUT_FLUSH()    (void)0
   #endif
 #else
   /* If defined as something else, make sure we declare it here so it's ready for use */
@@ -302,11 +302,11 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #ifndef UNITY_OUTPUT_FLUSH
 #define UNITY_FLUSH_CALL()
 #else
-#define UNITY_FLUSH_CALL() UNITY_OUTPUT_FLUSH()
+#define UNITY_FLUSH_CALL()  UNITY_OUTPUT_FLUSH()
 #endif
 
 #ifndef UNITY_PRINT_EOL
-#define UNITY_PRINT_EOL()    UNITY_OUTPUT_CHAR('\n')
+#define UNITY_PRINT_EOL()   UNITY_OUTPUT_CHAR('\n')
 #endif
 
 #ifndef UNITY_OUTPUT_START
@@ -365,19 +365,19 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #endif
 
 #ifndef UNITY_EXEC_TIME_START
-#define UNITY_EXEC_TIME_START() do{}while(0)
+#define UNITY_EXEC_TIME_START() do { /* nothing*/ } while (0)
 #endif
 
 #ifndef UNITY_EXEC_TIME_STOP
-#define UNITY_EXEC_TIME_STOP() do{}while(0)
+#define UNITY_EXEC_TIME_STOP()  do { /* nothing*/ } while (0)
 #endif
 
 #ifndef UNITY_TIME_TYPE
-#define UNITY_TIME_TYPE UNITY_UINT
+#define UNITY_TIME_TYPE         UNITY_UINT
 #endif
 
 #ifndef UNITY_PRINT_EXEC_TIME
-#define UNITY_PRINT_EXEC_TIME() do{}while(0)
+#define UNITY_PRINT_EXEC_TIME() do { /* nothing*/ } while (0)
 #endif
 
 /*-------------------------------------------------------
@@ -516,9 +516,9 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 #define UNITY_SET_DETAIL(d1)
 #define UNITY_SET_DETAILS(d1,d2)
 #else
-#define UNITY_CLR_DETAILS()      { Unity.CurrentDetail1 = 0;   Unity.CurrentDetail2 = 0;  }
-#define UNITY_SET_DETAIL(d1)     { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = 0;  }
-#define UNITY_SET_DETAILS(d1,d2) { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = (d2); }
+#define UNITY_CLR_DETAILS()         do { Unity.CurrentDetail1 = 0;     Unity.CurrentDetail2 = 0;    } while (0)
+#define UNITY_SET_DETAIL(d1)        do { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = 0;    } while (0)
+#define UNITY_SET_DETAILS(d1,d2)    do { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = (d2); } while (0)
 
 #ifndef UNITY_DETAIL1_NAME
 #define UNITY_DETAIL1_NAME "Function"
@@ -798,7 +798,7 @@ int UnityTestMatches(void);
  * Test Asserts
  *-------------------------------------------------------*/
 
-#define UNITY_TEST_ASSERT(condition, line, message)                                              do {if (condition) {} else {UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), (message));}} while(0)
+#define UNITY_TEST_ASSERT(condition, line, message)                                              do { if (condition) { /* nothing*/ } else { UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), (message)); } } while (0)
 #define UNITY_TEST_ASSERT_NULL(pointer, line, message)                                           UNITY_TEST_ASSERT(((pointer) == NULL),  (UNITY_LINE_TYPE)(line), (message))
 #define UNITY_TEST_ASSERT_NOT_NULL(pointer, line, message)                                       UNITY_TEST_ASSERT(((pointer) != NULL),  (UNITY_LINE_TYPE)(line), (message))
 #define UNITY_TEST_ASSERT_EMPTY(pointer, line, message)                                          UNITY_TEST_ASSERT(((pointer[0]) == 0),  (UNITY_LINE_TYPE)(line), (message))

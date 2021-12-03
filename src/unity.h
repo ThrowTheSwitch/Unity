@@ -111,7 +111,7 @@ void verifyTest(void);
 /* It is not necessary for you to call PASS. A PASS condition is assumed if nothing fails.
  * This method allows you to abort a test immediately with a PASS state, ignoring the remainder of the test. */
 #define TEST_PASS()                                                                                TEST_ABORT()
-#define TEST_PASS_MESSAGE(message)                                                                 do { UnityMessage((message), __LINE__); TEST_ABORT(); } while(0)
+#define TEST_PASS_MESSAGE(message)                                                                 do { UnityMessage((message), __LINE__); TEST_ABORT(); } while (0)
 
 /* This macro does nothing, but it is useful for build tools (like Ceedling) to make use of this to figure out
  * which files should be linked to in order to perform a test. Use it like TEST_FILE("sandwiches.c") */

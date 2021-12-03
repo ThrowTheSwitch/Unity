@@ -49,11 +49,11 @@ set(UNITY_EXTENSION_FIXTURE_ENABLED $<BOOL:${UNITY_EXTENSION_FIXTURE}>)
 set(UNITY_EXTENSION_MEMORY_ENABLED $<OR:${UNITY_EXTENSION_FIXTURE_ENABLED},$<BOOL:${UNITY_EXTENSION_MEMORY}>>)
 
 if(${UNITY_EXTENSION_FIXTURE})
-    message(STATUS "Unity: Bulding with the fixture extension.")
+    message(STATUS "Unity: Building with the fixture extension.")
 endif()
 
 if(${UNITY_EXTENSION_MEMORY})
-    message(STATUS "Unity: Bulding with the memory extension.")
+    message(STATUS "Unity: Building with the memory extension.")
 endif()
 
 # Main target ------------------------------------------------------------------
@@ -99,37 +99,49 @@ set_target_properties(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME}
     PRIVATE
-        $<$<C_COMPILER_ID:Clang>:-Wcast-align
-                                 -Wcast-qual
-                                 -Wconversion
-                                 -Wexit-time-destructors
-                                 -Wglobal-constructors
-                                 -Wmissing-noreturn
-                                 -Wmissing-prototypes
-                                 -Wno-missing-braces
-                                 -Wold-style-cast
-                                 -Wshadow
-                                 -Wweak-vtables
-                                 -Werror
-                                 -Wall>
-        $<$<C_COMPILER_ID:GNU>:-Waddress
-                               -Waggregate-return
-                               -Wformat-nonliteral
-                               -Wformat-security
-                               -Wformat
-                               -Winit-self
-                               -Wmissing-declarations
-                               -Wmissing-include-dirs
-                               -Wno-multichar
-                               -Wno-parentheses
-                               -Wno-type-limits
-                               -Wno-unused-parameter
-                               -Wunreachable-code
-                               -Wwrite-strings
-                               -Wpointer-arith
-                               -Werror
-                               -Wall>
-       $<$<C_COMPILER_ID:MSVC>:/Wall>
+        # Clang
+        $<$<C_COMPILER_ID:Clang>:
+            -Wcast-align
+            -Wcast-qual
+            -Wconversion
+            -Wexit-time-destructors                            
+            -Wglobal-constructors
+            -Wmissing-noreturn
+            -Wmissing-prototypes
+            -Wno-missing-braces
+            -Wold-style-cast
+            -Wshadow
+            -Wweak-vtables
+            -Werror
+            -Wall
+            $<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,8.0.0>:-Wextra-semi-stmt>
+        >
+        
+        # GCC
+        $<$<C_COMPILER_ID:GNU>:
+            -Waddress
+            -Waggregate-return
+            -Wformat-nonliteral
+            -Wformat-security
+            -Wformat
+            -Winit-self
+            -Wmissing-declarations
+            -Wmissing-include-dirs
+            -Wno-multichar
+            -Wno-parentheses
+            -Wno-type-limits
+            -Wno-unused-parameter
+            -Wunreachable-code
+            -Wwrite-strings
+            -Wpointer-arith
+            -Werror
+            -Wall
+        >
+
+        # MSVC
+        $<$<C_COMPILER_ID:MSVC>:
+            /Wall
+        >
 )
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
