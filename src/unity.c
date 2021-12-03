@@ -1005,11 +1005,13 @@ void UnityAssertGreaterOrLessFloat(const UNITY_FLOAT threshold,
                                    const char* msg,
                                    const UNITY_LINE_TYPE lineNumber)
 {
+    int failed;
+
     RETURN_IF_FAIL_OR_IGNORE;
 
-    int failed = 0;
+    failed = 0;
 
-    // Checking for "not success" rather than failure to get the right result for NaN
+    /* Checking for "not success" rather than failure to get the right result for NaN */
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
@@ -1194,11 +1196,13 @@ void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
                                     const char* msg,
                                     const UNITY_LINE_TYPE lineNumber)
 {
+    int failed;
+
     RETURN_IF_FAIL_OR_IGNORE;
 
-    int failed = 0;
+    failed = 0;
 
-    // Checking for "not success" rather than failure to get the right result for NaN
+    /* Checking for "not success" rather than failure to get the right result for NaN */
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
