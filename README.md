@@ -168,6 +168,10 @@ Asserts that two floating point values are NOT "equal" within a small % delta of
 
 Asserts that the actual value is less than or greater than the threshold.
 
+There are also `LESS_OR_EQUAL` and `GREATER_OR_EQUAL` variations.
+These obey the same rules for equality as do `TEST_ASSERT_EQUAL_FLOAT` and `TEST_ASSERT_EQUAL_DOUBLE`:
+If the two values are within a small % delta of the expected value, the assertion will pass.
+
 ### String Assertions
 
     TEST_ASSERT_EQUAL_STRING(expected, actual)

@@ -591,6 +591,16 @@ Asserts that the `actual` parameter is greater than `threshold` (exclusive).
 For example, if the threshold value is 1.0f, the assertion will fail if it is
 less than 1.0f.
 
+#### `TEST_ASSERT_LESS_OR_EQUAL_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is less than or equal to `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_FLOAT`.
+
+#### `TEST_ASSERT_GREATER_OR_EQUAL_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_FLOAT`.
+
 #### `TEST_ASSERT_FLOAT_IS_INF (actual)`
 
 Asserts that `actual` parameter is equivalent to positive infinity floating
@@ -670,11 +680,21 @@ Asserts that the `actual` parameter is less than `threshold` (exclusive).
 For example, if the threshold value is 1.0, the assertion will fail if it is
 greater than 1.0.
 
+#### `TEST_ASSERT_LESS_OR_EQUAL_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is less than or equal to `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_DOUBLE`.
+
 #### `TEST_ASSERT_GREATER_THAN_DOUBLE (threshold, actual)`
 
 Asserts that the `actual` parameter is greater than `threshold` (exclusive).
 For example, if the threshold value is 1.0, the assertion will fail if it is
 less than 1.0.
+
+#### `TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than or equal to `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_DOUBLE`.
 
 #### `TEST_ASSERT_DOUBLE_IS_INF (actual)`
 

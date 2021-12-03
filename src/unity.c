@@ -1015,6 +1015,8 @@ void UnityAssertGreaterOrLessFloat(const UNITY_FLOAT threshold,
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
+    if ((compare & UNITY_EQUAL_TO) && UnityFloatsWithin(threshold * UNITY_FLOAT_PRECISION, threshold, actual)) { failed = 0; }
+
     if (failed)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -1022,6 +1024,7 @@ void UnityAssertGreaterOrLessFloat(const UNITY_FLOAT threshold,
         UnityPrintFloat(actual);
         if (compare & UNITY_GREATER_THAN) { UnityPrint(UnityStrGt); }
         if (compare & UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt); }
+        if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual);  }
         UnityPrintFloat(threshold);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
@@ -1206,6 +1209,8 @@ void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
+    if ((compare & UNITY_EQUAL_TO) && UnityFloatsWithin(threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
+
     if (failed)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -1213,6 +1218,7 @@ void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
         UnityPrintFloat(actual);
         if (compare & UNITY_GREATER_THAN) { UnityPrint(UnityStrGt); }
         if (compare & UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt); }
+        if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual);  }
         UnityPrintFloat(threshold);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
