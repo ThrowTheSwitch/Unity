@@ -1,0 +1,288 @@
+https://github.com/ThrowTheSwitch/Unity/blob/0b899aec14d3a9abb2bf260ac355f0f28630a6a3/auto/generate_module.rb
+/tmp" BINARY_DEST="$HOME/.local/bin" API_RELEASE_URL="$API_RELEASES_BASE_URL/latest" if [ "$RELEASE_TAG" != "latest" ]; then API_RELEASE_URL="$API_RELEASES_BASE_URL/tags/$RELEASE_TAG" fi has_in_path() { type "$1" >/dev/null 2>&1 } source_file() { # shellcheck disable=SC1090 source "$1" 2>/dev/null } # update config based on OS type if [[ "$OSTYPE" == "darwin"* ]]; then OS_TYPE="macOS" BINARY_DEST="$HOME/bin" fi if ! has_in_path "curl"; then echo "curl is required to download this binary" exit 1 fi if [ ! -d "$BINARY_DEST" ]; then mkdir -p "$BINARY_DEST" fi DOWNLOAD_TAG=$(curl -s "${API_RELEASE_URL}" | grep "tag_name.*" | cut -d '"' -f 4) if [ -z "$DOWNLOAD_TAG" ]; then API_RELEASE_URL="$API_RELEASES_BASE_URL/tags/v$RELEASE_TAG" DOWNLOAD_TAG=$(curl -s "${API_RELEASE_URL}" | grep "tag_name.*" | cut -d '"' -f 4) if [ -z "$DOWNLOAD_TAG" ]; then echo "Release tag $RELEASE_TAG not found" exit 1 fi DOWNLOAD_TAG="$RELEASE_TAG" fi if [[ $DOWNLOAD_TAG == v* ]]; then DOWNLOAD_TAG="${DOWNLOAD_TAG:1}" fi ASSET_NAME="${BINARY_NAME}_${DOWNLOAD_TAG}_${OS_TYPE}_amd${OS_LONG_BIT}" ASSET_NAME_COMPRESSED="${ASSET_NAME}.tar.gz" DOWNLOAD_URL=$(curl -s "${API_RELEASE_URL}" | grep "browser.download_url.*${ASSET_NAME_COMPRESSED}" | cut -d '"' -f 4) cd "$DOWNLOAD_DIR" || exit echo "Downloading $BINARY_NAME v${DOWNLOAD_TAG}" if curl -sL "$DOWNLOAD_URL" --output "${ASSET_NAME_COMPRESSED}"; then echo "$BINARY_NAME v${DOWNLOAD_TAG} downloaded" else echo "Error downloading $BINARY_NAME ${DOWNLOAD_TAG}" fi # unpack and place the binary in the users PATH tar xf "$ASSET_NAME_COMPRESSED" if [ "$?" -ne 0 ]; then exit 1 fi cp "${ASSET_NAME}/${BINARY_NAME}" "${BINARY_DEST}/${BINARY_NAME}" if [ "$?" -ne 0 ]; then exit 1 fi echo "rhoas has been installed succesfully to $BINARY_DEST" echo "Please ensure that $BINARY_DEST is on your PATH" } # this ensures the entire script is downloaded #package bind
+
+import (
+
+	"context"
+
+	"github.com/redhat-developer/app-services-cli/internal/config"
+
+	"github.com/redhat-developer/app-services-cli/pkg/cluster"
+
+	"github.com/redhat-developer/app-services-cli/pkg/cluster/kubeclient"
+
+	"github.com/redhat-developer/app-services-cli/pkg/cluster/services/resources"
+
+	"github.com/redhat-developer/app-services-cli/pkg/cluster/v1alpha"
+
+	"github.com/redhat-developer/app-services-cli/pkg/cmd/factory"
+
+	"github.com/redhat-developer/app-services-cli/pkg/connection"
+
+	"github.com/redhat-developer/app-services-cli/pkg/iostreams"
+
+	"github.com/redhat-developer/app-services-cli/pkg/localize"
+
+	"github.com/redhat-developer/app-services-cli/pkg/logging"
+
+	"github.com/spf13/cobra"
+
+)
+
+type options struct {
+
+	Config     config.IConfig
+
+	Connection func(connectionCfg *connection.Config) (connection.Connection, error)
+
+	Logger     logging.Logger
+
+	IO         *iostreams.IOStreams
+
+	localizer  localize.Localizer
+
+	Context    context.Context
+
+	kubeconfigLocation string
+
+	namespace          string
+
+	forceCreationWithoutAsk bool
+
+	ignoreContext           bool
+
+	appName                 string
+
+	serviceType             string
+
+	serviceName             string
+
+	deploymentConfigEnabled bool
+
+	bindAsEnv               bool
+
+	bindingName             string
+
+}
+
+func NewBindCommand(f *factory.Factory) *cobra.Command {
+
+	opts := &options{
+
+		Config:     f.Config,
+
+		Connection: f.Connection,
+
+		Logger:     f.Logger,
+
+		IO:         f.IOStreams,
+
+		localizer:  f.Localizer,
+
+		Context:    f.Context,
+
+	}
+
+	cmd := &cobra.Command{
+
+		Use:     "bind",
+
+		Short:   opts.localizer.MustLocalize("cluster.bind.cmd.shortDescription"),
+
+		Long:    opts.localizer.MustLocalize("cluster.bind.cmd.longDescription"),
+
+		Example: opts.localizer.MustLocalize("cluster.bind.cmd.example"),
+
+		RunE: func(cmd *cobra.Command, _ []string) error {
+
+			if opts.ignoreContext == true && !opts.IO.CanPrompt() {
+
+				return opts.localizer.MustLocalizeError("flag.error.requiredWhenNonInteractive", localize.NewEntry("Flag", "ignore-context"))
+
+			}
+
+			if opts.appName == "" && !opts.IO.CanPrompt() {
+
+				return opts.localizer.MustLocalizeError("flag.error.requiredWhenNonInteractive", localize.NewEntry("Flag", "app-name"))
+
+			}
+
+			if opts.serviceType == "" && !opts.IO.CanPrompt() {
+
+				return opts.localizer.MustLocalizeError("flag.error.requiredWhenNonInteractive", localize.NewEntry("Flag", "service-type"))
+
+			}
+
+			if opts.serviceName == "" && !opts.IO.CanPrompt() {
+
+				return opts.localizer.MustLocalizeError("flag.error.requiredWhenNonInteractive", localize.NewEntry("Flag", "service-name"))
+
+			}
+
+			return runBind(opts)
+
+		},
+
+	}
+
+	cmd.Flags().StringVar(&opts.kubeconfigLocation, "kubeconfig", "", opts.localizer.MustLocalize("cluster.common.flag.kubeconfig.description"))
+
+	cmd.Flags().StringVar(&opts.appName, "app-name", "", opts.localizer.MustLocalize("cluster.bind.flag.appName"))
+
+	cmd.Flags().StringVar(&opts.bindingName, "binding-name", "", opts.localizer.MustLocalize("cluster.bind.flag.bindName"))
+
+	cmd.Flags().BoolVarP(&opts.forceCreationWithoutAsk, "yes", "y", false, opts.localizer.MustLocalize("cluster.common.flag.yes.description"))
+
+	cmd.Flags().StringVarP(&opts.namespace, "namespace", "n", "", opts.localizer.MustLocalize("cluster.common.flag.namespace.description"))
+
+	cmd.Flags().BoolVar(&opts.ignoreContext, "ignore-context", false, opts.localizer.MustLocalize("cluster.common.flag.ignoreContext.description"))
+
+	cmd.Flags().BoolVar(&opts.deploymentConfigEnabled, "deployment-config", false, opts.localizer.MustLocalize("cluster.bind.flag.deploymentConfig.description"))
+
+	cmd.Flags().BoolVar(&opts.bindAsEnv, "bind-env", false, opts.localizer.MustLocalize("cluster.bind.flag.bindenv.description"))
+
+	cmd.Flags().StringVar(&opts.serviceType, "service-type", "", opts.localizer.MustLocalize("cluster.common.flag.serviceType.description"))
+
+	cmd.Flags().StringVar(&opts.serviceName, "service-name", "", opts.localizer.MustLocalize("cluster.common.flag.serviceName.description"))
+
+	_ = cmd.RegisterFlagCompletionFunc("service-type", func(cmd *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+
+		return resources.AllServiceLabels, cobra.ShellCompDirectiveNoSpace
+
+	})
+
+	return cmd
+
+}
+
+func runBind(opts *options) error {
+
+	conn, err := opts.Connection(connection.DefaultConfigSkipMasAuth)
+
+	if err != nil {
+
+		return err
+
+	}
+
+	cliProperties := v1alpha.CommandEnvironment{
+
+		IO:         opts.IO,
+
+		Logger:     opts.Logger,
+
+		Localizer:  opts.localizer,
+
+		Config:     opts.Config,
+
+		Connection: conn,
+
+		Context:    opts.Context,
+
+	}
+
+	kubeClients, err := kubeclient.NewKubernetesClusterClients(&cliProperties, opts.kubeconfigLocation)
+
+	if err != nil {
+
+		return err
+
+	}
+
+	clusterAPI := cluster.KubernetesClusterAPIImpl{
+
+		KubernetesClients:  kubeClients,
+
+		CommandEnvironment: &cliProperties,
+
+	}
+
+	err = clusterAPI.ExecuteServiceBinding(&v1alpha.BindOperationOptions{
+
+		Namespace:               opts.namespace,
+
+		ServiceName:             opts.serviceName,
+
+		ServiceType:             opts.serviceType,
+
+		AppName:                 opts.appName,
+
+		ForceCreationWithoutAsk: opts.forceCreationWithoutAsk,
+
+		BindingName:             opts.bindingName,
+
+		BindAsFiles:             !opts.bindAsEnv,
+
+		DeploymentConfigEnabled: opts.deploymentConfigEnabled,
+
+		IgnoreContext:           opts.ignoreContext,
+
+	})
+
+	return err
+  paypal gh auth login [flags]{
+
+  "product": "GitHub CLI",
+  auto/generate_module.rbsource ~/.bash_profileexport PATH=/usr/local/bin:$PATHls -a ~0a35a093b60fe66bd7185bc313f4e142e51bLATES/.stylelintrc.json
+
+  "company": "GitHub, Inc.",
+
+  "license": "LICENSE",
+
+  "upgrade-code": "7c0a5736-5b8e-4176-b350-613fa2d8a1b3",
+
+  "files": {
+
+    "guid": "6e6dcb19-3cf6-46d1-ac56-c6fb39485c9d",
+
+    "items": [
+
+      "bin/gh.exe"
+
+    ]
+
+  },
+
+  "env": {
+
+    "guid": "94faac3d-4478-431c-8497-fba55dcfb249",
+
+    "vars": [
+
+      {
+
+        "name": "PATH",
+
+        "value": "[INSTALLDIR]",
+
+        "permanent": "yes",
+
+        "system": "no",
+
+        "action": "set",
+
+        "part": "last"
+
+      }
+
+    ]
+
+  },
+
+  "shortcuts": {},
+
+  "choco": {
+
+    "description": "Use GitHub from the CLI",
+
+    "project-url": "https://github.com/cli/cli",
+
+    "tags": "github cli git",
+
+    "license-url": "https://github.com/cli/cli/blob/trunk/LICENSE"
+
+  }
+
+}
+
+}
