@@ -261,7 +261,7 @@ TEST_PRINTF("Pointer   %p\n", &a);
 TEST_PRINTF("Character %c\n", 'F');
 TEST_PRINTF("String    %s\n", "My string");
 TEST_PRINTF("Percent   %%\n");
-TEST_PRINTF("Color Red \033[41mFAIL\033[00m\n");
+TEST_PRINTF("Color Red \033[41mFAIL\033[0m\n");
 TEST_PRINTF("\n");
 TEST_PRINTF("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);
 ```
