@@ -14,6 +14,7 @@
 #    - normal output (raw unity)
 #    - fixture output (unity_fixture.h/.c)
 #    - fixture output with verbose flag set ("-v")
+#    - time output flag set (UNITY_INCLUDE_EXEC_TIME define enabled with milliseconds output)
 #
 #    To use this parser use the following command
 #    ruby parseOutput.rb [options] [file]
