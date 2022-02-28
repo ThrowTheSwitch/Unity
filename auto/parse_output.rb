@@ -54,13 +54,13 @@ class ParseOutput
   end
 
   # Set the flag to indicate if there will be an XML output file or not
-  def set_test_suite_name(cli_arg)
-    @real_test_suite_name = cli_arg['-suite'.length..-1]
+  def test_suite_name=(cli_arg)
+    @real_test_suite_name = cli_arg
     puts 'Real test suite name will be \'' + @real_test_suite_name + '\''
   end
 
-  def xml_encode_s(s)
-    return s.encode(:xml => :attr)
+  def xml_encode_s(str)
+    str.encode(:xml => :attr)
   end
 
   # If write our output to XML
@@ -277,7 +277,7 @@ class ParseOutput
     puts '=================== RESULTS ====================='
     puts ''
     # Apply binary encoding. Bad symbols will be unchanged
-    File.open(file_name, "rb").each do |line|
+    File.open(file_name, 'rb').each do |line|
       # Typical test lines look like these:
       # ----------------------------------------------------
       # 1. normal output:
@@ -333,16 +333,16 @@ class ParseOutput
         @test_ignored += 1
       elsif line_array.size >= 4
         # We will check output from color compilation
-        if line_array[@result_usual_idx..-1].any? {|l| l.include? 'PASS'}
+        if line_array[@result_usual_idx..-1].any? { |l| l.include? 'PASS' }
           test_passed(line_array)
           @test_passed += 1
-        elsif line_array[@result_usual_idx..-1].any? {|l| l.include? 'FAIL'}
+        elsif line_array[@result_usual_idx..-1].any? { |l| l.include? 'FAIL' }
           test_failed(line_array)
           @test_failed += 1
-        elsif line_array[@result_usual_idx..-2].any? {|l| l.include? 'IGNORE'}
+        elsif line_array[@result_usual_idx..-2].any? { |l| l.include? 'IGNORE' }
           test_ignored(line_array)
           @test_ignored += 1
-        elsif line_array[@result_usual_idx..-1].any? {|l| l.include? 'IGNORE'}
+        elsif line_array[@result_usual_idx..-1].any? { |l| l.include? 'IGNORE' }
           line_array.push('No reason given (' + get_test_time(line_array[@result_usual_idx..-1]).to_s + ' ms)')
           test_ignored(line_array)
           @test_ignored += 1
@@ -374,7 +374,7 @@ if ARGV.size >= 1
     if arg == '-xml'
       parse_my_file.set_xml_output
     elsif arg.start_with?('-suite')
-      parse_my_file.set_test_suite_name(arg)
+      parse_my_file.test_suite_name = arg.delete_prefix('-suite')
     else
       parse_my_file.process(arg)
       break
