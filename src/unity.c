@@ -1269,30 +1269,70 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
         switch (length)
         {
             case 1:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
-                increment  = sizeof(UNITY_INT8);
+                // fixing problems with signed overflow on unsigned numbers
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
+                    increment  = sizeof(UNITY_INT8);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT8*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT8*)actual;
+                    increment  = sizeof(UNITY_UINT8);
+                }
                 break;
 
             case 2:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
-                increment  = sizeof(UNITY_INT16);
+                // fixing problems with signed overflow on unsigned numbers
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
+                    increment  = sizeof(UNITY_INT16);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT16*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT16*)actual;
+                    increment  = sizeof(UNITY_UINT16);
+                }
                 break;
 
 #ifdef UNITY_SUPPORT_64
             case 8:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
-                increment  = sizeof(UNITY_INT64);
+                // fixing problems with signed overflow on unsigned numbers
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
+                    increment  = sizeof(UNITY_INT64);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT64*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT64*)actual;
+                    increment  = sizeof(UNITY_UINT64);
+                }
                 break;
 #endif
 
             default: /* default is length 4 bytes */
             case 4:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
-                increment  = sizeof(UNITY_INT32);
+                // fixing problems with signed overflow on unsigned numbers
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                    increment  = sizeof(UNITY_INT32);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT32*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT32*)actual;
+                    increment  = sizeof(UNITY_UINT32);
+                }
                 length = 4;
                 break;
         }
