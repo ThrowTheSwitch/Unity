@@ -1269,7 +1269,7 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
         switch (length)
         {
             case 1:
-                // fixing problems with signed overflow on unsigned numbers
+                /* fixing problems with signed overflow on unsigned numbers */
                 if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
                 {
                     expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
@@ -1285,7 +1285,7 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
                 break;
 
             case 2:
-                // fixing problems with signed overflow on unsigned numbers
+                /* fixing problems with signed overflow on unsigned numbers */
                 if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
                 {
                     expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
@@ -1302,7 +1302,7 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
 
 #ifdef UNITY_SUPPORT_64
             case 8:
-                // fixing problems with signed overflow on unsigned numbers
+                /* fixing problems with signed overflow on unsigned numbers */
                 if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
                 {
                     expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
@@ -1320,7 +1320,7 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
 
             default: /* default is length 4 bytes */
             case 4:
-                // fixing problems with signed overflow on unsigned numbers
+                /* fixing problems with signed overflow on unsigned numbers */
                 if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
                 {
                     expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
