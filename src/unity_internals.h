@@ -52,8 +52,28 @@
       #define UNITY_NORETURN [[ noreturn ]]
     #endif
   #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
-    #include <stdnoreturn.h>
-    #define UNITY_NORETURN noreturn
+    #if defined(_WIN32) && defined(_MSC_VER)
+      /* We are using MSVC compiler on Windows platform. */
+      /* Not all Windows SDKs supports <stdnoreturn.h>, but compiler can support C11: */
+      /* https://devblogs.microsoft.com/cppblog/c11-and-c17-standard-support-arriving-in-msvc/ */
+      /* Not sure, that Mingw compilers has Windows SDK headers at all. */
+      #include <sdkddkver.h>
+    #endif
+
+    /* Using Windows SDK predefined macro for detecting supported SDK with MSVC compiler. */
+    /* Mingw GCC should work without that fixes. */
+    /* Based on: */
+    /* https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-170 */
+    /* NTDDI_WIN10_FE is equal to Windows 10 SDK 2104 */
+    #if defined(_MSC_VER) && ((!defined(NTDDI_WIN10_FE)) || WDK_NTDDI_VERSION < NTDDI_WIN10_FE)
+      /* Based on tests and: */
+      /* https://docs.microsoft.com/en-us/cpp/c-language/noreturn?view=msvc-170 */
+      /* https://en.cppreference.com/w/c/language/_Noreturn */
+      #define UNITY_NORETURN _Noreturn
+    #else /* Using newer Windows SDK or not MSVC compiler */
+      #include <stdnoreturn.h>
+      #define UNITY_NORETURN noreturn
+    #endif
   #endif
 #endif
 #ifndef UNITY_NORETURN
