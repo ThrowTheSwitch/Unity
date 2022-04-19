@@ -796,7 +796,11 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
     if (num_elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -943,7 +947,11 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
 
     if (elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -1084,7 +1092,11 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
 
     if (elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -1265,7 +1277,11 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
 
     if (num_elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -1504,7 +1520,11 @@ void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
     /* if no elements, it's an error */
     if (num_elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if ((const void*)expected == (const void*)actual)
@@ -1581,7 +1601,15 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if ((elements == 0) || (length == 0))
+    if (elements == 0)
+    {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
+        UnityPrintPointlessAndBail();
+#endif
+    }
+    if (length == 0)
     {
         UnityPrintPointlessAndBail();
     }

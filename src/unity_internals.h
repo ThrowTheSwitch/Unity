@@ -214,6 +214,8 @@
   #define UNITY_INTERNAL_PTR UNITY_PTR_ATTRIBUTE const void*
 #endif
 
+/* optionally define UNITY_COMPARE_PTRS_ON_ZERO_ARRAY */
+
 /*-------------------------------------------------------
  * Float Support
  *-------------------------------------------------------*/

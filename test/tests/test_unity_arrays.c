@@ -2908,3 +2908,33 @@ void testNotEqualInt64Arrays(void)
     VERIFY_FAILS_END
 #endif
 }
+
+void testVerifyIntPassingPointerComparisonOnZeroLengthArray(void)
+{
+    int a[] = { 1 };
+
+#ifndef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, a, 0);
+    VERIFY_FAILS_END
+#else
+
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, a, 0);
+#endif
+}
+
+void testVerifyIntFailingPointerComparisonOnZeroLengthArray(void)
+{
+    int a[] = { 1 };
+    int b[] = { 1 };
+
+#ifndef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, b, 0);
+    VERIFY_FAILS_END
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, b, 0);
+    VERIFY_FAILS_END
+#endif
+}

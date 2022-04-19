@@ -121,6 +121,12 @@ _Example:_
 #define UNITY_POINTER_WIDTH 64 // Set UNITY_POINTER_WIDTH to 64-bit
 ```
 
+#### `UNITY_COMPARE_PTRS_ON_ZERO_ARRAY`
+
+Define this to make all array assertions compare pointers instead of contents when a length of zero is specified. When not enabled,
+defining a length of zero will always result in a failure and a message warning the user that they have tried to compare empty
+arrays.
+
 #### `UNITY_SUPPORT_64`
 
 Unity will automatically include 64-bit support if it auto-detects it, or if your `int`, `long`, or pointer widths are greater than 32-bits.
