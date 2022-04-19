@@ -571,26 +571,26 @@ void UnityConcludeTest(void)
 /*-----------------------------------------------*/
 static void UnityAddMsgIfSpecified(const char* msg)
 {
-    if (msg)
-    {
-        UnityPrint(UnityStrSpacer);
-
 #ifdef UNITY_PRINT_TEST_CONTEXT
-        UNITY_PRINT_TEST_CONTEXT();
+    UnityPrint(UnityStrSpacer);
+    UNITY_PRINT_TEST_CONTEXT();
 #endif
 #ifndef UNITY_EXCLUDE_DETAILS
-        if (Unity.CurrentDetail1)
+    if (Unity.CurrentDetail1)
+    {
+        UnityPrint(UnityStrSpacer);
+        UnityPrint(UnityStrDetail1Name);
+        UnityPrint(Unity.CurrentDetail1);
+        if (Unity.CurrentDetail2)
         {
-            UnityPrint(UnityStrDetail1Name);
-            UnityPrint(Unity.CurrentDetail1);
-            if (Unity.CurrentDetail2)
-            {
-                UnityPrint(UnityStrDetail2Name);
-                UnityPrint(Unity.CurrentDetail2);
-            }
-            UnityPrint(UnityStrSpacer);
+            UnityPrint(UnityStrDetail2Name);
+            UnityPrint(Unity.CurrentDetail2);
         }
-#endif
+    }
+#endif    
+    if (msg)
+    {        
+        UnityPrint(UnityStrSpacer);
         UnityPrint(msg);
     }
 }
@@ -819,12 +819,22 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             case 1:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
+                if (style & (UNITY_DISPLAY_RANGE_UINT | UNITY_DISPLAY_RANGE_HEX))
+                {
+                    expect_val &= 0x000000FF;
+                    actual_val &= 0x000000FF;
+                }
                 increment  = sizeof(UNITY_INT8);
                 break;
 
             case 2:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
+                if (style & (UNITY_DISPLAY_RANGE_UINT | UNITY_DISPLAY_RANGE_HEX))
+                {
+                    expect_val &= 0x0000FFFF;
+                    actual_val &= 0x0000FFFF;
+                }
                 increment  = sizeof(UNITY_INT16);
                 break;
 
@@ -839,7 +849,14 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             default: /* default is length 4 bytes */
             case 4:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;    
+#ifdef UNITY_SUPPORT_64
+                if (style & (UNITY_DISPLAY_RANGE_UINT | UNITY_DISPLAY_RANGE_HEX))
+                {
+                    expect_val &= 0x00000000FFFFFFFF;
+                    actual_val &= 0x00000000FFFFFFFF;
+                }
+#endif
                 increment  = sizeof(UNITY_INT32);
                 length = 4;
                 break;
