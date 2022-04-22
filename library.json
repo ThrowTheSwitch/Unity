@@ -1,7 +1,7 @@
 {
   "name": "Unity",
   "version": "2.5.2",
-  "keywords": "unittest, tdd, unit, test",
+  "keywords": "unit-testing, testing, tdd, testing-framework",
   "description": "Simple Unit Testing for C",
   "homepage": "http://www.throwtheswitch.org/unity",
   "license": "MIT",
