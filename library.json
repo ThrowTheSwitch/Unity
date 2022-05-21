@@ -1,0 +1,15 @@
+{
+  "name": "Unity",
+  "version": "2.5.2",
+  "keywords": "unit-testing, testing, tdd, testing-framework",
+  "description": "Simple Unit Testing for C",
+  "homepage": "http://www.throwtheswitch.org/unity",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThrowTheSwitch/Unity.git"
+  },
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "unity.h"
+}

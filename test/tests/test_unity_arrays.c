@@ -1133,6 +1133,18 @@ void testHEX64ArrayWithinDelta(void)
 #endif
 }
 
+void testHEX64ArrayWithinDeltaShouldNotHaveSignIssues(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+    UNITY_UINT64 expected[] = {0x7FFFFFFFFFFFFFFF, 0x8000000000000000};
+    UNITY_UINT64 actualBigDelta[] = {0x8000000000000000, 0x7FFFFFFFFFFFFFFF};
+
+    TEST_ASSERT_HEX64_ARRAY_WITHIN(1, expected, actualBigDelta, 2);
+#endif
+}
+
 void testHEX64ArrayWithinDeltaAndMessage(void)
 {
 #ifndef UNITY_SUPPORT_64
@@ -1287,6 +1299,14 @@ void testHEX32ArrayWithinDelta(void)
     TEST_ASSERT_HEX32_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
 }
 
+void testHEX32ArrayWithinDeltaShouldNotHaveSignIssues(void)
+{
+    UNITY_UINT32 expected[] = {0x7FFFFFFF, 0x80000000};
+    UNITY_UINT32 actualBigDelta[] = {0x80000000, 0x7FFFFFFF};
+
+    TEST_ASSERT_HEX32_ARRAY_WITHIN(1, expected, actualBigDelta, 2);
+}
+
 void testHEX32ArrayWithinDeltaAndMessage(void)
 {
     UNITY_UINT expected[] = {0xABCD1234, 0xABCD1122, 0xABCD1277};
@@ -1396,6 +1416,14 @@ void testHEX16ArrayWithinDelta(void)
 
     TEST_ASSERT_HEX16_ARRAY_WITHIN(1, expected, actualSmallDelta, 3);
     TEST_ASSERT_HEX16_ARRAY_WITHIN(110, expected, actualBigDelta, 3);
+}
+
+void testHEX16ArrayWithinDeltaShouldNotHaveSignIssues(void)
+{
+    UNITY_UINT16 expected[] = {0x7FFF, 0x8000};
+    UNITY_UINT16 actualBigDelta[] = {0x8000, 0x7FFF};
+
+    TEST_ASSERT_HEX16_ARRAY_WITHIN(1, expected, actualBigDelta, 2);
 }
 
 void testHEX16ArrayWithinDeltaAndMessage(void)
@@ -1526,6 +1554,14 @@ void testHEX8ArrayNotWithinDelta(void)
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX8_ARRAY_WITHIN(1, expected, actualBigDelta, 3);
     VERIFY_FAILS_END
+}
+
+void testHEX8ArrayWithinDeltaShouldNotHaveSignIssues(void)
+{
+    UNITY_UINT8 expected[] = {0x7F, 0x80};
+    UNITY_UINT8 actualBigDelta[] = {0x80, 0x7F};
+
+    TEST_ASSERT_HEX8_ARRAY_WITHIN(1, expected, actualBigDelta, 2);
 }
 
 void testHEX8ArrayNotWithinDeltaAndMessage(void)
@@ -2869,6 +2905,36 @@ void testNotEqualInt64Arrays(void)
 
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p1, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testVerifyIntPassingPointerComparisonOnZeroLengthArray(void)
+{
+    int a[] = { 1 };
+
+#ifndef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, a, 0);
+    VERIFY_FAILS_END
+#else
+
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, a, 0);
+#endif
+}
+
+void testVerifyIntFailingPointerComparisonOnZeroLengthArray(void)
+{
+    int a[] = { 1 };
+    int b[] = { 1 };
+
+#ifndef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, b, 0);
+    VERIFY_FAILS_END
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EQUAL_INT_ARRAY(a, b, 0);
     VERIFY_FAILS_END
 #endif
 }

@@ -9,12 +9,19 @@
 #define UNITY_FIXTURE_H_
 
 #include "unity.h"
-#include "unity_internals.h"
 #include "unity_fixture_internals.h"
 
 #ifndef UNITY_FIXTURE_NO_EXTRAS
 #include "unity_memory.h"
 #endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include "unity_internals.h"
+
 
 int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 
@@ -78,6 +85,10 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 #define LONGS_EQUAL(expected, actual)                  TEST_ASSERT_EQUAL_INT((expected), (actual))
 #define STRCMP_EQUAL(expected, actual)                 TEST_ASSERT_EQUAL_STRING((expected), (actual))
 #define DOUBLES_EQUAL(expected, actual, delta)         TEST_ASSERT_DOUBLE_WITHIN((delta), (expected), (actual))
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* UNITY_FIXTURE_H_ */

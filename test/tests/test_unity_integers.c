@@ -800,6 +800,11 @@ void testHEX32sWithinDelta(void)
     TEST_ASSERT_HEX32_WITHIN(5, 5000, 5005);
 }
 
+void testHEX32sWithinDeltaShouldIgnoreSign(void)
+{
+    TEST_ASSERT_HEX32_WITHIN(1, 0x7FFFFFFF, 0x80000000);
+}
+
 void testHEX32sWithinDeltaAndCustomMessage(void)
 {
     TEST_ASSERT_HEX32_WITHIN_MESSAGE(1, 5000, 5001, "Custom Message.");
@@ -842,6 +847,11 @@ void testHEX16sWithinDelta(void)
     TEST_ASSERT_HEX16_WITHIN(5, 5000, 5005);
 }
 
+void testHEX16sWithinDeltaShouldIgnoreSign(void)
+{
+    TEST_ASSERT_HEX16_WITHIN(1, 0x7FFF, 0x8000);
+}
+
 void testHEX16sWithinDeltaAndCustomMessage(void)
 {
     TEST_ASSERT_HEX16_WITHIN_MESSAGE(1, 5000, 5001, "Custom Message.");
@@ -878,6 +888,11 @@ void testHEX8sWithinDelta(void)
     TEST_ASSERT_HEX8_WITHIN(1, 254, 255);
     TEST_ASSERT_HEX8_WITHIN(5, 251, 255);
     TEST_ASSERT_HEX8_WITHIN(5, 1, 4);
+}
+
+void testHEX8sWithinDeltaShouldIgnoreSign(void)
+{
+    TEST_ASSERT_HEX8_WITHIN(1, 0x7F, 0x80);
 }
 
 void testHEX8sWithinDeltaAndCustomMessage(void)

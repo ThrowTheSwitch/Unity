@@ -7,10 +7,8 @@
 #include "unity.h"
 #include <stddef.h>
 
-#ifdef AVR
-#include <avr/pgmspace.h>
-#else
-#define PROGMEM
+#ifndef UNITY_PROGMEM
+#define UNITY_PROGMEM
 #endif
 
 /* If omitted from header, declare overrideable prototypes here so they're ready for use */
@@ -19,57 +17,57 @@ void UNITY_OUTPUT_CHAR(int);
 #endif
 
 /* Helpful macros for us to use here in Assert functions */
-#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }
-#define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }
-#define RETURN_IF_FAIL_OR_IGNORE if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) TEST_ABORT()
+#define UNITY_FAIL_AND_BAIL         do { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); } while (0)
+#define UNITY_IGNORE_AND_BAIL       do { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); } while (0)
+#define RETURN_IF_FAIL_OR_IGNORE    do { if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) { TEST_ABORT(); } } while (0)
 
 struct UNITY_STORAGE_T Unity;
 
 #ifdef UNITY_OUTPUT_COLOR
-const char PROGMEM UnityStrOk[]                            = "\033[42mOK\033[00m";
-const char PROGMEM UnityStrPass[]                          = "\033[42mPASS\033[00m";
-const char PROGMEM UnityStrFail[]                          = "\033[41mFAIL\033[00m";
-const char PROGMEM UnityStrIgnore[]                        = "\033[43mIGNORE\033[00m";
+const char UNITY_PROGMEM UnityStrOk[]                            = "\033[42mOK\033[0m";
+const char UNITY_PROGMEM UnityStrPass[]                          = "\033[42mPASS\033[0m";
+const char UNITY_PROGMEM UnityStrFail[]                          = "\033[41mFAIL\033[0m";
+const char UNITY_PROGMEM UnityStrIgnore[]                        = "\033[43mIGNORE\033[0m";
 #else
-const char PROGMEM UnityStrOk[]                            = "OK";
-const char PROGMEM UnityStrPass[]                          = "PASS";
-const char PROGMEM UnityStrFail[]                          = "FAIL";
-const char PROGMEM UnityStrIgnore[]                        = "IGNORE";
+const char UNITY_PROGMEM UnityStrOk[]                            = "OK";
+const char UNITY_PROGMEM UnityStrPass[]                          = "PASS";
+const char UNITY_PROGMEM UnityStrFail[]                          = "FAIL";
+const char UNITY_PROGMEM UnityStrIgnore[]                        = "IGNORE";
 #endif
-static const char PROGMEM UnityStrNull[]                   = "NULL";
-static const char PROGMEM UnityStrSpacer[]                 = ". ";
-static const char PROGMEM UnityStrExpected[]               = " Expected ";
-static const char PROGMEM UnityStrWas[]                    = " Was ";
-static const char PROGMEM UnityStrGt[]                     = " to be greater than ";
-static const char PROGMEM UnityStrLt[]                     = " to be less than ";
-static const char PROGMEM UnityStrOrEqual[]                = "or equal to ";
-static const char PROGMEM UnityStrNotEqual[]               = " to be not equal to ";
-static const char PROGMEM UnityStrElement[]                = " Element ";
-static const char PROGMEM UnityStrByte[]                   = " Byte ";
-static const char PROGMEM UnityStrMemory[]                 = " Memory Mismatch.";
-static const char PROGMEM UnityStrDelta[]                  = " Values Not Within Delta ";
-static const char PROGMEM UnityStrPointless[]              = " You Asked Me To Compare Nothing, Which Was Pointless.";
-static const char PROGMEM UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
-static const char PROGMEM UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
+static const char UNITY_PROGMEM UnityStrNull[]                   = "NULL";
+static const char UNITY_PROGMEM UnityStrSpacer[]                 = ". ";
+static const char UNITY_PROGMEM UnityStrExpected[]               = " Expected ";
+static const char UNITY_PROGMEM UnityStrWas[]                    = " Was ";
+static const char UNITY_PROGMEM UnityStrGt[]                     = " to be greater than ";
+static const char UNITY_PROGMEM UnityStrLt[]                     = " to be less than ";
+static const char UNITY_PROGMEM UnityStrOrEqual[]                = "or equal to ";
+static const char UNITY_PROGMEM UnityStrNotEqual[]               = " to be not equal to ";
+static const char UNITY_PROGMEM UnityStrElement[]                = " Element ";
+static const char UNITY_PROGMEM UnityStrByte[]                   = " Byte ";
+static const char UNITY_PROGMEM UnityStrMemory[]                 = " Memory Mismatch.";
+static const char UNITY_PROGMEM UnityStrDelta[]                  = " Values Not Within Delta ";
+static const char UNITY_PROGMEM UnityStrPointless[]              = " You Asked Me To Compare Nothing, Which Was Pointless.";
+static const char UNITY_PROGMEM UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
+static const char UNITY_PROGMEM UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
 #ifndef UNITY_EXCLUDE_FLOAT
-static const char PROGMEM UnityStrNot[]                    = "Not ";
-static const char PROGMEM UnityStrInf[]                    = "Infinity";
-static const char PROGMEM UnityStrNegInf[]                 = "Negative Infinity";
-static const char PROGMEM UnityStrNaN[]                    = "NaN";
-static const char PROGMEM UnityStrDet[]                    = "Determinate";
-static const char PROGMEM UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
+static const char UNITY_PROGMEM UnityStrNot[]                    = "Not ";
+static const char UNITY_PROGMEM UnityStrInf[]                    = "Infinity";
+static const char UNITY_PROGMEM UnityStrNegInf[]                 = "Negative Infinity";
+static const char UNITY_PROGMEM UnityStrNaN[]                    = "NaN";
+static const char UNITY_PROGMEM UnityStrDet[]                    = "Determinate";
+static const char UNITY_PROGMEM UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
 #endif
-const char PROGMEM UnityStrErrShorthand[]                  = "Unity Shorthand Support Disabled";
-const char PROGMEM UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
-const char PROGMEM UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
-const char PROGMEM UnityStrErr64[]                         = "Unity 64-bit Support Disabled";
-static const char PROGMEM UnityStrBreaker[]                = "-----------------------";
-static const char PROGMEM UnityStrResultsTests[]           = " Tests ";
-static const char PROGMEM UnityStrResultsFailures[]        = " Failures ";
-static const char PROGMEM UnityStrResultsIgnored[]         = " Ignored ";
+const char UNITY_PROGMEM UnityStrErrShorthand[]                  = "Unity Shorthand Support Disabled";
+const char UNITY_PROGMEM UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
+const char UNITY_PROGMEM UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
+const char UNITY_PROGMEM UnityStrErr64[]                         = "Unity 64-bit Support Disabled";
+static const char UNITY_PROGMEM UnityStrBreaker[]                = "-----------------------";
+static const char UNITY_PROGMEM UnityStrResultsTests[]           = " Tests ";
+static const char UNITY_PROGMEM UnityStrResultsFailures[]        = " Failures ";
+static const char UNITY_PROGMEM UnityStrResultsIgnored[]         = " Ignored ";
 #ifndef UNITY_EXCLUDE_DETAILS
-static const char PROGMEM UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
-static const char PROGMEM UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
+static const char UNITY_PROGMEM UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
+static const char UNITY_PROGMEM UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
 #endif
 /*-----------------------------------------------
  * Pretty Printers & Test Result Output Handlers
@@ -369,10 +367,12 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     }
     else
     {
-        UNITY_INT32 n_int = 0, n;
-        int exponent = 0;
-        int decimals, digits;
-        char buf[16] = {0};
+        UNITY_INT32 n_int = 0;
+        UNITY_INT32 n;
+        int         exponent = 0;
+        int         decimals;
+        int         digits;
+        char        buf[16] = {0};
 
         /*
          * Scale up or down by powers of 10.  To minimize rounding error,
@@ -445,14 +445,19 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
         /* build up buffer in reverse order */
         digits = 0;
-        while ((n != 0) || (digits < (decimals + 1)))
+        while ((n != 0) || (digits <= decimals))
         {
             buf[digits++] = (char)('0' + n % 10);
             n /= 10;
         }
+
+        /* print out buffer (backwards) */
         while (digits > 0)
         {
-            if (digits == decimals) { UNITY_OUTPUT_CHAR('.'); }
+            if (digits == decimals)
+            {
+                UNITY_OUTPUT_CHAR('.');
+            }
             UNITY_OUTPUT_CHAR(buf[--digits]);
         }
 
@@ -564,26 +569,26 @@ void UnityConcludeTest(void)
 /*-----------------------------------------------*/
 static void UnityAddMsgIfSpecified(const char* msg)
 {
+#ifdef UNITY_PRINT_TEST_CONTEXT
+    UnityPrint(UnityStrSpacer);
+    UNITY_PRINT_TEST_CONTEXT();
+#endif
+#ifndef UNITY_EXCLUDE_DETAILS
+    if (Unity.CurrentDetail1)
+    {
+        UnityPrint(UnityStrSpacer);
+        UnityPrint(UnityStrDetail1Name);
+        UnityPrint(Unity.CurrentDetail1);
+        if (Unity.CurrentDetail2)
+        {
+            UnityPrint(UnityStrDetail2Name);
+            UnityPrint(Unity.CurrentDetail2);
+        }
+    }
+#endif
     if (msg)
     {
         UnityPrint(UnityStrSpacer);
-
-#ifdef UNITY_PRINT_TEST_CONTEXT
-        UNITY_PRINT_TEST_CONTEXT();
-#endif
-#ifndef UNITY_EXCLUDE_DETAILS
-        if (Unity.CurrentDetail1)
-        {
-            UnityPrint(UnityStrDetail1Name);
-            UnityPrint(Unity.CurrentDetail1);
-            if (Unity.CurrentDetail2)
-            {
-                UnityPrint(UnityStrDetail2Name);
-                UnityPrint(Unity.CurrentDetail2);
-            }
-            UnityPrint(UnityStrSpacer);
-        }
-#endif
         UnityPrint(msg);
     }
 }
@@ -765,11 +770,12 @@ void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
 }
 
 #define UnityPrintPointlessAndBail()       \
-{                                          \
+do {                                       \
     UnityTestResultsFailBegin(lineNumber); \
     UnityPrint(UnityStrPointless);         \
     UnityAddMsgIfSpecified(msg);           \
-    UNITY_FAIL_AND_BAIL; }
+    UNITY_FAIL_AND_BAIL;                   \
+} while (0)
 
 /*-----------------------------------------------*/
 void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
@@ -788,7 +794,11 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
     if (num_elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -811,12 +821,22 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             case 1:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
+                if (style & (UNITY_DISPLAY_RANGE_UINT | UNITY_DISPLAY_RANGE_HEX))
+                {
+                    expect_val &= 0x000000FF;
+                    actual_val &= 0x000000FF;
+                }
                 increment  = sizeof(UNITY_INT8);
                 break;
 
             case 2:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
+                if (style & (UNITY_DISPLAY_RANGE_UINT | UNITY_DISPLAY_RANGE_HEX))
+                {
+                    expect_val &= 0x0000FFFF;
+                    actual_val &= 0x0000FFFF;
+                }
                 increment  = sizeof(UNITY_INT16);
                 break;
 
@@ -832,6 +852,13 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
             case 4:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+#ifdef UNITY_SUPPORT_64
+                if (style & (UNITY_DISPLAY_RANGE_UINT | UNITY_DISPLAY_RANGE_HEX))
+                {
+                    expect_val &= 0x00000000FFFFFFFF;
+                    actual_val &= 0x00000000FFFFFFFF;
+                }
+#endif
                 increment  = sizeof(UNITY_INT32);
                 length = 4;
                 break;
@@ -884,11 +911,12 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
   #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
-  {                                                               \
+  do {                                                            \
     UnityPrint(UnityStrExpected);                                 \
     UnityPrintFloat(expected);                                    \
     UnityPrint(UnityStrWas);                                      \
-    UnityPrintFloat(actual); }
+    UnityPrintFloat(actual);                                      \
+  } while (0)
 #else
   #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \
     UnityPrint(UnityStrDelta)
@@ -917,7 +945,11 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
 
     if (elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -1058,7 +1090,11 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
 
     if (elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -1239,7 +1275,11 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
 
     if (num_elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if (expected == actual)
@@ -1260,30 +1300,70 @@ void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,
         switch (length)
         {
             case 1:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
-                increment  = sizeof(UNITY_INT8);
+                /* fixing problems with signed overflow on unsigned numbers */
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;
+                    increment  = sizeof(UNITY_INT8);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT8*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT8*)actual;
+                    increment  = sizeof(UNITY_UINT8);
+                }
                 break;
 
             case 2:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
-                increment  = sizeof(UNITY_INT16);
+                /* fixing problems with signed overflow on unsigned numbers */
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
+                    increment  = sizeof(UNITY_INT16);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT16*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT16*)actual;
+                    increment  = sizeof(UNITY_UINT16);
+                }
                 break;
 
 #ifdef UNITY_SUPPORT_64
             case 8:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
-                increment  = sizeof(UNITY_INT64);
+                /* fixing problems with signed overflow on unsigned numbers */
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
+                    increment  = sizeof(UNITY_INT64);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT64*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT64*)actual;
+                    increment  = sizeof(UNITY_UINT64);
+                }
                 break;
 #endif
 
             default: /* default is length 4 bytes */
             case 4:
-                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
-                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
-                increment  = sizeof(UNITY_INT32);
+                /* fixing problems with signed overflow on unsigned numbers */
+                if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+                {
+                    expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
+                    actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
+                    increment  = sizeof(UNITY_INT32);
+                }
+                else
+                {
+                    expect_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT32*)expected;
+                    actual_val = (UNITY_INT)*(UNITY_PTR_ATTRIBUTE const UNITY_UINT32*)actual;
+                    increment  = sizeof(UNITY_UINT32);
+                }
                 length = 4;
                 break;
         }
@@ -1438,7 +1518,11 @@ void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
     /* if no elements, it's an error */
     if (num_elements == 0)
     {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
         UnityPrintPointlessAndBail();
+#endif
     }
 
     if ((const void*)expected == (const void*)actual)
@@ -1515,7 +1599,15 @@ void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
 
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if ((elements == 0) || (length == 0))
+    if (elements == 0)
+    {
+#ifdef UNITY_COMPARE_PTRS_ON_ZERO_ARRAY
+        UNITY_TEST_ASSERT_EQUAL_PTR(expected, actual, lineNumber, msg);
+#else
+        UnityPrintPointlessAndBail();
+#endif
+    }
+    if (length == 0)
     {
         UnityPrintPointlessAndBail();
     }

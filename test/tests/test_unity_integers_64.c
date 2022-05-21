@@ -652,6 +652,15 @@ void testHEX64sWithinDelta(void)
 #endif
 }
 
+void testHEX32sWithinDeltaShouldIgnoreSign(void)
+{
+#ifndef UNITY_SUPPORT_64
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_HEX64_WITHIN(1, 0x7FFFFFFFFFFFFFFF,0x8000000000000000);
+#endif
+}
+
 void testHEX64sNotWithinDelta(void)
 {
 #ifndef UNITY_SUPPORT_64
