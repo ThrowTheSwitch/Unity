@@ -1001,6 +1001,60 @@ void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
 }
 
 /*-----------------------------------------------*/
+void UnityAssertFloatsNotWithin(const UNITY_FLOAT delta,
+                                const UNITY_FLOAT expected,
+                                const UNITY_FLOAT actual,
+                                const char* msg,
+                                const UNITY_LINE_TYPE lineNumber)
+{
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (UnityFloatsWithin(delta, expected, actual))
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintFloat((UNITY_DOUBLE)expected);
+        UnityPrint(UnityStrNotEqual);
+        UnityPrintFloat((UNITY_DOUBLE)actual);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
+void UnityAssertGreaterOrLessFloat(const UNITY_FLOAT threshold,
+                                   const UNITY_FLOAT actual,
+                                   const UNITY_COMPARISON_T compare,
+                                   const char* msg,
+                                   const UNITY_LINE_TYPE lineNumber)
+{
+    int failed;
+
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    failed = 0;
+
+    /* Checking for "not success" rather than failure to get the right result for NaN */
+    if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
+    if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
+
+    if ((compare & UNITY_EQUAL_TO) && UnityFloatsWithin(threshold * UNITY_FLOAT_PRECISION, threshold, actual)) { failed = 0; }
+
+    if (failed)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintFloat(actual);
+        if (compare & UNITY_GREATER_THAN) { UnityPrint(UnityStrGt); }
+        if (compare & UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt); }
+        if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual);  }
+        UnityPrintFloat(threshold);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
 void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber,
@@ -1139,6 +1193,60 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
     {
         UnityTestResultsFailBegin(lineNumber);
         UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
+void UnityAssertDoublesNotWithin(const UNITY_DOUBLE delta,
+                                 const UNITY_DOUBLE expected,
+                                 const UNITY_DOUBLE actual,
+                                 const char* msg,
+                                 const UNITY_LINE_TYPE lineNumber)
+{
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (UnityDoublesWithin(delta, expected, actual))
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintFloat((UNITY_DOUBLE)expected);
+        UnityPrint(UnityStrNotEqual);
+        UnityPrintFloat((UNITY_DOUBLE)actual);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
+void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
+                                    const UNITY_DOUBLE actual,
+                                    const UNITY_COMPARISON_T compare,
+                                    const char* msg,
+                                    const UNITY_LINE_TYPE lineNumber)
+{
+    int failed;
+
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    failed = 0;
+
+    /* Checking for "not success" rather than failure to get the right result for NaN */
+    if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
+    if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
+
+    if ((compare & UNITY_EQUAL_TO) && UnityFloatsWithin(threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
+
+    if (failed)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintFloat(actual);
+        if (compare & UNITY_GREATER_THAN) { UnityPrint(UnityStrGt); }
+        if (compare & UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt); }
+        if (compare & UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual);  }
+        UnityPrintFloat(threshold);
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }

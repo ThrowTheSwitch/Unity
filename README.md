@@ -142,13 +142,35 @@ The bit is specified 0-31 for a 32-bit integer.
 ### Numerical Assertions: Floats
 
     TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual)
+    TEST_ASSERT_DOUBLE_WITHIN(delta, expected, actual)
 
 Asserts that the actual value is within plus or minus delta of the expected value.
+
+    TEST_ASSERT_FLOAT_NOT_WITHIN(delta, expected, actual)
+    TEST_ASSERT_DOUBLE_NOT_WITHIN(delta, expected, actual)
+
+Asserts that the actual value is NOT within plus or minus delta of the expected value.
 
     TEST_ASSERT_EQUAL_FLOAT(expected, actual)
     TEST_ASSERT_EQUAL_DOUBLE(expected, actual)
 
 Asserts that two floating point values are "equal" within a small % delta of the expected value.
+
+    TEST_ASSERT_NOT_EQUAL_FLOAT(expected, actual)
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(expected, actual)
+
+Asserts that two floating point values are NOT "equal" within a small % delta of the expected value.
+
+    TEST_ASSERT_LESS_THAN_FLOAT(threshold, actual)
+    TEST_ASSERT_LESS_THAN_DOUBLE(threshold, actual)
+    TEST_ASSERT_GREATER_THAN_FLOAT(threshold, actual)
+    TEST_ASSERT_GREATER_THAN_DOUBLE(threshold, actual)
+
+Asserts that the actual value is less than or greater than the threshold.
+
+There are also `LESS_OR_EQUAL` and `GREATER_OR_EQUAL` variations.
+These obey the same rules for equality as do `TEST_ASSERT_EQUAL_FLOAT` and `TEST_ASSERT_EQUAL_DOUBLE`:
+If the two values are within a small % delta of the expected value, the assertion will pass.
 
 ### String Assertions
 

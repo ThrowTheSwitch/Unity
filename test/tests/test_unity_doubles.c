@@ -42,6 +42,10 @@ void testDoublesWithinDelta(void)
     TEST_ASSERT_DOUBLE_WITHIN(1.0, 187245.0, 187246.0);
     TEST_ASSERT_DOUBLE_WITHIN(0.05, 9273.2549, 9273.2049);
     TEST_ASSERT_DOUBLE_WITHIN(0.007, -726.93725, -726.94424);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_NOT_WITHIN(0.05, 9273.2549, 9273.2049);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -50,6 +54,8 @@ void testDoublesNotWithinDelta(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_DOUBLE_NOT_WITHIN(0.05, 9273.2649, 9273.2049);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_WITHIN(0.05, 9273.2649, 9273.2049);
     VERIFY_FAILS_END
@@ -66,6 +72,10 @@ void testDoublesEqual(void)
     TEST_ASSERT_EQUAL_DOUBLE(187241234567.5, 187241234567.6);
     TEST_ASSERT_EQUAL_DOUBLE(9273.2512345649, 9273.25123455699);
     TEST_ASSERT_EQUAL_DOUBLE(-726.12345693724, -726.1234569374);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(-726.12345693724, -726.1234569374);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -74,6 +84,8 @@ void testDoublesNotEqual(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(9273.9649, 9273.0049);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(9273.9649, 9273.0049);
     VERIFY_FAILS_END
@@ -85,6 +97,8 @@ void testDoublesNotEqualNegative1(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(-9273.9649, -9273.0049);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.9649, -9273.0049);
     VERIFY_FAILS_END
@@ -96,6 +110,8 @@ void testDoublesNotEqualNegative2(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(-9273.0049, -9273.9649);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.0049, -9273.9649);
     VERIFY_FAILS_END
@@ -107,6 +123,8 @@ void testDoublesNotEqualActualNaN(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(85.963, 0.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(85.963, 0.0 / d_zero);
     VERIFY_FAILS_END
@@ -118,6 +136,8 @@ void testDoublesNotEqualExpectedNaN(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(0.0 / d_zero, 85.963);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 85.963);
     VERIFY_FAILS_END
@@ -130,6 +150,10 @@ void testDoublesEqualBothNaN(void)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -138,6 +162,8 @@ void testDoublesNotEqualInfNaN(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, 0.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 0.0 / d_zero);
     VERIFY_FAILS_END
@@ -149,6 +175,8 @@ void testDoublesNotEqualNaNInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(0.0 / d_zero, 1.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 1.0 / d_zero);
     VERIFY_FAILS_END
@@ -160,6 +188,8 @@ void testDoublesNotEqualActualInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(321.642, 1.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(321.642, 1.0 / d_zero);
     VERIFY_FAILS_END
@@ -171,6 +201,8 @@ void testDoublesNotEqualExpectedInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, 321.642);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 321.642);
     VERIFY_FAILS_END
@@ -183,6 +215,10 @@ void testDoublesEqualBothInf(void)
     TEST_IGNORE();
 #else
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+    VERIFY_FAILS_END
 #endif
 }
 
@@ -191,9 +227,443 @@ void testDoublesNotEqualPlusMinusInf(void)
 #ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
 #else
+    TEST_ASSERT_NOT_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
+
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
     VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesGreaterThan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_THAN_DOUBLE(1.0, 2.0);
+    TEST_ASSERT_GREATER_THAN_DOUBLE(-1.0, 1.0);
+    TEST_ASSERT_GREATER_THAN_DOUBLE(-2.0, -1.0);
+#endif
+}
+
+void testDoublesGreaterThanInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_THAN_DOUBLE(1.0, 1.0 / d_zero);
+    TEST_ASSERT_GREATER_THAN_DOUBLE(-1.0 / d_zero, 1.0 / d_zero);
+    TEST_ASSERT_GREATER_THAN_DOUBLE(-1.0 / d_zero, 1.0);
+#endif
+}
+
+void testDoublesNotGreaterThan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(2.0, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterThanNanActual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(1.0, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterThanNanThreshold(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(0.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterThanNanBoth(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterThanInfActual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(1.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterThanNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(1.0, -1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterThanBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterThanBothNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_THAN_DOUBLE(-1.0 / d_zero, -1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesGreaterOrEqual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(1.0, 2.0);
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(2.0, 2.0);
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(-1.0, 1.0);
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(-2.0, -1.0);
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(-2.0, -2.0);
+#endif
+}
+
+void testDoublesGreaterOrEqualInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(1.0, 1.0 / d_zero);
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(-1.0 / d_zero, 1.0 / d_zero);
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(-1.0 / d_zero, 1.0);
+#endif
+}
+
+void testDoublesNotGreaterOrEqual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(2.0, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterOrEqualNanActual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(1.0, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterOrEqualNanThreshold(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(0.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesGreaterOrEqualNanBoth(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+#endif
+}
+
+void testDoublesNotGreaterOrEqualInfActual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(1.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotGreaterOrEqualNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(1.0, -1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesGreaterOrEqualBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+#endif
+}
+
+void testDoublesGreaterOrEqualBothNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE(-1.0 / d_zero, -1.0 / d_zero);
+#endif
+}
+
+void testDoublesLessThan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_THAN_DOUBLE(2.0, 1.0);
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0, -1.0);
+    TEST_ASSERT_LESS_THAN_DOUBLE(-1.0, -2.0);
+#endif
+}
+
+void testDoublesLessThanInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0 / d_zero, 1.0);
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0, -1.0 / d_zero);
+#endif
+}
+
+void testDoublesNotLessThan(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0, 2.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessThanNanActual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessThanNanThreshold(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(0.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessThanNanBoth(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessThanInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0, 1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessThanNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(-1.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessThanBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessThanBothNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_THAN_DOUBLE(-1.0 / d_zero, -1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesLessOrEqual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(2.0, 1.0);
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(2.0, 2.0);
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0, -1.0);
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(-1.0, -2.0);
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(-2.0, -2.0);
+#endif
+}
+
+void testDoublesLessOrEqualInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0 / d_zero, 1.0);
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0, -1.0 / d_zero);
+#endif
+}
+
+void testDoublesNotLessOrEqual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0, 2.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessOrEqualNanActual(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0, 0.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessOrEqualNanThreshold(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(0.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesLessOrEqualNanBoth(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
+#endif
+}
+
+void testDoublesNotLessOrEqualInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0, 1.0 / d_zero);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesNotLessOrEqualNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(-1.0 / d_zero, 1.0);
+    VERIFY_FAILS_END
+#endif
+}
+
+void testDoublesLessOrEqualBothInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
+#endif
+}
+
+void testDoublesLessOrEqualBothNegInf(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    TEST_ASSERT_LESS_OR_EQUAL_DOUBLE(-1.0 / d_zero, -1.0 / d_zero);
 #endif
 }
 

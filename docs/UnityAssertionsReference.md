@@ -555,20 +555,51 @@ Asserts that the `actual` value is within +/- `delta` of the `expected` value.
 The nature of floating point representation is such that exact evaluations of
 equality are not guaranteed.
 
+#### `TEST_ASSERT_FLOAT_WITHIN (delta, expected, actual)`
+
+Asserts that the `actual` value is NOT within +/- `delta` of the `expected` value.
+
 #### `TEST_ASSERT_EQUAL_FLOAT (expected, actual)`
 
-Asserts that the ?actual?value is "close enough to be considered equal" to the
+Asserts that the `actual` value is "close enough to be considered equal" to the
 `expected` value. If you are curious about the details, refer to the Advanced
 Asserting section for more details on this. Omitting a user-specified delta in a
 floating point assertion is both a shorthand convenience and a requirement of
 code generation conventions for CMock.
 
+#### `TEST_ASSERT_NOT_EQUAL_FLOAT (expected, actual)`
+
+Asserts that the `actual` value is NOT "close enough to be considered equal" to the
+`expected` value.
+
 #### `TEST_ASSERT_EQUAL_FLOAT_ARRAY (expected, actual, num_elements)`
 
 See Array assertion section for details. Note that individual array element
-float comparisons are executed using T?EST_ASSERT_EQUAL_FLOAT?.That is, user
+float comparisons are executed using `TEST_ASSERT_EQUAL_FLOAT`.That is, user
 specified delta comparison values requires a custom-implemented floating point
 array assertion.
+
+#### `TEST_ASSERT_LESS_THAN_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is less than `threshold` (exclusive).
+For example, if the threshold value is 1.0f, the assertion will fail if it is
+greater than 1.0f.
+
+#### `TEST_ASSERT_GREATER_THAN_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than `threshold` (exclusive).
+For example, if the threshold value is 1.0f, the assertion will fail if it is
+less than 1.0f.
+
+#### `TEST_ASSERT_LESS_OR_EQUAL_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is less than or equal to `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_FLOAT`.
+
+#### `TEST_ASSERT_GREATER_OR_EQUAL_FLOAT (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_FLOAT`.
 
 #### `TEST_ASSERT_FLOAT_IS_INF (actual)`
 
@@ -586,7 +617,7 @@ Asserts that `actual` parameter is a Not A Number floating point representation.
 
 #### `TEST_ASSERT_FLOAT_IS_DETERMINATE (actual)`
 
-Asserts that ?actual?parameter is a floating point representation usable for
+Asserts that `actual` parameter is a floating point representation usable for
 mathematical operations. That is, the `actual` parameter is neither positive
 infinity nor negative infinity nor Not A Number floating point representations.
 
@@ -619,6 +650,10 @@ Asserts that the `actual` value is within +/- `delta` of the `expected` value.
 The nature of floating point representation is such that exact evaluations of
 equality are not guaranteed.
 
+#### `TEST_ASSERT_DOUBLE_NOT_WITHIN (delta, expected, actual)`
+
+Asserts that the `actual` value is NOT within +/- `delta` of the `expected` value.
+
 #### `TEST_ASSERT_EQUAL_DOUBLE (expected, actual)`
 
 Asserts that the `actual` value is "close enough to be considered equal" to the
@@ -627,12 +662,39 @@ Asserting section for more details. Omitting a user-specified delta in a
 floating point assertion is both a shorthand convenience and a requirement of
 code generation conventions for CMock.
 
+#### `TEST_ASSERT_NOT_EQUAL_DOUBLE (expected, actual)`
+
+Asserts that the `actual` value is NOT "close enough to be considered equal" to the
+`expected` value.
+
 #### `TEST_ASSERT_EQUAL_DOUBLE_ARRAY (expected, actual, num_elements)`
 
 See Array assertion section for details. Note that individual array element
 double comparisons are executed using `TEST_ASSERT_EQUAL_DOUBLE`.That is, user
 specified delta comparison values requires a custom implemented double array
 assertion.
+
+#### `TEST_ASSERT_LESS_THAN_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is less than `threshold` (exclusive).
+For example, if the threshold value is 1.0, the assertion will fail if it is
+greater than 1.0.
+
+#### `TEST_ASSERT_LESS_OR_EQUAL_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is less than or equal to `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_DOUBLE`.
+
+#### `TEST_ASSERT_GREATER_THAN_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than `threshold` (exclusive).
+For example, if the threshold value is 1.0, the assertion will fail if it is
+less than 1.0.
+
+#### `TEST_ASSERT_GREATER_OR_EQUAL_DOUBLE (threshold, actual)`
+
+Asserts that the `actual` parameter is greater than or equal to `threshold`.
+The rules for equality are the same as for `TEST_ASSERT_EQUAL_DOUBLE`.
 
 #### `TEST_ASSERT_DOUBLE_IS_INF (actual)`
 
@@ -651,7 +713,7 @@ Asserts that `actual` parameter is a Not A Number floating point representation.
 #### `TEST_ASSERT_DOUBLE_IS_DETERMINATE (actual)`
 
 Asserts that `actual` parameter is a floating point representation usable for
-mathematical operations. That is, the ?actual?parameter is neither positive
+mathematical operations. That is, the `actual` parameter is neither positive
 infinity nor negative infinity nor Not A Number floating point representations.
 
 #### `TEST_ASSERT_DOUBLE_IS_NOT_INF (actual)`
@@ -775,11 +837,11 @@ What about the times where you suddenly need to deal with something odd, like a
 affect you:
 
 1. When Unity displays errors for you, it's going to pad the upper unused bits
-with zeros.
+   with zeros.
 2. You're going to have to be careful of assertions that perform signed
-operations, particularly `TEST_ASSERT_INT_WITHIN`.Such assertions might wrap
-your `int` in the wrong place, and you could experience false failures. You can
-always back down to a simple `TEST_ASSERT` and do the operations yourself.
+   operations, particularly `TEST_ASSERT_INT_WITHIN`. Such assertions might wrap
+   your `int` in the wrong place, and you could experience false failures. You can
+   always back down to a simple `TEST_ASSERT` and do the operations yourself.
 
 *Find The Latest of This And More at [ThrowTheSwitch.org][]*
 
