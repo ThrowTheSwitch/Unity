@@ -51,8 +51,8 @@ class UnityTestRunnerGenerator
   def self.grab_config(config_file)
     options = default_options
     unless config_file.nil? || config_file.empty?
-      require 'yaml'
-      yaml_guts = YAML.load_file(config_file)
+      require_relative 'yaml_helper'
+      yaml_guts = YamlHelper.load_file(config_file)
       options.merge!(yaml_guts[:unity] || yaml_guts[:cmock])
       raise "No :unity or :cmock section found in #{config_file}" unless options
     end

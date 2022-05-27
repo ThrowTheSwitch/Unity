@@ -1,14 +1,19 @@
-require 'yaml'
+# ==========================================
+#   Unity Project - A Test Framework for C
+#   Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
+#   [Released under MIT License. Please refer to license.txt for details]
+# ==========================================
+
 require 'fileutils'
 require_relative '../../auto/unity_test_summary'
 require_relative '../../auto/generate_test_runner'
 require_relative '../../auto/colour_reporter'
-
+require_relative '../../auto/yaml_helper'
 C_EXTENSION = '.c'.freeze
 
 def load_configuration(config_file)
   $cfg_file = config_file
-  $cfg = YAML.load(File.read($cfg_file))
+  $cfg = YamlHelper.load_file($cfg_file)
 end
 
 def configure_clean
