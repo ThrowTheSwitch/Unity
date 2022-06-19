@@ -4,7 +4,7 @@
 #
 # license: MIT
 #
-project('example-4', 'c')
+project('example-4', 'c', meson_version: '>= 0.55.0')
 
 unity_dep = dependency('unity')
 
