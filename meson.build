@@ -5,7 +5,8 @@
 # license: MIT
 #
 project('unity', 'c',
-    meson_version: '>=0.62.0',
+    license: 'MIT',
+    meson_version: '>=0.37.0',
     default_options: ['werror=true', 'c_std=c11'])
 
 subdir('src')
