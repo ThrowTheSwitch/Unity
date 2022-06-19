@@ -5,6 +5,7 @@
 # license: MIT
 #
 project('unity', 'c',
+    license: 'MIT',
     meson_version: '>=0.37.0',
     default_options: ['werror=true', 'c_std=c11'])
 
