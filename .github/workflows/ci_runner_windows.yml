@@ -1,0 +1,96 @@
+name: Host Windows CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+
+jobs:
+  host_windows_latest:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           gem install rspec
+           gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_windows_2019:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           gem install rspec
+           gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_windows_2022:
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           gem install rspec
+           gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_windows_mingw32:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw32
+        update: true
+    - name: Install gems
+      run: |
+           gem install rspec
+           gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_windows_mingw64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw64
+        update: true
+    - name: Install gems
+      run: |
+           gem install rspec
+           gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_windows_msys:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: MSYS
+        update: true
+    - name: Install gems
+      run: |
+           gem install rspec
+           gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
