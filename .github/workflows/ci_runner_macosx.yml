@@ -1,0 +1,60 @@
+name: MacOSX CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+
+jobs:
+  host_macosx_latest:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_macosx_10:
+    runs-on: macos-10.15
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_macosx_11:
+    runs-on: macos-11
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_macosx_12:
+    runs-on: macos-12
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
