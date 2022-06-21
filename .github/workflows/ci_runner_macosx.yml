@@ -17,8 +17,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install gems
       run: |
-           sudo gem install rspec
-           sudo gem install rubocop -v 0.57.2
+           gem install rspec
+           gem install rubocop -v 0.57.2
     - name: Run All Unit Tests
       run: |
           cd test && rake ci
@@ -29,8 +29,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install gems
       run: |
-           sudo gem install rspec
-           sudo gem install rubocop -v 0.57.2
+           gem install rspec
+           gem install rubocop -v 0.57.2
     - name: Run All Unit Tests
       run: |
           cd test && rake ci
@@ -41,8 +41,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install gems
       run: |
-           sudo gem install rspec
-           sudo gem install rubocop -v 0.57.2
+           gem install rspec
+           gem install rubocop -v 0.57.2
     - name: Run All Unit Tests
       run: |
           cd test && rake ci
@@ -53,8 +53,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install gems
       run: |
-           sudo gem install rspec
-           sudo gem install rubocop -v 0.57.2
+           gem install rspec
+           gem install rubocop -v 0.57.2
     - name: Run All Unit Tests
       run: |
           cd test && rake ci
