@@ -2048,7 +2048,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 /*-----------------------------------------------*/
 void UnitySetTestFile(const char* filename)
 {
-	Unity.TestFile = filename;
+    Unity.TestFile = filename;
 }
 
 /*-----------------------------------------------*/
