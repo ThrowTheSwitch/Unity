@@ -1,0 +1,74 @@
+name: Linux CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+
+jobs:
+  host_chromeos:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: nanasess/setup-chromedriver@v1.0.7
+    - run: chromedriver --url-base=/wd/hub &
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_ubuntu_18_04:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+
+  host_ubuntu_20_04:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
+          
+  host_ubuntu_22_04:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install gems
+      run: |
+           sudo gem install rspec
+           sudo gem install rubocop -v 0.57.2
+    - name: Run All Unit Tests
+      run: |
+          cd test && rake ci
