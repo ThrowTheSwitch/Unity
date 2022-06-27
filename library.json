@@ -11,5 +11,8 @@
   },
   "frameworks": "*",
   "platforms": "*",
-  "headers": "unity.h"
+  "headers": "unity.h",
+  "build": {
+    "extraScript": "platformio-build.py"
+  }
 }
