@@ -51,8 +51,8 @@ class UnityTestRunnerGenerator
   def self.grab_config(config_file)
     options = default_options
     unless config_file.nil? || config_file.empty?
-      require 'yaml'
-      yaml_guts = YAML.load_file(config_file)
+      require_relative 'yaml_helper'
+      yaml_guts = YamlHelper.load_file(config_file)
       options.merge!(yaml_guts[:unity] || yaml_guts[:cmock])
       raise "No :unity or :cmock section found in #{config_file}" unless options
     end
@@ -345,7 +345,8 @@ class UnityTestRunnerGenerator
 
   def create_run_test(output)
     require 'erb'
-    template = ERB.new(File.read(File.join(__dir__, 'run_test.erb')), nil, '<>')
+    file = File.read(File.join(__dir__, 'run_test.erb'))
+    template = ERB.new(file, trim_mode: '<>')
     output.puts("\n" + template.result(binding))
   end
 
