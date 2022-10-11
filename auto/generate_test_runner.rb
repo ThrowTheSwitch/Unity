@@ -140,7 +140,7 @@ class UnityTestRunnerGenerator
 
       if @options[:use_param_tests] && !arguments.empty?
         args = []
-        arguments.scan(/\s*TEST_CASE\s*\((.*)\)\s*$/) { |a| args << a[0] }
+        arguments.scan(/\s*TEST_CASE\s*\(\s*(.*)\s*\)\s*$/) { |a| args << a[0] }
 
         arguments.scan(/\s*TEST_RANGE\s*\((.*)\)\s*$/).flatten.each do |range_str|
           args += range_str.scan(/\[\s*(-?\d+.?\d*),\s*(-?\d+.?\d*),\s*(-?\d+.?\d*)\s*\]/).map do |arg_values_str|
