@@ -8,4 +8,6 @@ unity_dir = include_directories('.')
 
 unity_lib = static_library(meson.project_name(),
     'unity.c',
-    include_directories: unity_dir)
+    include_directories: unity_dir,
+    native: true
+)
