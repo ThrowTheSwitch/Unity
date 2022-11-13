@@ -173,6 +173,32 @@ void test_CharsArePreserved(unsigned index, char c)
     NextExpectedCharIndex++;
 }
 
+TEST_RANGE([0, 10, 2])
+void test_SingleRange(unsigned value)
+{
+  TEST_ASSERT_EQUAL(0, value % 2);
+  TEST_ASSERT_LESS_OR_EQUAL(10, value);
+}
+
+TEST_RANGE([1, 2, 1], [2, 1, -1])
+void test_TwoRanges(unsigned first, unsigned second)
+{
+  TEST_ASSERT_LESS_OR_EQUAL(4, first * second);
+}
+
+TEST_RANGE(<0, 10, 2>)
+void test_SingleExclusiveRange(unsigned value)
+{
+  TEST_ASSERT_EQUAL(0, value % 2);
+  TEST_ASSERT_LESS_THAN(10, value);
+}
+
+TEST_RANGE([2, 4, 1], <1, 2, 1>)
+void test_BothInclusiveAndExclusiveRange(unsigned first, unsigned second)
+{
+  TEST_ASSERT_LESS_THAN(first, second);
+}
+
 TEST_CASE(0,
 
           1)
