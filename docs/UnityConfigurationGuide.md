@@ -240,7 +240,7 @@ _Example:_
 Unity provides a simple (and very basic) printf-like string output implementation, which is able to print a string modified by the following format string modifiers:
 
 - __%d__ - signed value (decimal)
-- __%i__ - same as __%i__
+- __%i__ - same as __%d__
 - __%u__ - unsigned value (decimal)
 - __%f__ - float/Double (if float support is activated)
 - __%g__ - same as __%f__
@@ -251,6 +251,15 @@ Unity provides a simple (and very basic) printf-like string output implementatio
 - __%c__ - a single character
 - __%s__ - a string (e.g. "string")
 - __%%__ - The "%" symbol (escaped)
+
+Length specifiers are also supported. If you are using long long types, make sure UNITY_SUPPORT_64 is true to ensure they are printed correctly.
+
+- __%ld__ - signed long value (decimal)
+- __%lld__ - signed long long value (decimal)
+- __%lu__ - unsigned long value (decimal)
+- __%llu__ - unsigned long long value (decimal)
+- __%lx__ - unsigned long value (hexadecimal)
+- __%llx__ - unsigned long long value (hexadecimal)
 
 _Example:_
 
@@ -267,6 +276,7 @@ TEST_PRINTF("Pointer   %p\n", &a);
 TEST_PRINTF("Character %c\n", 'F');
 TEST_PRINTF("String    %s\n", "My string");
 TEST_PRINTF("Percent   %%\n");
+TEST_PRINTF("Unsigned long long %llu\n", 922337203685477580);
 TEST_PRINTF("Color Red \033[41mFAIL\033[0m\n");
 TEST_PRINTF("\n");
 TEST_PRINTF("Multiple (%d) (%i) (%u) (%x)\n", -100, 0, 200, 0x12345);

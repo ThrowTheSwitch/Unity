@@ -1823,10 +1823,96 @@ UNITY_INTERNAL_PTR UnityDoubleToPtr(const double num)
 }
 #endif
 
+#ifdef UNITY_INCLUDE_PRINT_FORMATTED
+
+/*-----------------------------------------------
+ * printf length modifier helpers
+ *-----------------------------------------------*/
+
+enum UnityLengthModifier {
+    UNITY_LENGTH_MODIFIER_NONE,
+    UNITY_LENGTH_MODIFIER_LONG_LONG,
+    UNITY_LENGTH_MODIFIER_LONG,
+};
+
+#define UNITY_EXTRACT_ARG(NUMBER_T, NUMBER, LENGTH_MOD, VA, ARG_T) \
+do {                                                               \
+    switch (LENGTH_MOD)                                            \
+    {                                                              \
+        case UNITY_LENGTH_MODIFIER_LONG_LONG:                      \
+        {                                                          \
+            NUMBER = (NUMBER_T)va_arg(VA, long long ARG_T);        \
+            break;                                                 \
+        }                                                          \
+        case UNITY_LENGTH_MODIFIER_LONG:                           \
+        {                                                          \
+            NUMBER = (NUMBER_T)va_arg(VA, long ARG_T);             \
+            break;                                                 \
+        }                                                          \
+        case UNITY_LENGTH_MODIFIER_NONE:                           \
+        default:                                                   \
+        {                                                          \
+            NUMBER = (NUMBER_T)va_arg(VA, ARG_T);                  \
+            break;                                                 \
+        }                                                          \
+    }                                                              \
+} while (0)
+
+static enum UnityLengthModifier UnityLengthModifierGet(const char *pch, int *length)
+{
+    enum UnityLengthModifier length_mod;
+    switch (pch[0])
+    {
+        case 'l':
+            {
+                if (pch[1] == 'l')
+                {
+                    *length = 2;
+                    length_mod = UNITY_LENGTH_MODIFIER_LONG_LONG;
+                }
+                else
+                {
+                    *length = 1;
+                    length_mod = UNITY_LENGTH_MODIFIER_LONG;
+                }
+                break;
+            }
+        case 'h':
+            {
+                // short and char are converted to int
+                length_mod = UNITY_LENGTH_MODIFIER_NONE;
+                if (pch[1] == 'h')
+                {
+                    *length = 2;
+                }
+                else
+                {
+                    *length = 1;
+                }
+                break;
+            }
+        case 'j':
+        case 'z':
+        case 't':
+        case 'L':
+            {
+                // Not supported, but should gobble up the length specifier anyway
+                length_mod = UNITY_LENGTH_MODIFIER_NONE;
+                *length = 1;
+                break;
+            }
+        default:
+            {
+                length_mod = UNITY_LENGTH_MODIFIER_NONE;
+                *length = 0;
+            }
+    }
+    return length_mod;
+}
+
 /*-----------------------------------------------
  * printf helper function
  *-----------------------------------------------*/
-#ifdef UNITY_INCLUDE_PRINT_FORMATTED
 static void UnityPrintFVA(const char* format, va_list va)
 {
     const char* pch = format;
@@ -1841,12 +1927,17 @@ static void UnityPrintFVA(const char* format, va_list va)
 
                 if (pch != NULL)
                 {
+                    int length_mod_size;
+                    enum UnityLengthModifier length_mod = UnityLengthModifierGet(pch, &length_mod_size);
+                    pch += length_mod_size;
+
                     switch (*pch)
                     {
                         case 'd':
                         case 'i':
                             {
-                                const int number = va_arg(va, int);
+                                UNITY_INT number;
+                                UNITY_EXTRACT_ARG(UNITY_INT, number, length_mod, va, int);
                                 UnityPrintNumber((UNITY_INT)number);
                                 break;
                             }
@@ -1861,21 +1952,31 @@ static void UnityPrintFVA(const char* format, va_list va)
 #endif
                         case 'u':
                             {
-                                const unsigned int number = va_arg(va, unsigned int);
-                                UnityPrintNumberUnsigned((UNITY_UINT)number);
+                                UNITY_UINT number;
+                                UNITY_EXTRACT_ARG(UNITY_UINT, number, length_mod, va, unsigned int);
+                                UnityPrintNumberUnsigned(number);
                                 break;
                             }
                         case 'b':
                             {
-                                const unsigned int number = va_arg(va, unsigned int);
+                                UNITY_UINT number;
+                                UNITY_EXTRACT_ARG(UNITY_UINT, number, length_mod, va, unsigned int);
                                 const UNITY_UINT mask = (UNITY_UINT)0 - (UNITY_UINT)1;
                                 UNITY_OUTPUT_CHAR('0');
                                 UNITY_OUTPUT_CHAR('b');
-                                UnityPrintMask(mask, (UNITY_UINT)number);
+                                UnityPrintMask(mask, number);
                                 break;
                             }
                         case 'x':
                         case 'X':
+                            {
+                                UNITY_UINT number;
+                                UNITY_EXTRACT_ARG(UNITY_UINT, number, length_mod, va, unsigned int);
+                                UNITY_OUTPUT_CHAR('0');
+                                UNITY_OUTPUT_CHAR('x');
+                                UnityPrintNumberHex(number, 8);
+                                break;
+                            }
                         case 'p':
                             {
                                 const unsigned int number = va_arg(va, unsigned int);
