@@ -239,7 +239,7 @@ How convenient is that?
 
 *Find The Latest of This And More at [ThrowTheSwitch.org][]*
 
-[ruby-lang.org]: https://ruby-labg.org/
+[ruby-lang.org]: https://ruby-lang.org/
 [YAML]: http://www.yaml.org/
 [Ceedling]: http://www.throwtheswitch.org/ceedling
 [ThrowTheSwitch.org]: https://throwtheswitch.org
