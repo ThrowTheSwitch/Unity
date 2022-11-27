@@ -4,13 +4,11 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
+#define UNITY_INCLUDE_PARAM_TESTING_MACRO
+
 #include <setjmp.h>
 #include <stdio.h>
 #include "unity.h"
-
-/* Support for Meta Test Rig */
-#define TEST_CASE(...)
-#define TEST_RANGE(...)
 
 /* Include Passthroughs for Linking Tests */
 void putcharSpy(int c) { (void)putchar(c);}
