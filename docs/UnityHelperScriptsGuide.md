@@ -227,16 +227,73 @@ script will generate 2 test calls:
 
 ```C
 test_demoParamFunction(1, 2, 5);
-test_demoParamFunction(3, 7, 20);
+test_demoParamFunction(10, 7, 20);
 ```
 
 That calls will be wrapped with `setUp`, `tearDown` and other
-usual Unity calls, as an independent unit tests.
+usual Unity calls, as for independent unit tests.
 The following output can be generated after test executable startup:
 
 ```Log
-tests/test_unity_parameterized.c:9:test_demoParamFunction(1, 2, 5):PASS
-tests/test_unity_parameterized.c:9:test_demoParamFunction(3, 7, 20):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(1, 2, 5):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(10, 7, 20):PASS
+```
+
+##### `TEST_RANGE`
+
+Test range is an advanced generator. It single call can be converted to zero,
+one or few `TEST_CASE` equivalent commands.
+
+That generator can be used for creating numeric ranges in decimal representation
+only: integers & floating point numbers. It uses few formats for every parameter:
+
+1. `[start, stop, step]` is stop-inclusive format
+2. `<start, stop, step>` is stop-exclusive formats
+
+Format providers 1 and 2 accept only three arguments:
+
+* `start` is start number
+* `stop` is end number (can or cannot exists in result sequence for format 1,
+will be always skipped for format 2)
+* `step` is incrementing step: can be either positive or negative value.
+
+Let's use our `test_demoParamFunction` test for checking, what ranges
+will be generated for our single `TEST_RANGE` row:
+
+```C
+TEST_RANGE([3, 4, 1], [10, 5, -2], <30, 31, 1>)
+```
+
+Tests execution output will be similar to that text:
+
+```Log
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(3, 10, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(3, 8, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(3, 6, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(4, 10, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(4, 8, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(4, 6, 30):PASS
+```
+
+As we can see:
+
+| Parameter | Format | Possible values | Total of values | Format number |
+|---|---|---|---|---|
+| `a` | `[3, 4, 1]` | `3`, `4` | 2 | Format 1 |
+| `b` | `[10, 5, -2]` | `10`, `8`, `6` | 3 | Format 1, negative step, end number is not included |
+| `c` | `<30, 31, 1>` | `30` | 1 | Format 2 |
+
+_Note_, that format 2 also supports negative step.
+
+We totally have 2 * 3 * 1 = 6 equal test cases, that can be written as following:
+
+```C
+TEST_CASE(3, 10, 30)
+TEST_CASE(3, 8, 30)
+TEST_CASE(3, 6, 30)
+TEST_CASE(4, 10, 30)
+TEST_CASE(4, 8, 30)
+TEST_CASE(4, 6, 30)
 ```
 
 ### `unity_test_summary.rb`
