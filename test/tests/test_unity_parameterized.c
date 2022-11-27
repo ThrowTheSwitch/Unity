@@ -4,8 +4,6 @@
     [Released under MIT License. Please refer to license.txt for details]
 ========================================== */
 
-#define UNITY_INCLUDE_PARAM_TESTING_MACRO
-
 #include <setjmp.h>
 #include <stdio.h>
 #include "unity.h"

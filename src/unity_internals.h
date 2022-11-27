@@ -783,12 +783,12 @@ extern const char UnityStrErrShorthand[];
 #endif
 
 /* Enable default macros for masking param tests test cases */
-#ifdef UNITY_INCLUDE_PARAM_TESTING_MACRO
+#ifdef UNITY_SUPPORT_TEST_CASES
   #ifdef UNITY_SUPPORT_VARIADIC_MACROS
-    #if !defined(TEST_CASE) && !defined(UNITY_NOT_DEFINE_TEST_CASE)
+    #if !defined(TEST_CASE) && !defined(UNITY_EXCLUDE_TEST_CASE)
       #define TEST_CASE(...)
     #endif
-    #if !defined(TEST_RANGE) && !defined(UNITY_NOT_DEFINE_TEST_RANGE)
+    #if !defined(TEST_RANGE) && !defined(UNITY_EXCLUDE_TEST_RANGE)
       #define TEST_RANGE(...)
     #endif
   #endif
