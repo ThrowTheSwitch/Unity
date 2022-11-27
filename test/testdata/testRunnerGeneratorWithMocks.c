@@ -20,9 +20,6 @@
    suitetest- custom prefix for when we want to use custom suite setup/teardown
 */
 
-/* Support for Meta Test Rig */
-#define TEST_CASE(a)
-
 /* Include Passthroughs for Linking Tests */
 void putcharSpy(int c) { (void)putchar(c);}
 void flushSpy(void) {}
@@ -194,4 +191,3 @@ void test_ShouldCallMockInitAndVerifyFunctionsForEachTest(void)
     TEST_ASSERT_EQUAL_MESSAGE(Unity.NumberOfTests - 1, mockMock_Destroy_Counter, "Mock Destroy Should Be Called Once Per Test Completed");
     TEST_ASSERT_EQUAL_MESSAGE(0,                       CMockMemFreeFinalCounter, "Mock MemFreeFinal Should Not Be Called Until End");
 }
-
