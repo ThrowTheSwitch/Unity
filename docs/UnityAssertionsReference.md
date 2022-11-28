@@ -555,7 +555,7 @@ Asserts that the `actual` value is within +/- `delta` of the `expected` value.
 The nature of floating point representation is such that exact evaluations of
 equality are not guaranteed.
 
-#### `TEST_ASSERT_FLOAT_WITHIN (delta, expected, actual)`
+#### `TEST_ASSERT_FLOAT_NOT_WITHIN (delta, expected, actual)`
 
 Asserts that the `actual` value is NOT within +/- `delta` of the `expected` value.
 
