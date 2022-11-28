@@ -5,7 +5,6 @@
 ============================================================================ */
 
 #include "unity.h"
-#include <stddef.h>
 
 #ifndef UNITY_PROGMEM
 #define UNITY_PROGMEM
