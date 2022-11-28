@@ -1191,7 +1191,7 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (!UnityDoublesWithin(delta, 0, expected, actual))
+    if (!UnityDoublesWithin(delta, (UNITY_DOUBLE)0, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
         UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
@@ -1209,7 +1209,7 @@ void UnityAssertDoublesNotWithin(const UNITY_DOUBLE delta,
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (UnityDoublesWithin(delta, 0, expected, actual))
+    if (UnityDoublesWithin(delta, (UNITY_DOUBLE)0, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
@@ -1238,7 +1238,7 @@ void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
-    if ((compare & UNITY_EQUAL_TO) && UnityDoublesWithin((UNITY_FLOAT)0, threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
+    if ((compare & UNITY_EQUAL_TO) && UnityDoublesWithin((UNITY_DOUBLE)0, threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
 
     if (failed)
     {
