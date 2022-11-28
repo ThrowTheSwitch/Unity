@@ -954,6 +954,17 @@ void UnityAssertWithinFloatArray(const UNITY_FLOAT delta,
 #endif
     }
 
+    if (isinf(in_delta))
+    {
+        return; /* Arrays will be force equal with infinite delta */
+    }
+
+    if (isnan(in_delta))
+    {
+        /* Delta must be correct number */
+        UnityPrintPointlessAndBail();
+    }
+
     if (expected == actual)
     {
         return; /* Both are NULL or same pointer */
@@ -1168,6 +1179,17 @@ void UnityAssertWithinDoubleArray(const UNITY_DOUBLE delta,
 #else
         UnityPrintPointlessAndBail();
 #endif
+    }
+
+    if (isinf(in_delta))
+    {
+        return; /* Arrays will be force equal with infinite delta */
+    }
+
+    if (isnan(in_delta))
+    {
+        /* Delta must be correct number */
+        UnityPrintPointlessAndBail();
     }
 
     if (expected == actual)

@@ -1049,6 +1049,22 @@ void testDoubleArraysWithin(void)
 #endif
 }
 
+void testDoubleArraysWithinUnusualDelta(void)
+{
+#ifdef UNITY_EXCLUDE_DOUBLE
+    TEST_IGNORE();
+#else
+    double p0[] = {-INFINITY, -8.0, 25.4, -0.123};
+    double p1[] = {INFINITY, 10.1};
+
+    TEST_ASSERT_DOUBLE_ARRAY_WITHIN(INFINITY, p0, p1, 2);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_DOUBLE_ARRAY_WITHIN(NAN, p0, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualDoubleEachEqual(void)
 {
 #ifdef UNITY_EXCLUDE_DOUBLE

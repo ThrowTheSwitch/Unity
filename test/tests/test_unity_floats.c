@@ -1047,6 +1047,22 @@ void testFloatArraysWithin(void)
 #endif
 }
 
+void testFloatArraysWithinUnusualDelta(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {(float)-INFINITY, -8.0f, 25.4f, -0.123f};
+    float p1[] = {(float)INFINITY, 10.1f};
+
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(INFINITY, p0, p1, 2);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(NAN, p0, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualFloatEachEqual(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT
