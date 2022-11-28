@@ -894,14 +894,13 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 /*-----------------------------------------------*/
 #ifndef UNITY_EXCLUDE_FLOAT
 /* Wrap this define in a function with variable types as float or double */
-#define UNITY_FLOAT_OR_DOUBLE_WITHIN(delta0, delta1, expected, actual, diff)                  \
+#define UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff)                  \
     if (isinf(expected) && isinf(actual) && (((expected) < 0) == ((actual) < 0))) return 1;   \
     if (UNITY_NAN_CHECK) return 1;                                                            \
     (diff) = (actual) - (expected);                                                           \
     if ((diff) < 0) (diff) = -(diff);                                                         \
-    if ((delta0) < 0) (delta0) = -(delta0);                                                   \
-    if ((delta1) < 0) (delta1) = -(delta1);                                                   \
-    return !(isnan(diff) || isinf(diff) || ((diff) > ((delta0) + (delta1))))
+    if ((delta) < 0) (delta) = -(delta);                                                   \
+    return !(isnan(diff) || isinf(diff) || ((diff) > (delta)))
     /* This first part of this condition will catch any NaN or Infinite values */
 #ifndef UNITY_NAN_NOT_EQUAL_NAN
   #define UNITY_NAN_CHECK isnan(expected) && isnan(actual)
@@ -923,10 +922,10 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 #endif /* UNITY_EXCLUDE_FLOAT_PRINT */
 
 /*-----------------------------------------------*/
-static int UnityFloatsWithin(UNITY_FLOAT delta0, UNITY_FLOAT delta1, UNITY_FLOAT expected, UNITY_FLOAT actual)
+static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOAT actual)
 {
     UNITY_FLOAT diff;
-    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta0, delta1, expected, actual, diff);
+    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);
 }
 
 /*-----------------------------------------------*/
@@ -941,6 +940,8 @@ void UnityAssertWithinFloatArray(const UNITY_FLOAT delta,
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_actual = actual;
+    UNITY_FLOAT in_delta = delta;
+    UNITY_FLOAT current_element_delta = delta;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -963,9 +964,23 @@ void UnityAssertWithinFloatArray(const UNITY_FLOAT delta,
         UNITY_FAIL_AND_BAIL;
     }
 
+    /* fix delta sign if need */
+    if (in_delta < 0)
+    {
+        in_delta = -in_delta;
+    }
+
     while (elements--)
     {
-        if (!UnityFloatsWithin(delta, *ptr_expected * UNITY_FLOAT_PRECISION, *ptr_expected, *ptr_actual))
+        current_element_delta = *ptr_expected * UNITY_FLOAT_PRECISION;
+
+        if (current_element_delta < 0)
+        {
+            /* fix delta sign for correct calculations */
+            current_element_delta = -current_element_delta;
+        }
+
+        if (!UnityFloatsWithin(in_delta + current_element_delta, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -992,7 +1007,7 @@ void UnityAssertFloatsWithin(const UNITY_FLOAT delta,
     RETURN_IF_FAIL_OR_IGNORE;
 
 
-    if (!UnityFloatsWithin(delta, (UNITY_FLOAT)0, expected, actual))
+    if (!UnityFloatsWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
         UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT((UNITY_DOUBLE)expected, (UNITY_DOUBLE)actual);
@@ -1010,7 +1025,7 @@ void UnityAssertFloatsNotWithin(const UNITY_FLOAT delta,
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (UnityFloatsWithin(delta, (UNITY_FLOAT)0, expected, actual))
+    if (UnityFloatsWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
@@ -1039,7 +1054,7 @@ void UnityAssertGreaterOrLessFloat(const UNITY_FLOAT threshold,
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
-    if ((compare & UNITY_EQUAL_TO) && UnityFloatsWithin((UNITY_FLOAT)0, threshold * UNITY_FLOAT_PRECISION, threshold, actual)) { failed = 0; }
+    if ((compare & UNITY_EQUAL_TO) && UnityFloatsWithin(threshold * UNITY_FLOAT_PRECISION, threshold, actual)) { failed = 0; }
 
     if (failed)
     {
@@ -1123,10 +1138,10 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
 
 /*-----------------------------------------------*/
 #ifndef UNITY_EXCLUDE_DOUBLE
-static int UnityDoublesWithin(UNITY_DOUBLE delta0, UNITY_DOUBLE delta1, UNITY_DOUBLE expected, UNITY_DOUBLE actual)
+static int UnityDoublesWithin(UNITY_DOUBLE delta, UNITY_DOUBLE expected, UNITY_DOUBLE actual)
 {
     UNITY_DOUBLE diff;
-    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta0, delta1, expected, actual, diff);
+    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);
 }
 
 /*-----------------------------------------------*/
@@ -1141,6 +1156,8 @@ void UnityAssertWithinDoubleArray(const UNITY_DOUBLE delta,
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_actual = actual;
+    UNITY_DOUBLE in_delta = delta;
+    UNITY_DOUBLE current_element_delta = delta;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1163,9 +1180,23 @@ void UnityAssertWithinDoubleArray(const UNITY_DOUBLE delta,
         UNITY_FAIL_AND_BAIL;
     }
 
+    /* fix delta sign if need */
+    if (in_delta < 0)
+    {
+        in_delta = -in_delta;
+    }
+
     while (elements--)
     {
-        if (!UnityDoublesWithin(delta, *ptr_expected * UNITY_DOUBLE_PRECISION, *ptr_expected, *ptr_actual))
+        current_element_delta = *ptr_expected * UNITY_DOUBLE_PRECISION;
+
+        if (current_element_delta < 0)
+        {
+            /* fix delta sign for correct calculations */
+            current_element_delta = -current_element_delta;
+        }
+
+        if (!UnityDoublesWithin(in_delta + current_element_delta, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -1191,7 +1222,7 @@ void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (!UnityDoublesWithin(delta, (UNITY_DOUBLE)0, expected, actual))
+    if (!UnityDoublesWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
         UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);
@@ -1209,7 +1240,7 @@ void UnityAssertDoublesNotWithin(const UNITY_DOUBLE delta,
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
-    if (UnityDoublesWithin(delta, (UNITY_DOUBLE)0, expected, actual))
+    if (UnityDoublesWithin(delta, expected, actual))
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrExpected);
@@ -1238,7 +1269,7 @@ void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
-    if ((compare & UNITY_EQUAL_TO) && UnityDoublesWithin((UNITY_DOUBLE)0, threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
+    if ((compare & UNITY_EQUAL_TO) && UnityDoublesWithin(threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
 
     if (failed)
     {
