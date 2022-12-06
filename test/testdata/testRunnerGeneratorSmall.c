@@ -11,9 +11,6 @@ TEST_FILE("some_file.c")
    spec     - normal default prefix. required to run default setup/teardown calls.
 */
 
-/* Support for Meta Test Rig */
-#define TEST_CASE(a)
-
 /* Include Passthroughs for Linking Tests */
 void putcharSpy(int c) { (void)putchar(c);}
 void flushSpy(void) {}
@@ -67,4 +64,3 @@ void spec_ThisTestPassesWhenNormalTeardownRan(void)
 {
     TEST_ASSERT_EQUAL_MESSAGE(1, CounterTeardown, "Normal Teardown Wasn't Run");
 }
-

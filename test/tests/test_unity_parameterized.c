@@ -8,10 +8,6 @@
 #include <stdio.h>
 #include "unity.h"
 
-/* Support for Meta Test Rig */
-#define TEST_CASE(...)
-#define TEST_RANGE(...)
-
 /* Include Passthroughs for Linking Tests */
 void putcharSpy(int c) { (void)putchar(c);}
 void flushSpy(void) {}

@@ -438,6 +438,36 @@ This will rarely be necessary. Most often, Unity will automatically detect if th
 In the event that the compiler supports variadic macros, but is primarily C89 (ANSI), defining this option will allow you to use them.
 This option is also not necessary when using Ceedling or the test runner generator script.
 
+#### `UNITY_SUPPORT_TEST_CASES`
+
+Unity can automatically define all supported parameterized tests macros.
+That feature is disabled by default.
+To enable it, use the following example:
+
+```C
+#define UNITY_SUPPORT_TEST_CASES
+```
+
+You can manually provide required `TEST_CASE` or `TEST_RANGE` macro definitions
+before including `unity.h`, and they won't be redefined.
+If you provide one of the following macros, some of default definitions will not be
+defined:
+| User defines macro | Unity will _not_ define following macro |
+|---|---|
+| `UNITY_EXCLUDE_TEST_CASE` | `TEST_CASE` |
+| `UNITY_EXCLUDE_TEST_RANGE` | `TEST_RANGE` |
+| `TEST_CASE` | `TEST_CASE` |
+| `TEST_RANGE` | `TEST_RANGE` |
+
+`UNITY_EXCLUDE_TEST_*` defines is not processed by test runner generator script.
+If you exclude one of them from definition, you should provide your own definition
+for them or avoid using undefined `TEST_*` macro as a test generator.
+Otherwise, compiler cannot build source code file with provided call.
+
+_Note:_
+That feature requires variadic macro support by compiler. If required feature
+is not detected, it will not be enabled, even though preprocessor macro is defined.
+
 ## Getting Into The Guts
 
 There will be cases where the options above aren't quite going to get everything perfect.

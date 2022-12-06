@@ -765,17 +765,33 @@ extern const char UnityStrErrShorthand[];
 #define TEST_ABORT() return
 #endif
 
+/* Automatically enable variadic macros support, if it not enabled before */
+#ifndef UNITY_SUPPORT_VARIADIC_MACROS
+  #ifdef __STDC_VERSION__
+    #if __STDC_VERSION__ >= 199901L
+      #define UNITY_SUPPORT_VARIADIC_MACROS
+    #endif
+  #endif
+#endif
+
 /* This tricky series of macros gives us an optional line argument to treat it as RUN_TEST(func, num=__LINE__) */
 #ifndef RUN_TEST
-#ifdef __STDC_VERSION__
-#if __STDC_VERSION__ >= 199901L
-#define UNITY_SUPPORT_VARIADIC_MACROS
-#endif
-#endif
 #ifdef UNITY_SUPPORT_VARIADIC_MACROS
 #define RUN_TEST(...) RUN_TEST_AT_LINE(__VA_ARGS__, __LINE__, throwaway)
 #define RUN_TEST_AT_LINE(func, line, ...) UnityDefaultTestRun(func, #func, line)
 #endif
+#endif
+
+/* Enable default macros for masking param tests test cases */
+#ifdef UNITY_SUPPORT_TEST_CASES
+  #ifdef UNITY_SUPPORT_VARIADIC_MACROS
+    #if !defined(TEST_CASE) && !defined(UNITY_EXCLUDE_TEST_CASE)
+      #define TEST_CASE(...)
+    #endif
+    #if !defined(TEST_RANGE) && !defined(UNITY_EXCLUDE_TEST_RANGE)
+      #define TEST_RANGE(...)
+    #endif
+  #endif
 #endif
 
 /* If we can't do the tricky version, we'll just have to require them to always include the line number */
