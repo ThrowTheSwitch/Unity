@@ -179,6 +179,123 @@ This option specifies the pattern for matching acceptable source file extensions
 By default it will accept cpp, cc, C, c, and ino files.
 If you need a different combination of files to search, update this from the default `'(?:cpp|cc|ino|C|c)'`.
 
+##### `:use_param_tests`
+
+This option enables parameterized test usage.
+That tests accepts arguments from `TEST_CASE` and `TEST_RANGE` macros,
+that are located above current test definition.
+By default, Unity assumes, that parameterized tests are disabled.
+
+Few usage examples can be found in `/test/tests/test_unity_parameterized.c` file.
+
+You should define `UNITY_SUPPORT_TEST_CASES` macro for tests success compiling,
+if you enable current option.
+
+You can see list of supported macros list in the next section.
+
+#### Parameterized tests provided macros
+
+Unity provides support for few param tests generators, that can be combined
+with each other. You must define test function as usual C function with usual
+C arguments, and test generator will pass what you tell as a list of arguments.
+
+Let's show how all of them works on the following test function definitions:
+
+```C
+/* Place your test generators here, usually one generator per one or few lines */
+void test_demoParamFunction(int a, int b, int c)
+{
+  TEST_ASSERT_GREATER_THAN_INT(a + b, c);
+}
+```
+
+##### `TEST_CASE`
+
+Test case is a basic generator, that can be used for param testing.
+One call of that macro will generate only one call for test function.
+It can be used with different args, such as numbers, enums, strings,
+global variables, another preprocessor defines.
+
+If we use replace comment before test function with the following code:
+
+```C
+TEST_CASE(1, 2, 5)
+TEST_CASE(3, 7, 20)
+```
+
+script will generate 2 test calls:
+
+```C
+test_demoParamFunction(1, 2, 5);
+test_demoParamFunction(10, 7, 20);
+```
+
+That calls will be wrapped with `setUp`, `tearDown` and other
+usual Unity calls, as for independent unit tests.
+The following output can be generated after test executable startup:
+
+```Log
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(1, 2, 5):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(10, 7, 20):PASS
+```
+
+##### `TEST_RANGE`
+
+Test range is an advanced generator. It single call can be converted to zero,
+one or few `TEST_CASE` equivalent commands.
+
+That generator can be used for creating numeric ranges in decimal representation
+only: integers & floating point numbers. It uses few formats for every parameter:
+
+1. `[start, stop, step]` is stop-inclusive format
+2. `<start, stop, step>` is stop-exclusive formats
+
+Format providers 1 and 2 accept only three arguments:
+
+* `start` is start number
+* `stop` is end number (can or cannot exists in result sequence for format 1,
+will be always skipped for format 2)
+* `step` is incrementing step: can be either positive or negative value.
+
+Let's use our `test_demoParamFunction` test for checking, what ranges
+will be generated for our single `TEST_RANGE` row:
+
+```C
+TEST_RANGE([3, 4, 1], [10, 5, -2], <30, 31, 1>)
+```
+
+Tests execution output will be similar to that text:
+
+```Log
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(3, 10, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(3, 8, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(3, 6, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(4, 10, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(4, 8, 30):PASS
+tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(4, 6, 30):PASS
+```
+
+As we can see:
+
+| Parameter | Format | Possible values | Total of values | Format number |
+|---|---|---|---|---|
+| `a` | `[3, 4, 1]` | `3`, `4` | 2 | Format 1 |
+| `b` | `[10, 5, -2]` | `10`, `8`, `6` | 3 | Format 1, negative step, end number is not included |
+| `c` | `<30, 31, 1>` | `30` | 1 | Format 2 |
+
+_Note_, that format 2 also supports negative step.
+
+We totally have 2 * 3 * 1 = 6 equal test cases, that can be written as following:
+
+```C
+TEST_CASE(3, 10, 30)
+TEST_CASE(3, 8, 30)
+TEST_CASE(3, 6, 30)
+TEST_CASE(4, 10, 30)
+TEST_CASE(4, 8, 30)
+TEST_CASE(4, 6, 30)
+```
+
 ### `unity_test_summary.rb`
 
 A Unity test file contains one or more test case functions.
