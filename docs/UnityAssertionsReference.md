@@ -845,5 +845,5 @@ affect you:
 
 *Find The Latest of This And More at [ThrowTheSwitch.org][]*
 
-[assert() macro]: http://en.wikipedia.org/en/wiki/Assert.h
+[assert() macro]: http://en.wikipedia.org/wiki/Assert.h
 [ThrowTheSwitch.org]: https://throwtheswitch.org
