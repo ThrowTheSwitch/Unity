@@ -1022,6 +1022,47 @@ void testNotEqualFloatArraysLengthZero(void)
 #endif
 }
 
+void testFloatArraysWithin(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {1.0f, -8.0f,  25.4f, -0.123f};
+    float p1[] = {1.0f, -8.0f,  25.4f, -0.123f};
+    float p2[] = {1.0f, -8.0f,  25.4f, -0.2f};
+    float p3[] = {1.0f, -23.0f, 25.0f, -0.26f};
+    float p4[] = {2.0f, -9.0f,  26.2f, 0.26f};
+    float p5[] = {-1.0f, -7.0f, 29.0f, 2.6f};
+
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, p0, p0, 1);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, p0, p0, 4);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, p0, p1, 4);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, p0, p2, 3);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, p0, p3, 1);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, p0, p4, 1);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, p0, p4, 4);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(2.0f, p0, p5, 1);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(2.0f, p0, p5, 2);
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(1.0f, NULL, NULL, 1);
+#endif
+}
+
+void testFloatArraysWithinUnusualDelta(void)
+{
+#ifdef UNITY_EXCLUDE_FLOAT
+    TEST_IGNORE();
+#else
+    float p0[] = {(float)-INFINITY, -8.0f, 25.4f, -0.123f};
+    float p1[] = {(float)INFINITY, 10.1f};
+
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(INFINITY, p0, p1, 2);
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_FLOAT_ARRAY_WITHIN(NAN, p0, p0, 4);
+    VERIFY_FAILS_END
+#endif
+}
+
 void testEqualFloatEachEqual(void)
 {
 #ifdef UNITY_EXCLUDE_FLOAT

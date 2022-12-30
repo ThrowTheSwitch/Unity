@@ -929,16 +929,19 @@ static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOA
 }
 
 /*-----------------------------------------------*/
-void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
-                                UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* actual,
-                                const UNITY_UINT32 num_elements,
-                                const char* msg,
-                                const UNITY_LINE_TYPE lineNumber,
-                                const UNITY_FLAGS_T flags)
+void UnityAssertWithinFloatArray(const UNITY_FLOAT delta,
+                                 UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
+                                 UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* actual,
+                                 const UNITY_UINT32 num_elements,
+                                 const char* msg,
+                                 const UNITY_LINE_TYPE lineNumber,
+                                 const UNITY_FLAGS_T flags)
 {
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_actual = actual;
+    UNITY_FLOAT in_delta = delta;
+    UNITY_FLOAT current_element_delta = delta;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -951,6 +954,17 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
 #endif
     }
 
+    if (isinf(in_delta))
+    {
+        return; /* Arrays will be force equal with infinite delta */
+    }
+
+    if (isnan(in_delta))
+    {
+        /* Delta must be correct number */
+        UnityPrintPointlessAndBail();
+    }
+
     if (expected == actual)
     {
         return; /* Both are NULL or same pointer */
@@ -961,9 +975,23 @@ void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,
         UNITY_FAIL_AND_BAIL;
     }
 
+    /* fix delta sign if need */
+    if (in_delta < 0)
+    {
+        in_delta = -in_delta;
+    }
+
     while (elements--)
     {
-        if (!UnityFloatsWithin(*ptr_expected * UNITY_FLOAT_PRECISION, *ptr_expected, *ptr_actual))
+        current_element_delta = *ptr_expected * UNITY_FLOAT_PRECISION;
+
+        if (current_element_delta < 0)
+        {
+            /* fix delta sign for correct calculations */
+            current_element_delta = -current_element_delta;
+        }
+
+        if (!UnityFloatsWithin(in_delta + current_element_delta, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -1128,16 +1156,19 @@ static int UnityDoublesWithin(UNITY_DOUBLE delta, UNITY_DOUBLE expected, UNITY_D
 }
 
 /*-----------------------------------------------*/
-void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expected,
-                                 UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* actual,
-                                 const UNITY_UINT32 num_elements,
-                                 const char* msg,
-                                 const UNITY_LINE_TYPE lineNumber,
-                                 const UNITY_FLAGS_T flags)
+void UnityAssertWithinDoubleArray(const UNITY_DOUBLE delta,
+                                  UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expected,
+                                  UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* actual,
+                                  const UNITY_UINT32 num_elements,
+                                  const char* msg,
+                                  const UNITY_LINE_TYPE lineNumber,
+                                  const UNITY_FLAGS_T flags)
 {
     UNITY_UINT32 elements = num_elements;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;
     UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_actual = actual;
+    UNITY_DOUBLE in_delta = delta;
+    UNITY_DOUBLE current_element_delta = delta;
 
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -1150,6 +1181,17 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
 #endif
     }
 
+    if (isinf(in_delta))
+    {
+        return; /* Arrays will be force equal with infinite delta */
+    }
+
+    if (isnan(in_delta))
+    {
+        /* Delta must be correct number */
+        UnityPrintPointlessAndBail();
+    }
+
     if (expected == actual)
     {
         return; /* Both are NULL or same pointer */
@@ -1160,9 +1202,23 @@ void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expecte
         UNITY_FAIL_AND_BAIL;
     }
 
+    /* fix delta sign if need */
+    if (in_delta < 0)
+    {
+        in_delta = -in_delta;
+    }
+
     while (elements--)
     {
-        if (!UnityDoublesWithin(*ptr_expected * UNITY_DOUBLE_PRECISION, *ptr_expected, *ptr_actual))
+        current_element_delta = *ptr_expected * UNITY_DOUBLE_PRECISION;
+
+        if (current_element_delta < 0)
+        {
+            /* fix delta sign for correct calculations */
+            current_element_delta = -current_element_delta;
+        }
+
+        if (!UnityDoublesWithin(in_delta + current_element_delta, *ptr_expected, *ptr_actual))
         {
             UnityTestResultsFailBegin(lineNumber);
             UnityPrint(UnityStrElement);
@@ -1235,7 +1291,7 @@ void UnityAssertGreaterOrLessDouble(const UNITY_DOUBLE threshold,
     if (!(actual < threshold) && (compare & UNITY_SMALLER_THAN)) { failed = 1; }
     if (!(actual > threshold) && (compare & UNITY_GREATER_THAN)) { failed = 1; }
 
-    if ((compare & UNITY_EQUAL_TO) && UnityFloatsWithin(threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
+    if ((compare & UNITY_EQUAL_TO) && UnityDoublesWithin(threshold * UNITY_DOUBLE_PRECISION, threshold, actual)) { failed = 0; }
 
     if (failed)
     {
