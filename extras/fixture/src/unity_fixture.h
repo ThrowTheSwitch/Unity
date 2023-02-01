@@ -38,8 +38,8 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 
 #define TEST(group, name) \
     void TEST_##group##_##name##_(void);\
-    void TEST_##group##_##name##_run(void);\
-    void TEST_##group##_##name##_run(void)\
+    static void TEST_##group##_##name##_run(void);\
+    static void TEST_##group##_##name##_run(void)\
     {\
         UnityTestRunner(TEST_##group##_SETUP,\
             TEST_##group##_##name##_,\
