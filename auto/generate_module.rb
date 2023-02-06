@@ -13,7 +13,7 @@ require 'fileutils'
 require 'pathname'
 
 # TEMPLATE_TST
-TEMPLATE_TST ||= '#ifdef TEST
+TEMPLATE_TST ||= '#ifdef %5$s
 
 #include "unity.h"
 
@@ -32,7 +32,7 @@ void test_%4$s_NeedToImplement(void)
     TEST_IGNORE_MESSAGE("Need to Implement %1$s");
 }
 
-#endif // TEST
+#endif // %5$s
 '.freeze
 
 # TEMPLATE_SRC
@@ -108,7 +108,8 @@ class UnityModuleGenerator
       update_svn: false,
       boilerplates: {},
       test_prefix: 'Test',
-      mock_prefix: 'Mock'
+      mock_prefix: 'Mock',
+      test_define: 'TEST'
     }
   end
 
@@ -134,7 +135,7 @@ class UnityModuleGenerator
     prefix = @options[:test_prefix] || 'Test'
     triad = [{ ext: '.c', path: @options[:path_src], prefix: '', template: TEMPLATE_SRC, inc: :src, boilerplate: @options[:boilerplates][:src] },
              { ext: '.h', path: @options[:path_inc], prefix: '',     template: TEMPLATE_INC, inc: :inc, boilerplate: @options[:boilerplates][:inc] },
-             { ext: '.c', path: @options[:path_tst], prefix: prefix, template: TEMPLATE_TST, inc: :tst, boilerplate: @options[:boilerplates][:tst] }]
+             { ext: '.c', path: @options[:path_tst], prefix: prefix, template: TEMPLATE_TST, inc: :tst, boilerplate: @options[:boilerplates][:tst], test_define: @options[:test_define] }]
 
     # prepare the pattern for use
     pattern = (pattern || @options[:pattern] || 'src').downcase
@@ -154,6 +155,7 @@ class UnityModuleGenerator
           path: (Pathname.new("#{cfg[:path]}#{subfolder}") + filename).cleanpath,
           name: submodule_name,
           template: cfg[:template],
+          test_define: cfg[:test_define]
           boilerplate: cfg[:boilerplate],
           includes: case (cfg[:inc])
                     when :src then (@options[:includes][:src] || []) | (pattern_traits[:inc].map { |f| format(f, module_name) })
@@ -212,7 +214,8 @@ class UnityModuleGenerator
         f.write(file[:template] % [file[:name],
                                    file[:includes].map { |ff| "#include \"#{ff}\"\n" }.join,
                                    file[:name].upcase.tr('-', '_'),
-                                   file[:name].tr('-', '_')])
+                                   file[:name].tr('-', '_'),
+                                   file[:test_define]])
       end
       if @options[:update_svn]
         `svn add \"#{file[:path]}\"`
