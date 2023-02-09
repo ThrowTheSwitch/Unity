@@ -8,6 +8,7 @@
 
 class UnityTestRunnerGenerator
   def initialize(options = nil)
+    @tests = []
     @options = UnityTestRunnerGenerator.default_options
     case options
     when NilClass
@@ -68,7 +69,7 @@ class UnityTestRunnerGenerator
 
     # pull required data from source file
     if @options[:is_main_runner]
-      tests = []
+      tests = @tests
       headers = {
         local: [],
         system: [],
@@ -275,7 +276,7 @@ class UnityTestRunnerGenerator
     output.puts("extern void #{@options[:teardown_name]}(void);")
     output.puts("\n#ifdef __cplusplus\nextern \"C\"\n{\n#endif") if @options[:externc]
     tests.each do |test|
-      output.puts("extern void #{test[:test]}(#{test[:call] || 'void'});")
+      output.puts("extern #{test[:returns] || 'void'} #{test[:test]}(#{test[:call] || 'void'});")
     end
     output.puts("#ifdef __cplusplus\n}\n#endif") if @options[:externc]
     output.puts('')
@@ -394,6 +395,14 @@ class UnityTestRunnerGenerator
   def create_main(output, filename, tests, used_mocks)
     @options[:use_test_collections] ? output.puts("\n/*=======RUNNER=====*/") : output.puts("\n/*=======MAIN=====*/")
     main_name = @options[:main_name].to_sym == :auto ? "main_#{filename.gsub('.c', '')}" : (@options[:main_name]).to_s
+    @tests.push({
+                  test: main_name,
+                  args: nil,
+                  call: "void",
+                  returns: "int",
+                  params: nil,
+                  line_number: nil
+                }) if @options[:use_test_collections]
     if @options[:cmdline_args]
       if main_name != 'main'
         output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv);")
