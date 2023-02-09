@@ -531,5 +531,29 @@ if $0 == __FILE__
     $generator.run(input_file, output_file, options)
   end
 
-  executor(ARGV[0], ARGV[1], options)
+  # Iterate over directories and create test
+  def directory_iterator(dir, options)
+    dir = dir + '/' unless dir[-1] == '/'
+    accepted_extensions = %w[.cpp .cc .ino .C .c]
+
+    Dir.foreach(dir) do |filename|
+      next if filename == '.' or filename == '..'
+      path = dir + filename
+      directory_iterator(path, options) if File.directory?(path)
+      next if File.directory?(path)
+      # Do work on the remaining files & directories
+      if accepted_extensions.include? File.extname(filename)
+        next if filename.include? '_Runner'
+        options[:main_name] = "run_#{File.basename(filename, ".*")}_tests"
+        executor(path, nil, options)
+      end
+    end
+  end
+
+  # check if input file is a directory
+  if File.directory?(ARGV[0])
+    directory_iterator(ARGV[0], options)
+  else
+    executor(ARGV[0], ARGV[1], options)
+  end
 end
