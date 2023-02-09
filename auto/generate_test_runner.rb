@@ -46,6 +46,7 @@ class UnityTestRunnerGenerator
       omit_begin_end: false,
       use_param_tests: false,
       use_test_collections: false,
+      is_main_runner: false,
       include_extensions: '(?:hpp|hh|H|h)',
       source_extensions: '(?:cpp|cc|ino|C|c)'
     }
@@ -66,15 +67,29 @@ class UnityTestRunnerGenerator
     @options.merge!(options) unless options.nil?
 
     # pull required data from source file
-    source = File.read(input_file)
-    source = source.force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
-    tests = find_tests(source)
-    headers = find_includes(source)
-    testfile_includes = (headers[:local] + headers[:system])
-    used_mocks = find_mocks(testfile_includes)
-    testfile_includes = (testfile_includes - used_mocks)
-    testfile_includes.delete_if { |inc| inc =~ /(unity|cmock)/ }
-    find_setup_and_teardown(source)
+    if @options[:is_main_runner]
+      tests = []
+      headers = {
+        local: [],
+        system: [],
+        linkonly: []
+      }
+      used_mocks = []
+      testfile_includes = []
+    else
+      source = File.read(input_file)
+      source = source.force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+      tests = find_tests(source)
+      headers = find_includes(source)
+      testfile_includes = (headers[:local] + headers[:system])
+      used_mocks = find_mocks(testfile_includes)
+      testfile_includes = (testfile_includes - used_mocks)
+      testfile_includes.delete_if { |inc| inc =~ /(unity|cmock)/ }
+      find_setup_and_teardown(source)
+    end
+
+    # exit if tests are empty while creating a collection
+    return if @options[:use_test_collections] and tests.empty?
 
     # build runner file
     generate(input_file, output_file, tests, used_mocks, testfile_includes)
@@ -91,13 +106,13 @@ class UnityTestRunnerGenerator
     File.open(output_file, 'w') do |output|
       create_header(output, used_mocks, testfile_includes)
       create_externs(output, tests, used_mocks)
-      create_mock_management(output, used_mocks)
+      create_mock_management(output, used_mocks) unless @options[:is_main_runner]
       create_setup(output)
       create_teardown(output)
       create_suite_setup(output)
       create_suite_teardown(output)
-      create_reset(output) unless @options[:use_test_collections]
-      create_run_test(output) unless tests.empty?
+      create_reset(output) unless @options[:use_test_collections] or @options[:is_main_runner]
+      create_run_test(output) unless tests.empty? or @options[:is_main_runner]
       create_args_wrappers(output, tests)
       create_main(output, input_file, tests, used_mocks)
     end
@@ -418,11 +433,15 @@ class UnityTestRunnerGenerator
     output.puts('  suiteSetUp();') if @options[:has_suite_setup]
     if @options[:omit_begin_end]
       output.puts("  UnitySetTestFile(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
+    elsif @options[:is_main_runner]
+      output.puts('  int result = 0;')
     else
       output.puts("  UnityBegin(\"#{filename.gsub(/\\/, '\\\\\\')}\");")
     end
     tests.each do |test|
-      if (!@options[:use_param_tests]) || test[:args].nil? || test[:args].empty?
+      if @options[:is_main_runner]
+        output.puts("  result = result == 0 ? #{test[:test]}() : result;")
+      elsif (!@options[:use_param_tests]) || test[:args].nil? || test[:args].empty?
         output.puts("  run_test(#{test[:test]}, \"#{test[:test]}\", #{test[:line_number]});")
       else
         test[:args].each.with_index(1) do |args, idx|
@@ -436,12 +455,12 @@ class UnityTestRunnerGenerator
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
     if @options[:has_suite_teardown]
       if @options[:omit_begin_end]
-        output.puts('  (void) suite_teardown(0);')
+        @options[:is_main_runner] ? output.puts('  (void) suite_teardown(result);') : output.puts('  (void) suite_teardown(0);')
       else
-        output.puts('  return suiteTearDown(UnityEnd());')
+        @options[:is_main_runner] ? output.puts('  return suiteTearDown(result);') : output.puts('  return suiteTearDown(UnityEnd());')
       end
     else
-      output.puts('  return UnityEnd();') unless @options[:omit_begin_end]
+      @options[:is_main_runner] ? output.puts('  return result;') : output.puts('  return UnityEnd();') unless @options[:omit_begin_end]
     end
     output.puts('}')
   end
@@ -556,6 +575,9 @@ if $0 == __FILE__
     options[:use_test_collections] = true
     directory_iterator(ARGV[0], options)
     options[:use_test_collections] = false
+    options[:is_main_runner] = true
+    options[:main_name] = 'main'
+    executor(ARGV[0] + 'All.c', nil, options)
   else
     executor(ARGV[0], ARGV[1], options)
   end
