@@ -521,8 +521,11 @@ if $0 == __FILE__
     exit 1
   end
 
+  # declare the global generator
+  $generator = UnityTestRunnerGenerator.new
+
   # create the default test runner name if not specified
   ARGV[1] = ARGV[0].gsub('.c', '_Runner.c') unless ARGV[1]
 
-  UnityTestRunnerGenerator.new(options).run(ARGV[0], ARGV[1])
+  $generator.run(ARGV[0], ARGV[1], options)
 end
