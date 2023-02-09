@@ -45,6 +45,7 @@ class UnityTestRunnerGenerator
       cmdline_args: false,
       omit_begin_end: false,
       use_param_tests: false,
+      use_test_collections: false,
       include_extensions: '(?:hpp|hh|H|h)',
       source_extensions: '(?:cpp|cc|ino|C|c)'
     }
@@ -95,7 +96,7 @@ class UnityTestRunnerGenerator
       create_teardown(output)
       create_suite_setup(output)
       create_suite_teardown(output)
-      create_reset(output)
+      create_reset(output) unless @options[:use_test_collections]
       create_run_test(output) unless tests.empty?
       create_args_wrappers(output, tests)
       create_main(output, input_file, tests, used_mocks)
@@ -301,14 +302,14 @@ class UnityTestRunnerGenerator
   end
 
   def create_setup(output)
-    return if @options[:has_setup]
+    return if @options[:has_setup] or @options[:use_test_collections]
 
     output.puts("\n/*=======Setup (stub)=====*/")
     output.puts("void #{@options[:setup_name]}(void) {}")
   end
 
   def create_teardown(output)
-    return if @options[:has_teardown]
+    return if @options[:has_teardown] or @options[:use_test_collections]
 
     output.puts("\n/*=======Teardown (stub)=====*/")
     output.puts("void #{@options[:teardown_name]}(void) {}")
@@ -376,7 +377,7 @@ class UnityTestRunnerGenerator
   end
 
   def create_main(output, filename, tests, used_mocks)
-    output.puts("\n/*=======MAIN=====*/")
+    @options[:use_test_collections] ? output.puts("\n/*=======RUNNER=====*/") : output.puts("\n/*=======MAIN=====*/")
     main_name = @options[:main_name].to_sym == :auto ? "main_#{filename.gsub('.c', '')}" : (@options[:main_name]).to_s
     if @options[:cmdline_args]
       if main_name != 'main'
@@ -552,7 +553,9 @@ if $0 == __FILE__
 
   # check if input file is a directory
   if File.directory?(ARGV[0])
+    options[:use_test_collections] = true
     directory_iterator(ARGV[0], options)
+    options[:use_test_collections] = false
   else
     executor(ARGV[0], ARGV[1], options)
   end
