@@ -524,8 +524,12 @@ if $0 == __FILE__
   # declare the global generator
   $generator = UnityTestRunnerGenerator.new
 
-  # create the default test runner name if not specified
-  ARGV[1] = ARGV[0].gsub('.c', '_Runner.c') unless ARGV[1]
+  def executor(input_file, output_file, options)
+    # create the default test runner name if not specified
+    output_file = input_file.gsub('.c', '_Runner.c') unless output_file
 
-  $generator.run(ARGV[0], ARGV[1], options)
+    $generator.run(input_file, output_file, options)
+  end
+
+  executor(ARGV[0], ARGV[1], options)
 end
