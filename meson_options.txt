@@ -1,0 +1,2 @@
+option('extension_fixture', type: 'feature', value: 'disabled', description: 'Whether to use the fixture extension.')
+option('extension_memory', type: 'feature', value: 'disabled', description: 'Whether to use the memory extension.')
