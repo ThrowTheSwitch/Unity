@@ -131,10 +131,11 @@ class ParseOutput
   def test_passed_unity_fixture(array)
     class_name = array[0]
     test_name  = array[1]
+    test_time = get_test_time(array[array.length - 1])
     test_suite_verify(class_name)
-    printf "%-40s PASS\n", test_name
+    printf "%-40s PASS %10d ms\n", test_name, test_time
 
-    push_xml_output_passed(test_name) if @xml_out
+    push_xml_output_passed(test_name, test_time) if @xml_out
   end
 
   # Test was flagged as having failed so format the output.
