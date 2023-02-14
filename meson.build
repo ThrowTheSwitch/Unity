@@ -16,7 +16,7 @@ project('unity', 'c',
     check: true
   ).stdout().strip(),
 
-  meson_version: '>=0.37.0',
+  meson_version: '>=0.47.0',
   default_options: [
     'werror=true',
     'c_std=c11'
