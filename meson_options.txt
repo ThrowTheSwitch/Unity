@@ -1,2 +1,2 @@
-option('extension_fixture', type: 'feature', value: 'disabled', description: 'Whether to use the fixture extension.')
-option('extension_memory', type: 'feature', value: 'disabled', description: 'Whether to use the memory extension.')
+option('extension_fixture', type: 'boolean', value: 'false', description: 'Whether to enable the fixture extension.')
+option('extension_memory', type: 'boolean', value: 'false', description: 'Whether to enable the memory extension.')

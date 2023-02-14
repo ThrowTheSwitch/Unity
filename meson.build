@@ -10,23 +10,21 @@ project('unity', 'c',
   # Set project version to value extracted from unity.h header
   version: run_command(
     [
-      find_program('python', 'python3'),
-      'auto' / 'extract_version.py',
-      'src' / 'unity.h'
+      'auto/extract_version.py',
+      'src/unity.h'
     ],
     check: true
   ).stdout().strip(),
 
-  # `meson.project_source_root()` introduced in 0.56.0
-  meson_version: '>=0.56.0',
+  meson_version: '>=0.37.0',
   default_options: [
     'werror=true',
     'c_std=c11'
   ]
 )
 
-build_fixture = get_option('extension_fixture').enabled()
-build_memory = get_option('extension_memory').enabled()
+build_fixture = get_option('extension_fixture')
+build_memory = get_option('extension_memory')
 
 unity_src = []
 unity_inc = []
@@ -57,24 +55,17 @@ unity_dep = declare_dependency(
 
 # Generate pkg-config file.
 pkg = import('pkgconfig')
-pkg.generate(unity_lib,
+pkg.generate(
+  name: meson.project_name(),
+  version: meson.project_version(),
+  libraries: [ unity_lib ],
   description: 'C Unit testing framework.'
 )
 
 # Create a generator that can be used by consumers of our build system to generate
 # test runners.
 gen_test_runner = generator(
-  find_program(meson.project_source_root() / 'auto' / 'generate_test_runner.rb'),
+  find_program('auto/generate_test_runner.rb'),
   output: '@BASENAME@_Runner.c',
   arguments: ['@INPUT@', '@OUTPUT@']
-)
-
-# Summarize.
-summary(
-  {
-    'Fixture extension': build_fixture,
-    'Memory extension': build_memory,
-  },
-  section: 'Extensions',
-  bool_yn: true
 )
