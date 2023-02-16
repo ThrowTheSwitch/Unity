@@ -42,7 +42,7 @@ def extract_headers(filename)
   includes = []
   lines = File.readlines(filename)
   lines.each do |line|
-    m = line.match(/^\s*#include\s+\"\s*(.+\.[hH])\s*\"/)
+    m = line.match(/^\s*#include\s+"\s*(.+\.[hH])\s*"/)
     includes << m[1] unless m.nil?
   end
   includes
@@ -57,12 +57,11 @@ def find_source_file(header, paths)
 end
 
 def tackit(strings)
-  result = if strings.is_a?(Array)
-             "\"#{strings.join}\""
-           else
-             strings
-           end
-  result
+  if strings.is_a?(Array)
+    "\"#{strings.join}\""
+  else
+    strings
+  end
 end
 
 def squash(prefix, items)
@@ -80,7 +79,7 @@ def build_compiler_fields
             end
   options = squash('', $cfg['compiler']['options'])
   includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
-  includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+  includes = includes.gsub(/\\ /, ' ').gsub(/\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
 
   { command: command, defines: defines, options: options, includes: includes }
 end
@@ -105,7 +104,7 @@ def build_linker_fields
                ''
              else
                squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
-             end.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+             end.gsub(/\\ /, ' ').gsub(/\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
 
   { command: command, options: options, includes: includes }
 end

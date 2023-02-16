@@ -15,6 +15,7 @@ module RakefileHelpers
 
       file = 'test_file_filter.yml'
       return unless File.exist?(file)
+
       filters = YamlHelper.load_file(file)
       @all_files = filters[:all_files]
       @only_files = filters[:only_files]

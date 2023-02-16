@@ -133,7 +133,7 @@ class UnityModuleGenerator
 
     # create triad definition
     prefix = @options[:test_prefix] || 'Test'
-    triad = [{ ext: '.c', path: @options[:path_src], prefix: '', template: TEMPLATE_SRC, inc: :src, boilerplate: @options[:boilerplates][:src] },
+    triad = [{ ext: '.c', path: @options[:path_src], prefix: '',     template: TEMPLATE_SRC, inc: :src, boilerplate: @options[:boilerplates][:src] },
              { ext: '.h', path: @options[:path_inc], prefix: '',     template: TEMPLATE_INC, inc: :inc, boilerplate: @options[:boilerplates][:inc] },
              { ext: '.c', path: @options[:path_tst], prefix: prefix, template: TEMPLATE_TST, inc: :tst, boilerplate: @options[:boilerplates][:tst], test_define: @options[:test_define] }]
 

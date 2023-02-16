@@ -86,8 +86,9 @@ class UnityTestSummary
   def get_details(_result_file, lines)
     results = { failures: [], ignores: [], successes: [] }
     lines.each do |line|
-      status_match = line.match(/^[^:]+:[^:]+:\w+(?:\([^\)]*\))?:([^:]+):?/)
+      status_match = line.match(/^[^:]+:[^:]+:\w+(?:\([^)]*\))?:([^:]+):?/)
       next unless status_match
+
       status = status_match.captures[0]
 
       line_out = (@root && (@root != 0) ? "#{@root}#{line}" : line).gsub(/\//, '\\')
