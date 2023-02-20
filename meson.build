@@ -45,7 +45,7 @@ endif
 unity_lib = static_library(meson.project_name(),
   sources: unity_src,
   include_directories: unity_inc,
-  install: true
+  install: not meson.is_subproject(),
 )
 
 unity_dep = declare_dependency(
@@ -54,13 +54,15 @@ unity_dep = declare_dependency(
 )
 
 # Generate pkg-config file.
-pkg = import('pkgconfig')
-pkg.generate(
-  name: meson.project_name(),
-  version: meson.project_version(),
-  libraries: [ unity_lib ],
-  description: 'C Unit testing framework.'
-)
+if not meson.is_subproject()
+  pkg = import('pkgconfig')
+  pkg.generate(
+    name: meson.project_name(),
+    version: meson.project_version(),
+    libraries: [ unity_lib ],
+    description: 'C Unit testing framework.'
+  )
+endif
 
 # Create a generator that can be used by consumers of our build system to generate
 # test runners.

@@ -8,8 +8,10 @@
 unity_inc += include_directories('.')
 unity_src += files('unity.c')
 
-install_headers(
-  'unity.h',
-  'unity_internals.h',
-  subdir: meson.project_name()
-)
+if not meson.is_subproject()
+  install_headers(
+    'unity.h',
+    'unity_internals.h',
+    subdir: meson.project_name()
+  )
+endif
