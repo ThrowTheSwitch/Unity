@@ -77,7 +77,7 @@
   #endif
 #endif
 #ifndef UNITY_NORETURN
-  #define UNITY_NORETURN UNITY_FUNCTION_ATTR(noreturn)
+  #define UNITY_NORETURN UNITY_FUNCTION_ATTR(__noreturn__)
 #endif
 
 /*-------------------------------------------------------
