@@ -389,7 +389,7 @@ class UnityTestRunnerGenerator
       output.puts('  {')
       output.puts('    if (parse_status < 0)')
       output.puts('    {')
-      output.puts("      UnityPrint(\"#{filename.gsub('.c', '')}.\");")
+      output.puts("      UnityPrint(\"#{filename.gsub('.c', '').gsub(/\\/, '\\\\\\')}.\");")
       output.puts('      UNITY_PRINT_EOL();')
       tests.each do |test|
         if (!@options[:use_param_tests]) || test[:args].nil? || test[:args].empty?
