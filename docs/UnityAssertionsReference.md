@@ -222,6 +222,50 @@ This can be useful for outputting `INFO` messages into the Unity output stream
 without actually ending the test. Like pass and fail messages, it will be output
 with the filename and line number.
 
+#### `TEST_PROTECT_NORETURN()`
+
+This macro prepares an environment to test a function that is declared `noreturn`.
+
+```
+    if(TEST_PROTECT_NORETURN()){
+    }
+```
+
+The function `mock_go_elsewhere()` would use `TEST_DO_NOT_RETURN()`
+instead of returning.
+
+#### `TEST_NOT_RETURNING(call)`
+
+Calls a function, and the test fails if the function returns.
+Instead, the called function should use `TEST_DO_NOT_RETURN()`.
+
+```
+       /* prepare the test here */
+       TEST_NOT_RETURNING(go_elsewhere(42));
+```
+
+Note: this can be used to call a mock function (that uses
+`TEST_NOT_RETURNING()` instead of returning), or an actual function
+that effectively does not return.  In the later case, the control
+won't resume to the caller test (unless there's a failure), so the
+test should expect that and have set up things accordingly.
+
+This cannot be used if `UNITY_EXCLUDE_SETJMP_H` is defined.
+
+#### `TEST_DO_NOT_RETURN()`
+
+Aborts the execution, and resume after the current
+`TEST_NOT_RETURNING()`, successfully.
+
+This should be used in mock functions declared `noreturn` instead of
+returning (explicitely or implicitely).
+
+Note: actual functions that don't return will go wherever they shoud
+go and it's assumed this is handled in the test.  These macros are
+intended to be used by mock functions.
+
+This cannot be used if `UNITY_EXCLUDE_SETJMP_H` is defined.
+
 ### Boolean
 
 #### `TEST_ASSERT (condition)`

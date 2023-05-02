@@ -518,6 +518,7 @@ struct UNITY_STORAGE_T
 #endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
     jmp_buf AbortFrame;
+    jmp_buf NoReturnFrame;
 #endif
 };
 
@@ -786,6 +787,28 @@ extern const char UnityStrErrShorthand[];
 #else
 #define TEST_ABORT() return
 #endif
+#endif
+
+#ifndef UNITY_EXCLUDE_SETJMP_H
+#define TEST_PROTECT_NORETURN() (setjmp(Unity.NoReturnFrame) == 0)
+#define TEST_DO_NOT_RETURN() longjmp(Unity.NoReturnFrame, 1)
+
+/*
+TEST_NOT_RETURNING(call)
+This macro uses TEST_PROTECT_NORETURN to protect the call.
+If the call returns, then the test fails.
+*/
+#define TEST_NOT_RETURNING(call) \
+    if (TEST_PROTECT_NORETURN()) \
+    { \
+        call; \
+        UnityFail("Call Was Expected Not To Return: " #call, __LINE__); \
+    }
+
+#else
+#define TEST_PROTECT_NORETURN() _Static_assert(false, "TEST_PROTECT_NORETURN() cannot be used when UNITY_EXCLUDE_SETJMP_H is defined"
+#define TEST_DO_NOT_RETURN() _Static_assert(false, "TEST_DO_NOT_RETURN() cannot be used when UNITY_EXCLUDE_SETJMP_H is defined"
+#define TEST_NOT_RETURNING(call) _Static_assert(false, "TEST_NOT_RETURNING(call) cannot be used when UNITY_EXCLUDE_SETJMP_H is defined"
 #endif
 
 /* Automatically enable variadic macros support, if it not enabled before */
