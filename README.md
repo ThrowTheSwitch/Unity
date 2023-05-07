@@ -2,25 +2,21 @@
 
 __Copyright (c) 2007 - 2021 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
-Welcome to the Unity Test Project, one of the main projects of ThrowTheSwitch.org.
-Unity Test is a unit testing framework built for C, with a focus on working with embedded toolchains.
+Welcome to Unity Test Project, one of the main projects of ThrowTheSwitch.org.
+Unity Test is a unit testing framework built for C, which focuses on working with embedded toolchains.
 
-This project is made to test code targetting microcontrollers big and small.
-The core project is a single C file and a pair of headers, allowing it to the added to your existing build setup without too much headache.
-You may use any compiler you wish, and may use most existing build systems including Make, CMake, etc.
+This project is made to test code targeting microcontrollers big and small.
+This project is a single C file and a pair of headers, allowing you to use this with his existing build setup without too much headache.
+You can use any compiler, and may use most of the existing build systems including Make, CMake, etc.
 If you'd like to leave the hard work to us, you might be interested in Ceedling, a build tool also by ThrowTheSwitch.org.
 
 If you're new to Unity, we encourage you to tour the [getting started guide][].
-
-## Getting Started
-
-The [docs][] folder contains a [getting started guide][] and much more tips about using Unity.
 
 ## Unity Assertion Summary
 
 For the full list, see [UnityAssertionsReference.md][].
 
-### Basic Validity Tests
+### Basic Validity Tests:
 
     TEST_ASSERT_TRUE(condition)
 
