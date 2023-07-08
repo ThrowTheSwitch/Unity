@@ -220,7 +220,7 @@ If we use replace comment before test function with the following code:
 
 ```C
 TEST_CASE(1, 2, 5)
-TEST_CASE(3, 7, 20)
+TEST_CASE(10, 7, 20)
 ```
 
 script will generate 2 test calls:
