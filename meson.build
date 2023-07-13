@@ -25,7 +25,9 @@ project('unity', 'c',
 
 build_fixture = get_option('extension_fixture')
 build_memory = get_option('extension_memory')
+support_double = get_option('support_double')
 
+unity_args = []
 unity_src = []
 unity_inc = []
 
@@ -42,8 +44,13 @@ if build_memory
   subdir('extras/memory/src')
 endif
 
+if support_double
+  unity_args += '-DUNITY_INCLUDE_DOUBLE'
+endif
+
 unity_lib = static_library(meson.project_name(),
   sources: unity_src,
+  c_args: unity_args,
   include_directories: unity_inc,
   install: not meson.is_subproject(),
 )
