@@ -448,7 +448,7 @@ To enable it, use the following example:
 #define UNITY_SUPPORT_TEST_CASES
 ```
 
-You can manually provide required `TEST_CASE` or `TEST_RANGE` macro definitions
+You can manually provide required `TEST_CASE`, `TEST_RANGE` or `TEST_MATRIX` macro definitions
 before including `unity.h`, and they won't be redefined.
 If you provide one of the following macros, some of default definitions will not be
 defined:
@@ -456,8 +456,10 @@ defined:
 |---|---|
 | `UNITY_EXCLUDE_TEST_CASE` | `TEST_CASE` |
 | `UNITY_EXCLUDE_TEST_RANGE` | `TEST_RANGE` |
+| `UNITY_EXCLUDE_TEST_MATRIX` | `TEST_MATRIX` |
 | `TEST_CASE` | `TEST_CASE` |
 | `TEST_RANGE` | `TEST_RANGE` |
+| `TEST_MATRIX` | `TEST_MATRIX` |
 
 `UNITY_EXCLUDE_TEST_*` defines is not processed by test runner generator script.
 If you exclude one of them from definition, you should provide your own definition
