@@ -89,7 +89,7 @@ void verifyTest(void);
  *     - define UNITY_SUPPORT_TEST_CASES to include the TEST_CASE macro, though really it's mostly about the runner generator script
 
  * Parameterized Tests
- *     - you'll want to create a define of TEST_CASE(...) and/or TEST_RANGE(...) which basically evaluates to nothing
+ *     - you'll want to create a define of TEST_CASE(...), TEST_RANGE(...) and/or TEST_MATRIX(...) which basically evaluates to nothing
 
  * Tests with Arguments
  *     - you'll want to define UNITY_USE_COMMAND_LINE_ARGS if you have the test runner passing arguments to Unity
