@@ -7,6 +7,7 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include "unity.h"
+#include "types_for_test.h"
 
 /* Include Passthroughs for Linking Tests */
 void putcharSpy(int c) { (void)putchar(c);}
@@ -209,10 +210,99 @@ TEST_RANGE([2,
 TEST_CASE(
 
   6 , 7)
+TEST_MATRIX([7,
+             8   ,
+
+             9, 10],
+    [
+      11]
+
+      )
 void test_SpaceInTestCase(unsigned index, unsigned bigger)
 {
   TEST_ASSERT_EQUAL_UINT32(NextExpectedSpaceIndex, index);
   TEST_ASSERT_LESS_THAN(bigger, index);
 
   NextExpectedSpaceIndex++;
+}
+
+TEST_MATRIX([1, 5, (2*2)+1, 4])
+void test_SingleMatix(unsigned value)
+{
+  TEST_ASSERT_LESS_OR_EQUAL(10, value);
+}
+
+TEST_MATRIX([2, 5l, 4u+3, 4ul], [-2, 3])
+void test_TwoMatrices(unsigned first, signed second)
+{
+  static unsigned idx = 0;
+  static const unsigned expected[] =
+  {
+  // -2   3
+     -4,  6, // 2
+    -10, 15, // 5
+    -14, 21, // 7
+     -8, 12, // 4
+  };
+  TEST_ASSERT_EQUAL_INT(expected[idx++], first * second);
+}
+
+TEST_MATRIX(["String1", "String,2", "Stri" "ng3", "String[4]", "String\"5\""], [-5, 12.5f])
+void test_StringsAndNumbersMatrices(const char* str, float number)
+{
+  static unsigned idx = 0;
+  static const char* expected[] =
+  {
+    "String1_-05.00",
+    "String1_+12.50",
+    "String,2_-05.00",
+    "String,2_+12.50",
+    "String3_-05.00",
+    "String3_+12.50",
+    "String[4]_-05.00",
+    "String[4]_+12.50",
+    "String\"5\"_-05.00",
+    "String\"5\"_+12.50",
+  };
+  char buf[200] = {0};
+  snprintf(buf, sizeof(buf), "%s_%+06.2f", str, number);
+  TEST_ASSERT_EQUAL_STRING(expected[idx++], buf);
+}
+
+TEST_MATRIX(
+  [ENUM_A, ENUM_4, ENUM_C],
+  [test_arr[0], 7.8f, test_arr[2]],
+  ['a', 'f', '[', ']', '\'', '"'],
+)
+void test_EnumCharAndArrayMatrices(test_enum_t e, float n, char c)
+{
+  static unsigned enum_idx = 0;
+  static const test_enum_t exp_enum[3] = {
+    ENUM_A, ENUM_4, ENUM_C,
+  };
+
+  static unsigned float_idx = 0;
+  float exp_float[3] = {0};
+  exp_float[0] = test_arr[0];
+  exp_float[1] = 7.8f;
+  exp_float[2] = test_arr[2];
+
+  static unsigned char_idx = 0;
+  static const test_enum_t exp_char[] = {
+    'a', 'f', '[', ']', '\'', '"'
+  };
+
+  TEST_ASSERT_EQUAL_INT(exp_enum[enum_idx], e);
+  TEST_ASSERT_EQUAL_FLOAT(exp_float[float_idx], n);
+  TEST_ASSERT_EQUAL_CHAR(exp_char[char_idx], c);
+
+  char_idx = (char_idx + 1) % 6;
+  if (char_idx == 0.0f)
+  {
+    float_idx = (float_idx + 1) % 3;
+    if (float_idx == 0.0f)
+    {
+      enum_idx = (enum_idx + 1) % 3;
+    }
+  }
 }
