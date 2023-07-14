@@ -3,9 +3,7 @@ name: Build Unity library
 
 on:
   push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 jobs:
   build:
