@@ -19,7 +19,7 @@ jobs:
             build_type: "Release",
             cc: "cl",
             cxx: "cl",
-            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             generators: "Ninja",
             shared_build: false
           }
@@ -47,7 +47,7 @@ jobs:
             build_type: "Release",
             cc: "cl",
             cxx: "cl",
-            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             generators: "Ninja",
             shared_build: true
           }
@@ -78,6 +78,10 @@ jobs:
 
       - name: Install dependencies
         run: pip install cmake ninja
+
+      - name: Prepare Visual Studio environment
+        if: startsWith(matrix.config.os, 'windows')
+        run: cmd "${{ matrix.config.environment_script }}"
 
       - name: CMake configure
         shell: bash
