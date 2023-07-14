@@ -93,7 +93,9 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_INSTALL_PREFIX:PATH=install \
             -DBUILD_SHARED_LIBS:BOOL=${{ matrix.config.shared_build }} \
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+            -DUNITY_EXTENSION_FIXTURES:BOOL=ON \
+            -DUNITY_EXTENSION_MEMORY:BOOL=ON
 
       - name: CMake build
         shell: bash
