@@ -143,6 +143,9 @@ target_compile_options(${PROJECT_NAME}
         $<$<C_COMPILER_ID:MSVC>:
             /Wall
         >
+
+        # Enable shared library
+        $<$<BOOL:${BUILD_SHARED_LIBS}>:UNITY_SKIP_DEFAULT_RUNNER>
 )
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake

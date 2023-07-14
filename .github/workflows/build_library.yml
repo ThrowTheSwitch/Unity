@@ -95,8 +95,7 @@ jobs:
             -DBUILD_SHARED_LIBS:BOOL=${{ matrix.config.shared_build }} \
             -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
             -DUNITY_EXTENSION_FIXTURES:BOOL=ON \
-            -DUNITY_EXTENSION_MEMORY:BOOL=ON \
-            -DCMAKE_C_FLAGS="-DUNITY_SKIP_DEFAULT_RUNNER"
+            -DUNITY_EXTENSION_MEMORY:BOOL=ON
 
       - name: CMake build
         shell: bash
