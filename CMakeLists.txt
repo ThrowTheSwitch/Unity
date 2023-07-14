@@ -143,7 +143,10 @@ target_compile_options(${PROJECT_NAME}
         $<$<C_COMPILER_ID:MSVC>:
             /Wall
         >
+)
 
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
         # Enable shared library
         $<$<BOOL:${BUILD_SHARED_LIBS}>:UNITY_SKIP_DEFAULT_RUNNER>
 )
