@@ -1,0 +1,90 @@
+---
+name: Build Unity library
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        config:
+        - {
+            name: "Windows: MSVC",
+            os: windows-latest,
+            build_type: "Release",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            generators: "Ninja",
+            shared_build: "OFF"
+          }
+        - {
+            name: "Ubuntu: GCC",
+            os: ubuntu-latest,
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            generators: "Ninja",
+            shared_build: "OFF"
+          }
+        - {
+            name: "Apple OSX: Clang",
+            os: macos-latest,
+            build_type: "Release",
+            cc: "clang",
+            cxx: "clang++",
+            generators: "Ninja",
+            shared_build: "OFF"
+          }
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies on Windows
+        if: startsWith(matrix.config.os, 'windows')
+        run: |
+          choco install ninja cmake
+          ninja --version
+          cmake --version
+
+      - name: Install dependencies on Ubuntu
+        if: startsWith(matrix.config.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build cmake
+          ninja --version
+          cmake --version
+          gcc --version
+      - name: Install dependencies on OSX
+        if: startsWith(matrix.config.os, 'macos')
+        run: |
+          brew install cmake ninja
+          ninja --version
+          cmake --version
+          clang --version
+
+      - name: CMake configure
+        shell: bash
+        run: |
+          cmake \
+            -S . \
+            -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -G "${{ matrix.config.generators }}" \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DBUIlD_SHARED_LIBS=${{ matrix.config.shared_build }}
+
+      - name: CMake build
+        shell: bash
+        run: cmake --build build --config ${{ matrix.config.build_type }}
+
+      - name: CMake install
+        shell: bash
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target install

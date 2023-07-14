@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.12)
 # Read src/unity.h file and get project version from it
 set(UNITY_HEADER "src/unity.h")
 
-file(STRINGS "${UNITY_HEADER}" UNITY_HEADER_CONTENT 
+file(STRINGS "${UNITY_HEADER}" UNITY_HEADER_CONTENT
     REGEX "^#define UNITY_VERSION_(MAJOR|MINOR|BUILD) +[0-9]+$"
 )
 
@@ -24,8 +24,8 @@ set(UNITY_HEADER_VERSION_BUILD 0)
 
 foreach(VERSION_LINE IN LISTS UNITY_HEADER_CONTENT)
     foreach(VERSION_PART MAJOR MINOR BUILD)
-        string(CONCAT REGEX_STRING "#define UNITY_VERSION_" 
-                                   "${VERSION_PART}" 
+        string(CONCAT REGEX_STRING "#define UNITY_VERSION_"
+                                   "${VERSION_PART}"
                                    " +([0-9]+)"
         )
 
@@ -57,7 +57,7 @@ if(${UNITY_EXTENSION_MEMORY})
 endif()
 
 # Main target ------------------------------------------------------------------
-add_library(${PROJECT_NAME} STATIC)
+add_library(${PROJECT_NAME})
 add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
 
 # Includes ---------------------------------------------------------------------
@@ -89,12 +89,13 @@ set(${PROJECT_NAME}_PUBLIC_HEADERS
 )
 
 set_target_properties(${PROJECT_NAME}
-    PROPERTIES 
+    PROPERTIES
         C_STANDARD          11
         C_STANDARD_REQUIRED ON
         C_EXTENSIONS        OFF
         PUBLIC_HEADER       "${${PROJECT_NAME}_PUBLIC_HEADERS}"
         EXPORT_NAME         framework
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 target_compile_options(${PROJECT_NAME}
@@ -104,7 +105,7 @@ target_compile_options(${PROJECT_NAME}
             -Wcast-align
             -Wcast-qual
             -Wconversion
-            -Wexit-time-destructors                            
+            -Wexit-time-destructors
             -Wglobal-constructors
             -Wmissing-noreturn
             -Wmissing-prototypes
@@ -116,7 +117,7 @@ target_compile_options(${PROJECT_NAME}
             -Wall
             $<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,8.0.0>:-Wextra-semi-stmt>
         >
-        
+
         # GCC
         $<$<C_COMPILER_ID:GNU>:
             -Waddress
@@ -146,7 +147,7 @@ target_compile_options(${PROJECT_NAME}
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
     VERSION       ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion 
+    COMPATIBILITY SameMajorVersion
 )
 
 ## Target installation
@@ -154,6 +155,7 @@ install(TARGETS   ${PROJECT_NAME}
     EXPORT        ${PROJECT_NAME}Targets
     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME       DESTINATION ${CMAKE_INSTALL_BINDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
     COMPONENT     library
 )
