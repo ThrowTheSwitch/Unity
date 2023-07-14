@@ -10,7 +10,7 @@ jobs:
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         config:
         - {
@@ -21,7 +21,7 @@ jobs:
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             generators: "Ninja",
-            shared_build: "OFF"
+            shared_build: false
           }
         - {
             name: "Ubuntu: GCC - Release Static",
@@ -30,7 +30,7 @@ jobs:
             cc: "gcc",
             cxx: "g++",
             generators: "Ninja",
-            shared_build: "OFF"
+            shared_build: false
           }
         - {
             name: "Apple OSX: Clang - Release Static",
@@ -39,7 +39,7 @@ jobs:
             cc: "clang",
             cxx: "clang++",
             generators: "Ninja",
-            shared_build: "OFF"
+            shared_build: false
           }
         - {
             name: "Windows: MSVC - Release Shared",
@@ -49,7 +49,7 @@ jobs:
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             generators: "Ninja",
-            shared_build: "ON"
+            shared_build: true
           }
         - {
             name: "Ubuntu: GCC - Release Shared",
@@ -58,7 +58,7 @@ jobs:
             cc: "gcc",
             cxx: "g++",
             generators: "Ninja",
-            shared_build: "ON"
+            shared_build: true
           }
         - {
             name: "Apple OSX: Clang - Release Shared",
@@ -67,7 +67,7 @@ jobs:
             cc: "clang",
             cxx: "clang++",
             generators: "Ninja",
-            shared_build: "ON"
+            shared_build: true
           }
 
     steps:
@@ -88,7 +88,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_INSTALL_PREFIX:PATH=install \
-            -DBUILD_SHARED_LIBS=${{ matrix.config.shared_build }} \
+            -DBUILD_SHARED_LIBS:BOOL=${{ matrix.config.shared_build }} \
             -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
       - name: CMake build
