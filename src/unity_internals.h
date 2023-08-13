@@ -793,6 +793,9 @@ extern const char UnityStrErrShorthand[];
     #if !defined(TEST_RANGE) && !defined(UNITY_EXCLUDE_TEST_RANGE)
       #define TEST_RANGE(...)
     #endif
+    #if !defined(TEST_MATRIX) && !defined(UNITY_EXCLUDE_TEST_MATRIX)
+      #define TEST_MATRIX(...)
+    #endif
   #endif
 #endif
 
