@@ -4,7 +4,7 @@
 #include "unity.h"
 #include "Defs.h"
 
-TEST_FILE("some_file.c")
+TEST_SOURCE_FILE("some_file.c")
 
 /* Notes about prefixes:
    test     - normal default prefix. these are "always run" tests for this procedure
