@@ -210,7 +210,7 @@ class UnityTestRunnerGenerator
     includes = {
       local: source.scan(/^\s*#include\s+\"\s*(.+\.#{@options[:include_extensions]})\s*\"/).flatten,
       system: source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" },
-      linkonly: source.scan(/^TEST_FILE\(\s*\"\s*(.+\.#{@options[:source_extensions]})\s*\"/).flatten
+      linkonly: source.scan(/^TEST_SOURCE_FILE\(\s*\"\s*(.+\.#{@options[:source_extensions]})\s*\"/).flatten
     }
     includes
   end
