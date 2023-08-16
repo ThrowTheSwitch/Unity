@@ -105,7 +105,7 @@ void verifyTest(void);
 #define TEST_MESSAGE(message)                                                                      UnityMessage((message), __LINE__)
 #define TEST_ONLY()
 #ifdef UNITY_INCLUDE_PRINT_FORMATTED
-#define TEST_PRINTF(message, ...)                                                                  UnityPrintF(__LINE__, (message), __VA_ARGS__)
+#define TEST_PRINTF(message, ...)                                                                  UnityPrintF(__LINE__, (message), ##__VA_ARGS__)
 #endif
 
 /* It is not necessary for you to call PASS. A PASS condition is assumed if nothing fails.
