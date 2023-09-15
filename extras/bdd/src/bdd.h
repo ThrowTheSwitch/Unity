@@ -13,6 +13,8 @@ extern "C"
 {
 #endif
 
+#include <stdio.h>
+
 /**
  * @brief Macros for defining a Behavior-Driven Development (BDD) structure with descriptions.
  *
