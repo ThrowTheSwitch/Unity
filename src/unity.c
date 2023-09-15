@@ -2031,15 +2031,29 @@ static void UnityPrintFVA(const char* format, va_list va)
                                 UNITY_EXTRACT_ARG(UNITY_UINT, number, length_mod, va, unsigned int);
                                 UNITY_OUTPUT_CHAR('0');
                                 UNITY_OUTPUT_CHAR('x');
-                                UnityPrintNumberHex(number, 8);
+                                if (length_mod == UNITY_LENGTH_MODIFIER_LONG_LONG)
+                                {
+                                    UnityPrintNumberHex(number, 16);
+                                }
+                                else
+                                {
+                                    UnityPrintNumberHex(number, 8);
+                                }
                                 break;
                             }
                         case 'p':
                             {
-                                const unsigned int number = va_arg(va, unsigned int);
+                                UNITY_UINT number;
+                                char nibbles_to_print = 8;
+                                if (UNITY_POINTER_WIDTH == 64)
+                                {
+                                    length_mod = UNITY_LENGTH_MODIFIER_LONG_LONG;
+                                    nibbles_to_print = 16;
+                                }
+                                UNITY_EXTRACT_ARG(UNITY_UINT, number, length_mod, va, unsigned int);
                                 UNITY_OUTPUT_CHAR('0');
                                 UNITY_OUTPUT_CHAR('x');
-                                UnityPrintNumberHex((UNITY_UINT)number, 8);
+                                UnityPrintNumberHex((UNITY_UINT)number, nibbles_to_print);
                                 break;
                             }
                         case 'c':
