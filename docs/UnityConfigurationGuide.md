@@ -399,6 +399,68 @@ _Example:_
 #define UNITY_EXCLUDE_SETJMP
 ```
 
+#### `UNITY_TEST_PROTECT`
+
+#### `UNITY_TEST_ABORT`
+
+Unity handles test failures via `setjmp`/`longjmp` pair by default. As mentioned above, you can disable this with `UNITY_EXCLUDE_SETJMP`. You can also customise what happens on every `TEST_PROTECT` and `TEST_ABORT` call. This can be accomplished by providing user-defined `UNITY_TEST_PROTECT` and `UNITY_TEST_ABORT` macros (and these may be defined independently).
+
+`UNITY_TEST_PROTECT` is used as an `if` statement expression, and has to evaluate to `true` on the first call (when saving stack environment with `setjmp`), and to `false` when it returns as a result of a `TEST_ABORT` (when restoring the stack environment with `longjmp`).
+
+Whenever an assert macro fails, `TEST_ABORT` is used to restore the stack environment previously set by `TEST_PROTECT`. This part may be overriden with `UNITY_TEST_ABORT`, e.g. if custom failure handling is needed.
+
+_Example 1:_
+
+Calling `longjmp` on your target is possible, but has a platform-specific (or implementation-specific) set of prerequisites, e.g. privileged access level. You can extend the default behaviour of `TEST_PROTECT` and `TEST_ABORT` as:
+
+`unity_config.h`:
+
+```C
+#include "my_custom_test_handlers.h"
+
+#define UNITY_TEST_PROTECT() custom_test_protect()
+#define UNITY_TEST_ABORT()   custom_test_abort()
+```
+
+`my_custom_test_handlers.c`:
+
+```C
+int custom_test_protect(void) {
+  platform_specific_code();
+  return setjmp(Unity.AbortFrame) == 0;
+}
+
+UNITY_NORETURN void custom_test_abort(void) {
+  more_platform_specific_code();
+  longjmp(Unity.AbortFrame, 1);
+}
+```
+
+_Example 2:_
+
+Unity is used to provide the assertion macros only, and an external test harness/runner is used for test orchestration/reporting. In this case you can easily plug your code by overriding `TEST_ABORT` as:
+
+`unity_config.h`:
+
+```C
+#include "my_custom_test_handlers.h"
+
+#define UNITY_TEST_PROTECT() 1
+#define UNITY_TEST_ABORT()   custom_test_abort()
+```
+
+`my_custom_test_handlers.c`:
+
+```C
+void custom_test_abort(void) {
+  if (Unity.CurrentTestFailed == 1) {
+    custom_failed_test_handler();
+  } else if (Unity.CurrentTestIgnored == 1) {
+    custom_ignored_test_handler();
+  }
+}
+```
+
 #### `UNITY_OUTPUT_COLOR`
 
 If you want to add color using ANSI escape codes you can use this define.

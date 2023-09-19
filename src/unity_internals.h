@@ -759,12 +759,24 @@ extern const char UnityStrErrShorthand[];
  * Test Running Macros
  *-------------------------------------------------------*/
 
+#ifdef UNITY_TEST_PROTECT
+#define TEST_PROTECT() UNITY_TEST_PROTECT()
+#else
 #ifndef UNITY_EXCLUDE_SETJMP_H
 #define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
-#define TEST_ABORT() longjmp(Unity.AbortFrame, 1)
 #else
 #define TEST_PROTECT() 1
+#endif
+#endif
+
+#ifdef UNITY_TEST_ABORT
+#define TEST_ABORT() UNITY_TEST_ABORT()
+#else
+#ifndef UNITY_EXCLUDE_SETJMP_H
+#define TEST_ABORT() longjmp(Unity.AbortFrame, 1)
+#else
 #define TEST_ABORT() return
+#endif
 #endif
 
 /* Automatically enable variadic macros support, if it not enabled before */
