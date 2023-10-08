@@ -1609,8 +1609,8 @@ void UnityAssertEqualString(const char* expected,
         }
     }
     else
-    { /* handle case of one pointers being null (if both null, test should pass) */
-        if (expected != actual)
+    { /* fail if either null but not if both */
+        if (expected || actual)
         {
             Unity.CurrentTestFailed = 1;
         }
@@ -1649,8 +1649,8 @@ void UnityAssertEqualStringLen(const char* expected,
         }
     }
     else
-    { /* handle case of one pointers being null (if both null, test should pass) */
-        if (expected != actual)
+    { /* fail if either null but not if both */
+        if (expected || actual)
         {
             Unity.CurrentTestFailed = 1;
         }
