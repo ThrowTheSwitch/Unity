@@ -220,7 +220,7 @@ If we use replace comment before test function with the following code:
 
 ```C
 TEST_CASE(1, 2, 5)
-TEST_CASE(3, 7, 20)
+TEST_CASE(10, 7, 20)
 ```
 
 script will generate 2 test calls:
@@ -294,6 +294,93 @@ TEST_CASE(3, 6, 30)
 TEST_CASE(4, 10, 30)
 TEST_CASE(4, 8, 30)
 TEST_CASE(4, 6, 30)
+```
+
+##### `TEST_MATRIX`
+
+Test matix is an advanced generator. It single call can be converted to zero,
+one or few `TEST_CASE` equivalent commands.
+
+That generator will create tests for all cobinations of the provided list. Each argument has to be given as a list of one or more elements in the format `[<parm1>, <param2>, ..., <paramN-1>, <paramN>]`.
+
+All parameters supported by the `TEST_CASE` is supported as arguments:
+- Numbers incl type specifiers e.g. `<1>`, `<1u>`, `<1l>`, `<2.3>`, or `<2.3f>`
+- Strings incl string concatianion e.g. `<"string">`, or `<"partial" "string">`
+- Chars e.g. `<'c'>`
+- Enums e.g. `<ENUM_NAME>`
+- Elements of arrays e.g. `<data[0]>`
+
+Let's use our `test_demoParamFunction` test for checking, what ranges
+will be generated for our single `TEST_RANGE` row:
+
+```C
+TEST_MATRIX([3, 4, 7], [10, 8, 2, 1],[30u, 20.0f])
+```
+
+Tests execution output will be similar to that text:
+
+```Log
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 10, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 10, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 8, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 8, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 2, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 2, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 1, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(3, 1, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 10, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 10, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 8, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 8, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 2, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 2, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 1, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(4, 1, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 10, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 10, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 8, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 8, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 2, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 2, 20.0f):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 1, 30u):PASS
+tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 1, 20.0f):PASS
+```
+
+As we can see:
+
+| Parameter | Format | Count of values |
+|---|---|---|
+| `a` | `[3, 4, 7]` | 2 |
+| `b` | `[10, 8, 2, 1]` | 4 |
+| `c` | `[30u, 20.0f]` | 2 |
+
+We totally have 2 * 4 * 2 = 16 equal test cases, that can be written as following:
+
+```C
+TEST_CASE(3, 10, 30u)
+TEST_CASE(3, 10, 20.0f)
+TEST_CASE(3, 8, 30u)
+TEST_CASE(3, 8, 20.0f)
+TEST_CASE(3, 2, 30u)
+TEST_CASE(3, 2, 20.0f)
+TEST_CASE(3, 1, 30u)
+TEST_CASE(3, 1, 20.0f)
+TEST_CASE(4, 10, 30u)
+TEST_CASE(4, 10, 20.0f)
+TEST_CASE(4, 8, 30u)
+TEST_CASE(4, 8, 20.0f)
+TEST_CASE(4, 2, 30u)
+TEST_CASE(4, 2, 20.0f)
+TEST_CASE(4, 1, 30u)
+TEST_CASE(4, 1, 20.0f)
+TEST_CASE(7, 10, 30u)
+TEST_CASE(7, 10, 20.0f)
+TEST_CASE(7, 8, 30u)
+TEST_CASE(7, 8, 20.0f)
+TEST_CASE(7, 2, 30u)
+TEST_CASE(7, 2, 20.0f)
+TEST_CASE(7, 1, 30u)
+TEST_CASE(7, 1, 20.0f)
 ```
 
 ### `unity_test_summary.rb`

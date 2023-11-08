@@ -1,0 +1,3 @@
+option('extension_fixture', type: 'boolean', value: 'false', description: 'Whether to enable the fixture extension.')
+option('extension_memory', type: 'boolean', value: 'false', description: 'Whether to enable the memory extension.')
+option('support_double', type: 'boolean', value: 'false', description: 'Whether to enable double precision floating point assertions.')

@@ -6,7 +6,7 @@ Welcome to the Unity Test Project, one of the main projects of ThrowTheSwitch.or
 Unity Test is a unit testing framework built for C, with a focus on working with embedded toolchains.
 
 This project is made to test code targetting microcontrollers big and small.
-The core project is a single C file and a pair of headers, allowing it to the added to your existing build setup without too much headache.
+The core project is a single C file and a pair of headers, allowing it to be added to your existing build setup without too much headache.
 You may use any compiler you wish, and may use most existing build systems including Make, CMake, etc.
 If you'd like to leave the hard work to us, you might be interested in Ceedling, a build tool also by ThrowTheSwitch.org.
 

@@ -132,8 +132,8 @@ class UnityTestRunnerGenerator
 
     lines.each_with_index do |line, _index|
       # find tests
-      next unless line =~ /^((?:\s*(?:TEST_CASE|TEST_RANGE)\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
-      next unless line =~ /^((?:\s*(?:TEST_CASE|TEST_RANGE)\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]})\w*)\s*\(\s*(.*)\s*\)/m
+      next unless line =~ /^((?:\s*(?:TEST_(?:CASE|RANGE|MATRIX))\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]}).*)\s*\(\s*(.*)\s*\)/m
+      next unless line =~ /^((?:\s*(?:TEST_(?:CASE|RANGE|MATRIX))\s*\(.*?\)\s*)*)\s*void\s+((?:#{@options[:test_prefix]})\w*)\s*\(\s*(.*)\s*\)/m
 
       arguments = Regexp.last_match(1)
       name = Regexp.last_match(2)
@@ -143,25 +143,38 @@ class UnityTestRunnerGenerator
 
       if @options[:use_param_tests] && !arguments.empty?
         args = []
-        type_and_args = arguments.split(/TEST_(CASE|RANGE)/)
-        (1...type_and_args.length).step(2).each do |i|
-          if type_and_args[i] == 'CASE'
+        type_and_args = arguments.split(/TEST_(CASE|RANGE|MATRIX)/)
+        for i in (1...type_and_args.length).step(2)
+          case type_and_args[i]
+          when "CASE"
             args << type_and_args[i + 1].sub(/^\s*\(\s*(.*?)\s*\)\s*$/m, '\1')
-            next
-          end
 
-          # RANGE
-          args += type_and_args[i + 1].scan(/(\[|<)\s*(-?\d+.?\d*)\s*,\s*(-?\d+.?\d*)\s*,\s*(-?\d+.?\d*)\s*(\]|>)/m).map do |arg_values_str|
-            exclude_end = arg_values_str[0] == '<' && arg_values_str[-1] == '>'
-            arg_values_str[1...-1].map do |arg_value_str|
-              arg_value_str.include?('.') ? arg_value_str.to_f : arg_value_str.to_i
-            end.push(exclude_end)
-          end.map do |arg_values|
-            Range.new(arg_values[0], arg_values[1], arg_values[3]).step(arg_values[2]).to_a
-          end.reduce(nil) do |result, arg_range_expanded|
-            result.nil? ? arg_range_expanded.map { |a| [a] } : result.product(arg_range_expanded)
-          end.map do |arg_combinations|
-            arg_combinations.flatten.join(', ')
+          when "RANGE"
+            args += type_and_args[i + 1].scan(/(\[|<)\s*(-?\d+.?\d*)\s*,\s*(-?\d+.?\d*)\s*,\s*(-?\d+.?\d*)\s*(\]|>)/m).map do |arg_values_str|
+              exclude_end = arg_values_str[0] == '<' && arg_values_str[-1] == '>'
+              arg_values_str[1...-1].map do |arg_value_str|
+                arg_value_str.include?('.') ? arg_value_str.to_f : arg_value_str.to_i
+              end.push(exclude_end)
+            end.map do |arg_values|
+              Range.new(arg_values[0], arg_values[1], arg_values[3]).step(arg_values[2]).to_a
+            end.reduce(nil) do |result, arg_range_expanded|
+              result.nil? ? arg_range_expanded.map { |a| [a] } : result.product(arg_range_expanded)
+            end.map do |arg_combinations|
+              arg_combinations.flatten.join(', ')
+            end
+
+          when "MATRIX"
+            single_arg_regex_string = /(?:(?:"(?:\\"|[^\\])*?")+|(?:'\\?.')+|(?:[^\s\]\["'\,]|\[[\d\S_-]+\])+)/.source
+            args_regex = /\[((?:\s*#{single_arg_regex_string}\s*,?)*(?:\s*#{single_arg_regex_string})?\s*)\]/m
+            arg_elements_regex = /\s*(#{single_arg_regex_string})\s*,\s*/m
+
+            args += type_and_args[i + 1].scan(args_regex).flatten.map do |arg_values_str|
+              (arg_values_str + ',').scan(arg_elements_regex)
+            end.reduce do |result, arg_range_expanded|
+              result.product(arg_range_expanded)
+            end.map do |arg_combinations|
+              arg_combinations.flatten.join(', ')
+            end
           end
         end
       end
@@ -197,7 +210,7 @@ class UnityTestRunnerGenerator
     {
       local: source.scan(/^\s*#include\s+"\s*(.+\.#{@options[:include_extensions]})\s*"/).flatten,
       system: source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" },
-      linkonly: source.scan(/^TEST_FILE\(\s*"\s*(.+\.#{@options[:source_extensions]})\s*"/).flatten
+      linkonly: source.scan(/^TEST_SOURCE_FILE\(\s*\"\s*(.+\.#{@options[:source_extensions]})\s*\"/).flatten
     }
   end
 
@@ -388,7 +401,7 @@ class UnityTestRunnerGenerator
       output.puts('  {')
       output.puts('    if (parse_status < 0)')
       output.puts('    {')
-      output.puts("      UnityPrint(\"#{filename.gsub('.c', '')}.\");")
+      output.puts("      UnityPrint(\"#{filename.gsub('.c', '').gsub(/\\/, '\\\\\\')}.\");")
       output.puts('      UNITY_PRINT_EOL();')
       tests.each do |test|
         if (!@options[:use_param_tests]) || test[:args].nil? || test[:args].empty?

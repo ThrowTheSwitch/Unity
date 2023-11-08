@@ -1115,6 +1115,7 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
             is_trait = !isinf(actual) && !isnan(actual);
             break;
 
+        case UNITY_FLOAT_INVALID_TRAIT:  /* Supress warning */
         default: /* including UNITY_FLOAT_INVALID_TRAIT */
             trait_index = 0;
             trait_names[0] = UnityStrInvalidFloatTrait;
@@ -1341,6 +1342,7 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
             is_trait = !isinf(actual) && !isnan(actual);
             break;
 
+        case UNITY_FLOAT_INVALID_TRAIT:  /* Supress warning */
         default: /* including UNITY_FLOAT_INVALID_TRAIT */
             trait_index = 0;
             trait_names[0] = UnityStrInvalidFloatTrait;
@@ -1607,8 +1609,8 @@ void UnityAssertEqualString(const char* expected,
         }
     }
     else
-    { /* handle case of one pointers being null (if both null, test should pass) */
-        if (expected != actual)
+    { /* fail if either null but not if both */
+        if (expected || actual)
         {
             Unity.CurrentTestFailed = 1;
         }
@@ -1647,8 +1649,8 @@ void UnityAssertEqualStringLen(const char* expected,
         }
     }
     else
-    { /* handle case of one pointers being null (if both null, test should pass) */
-        if (expected != actual)
+    { /* fail if either null but not if both */
+        if (expected || actual)
         {
             Unity.CurrentTestFailed = 1;
         }
@@ -2034,10 +2036,17 @@ static void UnityPrintFVA(const char* format, va_list va)
                             }
                         case 'p':
                             {
-                                const unsigned int number = va_arg(va, unsigned int);
+                                UNITY_UINT number;
+                                char nibbles_to_print = 8;
+                                if (UNITY_POINTER_WIDTH == 64)
+                                {
+                                    length_mod = UNITY_LENGTH_MODIFIER_LONG_LONG;
+                                    nibbles_to_print = 16;
+                                }
+                                UNITY_EXTRACT_ARG(UNITY_UINT, number, length_mod, va, unsigned int);
                                 UNITY_OUTPUT_CHAR('0');
                                 UNITY_OUTPUT_CHAR('x');
-                                UnityPrintNumberHex((UNITY_UINT)number, UNITY_MAX_NIBBLES);
+                                UnityPrintNumberHex((UNITY_UINT)number, nibbles_to_print);
                                 break;
                             }
                         case 'c':
