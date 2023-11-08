@@ -54,7 +54,7 @@ The message is output stating why.
 
 Compare two integers for equality and display errors as signed integers.
 A cast will be performed to your natural integer size so often this can just be used.
-When you need to specify the exact size, like when comparing arrays, you can use a specific version:
+When you need to specify the exact size, you can use a specific version.
 
     TEST_ASSERT_EQUAL_UINT(expected, actual)
     TEST_ASSERT_EQUAL_UINT8(expected, actual)
@@ -72,7 +72,8 @@ Like INT, there are variants for different sizes also.
     TEST_ASSERT_EQUAL_HEX64(expected, actual)
 
 Compares two integers for equality and display errors as hexadecimal.
-Like the other integer comparisons, you can specify the size... here the size will also effect how many nibbles are shown (for example, `HEX16` will show 4 nibbles).
+Like the other integer comparisons, you can specify the size... 
+here the size will also effect how many nibbles are shown (for example, `HEX16` will show 4 nibbles).
 
     TEST_ASSERT_EQUAL(expected, actual)
 
@@ -214,7 +215,8 @@ Fails if the pointer is equal to NULL
     TEST_ASSERT_EQUAL_MEMORY(expected, actual, len)
 
 Compare two blocks of memory.
-This is a good generic assertion for types that can't be coerced into acting like standard types... but since it's a memory compare, you have to be careful that your data types are packed.
+This is a good generic assertion for types that can't be coerced into acting like standard types... 
+but since it's a memory compare, you have to be careful that your data types are packed.
 
 ### \_MESSAGE
 

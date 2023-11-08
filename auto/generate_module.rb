@@ -155,7 +155,7 @@ class UnityModuleGenerator
           path: (Pathname.new("#{cfg[:path]}#{subfolder}") + filename).cleanpath,
           name: submodule_name,
           template: cfg[:template],
-          test_define: cfg[:test_define]
+          test_define: cfg[:test_define],
           boilerplate: cfg[:boilerplate],
           includes: case (cfg[:inc])
                     when :src then (@options[:includes][:src] || []) | (pattern_traits[:inc].map { |f| format(f, module_name) })
@@ -170,18 +170,19 @@ class UnityModuleGenerator
   end
 
   ############################
-  def neutralize_filename(name, start_cap = true)
+  def neutralize_filename(name, start_cap: true)
     return name if name.empty?
+
     name = name.split(/(?:\s+|_|(?=[A-Z][a-z]))|(?<=[a-z])(?=[A-Z])/).map(&:capitalize).join('_')
-    name = name[0].downcase + name[1..-1] unless start_cap
+    name = name[0].downcase + name[1..] unless start_cap
     name
   end
 
   ############################
   def create_filename(part1, part2 = '')
-    name = part2.empty? ? part1 : part1 + '_' + part2
+    name = part2.empty? ? part1 : "#{part1}_#{part2}"
     case (@options[:naming])
-    when 'bumpy' then neutralize_filename(name, false).delete('_')
+    when 'bumpy' then neutralize_filename(name, start_cap: false).delete('_')
     when 'camel' then neutralize_filename(name).delete('_')
     when 'snake' then neutralize_filename(name).downcase
     when 'caps'  then neutralize_filename(name).upcase
@@ -263,12 +264,12 @@ if $0 == __FILE__
     case arg
     when /^-d/            then destroy = true
     when /^-u/            then options[:update_svn] = true
-    when /^-p\"?(\w+)\"?/ then options[:pattern] = Regexp.last_match(1)
-    when /^-s\"?(.+)\"?/  then options[:path_src] = Regexp.last_match(1)
-    when /^-i\"?(.+)\"?/  then options[:path_inc] = Regexp.last_match(1)
-    when /^-t\"?(.+)\"?/  then options[:path_tst] = Regexp.last_match(1)
-    when /^-n\"?(.+)\"?/  then options[:naming] = Regexp.last_match(1)
-    when /^-y\"?(.+)\"?/  then options = UnityModuleGenerator.grab_config(Regexp.last_match(1))
+    when /^-p"?(\w+)"?/ then options[:pattern] = Regexp.last_match(1)
+    when /^-s"?(.+)"?/  then options[:path_src] = Regexp.last_match(1)
+    when /^-i"?(.+)"?/  then options[:path_inc] = Regexp.last_match(1)
+    when /^-t"?(.+)"?/  then options[:path_tst] = Regexp.last_match(1)
+    when /^-n"?(.+)"?/  then options[:naming] = Regexp.last_match(1)
+    when /^-y"?(.+)"?/  then options = UnityModuleGenerator.grab_config(Regexp.last_match(1))
     when /^(\w+)/
       raise "ERROR: You can't have more than one Module name specified!" unless module_name.nil?
 

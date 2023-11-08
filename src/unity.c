@@ -2029,7 +2029,7 @@ static void UnityPrintFVA(const char* format, va_list va)
                                 UNITY_EXTRACT_ARG(UNITY_UINT, number, length_mod, va, unsigned int);
                                 UNITY_OUTPUT_CHAR('0');
                                 UNITY_OUTPUT_CHAR('x');
-                                UnityPrintNumberHex(number, 8);
+                                UnityPrintNumberHex(number, UNITY_MAX_NIBBLES);
                                 break;
                             }
                         case 'p':
@@ -2037,7 +2037,7 @@ static void UnityPrintFVA(const char* format, va_list va)
                                 const unsigned int number = va_arg(va, unsigned int);
                                 UNITY_OUTPUT_CHAR('0');
                                 UNITY_OUTPUT_CHAR('x');
-                                UnityPrintNumberHex((UNITY_UINT)number, 8);
+                                UnityPrintNumberHex((UNITY_UINT)number, UNITY_MAX_NIBBLES);
                                 break;
                             }
                         case 'c':
