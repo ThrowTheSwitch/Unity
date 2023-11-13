@@ -222,6 +222,17 @@ _Example:_
 #define UNITY_FLOAT_PRECISION 0.001f
 ```
 
+#### `UNITY_IS_NAN` and `UNITY_IS_INF`
+
+If your toolchain defines `isnan` and `isinf` in `math.h` as macros, nothing needs to be done. If your toolchain doesn't define these, Unity
+will create these macros itself. You may override either or both of these defines to specify how you want to evaluate if a number is NaN or Infinity.
+
+_Example:_
+
+```C
+#define UNITY_IS_NAN(n) ((n != n) ? 1 : 0)
+```
+
 ### Miscellaneous
 
 #### `UNITY_EXCLUDE_STDDEF_H`

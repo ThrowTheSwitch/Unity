@@ -56,7 +56,7 @@ class ParseOutput
   # Set the flag to indicate if there will be an XML output file or not
   def test_suite_name=(cli_arg)
     @real_test_suite_name = cli_arg
-    puts 'Real test suite name will be \'' + @real_test_suite_name + '\''
+    puts "Real test suite name will be '#{@real_test_suite_name}'"
   end
 
   def xml_encode_s(str)
@@ -75,7 +75,7 @@ class ParseOutput
   # Pushes the suite info as xml to the array list, which will be written later
   def push_xml_output_suite_info
     # Insert opening tag at front
-    heading = '<testsuite name=' + xml_encode_s(@real_test_suite_name) + ' tests="' + @total_tests.to_s + '" failures="' + @test_failed.to_s + '"' + ' skips="' + @test_ignored.to_s + '">'
+    heading = "<testsuite name=#{xml_encode_s(@real_test_suite_name)} tests=\"#{@total_tests}\" failures=\"#{@test_failed}\" skips=\"#{@test_ignored}\">"
     @array_list.insert(0, heading)
     # Push back the closing tag
     @array_list.push '</testsuite>'
@@ -83,20 +83,20 @@ class ParseOutput
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_passed(test_name, execution_time = 0)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s((execution_time / 1000.0).to_s) + ' />'
+    @array_list.push "    <testcase classname=#{xml_encode_s(@test_suite)} name=#{xml_encode_s(test_name)} time=#{xml_encode_s((execution_time / 1000.0).to_s)} />"
   end
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_failed(test_name, reason, execution_time = 0)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s((execution_time / 1000.0).to_s) + '>'
-    @array_list.push '        <failure type="ASSERT FAILED">' + reason + '</failure>'
+    @array_list.push "    <testcase classname=#{xml_encode_s(@test_suite)} name=#{xml_encode_s(test_name)} time=#{xml_encode_s((execution_time / 1000.0).to_s)} >"
+    @array_list.push "        <failure type=\"ASSERT FAILED\">#{reason}</failure>"
     @array_list.push '    </testcase>'
   end
 
   # Pushes xml output data to the array list, which will be written later
   def push_xml_output_ignored(test_name, reason, execution_time = 0)
-    @array_list.push '    <testcase classname=' + xml_encode_s(@test_suite) + ' name=' + xml_encode_s(test_name) + ' time=' + xml_encode_s((execution_time / 1000.0).to_s) + '>'
-    @array_list.push '        <skipped type="TEST IGNORED">' + reason + '</skipped>'
+    @array_list.push "    <testcase classname=#{xml_encode_s(@test_suite)} name=#{xml_encode_s(test_name)} time=#{xml_encode_s((execution_time / 1000.0).to_s)} >"
+    @array_list.push "        <skipped type=\"TEST IGNORED\">#{reason}</skipped>"
     @array_list.push '    </testcase>'
   end
 
@@ -144,7 +144,7 @@ class ParseOutput
     test_name  = array[1]
     test_suite_verify(class_name)
     reason_array = array[2].split(':')
-    reason = reason_array[-1].lstrip.chomp + ' at line: ' + reason_array[-4]
+    reason = "#{reason_array[-1].lstrip.chomp} at line: #{reason_array[-4]}"
 
     printf "%-40s FAILED\n", test_name
 
@@ -189,12 +189,12 @@ class ParseOutput
   def test_failed(array)
     # ':' symbol will be valid in function args now
     real_method_name = array[@result_usual_idx - 1..-3].join(':')
-    array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..-1]
+    array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..]
 
     last_item = array.length - 1
     test_time = get_test_time(array[last_item])
     test_name = array[last_item - 2]
-    reason = array[last_item].chomp.lstrip + ' at line: ' + array[last_item - 3]
+    reason = "#{array[last_item].chomp.lstrip} at line: #{array[last_item - 3]}"
     class_name = array[@class_name_idx]
 
     if test_name.start_with? 'TEST('
@@ -217,7 +217,7 @@ class ParseOutput
   def test_ignored(array)
     # ':' symbol will be valid in function args now
     real_method_name = array[@result_usual_idx - 1..-3].join(':')
-    array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..-1]
+    array = array[0..@result_usual_idx - 3] + [real_method_name] + array[-2..]
 
     last_item = array.length - 1
     test_time = get_test_time(array[last_item])
@@ -268,7 +268,7 @@ class ParseOutput
   def process(file_name)
     @array_list = []
 
-    puts 'Parsing file: ' + file_name
+    puts "Parsing file: #{file_name}"
 
     @test_passed = 0
     @test_failed = 0
@@ -333,17 +333,17 @@ class ParseOutput
         @test_ignored += 1
       elsif line_array.size >= 4
         # We will check output from color compilation
-        if line_array[@result_usual_idx..-1].any? { |l| l.include? 'PASS' }
+        if line_array[@result_usual_idx..].any? { |l| l.include? 'PASS' }
           test_passed(line_array)
           @test_passed += 1
-        elsif line_array[@result_usual_idx..-1].any? { |l| l.include? 'FAIL' }
+        elsif line_array[@result_usual_idx..].any? { |l| l.include? 'FAIL' }
           test_failed(line_array)
           @test_failed += 1
         elsif line_array[@result_usual_idx..-2].any? { |l| l.include? 'IGNORE' }
           test_ignored(line_array)
           @test_ignored += 1
-        elsif line_array[@result_usual_idx..-1].any? { |l| l.include? 'IGNORE' }
-          line_array.push('No reason given (' + get_test_time(line_array[@result_usual_idx..-1]).to_s + ' ms)')
+        elsif line_array[@result_usual_idx..].any? { |l| l.include? 'IGNORE' }
+          line_array.push("No reason given (#{get_test_time(line_array[@result_usual_idx..])} ms)")
           test_ignored(line_array)
           @test_ignored += 1
         end
@@ -353,9 +353,9 @@ class ParseOutput
     puts ''
     puts '=================== SUMMARY ====================='
     puts ''
-    puts 'Tests Passed  : ' + @test_passed.to_s
-    puts 'Tests Failed  : ' + @test_failed.to_s
-    puts 'Tests Ignored : ' + @test_ignored.to_s
+    puts "Tests Passed  : #{@test_passed}"
+    puts "Tests Failed  : #{@test_failed}"
+    puts "Tests Ignored : #{@test_ignored}"
 
     return unless @xml_out
 

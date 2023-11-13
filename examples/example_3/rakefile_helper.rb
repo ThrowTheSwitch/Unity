@@ -17,7 +17,7 @@ def load_configuration(config_file)
 end
 
 def configure_clean
-  CLEAN.include($cfg['compiler']['build_path'] + '*.*') unless $cfg['compiler']['build_path'].nil?
+  CLEAN.include("#{$cfg['compiler']['build_path']}*.*") unless $cfg['compiler']['build_path'].nil?
 end
 
 def configure_toolchain(config_file = DEFAULT_CONFIG_FILE)
@@ -27,7 +27,7 @@ def configure_toolchain(config_file = DEFAULT_CONFIG_FILE)
 end
 
 def unit_test_files
-  path = $cfg['compiler']['unit_tests_path'] + 'Test*' + C_EXTENSION
+  path = "#{$cfg['compiler']['unit_tests_path']}Test*#{C_EXTENSION}"
   path.tr!('\\', '/')
   FileList.new(path)
 end
@@ -42,7 +42,7 @@ def extract_headers(filename)
   includes = []
   lines = File.readlines(filename)
   lines.each do |line|
-    m = line.match(/^\s*#include\s+\"\s*(.+\.[hH])\s*\"/)
+    m = line.match(/^\s*#include\s+"\s*(.+\.[hH])\s*"/)
     includes << m[1] unless m.nil?
   end
   includes
@@ -57,12 +57,11 @@ def find_source_file(header, paths)
 end
 
 def tackit(strings)
-  result = if strings.is_a?(Array)
-             "\"#{strings.join}\""
-           else
-             strings
-           end
-  result
+  if strings.is_a?(Array)
+    "\"#{strings.join}\""
+  else
+    strings
+  end
 end
 
 def squash(prefix, items)
@@ -80,7 +79,7 @@ def build_compiler_fields
             end
   options = squash('', $cfg['compiler']['options'])
   includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
-  includes = includes.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+  includes = includes.gsub(/\\ /, ' ').gsub(/\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
 
   { command: command, defines: defines, options: options, includes: includes }
 end
@@ -105,18 +104,18 @@ def build_linker_fields
                ''
              else
                squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
-             end.gsub(/\\ /, ' ').gsub(/\\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+             end.gsub(/\\ /, ' ').gsub(/\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
 
   { command: command, options: options, includes: includes }
 end
 
 def link_it(exe_name, obj_list)
   linker = build_linker_fields
-  cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]} " +
-            (obj_list.map { |obj| "#{$cfg['linker']['object_files']['path']}#{obj} " }).join +
-            $cfg['linker']['bin_files']['prefix'] + ' ' +
-            $cfg['linker']['bin_files']['destination'] +
-            exe_name + $cfg['linker']['bin_files']['extension']
+  cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]}"
+  cmd_str += " #{(obj_list.map { |obj| "#{$cfg['linker']['object_files']['path']}#{obj}" }).join(' ')}"
+  cmd_str += " #{$cfg['linker']['bin_files']['prefix']} "
+  cmd_str += $cfg['linker']['bin_files']['destination']
+  cmd_str += exe_name + $cfg['linker']['bin_files']['extension']
   execute(cmd_str)
 end
 
@@ -126,7 +125,7 @@ def build_simulator_fields
   command = if $cfg['simulator']['path'].nil?
               ''
             else
-              (tackit($cfg['simulator']['path']) + ' ')
+              "#{tackit($cfg['simulator']['path'])} "
             end
   pre_support = if $cfg['simulator']['pre_support'].nil?
                   ''
@@ -189,7 +188,7 @@ def run_tests(test_files)
 
     # Build the test runner (generate if configured to do so)
     test_base = File.basename(test, C_EXTENSION)
-    runner_name = test_base + '_Runner.c'
+    runner_name = "#{test_base}_Runner.c"
     if $cfg['compiler']['runner_path'].nil?
       runner_path = $cfg['compiler']['build_path'] + runner_name
       test_gen = UnityTestRunnerGenerator.new($cfg_file)
