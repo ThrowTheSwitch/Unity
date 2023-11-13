@@ -45,6 +45,7 @@ class UnityTestRunnerGenerator
       cmdline_args: false,
       omit_begin_end: false,
       use_param_tests: false,
+      use_system_files: true,
       include_extensions: '(?:hpp|hh|H|h)',
       source_extensions: '(?:cpp|cc|ino|C|c)'
     }
@@ -69,7 +70,7 @@ class UnityTestRunnerGenerator
     source = source.force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
     tests = find_tests(source)
     headers = find_includes(source)
-    testfile_includes = (headers[:local] + headers[:system])
+    testfile_includes = @options[:use_system_files] ? (headers[:local] + headers[:system]) : (headers[:local])
     used_mocks = find_mocks(testfile_includes)
     testfile_includes = (testfile_includes - used_mocks)
     testfile_includes.delete_if { |inc| inc =~ /(unity|cmock)/ }
@@ -80,7 +81,7 @@ class UnityTestRunnerGenerator
 
     # determine which files were used to return them
     all_files_used = [input_file, output_file]
-    all_files_used += testfile_includes.map { |filename| filename + '.c' } unless testfile_includes.empty?
+    all_files_used += testfile_includes.map { |filename| "#{filename}.c" } unless testfile_includes.empty?
     all_files_used += @options[:includes] unless @options[:includes].empty?
     all_files_used += headers[:linkonly] unless headers[:linkonly].empty?
     all_files_used.uniq
@@ -144,12 +145,12 @@ class UnityTestRunnerGenerator
       if @options[:use_param_tests] && !arguments.empty?
         args = []
         type_and_args = arguments.split(/TEST_(CASE|RANGE|MATRIX)/)
-        for i in (1...type_and_args.length).step(2)
+        (1...type_and_args.length).step(2).each do |i|
           case type_and_args[i]
-          when "CASE"
+          when 'CASE'
             args << type_and_args[i + 1].sub(/^\s*\(\s*(.*?)\s*\)\s*$/m, '\1')
 
-          when "RANGE"
+          when 'RANGE'
             args += type_and_args[i + 1].scan(/(\[|<)\s*(-?\d+.?\d*)\s*,\s*(-?\d+.?\d*)\s*,\s*(-?\d+.?\d*)\s*(\]|>)/m).map do |arg_values_str|
               exclude_end = arg_values_str[0] == '<' && arg_values_str[-1] == '>'
               arg_values_str[1...-1].map do |arg_value_str|
@@ -163,13 +164,13 @@ class UnityTestRunnerGenerator
               arg_combinations.flatten.join(', ')
             end
 
-          when "MATRIX"
-            single_arg_regex_string = /(?:(?:"(?:\\"|[^\\])*?")+|(?:'\\?.')+|(?:[^\s\]\["'\,]|\[[\d\S_-]+\])+)/.source
+          when 'MATRIX'
+            single_arg_regex_string = /(?:(?:"(?:\\"|[^\\])*?")+|(?:'\\?.')+|(?:[^\s\]\["',]|\[[\d\S_-]+\])+)/.source
             args_regex = /\[((?:\s*#{single_arg_regex_string}\s*,?)*(?:\s*#{single_arg_regex_string})?\s*)\]/m
             arg_elements_regex = /\s*(#{single_arg_regex_string})\s*,\s*/m
 
             args += type_and_args[i + 1].scan(args_regex).flatten.map do |arg_values_str|
-              (arg_values_str + ',').scan(arg_elements_regex)
+              ("#{arg_values_str},").scan(arg_elements_regex)
             end.reduce do |result, arg_range_expanded|
               result.product(arg_range_expanded)
             end.map do |arg_combinations|
@@ -188,7 +189,7 @@ class UnityTestRunnerGenerator
     source_lines = source.split("\n")
     source_index = 0
     tests_and_line_numbers.size.times do |i|
-      source_lines[source_index..-1].each_with_index do |line, index|
+      source_lines[source_index..].each_with_index do |line, index|
         next unless line =~ /\s+#{tests_and_line_numbers[i][:test]}(?:\s|\()/
 
         source_index += index
@@ -210,7 +211,7 @@ class UnityTestRunnerGenerator
     {
       local: source.scan(/^\s*#include\s+"\s*(.+\.#{@options[:include_extensions]})\s*"/).flatten,
       system: source.scan(/^\s*#include\s+<\s*(.+)\s*>/).flatten.map { |inc| "<#{inc}>" },
-      linkonly: source.scan(/^TEST_SOURCE_FILE\(\s*\"\s*(.+\.#{@options[:source_extensions]})\s*\"/).flatten
+      linkonly: source.scan(/^TEST_SOURCE_FILE\(\s*"\s*(.+\.#{@options[:source_extensions]})\s*"/).flatten
     }
   end
 
@@ -368,7 +369,7 @@ class UnityTestRunnerGenerator
     require 'erb'
     file = File.read(File.join(__dir__, 'run_test.erb'))
     template = ERB.new(file, trim_mode: '<>')
-    output.puts("\n" + template.result(binding))
+    output.puts("\n#{template.result(binding)}")
   end
 
   def create_args_wrappers(output, tests)

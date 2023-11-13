@@ -112,7 +112,7 @@ if $0 == __FILE__
 
   # parse out the command options
   opts, args = ARGV.partition { |v| v =~ /^--\w+/ }
-  opts.map! { |v| v[2..-1].to_sym }
+  opts.map! { |v| v[2..].to_sym }
 
   # create an instance to work with
   uts = UnityTestSummary.new(opts)
@@ -128,7 +128,7 @@ if $0 == __FILE__
     uts.targets = results
 
     # set the root path
-    args[1] ||= Dir.pwd + '/'
+    args[1] ||= "#{Dir.pwd}/"
     uts.root = ARGV[1]
 
     # run the summarizer
