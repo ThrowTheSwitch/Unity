@@ -12,6 +12,8 @@ If you'd like to leave the hard work to us, you might be interested in Ceedling,
 
 If you're new to Unity, we encourage you to tour the [getting started guide][].
 
+You can also find the [change log][] and [known issues][] in our documentation.
+
 ## Getting Started
 
 The [docs][] folder contains a [getting started guide][] and much more tips about using Unity.
@@ -226,5 +228,7 @@ This is useful for specifying more information about the problem.
 
 [CI]: https://github.com/ThrowTheSwitch/Unity/workflows/CI/badge.svg
 [getting started guide]: docs/UnityGettingStartedGuide.md
+[change log]: docs/UnityChangeLog.md
+[known issues]: docs/UnityKnownIssues.md
 [docs]: docs/
 [UnityAssertionsReference.md]: docs/UnityAssertionsReference.md
