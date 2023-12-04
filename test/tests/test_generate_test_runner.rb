@@ -1158,7 +1158,41 @@ RUNNER_TESTS = [
       :to_pass => [ ],
       :to_fail => [ ],
       :to_ignore => [ ],
-      :text => [ "ERROR: Unknown Option z" ],
+      :text => [
+        "ERROR: Unknown Option z",
+        "Options:",
+        "-l        List all tests and exit",
+        "-f NAME   Filter to run only tests whose name includes NAME",
+        "-n NAME   \\(deprecated\\) alias of -f",
+        "-h        show this Help menu",
+        "-q        Quiet/decrease verbosity",
+        "-v        increase Verbosity",
+        "-x NAME   eXclude tests whose name includes NAME",
+      ],
+    }
+  },
+
+  { :name => 'ArgsHelp',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-h",
+    :expected => {
+      :to_pass => [ ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+      :text => [
+        "Options:",
+        "-l        List all tests and exit",
+        "-f NAME   Filter to run only tests whose name includes NAME",
+        "-n NAME   \\(deprecated\\) alias of -f",
+        "-h        show this Help menu",
+        "-q        Quiet/decrease verbosity",
+        "-v        increase Verbosity",
+        "-x NAME   eXclude tests whose name includes NAME",
+      ],
     }
   },
 ]
