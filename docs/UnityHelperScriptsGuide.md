@@ -114,6 +114,11 @@ In the `examples` directory, Example 3's Rakefile demonstrates using a Ruby hash
 This option specifies an array of file names to be `#include`'d at the top of your runner C file.
 You might use it to reference custom types or anything else universally needed in your generated runners.
 
+##### `:defines`
+
+This option specifies an array of definitions to be `#define`'d at the top of your runner C file.
+Each definition will be wrapped in an `#ifndef`.
+
 ##### `:suite_setup`
 
 Define this option with C code to be executed _before any_ test cases are run.
@@ -191,7 +196,63 @@ Few usage examples can be found in `/test/tests/test_unity_parameterized.c` file
 You should define `UNITY_SUPPORT_TEST_CASES` macro for tests success compiling,
 if you enable current option.
 
-You can see list of supported macros list in the next section.
+You can see list of supported macros list in the
+[Parameterized tests provided macros](#parameterized-tests-provided-macros)
+section that follows.
+
+##### `:cmdline_args`
+
+When set to `true`, the generated test runner can accept a number of
+options to modify how the test(s) are run.
+
+Ensure Unity is compiled with `UNITY_USE_COMMAND_LINE_ARGS` defined or else
+the required functions will not exist.
+
+These are the available options:
+
+| Option    | Description                                       |
+| --------- | ------------------------------------------------- |
+| `-l`      | List all tests and exit                           |
+| `-f NAME` | Filter to run only tests whose name includes NAME |
+| `-n NAME` | (deprecated) alias of -f                          |
+| `-h`      | show the Help menu that lists these options       |
+| `-q`      | Quiet/decrease verbosity                          |
+| `-v`      | increase Verbosity                                |
+| `-x NAME` | eXclude tests whose name includes NAME            |
+
+##### `:setup_name`
+
+Override the default test `setUp` function name.
+
+##### `:teardown_name`
+
+Override the default test `tearDown` function name.
+
+##### `:test_reset_name`
+
+Override the default test `resetTest` function name.
+
+##### `:test_verify_name`
+
+Override the default test `verifyTest` function name.
+
+##### `:main_name`
+
+Override the test's `main()` function name (from `main` to whatever is specified).
+The sentinel value `:auto` will use the test's filename with the `.c` extension removed prefixed
+with `main_` as the "main" function.
+
+To clarify, if `:main_name == :auto` and the test filename is "test_my_project.c", then the
+generated function name will be `main_test_my_project(int argc, char** argv)`.
+
+##### `main_export_decl`
+
+Provide any `cdecl` for the `main()` test function. Is empty by default.
+
+##### `:omit_begin_end`
+
+If `true`, the `UnityBegin` and `UnityEnd` function will not be called for
+Unity test state setup and cleanup.
 
 #### Parameterized tests provided macros
 
