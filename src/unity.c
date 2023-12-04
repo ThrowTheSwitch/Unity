@@ -2332,13 +2332,13 @@ int UnityParseOptions(int argc, char** argv)
                     /* fall-through to display help */
                 case 'h':
                     UnityPrint("Options: "); UNITY_PRINT_EOL();
-                    UnityPrint("-l        List all tests"); UNITY_PRINT_EOL();
-                    UnityPrint("-f TEST   Only run tests with TEST in the name"); UNITY_PRINT_EOL();
-                    UnityPrint("-n TEST   Only run tests with TEST in the name"); UNITY_PRINT_EOL();
-                    UnityPrint("-h        Show this help menu"); UNITY_PRINT_EOL();
-                    UnityPrint("-q        Quiet/Decrease verbosity"); UNITY_PRINT_EOL();
-                    UnityPrint("-v        Increase verbosity"); UNITY_PRINT_EOL();
-                    UnityPrint("-x TEST   Exclude tests with TEST in the name"); UNITY_PRINT_EOL();
+                    UnityPrint("-l        List all tests and exit"); UNITY_PRINT_EOL();
+                    UnityPrint("-f NAME   Filter to run only tests whose name includes NAME"); UNITY_PRINT_EOL();
+                    UnityPrint("-n NAME   (deprecated) alias of -f"); UNITY_PRINT_EOL();
+                    UnityPrint("-h        show this Help menu"); UNITY_PRINT_EOL();
+                    UnityPrint("-q        Quiet/decrease verbosity"); UNITY_PRINT_EOL();
+                    UnityPrint("-v        increase Verbosity"); UNITY_PRINT_EOL();
+                    UnityPrint("-x NAME   eXclude tests whose name includes NAME"); UNITY_PRINT_EOL();
                     UNITY_OUTPUT_FLUSH();
                     return 1;
             }
