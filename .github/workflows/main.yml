@@ -23,7 +23,7 @@ jobs:
       - name: Setup Ruby Testing Tools
         run: |
           sudo gem install rspec
-          sudo gem install rubocop -v 0.57.2
+          sudo gem install rubocop -v 1.57.2
 
       # Checks out repository under $GITHUB_WORKSPACE
       - name: Checkout Latest Repo
