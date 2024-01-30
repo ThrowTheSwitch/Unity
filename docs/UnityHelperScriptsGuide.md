@@ -277,6 +277,22 @@ Unity test state setup and cleanup.
 
 This option can also be specified at the command prompt as `--omit_begin_end`
 
+##### `:shuffle_tests`
+
+If `true`, the test execution order will be shuffled. Is `false` by default.
+
+This option can also be specified at the command prompt as `--shuffle_tests`
+
+##### `:rng_seed`
+
+If set to some positive integer value, said value will be used as the seed value passed
+to the `srand` function. Otherwise, if not set to any value, `time(NULL)` will be used
+as the seed value.
+
+Only applicable if `:shuffle_tests` is set to `true`.
+
+This option can also be specified at the command prompt as `--rng_seed`
+
 #### Parameterized tests provided macros
 
 Unity provides support for few param tests generators, that can be combined
