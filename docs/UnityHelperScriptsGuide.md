@@ -254,6 +254,18 @@ Provide any `cdecl` for the `main()` test function. Is empty by default.
 If `true`, the `UnityBegin` and `UnityEnd` function will not be called for
 Unity test state setup and cleanup.
 
+##### `:shuffle_tests`
+
+If `true`, the test execution order will be shuffled. Is `false` by default.
+
+##### `:rng_seed`
+
+If set to some positive integer value, said value will be used as the seed value passed
+to the `srand` function. Otherwise, if not set to any value, `time(NULL)` will be used
+as the seed value.
+
+Only applicable if `:shuffle_tests` is set to `true`.
+
 #### Parameterized tests provided macros
 
 Unity provides support for few param tests generators, that can be combined
