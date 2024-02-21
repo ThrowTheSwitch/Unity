@@ -239,7 +239,11 @@ class UnityTestRunnerGenerator
     output.puts('#include "cmock.h"') unless mocks.empty?
     output.puts('}') if @options[:externcincludes]
     if @options[:defines] && !@options[:defines].empty?
-      @options[:defines].each { |d| output.puts("#ifndef #{d}\n#define #{d}\n#endif /* #{d} */") }
+      output.puts("/* injected defines for unity settings, etc */")
+      @options[:defines].each do |d| 
+        def_only = d.match(/(\w+).*/)[1]
+        output.puts("#ifndef #{def_only}\n#define #{d}\n#endif /* #{def_only} */")
+      end
     end
     if @options[:header_file] && !@options[:header_file].empty?
       output.puts("#include \"#{File.basename(@options[:header_file])}\"")
