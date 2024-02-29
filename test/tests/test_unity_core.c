@@ -296,8 +296,9 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); /* Suppress output */
     startFlushSpy();
-    TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
+    UNITY_UINT savedGetFlushSpyCalls = getFlushSpyCalls();
     UnityConcludeTest();
+    TEST_ASSERT_EQUAL(0, savedGetFlushSpyCalls);
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
 #if defined(UNITY_OUTPUT_FLUSH) && defined(UNITY_OUTPUT_FLUSH_HEADER_DECLARATION)
