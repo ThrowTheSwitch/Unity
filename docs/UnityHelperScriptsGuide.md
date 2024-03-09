@@ -126,6 +126,8 @@ Define this option with C code to be executed _before any_ test cases are run.
 Alternatively, if your C compiler supports weak symbols, you can leave this option unset and instead provide a `void suiteSetUp(void)` function in your test suite.
 The linker will look for this symbol and fall back to a Unity-provided stub if it is not found.
 
+This option can also be specified at the command prompt as `--suite_setup=""`
+
 ##### `:suite_teardown`
 
 Define this option with C code to be executed _after all_ test cases have finished.
@@ -136,6 +138,8 @@ You can normally just return `num_failures`.
 Alternatively, if your C compiler supports weak symbols, you can leave this option unset and instead provide a `int suiteTearDown(int num_failures)` function in your test suite.
 The linker will look for this symbol and fall back to a Unity-provided stub if it is not found.
 
+This option can also be specified at the command prompt as `--suite_teardown=""`
+
 ##### `:enforce_strict_ordering`
 
 This option should be defined if you have the strict order feature enabled in CMock (see CMock documentation).
@@ -145,6 +149,8 @@ If you provide the same YAML to the generator as used in CMock's configuration, 
 ##### `:externc`
 
 This option should be defined if you are mixing C and CPP and want your test runners to automatically include extern "C" support when they are generated.
+
+This option can also be specified at the command prompt as `--externc`
 
 ##### `:mock_prefix` and `:mock_suffix`
 
@@ -170,7 +176,10 @@ Or as a yaml file:
 
 If you are using CMock, it is very likely that you are already passing an array of plugins to CMock.
 You can just use the same array here.
+
 This script will just ignore the plugins that don't require additional support.
+
+This option can also be specified at the command prompt as `--cexception`
 
 ##### `:include_extensions`
 
@@ -200,6 +209,8 @@ You can see list of supported macros list in the
 [Parameterized tests provided macros](#parameterized-tests-provided-macros)
 section that follows.
 
+This option can also be specified at the command prompt as `--use_param_tests=1`
+
 ##### `:cmdline_args`
 
 When set to `true`, the generated test runner can accept a number of
@@ -224,17 +235,25 @@ These are the available options:
 
 Override the default test `setUp` function name.
 
+This option can also be specified at the command prompt as `--setup_name=""`
+
 ##### `:teardown_name`
 
 Override the default test `tearDown` function name.
+
+This option can also be specified at the command prompt as `--teardown_name=""`
 
 ##### `:test_reset_name`
 
 Override the default test `resetTest` function name.
 
+This option can also be specified at the command prompt as `--test_reset_name=""`
+
 ##### `:test_verify_name`
 
 Override the default test `verifyTest` function name.
+
+This option can also be specified at the command prompt as `--test_verify_name=""`
 
 ##### `:main_name`
 
@@ -245,6 +264,8 @@ with `main_` as the "main" function.
 To clarify, if `:main_name == :auto` and the test filename is "test_my_project.c", then the
 generated function name will be `main_test_my_project(int argc, char** argv)`.
 
+This option can also be specified at the command prompt as `--main_name=""`
+
 ##### `main_export_decl`
 
 Provide any `cdecl` for the `main()` test function. Is empty by default.
@@ -253,6 +274,8 @@ Provide any `cdecl` for the `main()` test function. Is empty by default.
 
 If `true`, the `UnityBegin` and `UnityEnd` function will not be called for
 Unity test state setup and cleanup.
+
+This option can also be specified at the command prompt as `--omit_begin_end`
 
 #### Parameterized tests provided macros
 
