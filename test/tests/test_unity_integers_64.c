@@ -61,7 +61,7 @@ void testInt64ArrayWithinDeltaAndMessage(void)
 #endif
 }
 
-void tesUInt64ArrayNotWithinDelta(void)
+void testInt64ArrayNotWithinDelta(void)
 {
 #ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
