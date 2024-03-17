@@ -1,3 +1,10 @@
+# =========================================================================
+#   Unity - A Test Framework for C
+#   ThrowTheSwitch.org
+#   Copyright (c) 2007-24 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   SPDX-License-Identifier: MIT
+# =========================================================================
+
 # Copied from ~Unity/targets/gcc_32.yml
 unity_root:  &unity_root '../..'
 unity_source: &unity_source '../../src/'

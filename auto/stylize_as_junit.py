@@ -1,11 +1,10 @@
 #! python3
-# ==========================================
-#   Fork from Unity Project - A Test Framework for C
-#   Pull request on Gerrit in progress, the objective of this file is to be deleted when official Unity deliveries
-#   include that modification
-#   Copyright (c) 2015 Alexander Mueller / XelaRellum@web.de
-#   [Released under MIT License. Please refer to license.txt for details]
-# ==========================================
+# =========================================================================
+#   Unity - A Test Framework for C
+#   ThrowTheSwitch.org
+#   Copyright (c) 2007-24 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   SPDX-License-Identifier: MIT
+# =========================================================================
 import sys
 import os
 from glob import glob
