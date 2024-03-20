@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # =========================================================================
 #   Unity - A Test Framework for C
 #   ThrowTheSwitch.org
@@ -5,7 +6,6 @@
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
-#!/usr/bin/env python3
 import re
 import sys
 
