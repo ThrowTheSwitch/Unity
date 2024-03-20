@@ -1,3 +1,9 @@
+# =========================================================================
+#   Unity - A Test Framework for C
+#   ThrowTheSwitch.org
+#   Copyright (c) 2007-24 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   SPDX-License-Identifier: MIT
+# =========================================================================
 #============================================================
 #  Author: John Theofanopoulos
 #  A simple parser. Takes the output files generated during the

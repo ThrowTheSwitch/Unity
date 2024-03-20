@@ -1,9 +1,9 @@
-/* Copyright (c) 2023 Michael Gene Brockus (Dreamer) and Contributed to Unity Project
- * ==========================================
- *  Unity Project - A Test Framework for C
- *  Copyright (c) 2007 Mike Karlesky, Mark VanderVoord, Greg Williams
- *  [Released under MIT License. Please refer to license.txt for details]
- * ========================================== */
+/* =========================================================================
+    Unity - A Test Framework for C
+    ThrowTheSwitch.org
+    Copyright (c) 2007-24 Mike Karlesky, Mark VanderVoord, & Greg Williams
+    SPDX-License-Identifier: MIT
+========================================================================= */
 
 #ifndef UNITY_BDD_TEST_H_
 #define UNITY_BDD_TEST_H_

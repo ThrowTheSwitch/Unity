@@ -482,6 +482,34 @@ _Example:_
 #define UNITY_OUTPUT_COLOR
 ```
 
+#### `UNITY_INCLUDE_EXEC_TIME`
+
+Define this to measure and report execution time for each test in the suite. When enabled, Unity will do
+it's best to automatically find a way to determine the time in milliseconds. On most Windows, macos, or 
+Linux environments, this is automatic. If not, you can give Unity more information.
+
+#### `UNITY_CLOCK_MS`
+
+If you're working on a system (embedded or otherwise) which has an accessible millisecond timer. You can
+define `UNITY_CLOCK_MS` to be the name of the function which returns the millisecond timer. It will then
+attempt to use that function for timing purposes.
+
+#### `UNITY_EXEC_TIME_START`
+
+Define this hook to start a millisecond timer if necessary.
+
+#### `UNITY_EXEC_TIME_STOP`
+
+Define this hook to stop a millisecond timer if necessary.
+
+#### `UNITY_PRINT_EXEC_TIME`
+
+Define this hook to print the current execution time. Used to report the milliseconds elapsed.
+
+#### `UNITY_TIME_TYPE`
+
+Finally, this can be set to the type which holds the millisecond timer.
+
 #### `UNITY_SHORTHAND_AS_INT`
 
 #### `UNITY_SHORTHAND_AS_MEM`

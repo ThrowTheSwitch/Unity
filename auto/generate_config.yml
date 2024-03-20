@@ -1,3 +1,10 @@
+# =========================================================================
+#   Unity - A Test Framework for C
+#   ThrowTheSwitch.org
+#   Copyright (c) 2007-24 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   SPDX-License-Identifier: MIT
+# =========================================================================
+
 #this is a sample configuration file for generate_module
 #you would use it by calling generate_module with the -ygenerate_config.yml option
 #files like this are useful for customizing generate_module to your environment
