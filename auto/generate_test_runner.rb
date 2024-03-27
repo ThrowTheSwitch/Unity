@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 # =========================================================================
 #   Unity - A Test Framework for C

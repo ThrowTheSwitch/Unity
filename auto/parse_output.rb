@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # =========================================================================
 #   Unity - A Test Framework for C
 #   ThrowTheSwitch.org

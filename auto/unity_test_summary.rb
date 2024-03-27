@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # =========================================================================
 #   Unity - A Test Framework for C
 #   ThrowTheSwitch.org
@@ -5,7 +7,6 @@
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
-# !/usr/bin/ruby
 #
 # unity_test_summary.rb
 #
