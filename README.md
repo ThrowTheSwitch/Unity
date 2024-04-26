@@ -1,6 +1,6 @@
 # Unity Test ![CI][]
 
-__Copyright (c) 2007 - 2023 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
+__Copyright (c) 2007 - 2024 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
 Welcome to the Unity Test Project, one of the main projects of ThrowTheSwitch.org.
 Unity Test is a unit testing framework built for C, with a focus on working with embedded toolchains.
