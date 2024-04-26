@@ -2351,7 +2351,7 @@ int UnityParseOptions(int argc, char** argv)
 }
 
 /*-----------------------------------------------*/
-int IsStringInBiggerString(const char* longstring, const char* shortstring)
+static int IsStringInBiggerString(const char* longstring, const char* shortstring)
 {
     const char* lptr = longstring;
     const char* sptr = shortstring;
@@ -2396,7 +2396,7 @@ int IsStringInBiggerString(const char* longstring, const char* shortstring)
 }
 
 /*-----------------------------------------------*/
-int UnityStringArgumentMatches(const char* str)
+static int UnityStringArgumentMatches(const char* str)
 {
     int retval;
     const char* ptr1;
