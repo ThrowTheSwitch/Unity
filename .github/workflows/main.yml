@@ -27,7 +27,7 @@ jobs:
 
       # Checks out repository under $GITHUB_WORKSPACE
       - name: Checkout Latest Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Run Tests
       - name: Run All Unit Tests
