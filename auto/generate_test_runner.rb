@@ -455,10 +455,10 @@ class UnityTestRunnerGenerator
       if @options[:omit_begin_end]
         output.puts('  (void) suite_teardown(0);')
       else
-        output.puts('  return suiteTearDown(UnityEnd());')
+        output.puts('  return suiteTearDown(UNITY_END());')
       end
     else
-      output.puts('  return UnityEnd();') unless @options[:omit_begin_end]
+      output.puts('  return UNITY_END();') unless @options[:omit_begin_end]
     end
     output.puts('}')
   end
@@ -534,7 +534,7 @@ if $0 == __FILE__
           '    --suite_setup=""      - code to execute for setup of entire suite',
           '    --suite_teardown=""   - code to execute for teardown of entire suite',
           '    --use_param_tests=1   - enable parameterized tests (disabled by default)',
-          '    --omit_begin_end=1    - omit calls to UnityBegin and UnityEnd (disabled by default)',
+          '    --omit_begin_end=1    - omit calls to UnityBegin and UNITY_END (disabled by default)',
           '    --header_file=""      - path/name of test header file to generate too'].join("\n")
     exit 1
   end
