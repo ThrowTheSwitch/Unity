@@ -2271,6 +2271,7 @@ int UnityEnd(void)
 char* UnityOptionIncludeNamed = NULL;
 char* UnityOptionExcludeNamed = NULL;
 int UnityVerbosity            = 1;
+int UnityStrictMatch          = 0;
 
 /*-----------------------------------------------*/
 int UnityParseOptions(int argc, char** argv)
@@ -2278,6 +2279,7 @@ int UnityParseOptions(int argc, char** argv)
     int i;
     UnityOptionIncludeNamed = NULL;
     UnityOptionExcludeNamed = NULL;
+    UnityStrictMatch = 0;
 
     for (i = 1; i < argc; i++)
     {
@@ -2289,6 +2291,7 @@ int UnityParseOptions(int argc, char** argv)
                     return -1;
                 case 'n': /* include tests with name including this string */
                 case 'f': /* an alias for -n */
+                    UnityStrictMatch = (argv[i][1] == 'n'); /* strictly match this string if -n */
                     if (argv[i][2] == '=')
                     {
                         UnityOptionIncludeNamed = &argv[i][3];
@@ -2336,7 +2339,7 @@ int UnityParseOptions(int argc, char** argv)
                     UnityPrint("Options: "); UNITY_PRINT_EOL();
                     UnityPrint("-l        List all tests and exit"); UNITY_PRINT_EOL();
                     UnityPrint("-f NAME   Filter to run only tests whose name includes NAME"); UNITY_PRINT_EOL();
-                    UnityPrint("-n NAME   (deprecated) alias of -f"); UNITY_PRINT_EOL();
+                    UnityPrint("-n NAME   Run only the test named NAME"); UNITY_PRINT_EOL();
                     UnityPrint("-h        show this Help menu"); UNITY_PRINT_EOL();
                     UnityPrint("-q        Quiet/decrease verbosity"); UNITY_PRINT_EOL();
                     UnityPrint("-v        increase Verbosity"); UNITY_PRINT_EOL();
@@ -2359,7 +2362,7 @@ static int IsStringInBiggerString(const char* longstring, const char* shortstrin
 
     if (*sptr == '*')
     {
-        return 1;
+        return UnityStrictMatch ? 0 : 1;
     }
 
     while (*lptr)
@@ -2372,19 +2375,29 @@ static int IsStringInBiggerString(const char* longstring, const char* shortstrin
             lptr++;
             sptr++;
 
-            /* We're done if we match the entire string or up to a wildcard */
-            if (*sptr == '*')
-                return 1;
-            if (*sptr == ',')
-                return 1;
-            if (*sptr == '"')
-                return 1;
-            if (*sptr == '\'')
-                return 1;
-            if (*sptr == ':')
-                return 2;
-            if (*sptr == 0)
-                return 1;
+            switch (*sptr)
+            {
+                case '*': /* we encountered a wild-card */
+                    return UnityStrictMatch ? 0 : 1;
+
+                case ',': /* we encountered the end of match string */
+                case '"':
+                case '\'':
+                case 0:
+                    return (!UnityStrictMatch || (*lptr == 0)) ? 1 : 0;
+
+                case ':': /* we encountered the end of a partial match */
+                    return 2;
+
+                default:
+                    break;
+            }
+        }
+
+        // If we didn't match and we're on strict matching, we already know we failed
+        if (UnityStrictMatch)
+        {
+            return 0;
         }
 
         /* Otherwise we start in the long pointer 1 character further and try again */

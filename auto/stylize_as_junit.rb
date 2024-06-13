@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 # =========================================================================
 #   Unity - A Test Framework for C
 #   ThrowTheSwitch.org
@@ -5,16 +6,10 @@
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
-#!/usr/bin/ruby
-#
-# unity_to_junit.rb
-#
 require 'fileutils'
 require 'optparse'
 require 'ostruct'
 require 'set'
-
-require 'pp'
 
 VERSION = 1.0
 

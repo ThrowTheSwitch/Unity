@@ -160,7 +160,7 @@ class UnityModuleGenerator
           boilerplate: cfg[:boilerplate],
           includes: case (cfg[:inc])
                     when :src then (@options[:includes][:src] || []) | (pattern_traits[:inc].map { |f| format(f, module_name) })
-                    when :inc then (@options[:includes][:inc] || [])
+                    when :inc then  @options[:includes][:inc] || []
                     when :tst then (@options[:includes][:tst] || []) | (pattern_traits[:inc].map { |f| format("#{@options[:mock_prefix]}#{f}", module_name) })
                     end
         }

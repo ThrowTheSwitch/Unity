@@ -171,7 +171,7 @@ class UnityTestRunnerGenerator
             arg_elements_regex = /\s*(#{single_arg_regex_string})\s*,\s*/m
 
             args += type_and_args[i + 1].scan(args_regex).flatten.map do |arg_values_str|
-              ("#{arg_values_str},").scan(arg_elements_regex)
+              "#{arg_values_str},".scan(arg_elements_regex)
             end.reduce do |result, arg_range_expanded|
               result.product(arg_range_expanded)
             end.map do |arg_combinations|
@@ -240,8 +240,8 @@ class UnityTestRunnerGenerator
     output.puts('#include "cmock.h"') unless mocks.empty?
     output.puts('}') if @options[:externcincludes]
     if @options[:defines] && !@options[:defines].empty?
-      output.puts("/* injected defines for unity settings, etc */")
-      @options[:defines].each do |d| 
+      output.puts('/* injected defines for unity settings, etc */')
+      @options[:defines].each do |d|
         def_only = d.match(/(\w+).*/)[1]
         output.puts("#ifndef #{def_only}\n#define #{d}\n#endif /* #{def_only} */")
       end

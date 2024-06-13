@@ -225,7 +225,7 @@ These are the available options:
 | --------- | ------------------------------------------------- |
 | `-l`      | List all tests and exit                           |
 | `-f NAME` | Filter to run only tests whose name includes NAME |
-| `-n NAME` | (deprecated) alias of -f                          |
+| `-n NAME` | Run only the test named NAME                      |
 | `-h`      | show the Help menu that lists these options       |
 | `-q`      | Quiet/decrease verbosity                          |
 | `-v`      | increase Verbosity                                |

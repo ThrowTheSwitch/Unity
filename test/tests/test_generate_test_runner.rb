@@ -740,7 +740,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n test_",
+    :cmdline_args => "-f test_",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'test_NotBeConfusedByLongComplicatedStrings',
@@ -758,7 +758,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n should_",
+    :cmdline_args => "-f should_",
     :expected => {
       :to_pass => [ 'should_RunTestsStartingWithShouldByDefault' ],
       :to_fail => [  ],
@@ -772,7 +772,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n should_,test_",
+    :cmdline_args => "-f should_,test_",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'test_NotBeConfusedByLongComplicatedStrings',
@@ -790,7 +790,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n=testRunnerGeneratorSma*",
+    :cmdline_args => "-f=testRunnerGeneratorSma*",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'spec_ThisTestPassesWhenNormalSetupRan',
@@ -806,7 +806,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGeneratorSmall:*",
+    :cmdline_args => "-f testRunnerGeneratorSmall:*",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'spec_ThisTestPassesWhenNormalSetupRan',
@@ -822,7 +822,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGeneratorSmall:test_*",
+    :cmdline_args => "-f testRunnerGeneratorSmall:test_*",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
       :to_fail => [ 'test_ThisTestAlwaysFails' ],
@@ -836,7 +836,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGeneratorSmall:te*",
+    :cmdline_args => "-f testRunnerGeneratorSmall:te*",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
       :to_fail => [ 'test_ThisTestAlwaysFails' ],
@@ -850,7 +850,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGeneratorSm*:*",
+    :cmdline_args => "-f testRunnerGeneratorSm*:*",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'spec_ThisTestPassesWhenNormalSetupRan',
@@ -885,7 +885,7 @@ RUNNER_TESTS = [
       :cmdline_args => true,
       :includes => ['Defs.h'],
     },
-    :cmdline_args => "-n test_ -x Ignored",
+    :cmdline_args => "-f test_ -x Ignored",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'test_NotBeConfusedByLongComplicatedStrings',
@@ -903,7 +903,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n ThisTestAlwaysPasses",
+    :cmdline_args => "-f ThisTestAlwaysPasses",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
       :to_fail => [ ],
@@ -917,7 +917,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGenerator:ThisTestAlwaysPasses",
+    :cmdline_args => "-f testRunnerGenerator:ThisTestAlwaysPasses",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
       :to_fail => [ ],
@@ -931,7 +931,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGenerator.c:ThisTestAlwaysPasses",
+    :cmdline_args => "-f testRunnerGenerator.c:ThisTestAlwaysPasses",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
       :to_fail => [ ],
@@ -945,7 +945,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n \"testRunnerGenerator:ThisTestAlwaysPasses,test_ThisTestAlwaysFails\"",
+    :cmdline_args => "-f \"testRunnerGenerator:ThisTestAlwaysPasses,test_ThisTestAlwaysFails\"",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
       :to_fail => [ 'test_ThisTestAlwaysFails' ],
@@ -959,10 +959,52 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n 'testRunnerGenerator:ThisTestAlwaysPasses,test_ThisTestAlwaysFails'",
+    :cmdline_args => "-f 'testRunnerGenerator:ThisTestAlwaysPasses,test_ThisTestAlwaysFails'",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses' ],
       :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsHandlePreciseMatch',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n 'test_ThisTestAlwaysPasses'",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsHandlePreciseMatches',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n 'test_ThisTestAlwaysPasses,test_ThisTestAlwaysFails'",
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses' ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsRequiresPreciseMatchNotPartial',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n ThisTestAlwaysPass",
+    :expected => {
+      :to_pass => [ ],
+      :to_fail => [ ],
       :to_ignore => [ ],
     }
   },
@@ -973,7 +1015,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n AnotherFile:ThisTestDoesNotExist",
+    :cmdline_args => "-f AnotherFile:ThisTestDoesNotExist",
     :expected => {
       :to_pass => [ ],
       :to_fail => [ ],
@@ -987,7 +1029,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n ThisTestDoesNotExist",
+    :cmdline_args => "-f ThisTestDoesNotExist",
     :expected => {
       :to_pass => [ ],
       :to_fail => [ ],
@@ -1015,7 +1057,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n testRunnerGenerator",
+    :cmdline_args => "-f testRunnerGenerator",
     :expected => {
       :to_pass => [ 'test_ThisTestAlwaysPasses',
                     'spec_ThisTestPassesWhenNormalSetupRan',
@@ -1053,7 +1095,7 @@ RUNNER_TESTS = [
       :cmdline_args => true,
       :test_prefix => "paratest"
     },
-    :cmdline_args => "-n ShouldHandleParameterizedTests",
+    :cmdline_args => "-f ShouldHandleParameterizedTests",
     :features => [ :parameterized ],
     :expected => {
       :to_pass => [ 'paratest_ShouldHandleParameterizedTests\(25\)',
@@ -1124,7 +1166,7 @@ RUNNER_TESTS = [
     :options => {
       :cmdline_args => true,
     },
-    :cmdline_args => "-n",
+    :cmdline_args => "-f",
     :expected => {
       :to_pass => [ ],
       :to_fail => [ ],
@@ -1164,7 +1206,7 @@ RUNNER_TESTS = [
         "Options:",
         "-l        List all tests and exit",
         "-f NAME   Filter to run only tests whose name includes NAME",
-        "-n NAME   \\(deprecated\\) alias of -f",
+        "-n NAME   Run only the test named NAME",
         "-h        show this Help menu",
         "-q        Quiet/decrease verbosity",
         "-v        increase Verbosity",
@@ -1188,7 +1230,7 @@ RUNNER_TESTS = [
         "Options:",
         "-l        List all tests and exit",
         "-f NAME   Filter to run only tests whose name includes NAME",
-        "-n NAME   \\(deprecated\\) alias of -f",
+        "-n NAME   Run only the test named NAME",
         "-h        show this Help menu",
         "-q        Quiet/decrease verbosity",
         "-v        increase Verbosity",
