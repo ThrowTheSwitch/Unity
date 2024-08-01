@@ -402,6 +402,7 @@ class UnityTestRunnerGenerator
       end
       output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv)")
       output.puts('{')
+      output.puts('#ifdef UNITY_USE_COMMAND_LINE_ARGS')
       output.puts('  int parse_status = UnityParseOptions(argc, argv);')
       output.puts('  if (parse_status != 0)')
       output.puts('  {')
@@ -424,6 +425,7 @@ class UnityTestRunnerGenerator
       output.puts('    }')
       output.puts('    return parse_status;')
       output.puts('  }')
+      output.puts('#endif')
     else
       main_return = @options[:omit_begin_end] ? 'void' : 'int'
       if main_name != 'main'

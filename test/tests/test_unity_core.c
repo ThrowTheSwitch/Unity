@@ -293,8 +293,9 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 #ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
 #else
-    UNITY_UINT savedGetFlushSpyCalls = 0;
-    UNITY_UINT savedFailures = Unity.TestFailures;
+    int failures = 0;
+    UNITY_COUNTER_TYPE savedGetFlushSpyCalls = 0;
+    UNITY_COUNTER_TYPE savedFailures = Unity.TestFailures;
     Unity.CurrentTestFailed = 1;
     startPutcharSpy(); /* Suppress output */
     startFlushSpy();
@@ -311,7 +312,7 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     endFlushSpy();
 
     startPutcharSpy(); /* Suppress output */
-    int failures = UnityEnd();
+    failures = UnityEnd();
     Unity.TestFailures--;
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, failures);
