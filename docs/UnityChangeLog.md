@@ -24,6 +24,7 @@ New Features:
   - Add Unity BDD plugin
   - Add `UNITY_INCLUDE_EXEC_TIME` option to report test times
   - Allow user to override test abort underlying mechanism
+  - Add `NOT_EQUAL*` and `NOT_WITHIN*` checks for floats and doubles 
 
 Significant Bugfixes:
 
