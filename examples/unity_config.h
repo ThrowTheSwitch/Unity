@@ -109,7 +109,7 @@
  * There can be a significant size and speed impact to enabling 64-bit support
  * on small targets, so don't define it if you don't need it.
  */
-/* #define UNITY_INCLUDE_64 */
+/* #define UNITY_SUPPORT_64 */
 
 
 /* *************************** FLOATING POINT TYPES ****************************
