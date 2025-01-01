@@ -13,7 +13,23 @@ Prior to 2008, the project was an internal project and not released to the publi
 
 ## Log
 
-### Unity 2.6.0 ()
+### Unity 2.6.1 (Jan 2025)
+
+New Features:
+  
+  - Add `-n` comand line option as strict matcher again
+
+Significant Bugfixes:
+
+  - Protect against problems when mis-matched command line options selected
+
+Other:
+
+  - Protect against Conversion warnings in gcc
+  - Remove Redundant line-casts
+  - Make more internal functions static
+
+### Unity 2.6.0 (Mar 2024)
 
 New Features:
 
