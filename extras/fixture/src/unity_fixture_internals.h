@@ -17,9 +17,12 @@ struct UNITY_FIXTURE_T
 {
     int Verbose;
     int Silent;
+    int DryRun;
     unsigned int RepeatCount;
     const char* NameFilter;
+    const char* Name;
     const char* GroupFilter;
+    const char* Group;
 };
 extern struct UNITY_FIXTURE_T UnityFixture;
 
