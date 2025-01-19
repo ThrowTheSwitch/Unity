@@ -90,23 +90,32 @@ TEST_GROUP(UnityCommandOptions);
 
 static int savedVerbose;
 static unsigned int savedRepeat;
+static int savedDryRun;
 static const char* savedName;
 static const char* savedGroup;
+static const char* savedNameExact;
+static const char* savedGroupExact;
 
 TEST_SETUP(UnityCommandOptions)
 {
     savedVerbose = UnityFixture.Verbose;
     savedRepeat = UnityFixture.RepeatCount;
+    savedDryRun = UnityFixture.DryRun;
     savedName = UnityFixture.NameFilter;
     savedGroup = UnityFixture.GroupFilter;
+    savedNameExact = UnityFixture.Name;
+    savedGroupExact = UnityFixture.Group;
 }
 
 TEST_TEAR_DOWN(UnityCommandOptions)
 {
     UnityFixture.Verbose = savedVerbose;
     UnityFixture.RepeatCount= savedRepeat;
+    UnityFixture.DryRun = savedDryRun;
     UnityFixture.NameFilter = savedName;
     UnityFixture.GroupFilter = savedGroup;
+    UnityFixture.Name= savedNameExact;
+    UnityFixture.Group= savedGroup;
 }
 
 
@@ -118,8 +127,11 @@ TEST(UnityCommandOptions, DefaultOptions)
 {
     UnityGetCommandLineOptions(1, noOptions);
     TEST_ASSERT_EQUAL(0, UnityFixture.Verbose);
+    TEST_ASSERT_EQUAL(0, UnityFixture.DryRun);
     TEST_ASSERT_POINTERS_EQUAL(0, UnityFixture.GroupFilter);
     TEST_ASSERT_POINTERS_EQUAL(0, UnityFixture.NameFilter);
+    TEST_ASSERT_POINTERS_EQUAL(0, UnityFixture.Group);
+    TEST_ASSERT_POINTERS_EQUAL(0, UnityFixture.Name);
     TEST_ASSERT_EQUAL(1, UnityFixture.RepeatCount);
 }
 
@@ -132,6 +144,17 @@ TEST(UnityCommandOptions, OptionVerbose)
 {
     TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(2, verbose));
     TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
+}
+
+static const char* dryRun[] = {
+        "testrunner.exe",
+        "-d"
+};
+
+TEST(UnityCommandOptions, OptionDryRun)
+{
+    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(2, dryRun));
+    TEST_ASSERT_EQUAL(1, UnityFixture.DryRun);
 }
 
 static const char* group[] = {
@@ -154,6 +177,28 @@ TEST(UnityCommandOptions, OptionSelectTestByName)
 {
     TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(3, name));
     STRCMP_EQUAL("testname", UnityFixture.NameFilter);
+}
+
+static const char* groupExact[] = {
+        "testrunner.exe",
+        "-G", "groupname"
+};
+
+TEST(UnityCommandOptions, OptionSelectTestByGroupExact)
+{
+    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(3, groupExact));
+    STRCMP_EQUAL("groupname", UnityFixture.Group);
+}
+
+static const char* nameExact[] = {
+        "testrunner.exe",
+        "-N", "testname"
+};
+
+TEST(UnityCommandOptions, OptionSelectTestByNameExact)
+{
+    TEST_ASSERT_EQUAL(0, UnityGetCommandLineOptions(3, nameExact));
+    STRCMP_EQUAL("testname", UnityFixture.Name);
 }
 
 static const char* repeat[] = {
