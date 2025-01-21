@@ -46,21 +46,25 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
     return (int)Unity.TestFailures;
 }
 
-static int selected(const char* filter, const char* name)
+static int selected(const char* filter, const char* select, const char* name)
 {
-    if (filter == 0)
+    if (filter == 0 && select == 0)
         return 1;
-    return strstr(name, filter) ? 1 : 0;
+    if (filter && strstr(name, filter))
+        return 1;
+    if (select && strcmp(name, select) == 0)
+        return 1;
+    return 0;
 }
 
 static int testSelected(const char* test)
 {
-    return selected(UnityFixture.NameFilter, test);
+    return selected(UnityFixture.NameFilter, UnityFixture.Name, test);
 }
 
 static int groupSelected(const char* group)
 {
-    return selected(UnityFixture.GroupFilter, group);
+    return selected(UnityFixture.GroupFilter, UnityFixture.Group, group);
 }
 
 void UnityTestRunner(unityfunction* setup,
@@ -96,17 +100,20 @@ void UnityTestRunner(unityfunction* setup,
         Unity.NumberOfTests++;
         UnityPointer_Init();
 
-        UNITY_EXEC_TIME_START();
+        if (!UnityFixture.DryRun) {
+            UNITY_EXEC_TIME_START();
 
-        if (TEST_PROTECT())
-        {
-            setup();
-            testBody();
+            if (TEST_PROTECT())
+            {
+                setup();
+                testBody();
+            }
+            if (TEST_PROTECT())
+            {
+                teardown();
+            }
         }
-        if (TEST_PROTECT())
-        {
-            teardown();
-        }
+
         if (TEST_PROTECT())
         {
             UnityPointer_UndoAllSets();
@@ -183,8 +190,11 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
     int i;
     UnityFixture.Verbose = 0;
     UnityFixture.Silent = 0;
+    UnityFixture.DryRun = 0;
     UnityFixture.GroupFilter = 0;
+    UnityFixture.Group = 0;
     UnityFixture.NameFilter = 0;
+    UnityFixture.Name = 0;
     UnityFixture.RepeatCount = 1;
 
     if (argc == 1)
@@ -207,9 +217,15 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
             UNITY_PRINT_EOL();
             UnityPrint("  -s          Silent mode: minimal output showing only test failures");
             UNITY_PRINT_EOL();
+            UnityPrint("  -d          Dry run all tests");
+            UNITY_PRINT_EOL();
             UnityPrint("  -g NAME     Only run tests in groups that contain the string NAME");
             UNITY_PRINT_EOL();
+            UnityPrint("  -G NAME     Only run tests in groups named NAME");
+            UNITY_PRINT_EOL();
             UnityPrint("  -n NAME     Only run tests whose name contains the string NAME");
+            UNITY_PRINT_EOL();
+            UnityPrint("  -N NAME     Only run tests named NAME");
             UNITY_PRINT_EOL();
             UnityPrint("  -r NUMBER   Repeatedly run all tests NUMBER times");
             UNITY_PRINT_EOL();
@@ -237,6 +253,11 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
             UnityFixture.Silent = 1;
             i++;
         }
+        else if (strcmp(argv[i], "-d") == 0)
+        {
+            UnityFixture.DryRun = 1;
+            i++;
+        }
         else if (strcmp(argv[i], "-g") == 0)
         {
             i++;
@@ -245,12 +266,28 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
             UnityFixture.GroupFilter = argv[i];
             i++;
         }
+        else if (strcmp(argv[i], "-G") == 0)
+        {
+            i++;
+            if (i >= argc)
+                return 1;
+            UnityFixture.Group= argv[i];
+            i++;
+        }
         else if (strcmp(argv[i], "-n") == 0)
         {
             i++;
             if (i >= argc)
                 return 1;
             UnityFixture.NameFilter = argv[i];
+            i++;
+        }
+        else if (strcmp(argv[i], "-N") == 0)
+        {
+            i++;
+            if (i >= argc)
+                return 1;
+            UnityFixture.Name = argv[i];
             i++;
         }
         else if (strcmp(argv[i], "-r") == 0)
