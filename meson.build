@@ -26,6 +26,7 @@ project('unity', 'c',
 build_fixture = get_option('extension_fixture')
 build_memory = get_option('extension_memory')
 support_double = get_option('support_double')
+fixture_help_message = get_option('fixture_help_message')
 
 unity_args = []
 unity_src = []
@@ -35,6 +36,9 @@ subdir('src')
 
 if build_fixture
   subdir('extras/fixture/src')
+  if fixture_help_message != ''
+    unity_args += '-DUNITY_CUSTOM_HELP_MSG=' + fixture_help_message
+  endif
 endif
 
 if build_memory.enabled() or (build_memory.auto() and build_fixture)
