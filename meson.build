@@ -34,14 +34,13 @@ unity_inc = []
 subdir('src')
 
 if build_fixture
-  # Building the fixture extension implies building the memory
-  # extension.
-  build_memory = true
   subdir('extras/fixture/src')
 endif
 
-if build_memory
+if build_memory.enabled() or (build_memory.auto() and build_fixture)
   subdir('extras/memory/src')
+else
+  unity_args += '-DUNITY_FIXTURE_NO_EXTRAS'
 endif
 
 if support_double
