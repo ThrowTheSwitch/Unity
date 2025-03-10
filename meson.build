@@ -64,10 +64,10 @@ unity_dep = declare_dependency(
 if not meson.is_subproject()
   pkg = import('pkgconfig')
   pkg.generate(
-    name: meson.project_name(),
+    unity_lib,
     version: meson.project_version(),
-    libraries: [ unity_lib ],
-    description: 'C Unit testing framework.'
+    subdirs: 'unity',
+    extra_cflags: unity_args,
   )
 endif
 
