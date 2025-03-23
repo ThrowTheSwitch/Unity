@@ -259,8 +259,14 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #ifndef UNITY_IS_NAN
 #ifndef isnan
 /* NaN is the only floating point value that does NOT equal itself.
- * Therefore if n != n, then it is NaN. */
-#define UNITY_IS_NAN(n) ((n != n) ? 1 : 0)
+ * Therefore if n != n, then it is NaN.
+ *
+ * Another way to define NaN is to check whether the number belongs
+ * simultaneously to the set of negative and positive numbers, including 0.
+ * Therefore if ((n >= 0) == (n < 0)), then it is NaN.
+ * This implementation will not cause an error with the compilation flag:
+ * -Werror=float-equal */
+#define UNITY_IS_NAN(n) ((((n) >= 0.0f) == ((n) < 0.0f)) ? 1 : 0)
 #else
 #define UNITY_IS_NAN(n) isnan(n)
 #endif
@@ -274,6 +280,11 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #else
 #define UNITY_IS_INF(n) isinf(n)
 #endif
+#endif
+
+/* Calculates the absolute value of the given number */
+#ifndef UNITY_ABS
+  #define UNITY_ABS(n) (((n) < 0) ? -(n) : (n))
 #endif
 
 #endif

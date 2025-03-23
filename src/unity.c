@@ -337,10 +337,12 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     static const int sig_digits = 9;
     static const UNITY_INT32 min_scaled = 100000000;
     static const UNITY_INT32 max_scaled = 1000000000;
+    static const UNITY_DOUBLE epsilon = UNITY_DOUBLE_PRECISION;
 #else
     static const int sig_digits = 7;
     static const UNITY_INT32 min_scaled = 1000000;
     static const UNITY_INT32 max_scaled = 10000000;
+    static const UNITY_DOUBLE epsilon = UNITY_FLOAT_PRECISION;
 #endif
 
     UNITY_DOUBLE number = input_number;
@@ -353,7 +355,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     }
 
     /* handle zero, NaN, and +/- infinity */
-    if (number == 0.0f)
+    if (UNITY_ABS(number) < epsilon)
     {
         UnityPrint("0");
     }
@@ -420,7 +422,7 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
 #ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
         /* round to even if exactly between two integers */
-        if ((n & 1) && (((UNITY_DOUBLE)n - number) == 0.5f))
+        if ((n & 1) && (UNITY_ABS((UNITY_DOUBLE)n - number - 0.5f) < epsilon))
             n--;
 #endif
 
