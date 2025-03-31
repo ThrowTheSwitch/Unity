@@ -67,6 +67,7 @@ if not meson.is_subproject()
     name: meson.project_name(),
     version: meson.project_version(),
     libraries: [ unity_lib ],
+    subdirs: 'unity',
     description: 'C Unit testing framework.'
   )
 endif
