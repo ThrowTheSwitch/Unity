@@ -61,13 +61,23 @@ const char UNITY_PROGMEM UnityStrErrShorthand[]                  = "Unity Shorth
 const char UNITY_PROGMEM UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
 const char UNITY_PROGMEM UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
 const char UNITY_PROGMEM UnityStrErr64[]                         = "Unity 64-bit Support Disabled";
+const char UNITY_PROGMEM UnityStrErrDetailStack[]                = "Unity Detail Stack Support Disabled";
 static const char UNITY_PROGMEM UnityStrBreaker[]                = "-----------------------";
 static const char UNITY_PROGMEM UnityStrResultsTests[]           = " Tests ";
 static const char UNITY_PROGMEM UnityStrResultsFailures[]        = " Failures ";
 static const char UNITY_PROGMEM UnityStrResultsIgnored[]         = " Ignored ";
 #ifndef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_DETAIL_STACK_SIZE
+static const char* UNITY_PROGMEM UnityStrDetailLabels[] = UNITY_DETAIL_LABEL_NAMES;
+static const UNITY_COUNTER_TYPE UNITY_PROGMEM UnityStrDetailLabelsCount = sizeof(UnityStrDetailLabels) / sizeof(const char*);
+static const char UNITY_PROGMEM UnityStrErrDetailStackEmpty[]           = " Detail Stack Empty";
+static const char UNITY_PROGMEM UnityStrErrDetailStackFull[]            = " Detail Stack Full";
+static const char UNITY_PROGMEM UnityStrErrDetailStackLabel[]           = " Detail Label Outside Of UNITY_DETAIL_LABEL_NAMES: ";
+static const char UNITY_PROGMEM UnityStrErrDetailStackPop[]             = " Detail Pop With Unexpected Arguments";
+#else
 static const char UNITY_PROGMEM UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
 static const char UNITY_PROGMEM UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
+#endif
 #endif
 /*-----------------------------------------------
  * Pretty Printers & Test Result Output Handlers
@@ -574,6 +584,28 @@ static void UnityAddMsgIfSpecified(const char* msg)
     UNITY_PRINT_TEST_CONTEXT();
 #endif
 #ifndef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_DETAIL_STACK_SIZE
+    {
+        UNITY_COUNTER_TYPE c;
+        for (c = 0; (c < Unity.CurrentDetailStackSize) && (c < UNITY_DETAIL_STACK_SIZE); c++) {
+            const char* label;
+            if ((Unity.CurrentDetailStackLabels[c] == UNITY_DETAIL_NONE) || (Unity.CurrentDetailStackLabels[c] > UnityStrDetailLabelsCount)) {
+                break;
+            }
+            label = UnityStrDetailLabels[Unity.CurrentDetailStackLabels[c]];
+            UnityPrint(UnityStrSpacer);
+            if ((label[0] == '#') && (label[1] != 0)) {
+                UnityPrint(label + 2);
+                UNITY_OUTPUT_CHAR(' ');
+                UnityPrintNumberByStyle(Unity.CurrentDetailStackValues[c], label[1]);
+            } else if (Unity.CurrentDetailStackValues[c] != 0){
+                UnityPrint(label);
+                UNITY_OUTPUT_CHAR(' ');
+                UnityPrint((const char*)Unity.CurrentDetailStackValues[c]);
+            }
+        }
+    }
+#else
     if (Unity.CurrentDetail1)
     {
         UnityPrint(UnityStrSpacer);
@@ -585,6 +617,7 @@ static void UnityAddMsgIfSpecified(const char* msg)
             UnityPrint(Unity.CurrentDetail2);
         }
     }
+#endif
 #endif
     if (msg)
     {
@@ -2127,32 +2160,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrFail);
-    if (msg != NULL)
-    {
-        UNITY_OUTPUT_CHAR(':');
-
-#ifdef UNITY_PRINT_TEST_CONTEXT
-        UNITY_PRINT_TEST_CONTEXT();
-#endif
-#ifndef UNITY_EXCLUDE_DETAILS
-        if (Unity.CurrentDetail1)
-        {
-            UnityPrint(UnityStrDetail1Name);
-            UnityPrint(Unity.CurrentDetail1);
-            if (Unity.CurrentDetail2)
-            {
-                UnityPrint(UnityStrDetail2Name);
-                UnityPrint(Unity.CurrentDetail2);
-            }
-            UnityPrint(UnityStrSpacer);
-        }
-#endif
-        if (msg[0] != ' ')
-        {
-            UNITY_OUTPUT_CHAR(' ');
-        }
-        UnityPrint(msg);
-    }
+    UnityAddMsgIfSpecified(msg);
 
     UNITY_FAIL_AND_BAIL;
 }
@@ -2195,7 +2203,13 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
     Unity.CurrentTestName = FuncName;
     Unity.CurrentTestLineNumber = (UNITY_LINE_TYPE)FuncLineNum;
     Unity.NumberOfTests++;
+    #ifndef UNITY_EXCLUDE_DETAILS
+    #ifdef UNITY_DETAIL_STACK_SIZE
+    Unity.CurrentDetailStackSize = 0;
+    #else
     UNITY_CLR_DETAILS();
+    #endif
+    #endif
     UNITY_EXEC_TIME_START();
     if (TEST_PROTECT())
     {
@@ -2262,6 +2276,46 @@ int UnityEnd(void)
     UNITY_OUTPUT_COMPLETE();
     return (int)(Unity.TestFailures);
 }
+
+/*-----------------------------------------------
+ * Details Stack
+ *-----------------------------------------------*/
+#ifndef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_DETAIL_STACK_SIZE
+void UnityPushDetail(UNITY_DETAIL_LABEL_TYPE label, UNITY_DETAIL_VALUE_TYPE value, const UNITY_LINE_TYPE line) {
+    if (Unity.CurrentDetailStackSize >= UNITY_DETAIL_STACK_SIZE) {
+        UnityTestResultsFailBegin(line);
+        UnityPrint(UnityStrErrDetailStackFull);
+        UnityAddMsgIfSpecified(NULL);
+        UNITY_FAIL_AND_BAIL;
+    }
+    if (label >= UnityStrDetailLabelsCount) {
+        UnityTestResultsFailBegin(line);
+        UnityPrint(UnityStrErrDetailStackLabel);
+        UnityPrintNumberUnsigned(label);
+        UnityAddMsgIfSpecified(NULL);
+        UNITY_FAIL_AND_BAIL;
+    }
+    Unity.CurrentDetailStackLabels[Unity.CurrentDetailStackSize] = label;
+    Unity.CurrentDetailStackValues[Unity.CurrentDetailStackSize++] = value;
+}
+void UnityPopDetail(UNITY_DETAIL_LABEL_TYPE label, UNITY_DETAIL_VALUE_TYPE value, const UNITY_LINE_TYPE line) {
+    if (Unity.CurrentDetailStackSize == 0) {
+        UnityTestResultsFailBegin(line);
+        UnityPrint(UnityStrErrDetailStackEmpty);
+        UnityAddMsgIfSpecified(NULL);
+        UNITY_FAIL_AND_BAIL;
+    }
+    if ((Unity.CurrentDetailStackLabels[Unity.CurrentDetailStackSize-1] != label) || (Unity.CurrentDetailStackValues[Unity.CurrentDetailStackSize-1] != value)) {
+        UnityTestResultsFailBegin(line);
+        UnityPrint(UnityStrErrDetailStackPop);
+        UnityAddMsgIfSpecified(NULL);
+        UNITY_FAIL_AND_BAIL;
+    }   
+    Unity.CurrentDetailStackSize--;
+}
+#endif
+#endif
 
 /*-----------------------------------------------
  * Command Line Argument Support
