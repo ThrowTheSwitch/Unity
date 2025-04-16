@@ -512,13 +512,30 @@ typedef enum
     UNITY_ARRAY_UNKNOWN
 } UNITY_FLAGS_T;
 
+#ifndef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_DETAIL_STACK_SIZE
+#ifndef UNITY_DETAIL_LABEL_TYPE
+#define UNITY_DETAIL_LABEL_TYPE uint8_t
+#endif
+#ifndef UNITY_DETAIL_VALUE_TYPE
+#define UNITY_DETAIL_VALUE_TYPE UNITY_PTR_TO_INT
+#endif
+#endif
+#endif
+
 struct UNITY_STORAGE_T
 {
     const char* TestFile;
     const char* CurrentTestName;
 #ifndef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_DETAIL_STACK_SIZE
+    UNITY_DETAIL_LABEL_TYPE CurrentDetailStackLabels[UNITY_DETAIL_STACK_SIZE];
+    UNITY_DETAIL_VALUE_TYPE CurrentDetailStackValues[UNITY_DETAIL_STACK_SIZE];
+    UNITY_COUNTER_TYPE CurrentDetailStackSize;
+#else
     const char* CurrentDetail1;
     const char* CurrentDetail2;
+#endif
 #endif
     UNITY_LINE_TYPE CurrentTestLineNumber;
     UNITY_COUNTER_TYPE NumberOfTests;
@@ -561,16 +578,53 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 #define UNITY_SET_DETAIL(d1)
 #define UNITY_SET_DETAILS(d1,d2)
 #else
-#define UNITY_CLR_DETAILS()         do { Unity.CurrentDetail1 = 0;     Unity.CurrentDetail2 = 0;    } while (0)
-#define UNITY_SET_DETAIL(d1)        do { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = 0;    } while (0)
-#define UNITY_SET_DETAILS(d1,d2)    do { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = (d2); } while (0)
-
 #ifndef UNITY_DETAIL1_NAME
 #define UNITY_DETAIL1_NAME "Function"
 #endif
 
 #ifndef UNITY_DETAIL2_NAME
 #define UNITY_DETAIL2_NAME "Argument"
+#endif
+
+#ifdef UNITY_DETAIL_STACK_SIZE
+/* stack based implementation */
+#ifndef UNITY_DETAIL_LABEL_NAMES
+/* Note: If the label name string starts with '#', the second byte is interpreted as UNITY_DISPLAY_STYLE_T,
+ *         and the detail value will be printed as number (e.g. "#\x24Line" to output "Line <UINT32 value>").
+ *       Otherwise, the detail value must be a pointer to a string that is valid until it is pop'ed.
+ */
+#define UNITY_DETAIL_LABEL_NAMES {0, UNITY_DETAIL1_NAME, UNITY_DETAIL2_NAME}
+typedef enum
+{
+    UNITY_DETAIL_NONE = 0,
+    UNITY_DETAIL_D1 = 1,
+    UNITY_DETAIL_D2 = 2
+} UNITY_DETAIL_LABEL_T;
+#endif
+void UnityPushDetail(UNITY_DETAIL_LABEL_TYPE label, UNITY_DETAIL_VALUE_TYPE value, const UNITY_LINE_TYPE line);
+void UnityPopDetail(UNITY_DETAIL_LABEL_TYPE label, UNITY_DETAIL_VALUE_TYPE value, const UNITY_LINE_TYPE line);
+
+#define UNITY_CLR_DETAILS()         do { \
+        if(Unity.CurrentDetailStackSize && \
+           Unity.CurrentDetailStackLabels[Unity.CurrentDetailStackSize - 1] == UNITY_DETAIL_D2) { \
+            Unity.CurrentDetailStackLabels[--Unity.CurrentDetailStackSize] = UNITY_DETAIL_NONE;} \
+        if(Unity.CurrentDetailStackSize && \
+          Unity.CurrentDetailStackLabels[Unity.CurrentDetailStackSize - 1] == UNITY_DETAIL_D1) { \
+            Unity.CurrentDetailStackLabels[--Unity.CurrentDetailStackSize] = UNITY_DETAIL_NONE;} \
+    } while (0)
+#define UNITY_SET_DETAIL(d1)        do { UNITY_CLR_DETAILS(); \
+        UnityPushDetail(UNITY_DETAIL_D1, (UNITY_DETAIL_VALUE_TYPE)(d1), __LINE__); \
+    } while (0)
+#define UNITY_SET_DETAILS(d1,d2)    do { UNITY_CLR_DETAILS(); \
+        UnityPushDetail(UNITY_DETAIL_D1, (UNITY_DETAIL_VALUE_TYPE)(d1), __LINE__); \
+        UnityPushDetail(UNITY_DETAIL_D2, (UNITY_DETAIL_VALUE_TYPE)(d2), __LINE__); \
+    } while (0)
+
+#else
+/* just two hardcoded slots */
+#define UNITY_CLR_DETAILS()         do { Unity.CurrentDetail1 = 0;     Unity.CurrentDetail2 = 0;    } while (0)
+#define UNITY_SET_DETAIL(d1)        do { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = 0;    } while (0)
+#define UNITY_SET_DETAILS(d1,d2)    do { Unity.CurrentDetail1 = (d1);  Unity.CurrentDetail2 = (d2); } while (0)
 #endif
 #endif
 
@@ -1177,6 +1231,14 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(actual, line, message)                           UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_NEG_INF)
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, line, message)                               UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_NAN)
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, line, message)                       UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_DET)
+#endif
+
+#if !defined(UNITY_EXCLUDE_DETAILS) && defined(UNITY_DETAIL_STACK_SIZE)
+#define UNITY_DETAIL_PUSH(label, value)                                                          UnityPushDetail((UNITY_DETAIL_LABEL_TYPE)(label), (UNITY_DETAIL_VALUE_TYPE)(value), __LINE__)
+#define UNITY_DETAIL_POP(label, value)                                                           UnityPopDetail((UNITY_DETAIL_LABEL_TYPE)(label), (UNITY_DETAIL_VALUE_TYPE)(value), __LINE__)
+#else
+#define UNITY_DETAIL_PUSH(label, value)                                                          UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrDetailStack)
+#define UNITY_DETAIL_POP(label, value)                                                           UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrDetailStack)
 #endif
 
 /* End of UNITY_INTERNALS_H */
