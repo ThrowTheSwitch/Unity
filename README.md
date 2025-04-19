@@ -75,7 +75,7 @@ Like INT, there are variants for different sizes also.
 
 Compares two integers for equality and display errors as hexadecimal.
 Like the other integer comparisons, you can specify the size... 
-here the size will also effect how many nibbles are shown (for example, `HEX16` will show 4 nibbles).
+here the size will also affect how many nibbles are shown (for example, `HEX16` will show 4 nibbles).
 
     TEST_ASSERT_EQUAL(expected, actual)
 
