@@ -45,7 +45,7 @@ int suiteTearDown(int num_failures);
  * Test Reset and Verify
  *-------------------------------------------------------*/
 
-/* These functions are intended to be called before during tests in order
+/* These functions are intended to be called before or during tests in order
  * to support complex test loops, etc. Both are NOT built into Unity. Instead
  * the test runner generator will create them. resetTest will run teardown and
  * setup again, verifying any end-of-test needs between. verifyTest will only
