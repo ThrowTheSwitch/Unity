@@ -94,12 +94,12 @@ UnityTestRunnerGenerator.new.run(testfile, runner_name, options)
 ```
 
 If you have multiple files to generate in a build script (such as a Rakefile), you might want to instantiate a generator object with your options and call it to generate each runner afterwards.
-Like thus:
+Like this:
 
 ```Ruby
 gen = UnityTestRunnerGenerator.new(options)
 test_files.each do |f|
-  gen.run(f, File.basename(f,'.c')+"Runner.c"
+  gen.run(f, File.basename(f,'.c')+"Runner.c")
 end
 ```
 
@@ -205,7 +205,7 @@ Few usage examples can be found in `/test/tests/test_unity_parameterized.c` file
 You should define `UNITY_SUPPORT_TEST_CASES` macro for tests success compiling,
 if you enable current option.
 
-You can see list of supported macros list in the
+You can see a list of supported macros in the
 [Parameterized tests provided macros](#parameterized-tests-provided-macros)
 section that follows.
 
@@ -299,7 +299,7 @@ Unity provides support for few param tests generators, that can be combined
 with each other. You must define test function as usual C function with usual
 C arguments, and test generator will pass what you tell as a list of arguments.
 
-Let's show how all of them works on the following test function definitions:
+Let's show how all of them work on the following test function definitions:
 
 ```C
 /* Place your test generators here, usually one generator per one or few lines */
@@ -401,17 +401,17 @@ TEST_CASE(4, 6, 30)
 Test matix is an advanced generator. It single call can be converted to zero,
 one or few `TEST_CASE` equivalent commands.
 
-That generator will create tests for all cobinations of the provided list. Each argument has to be given as a list of one or more elements in the format `[<parm1>, <param2>, ..., <paramN-1>, <paramN>]`.
+That generator will create tests for all combinations of the provided list. Each argument has to be given as a list of one or more elements in the format `[<parm1>, <param2>, ..., <paramN-1>, <paramN>]`.
 
-All parameters supported by the `TEST_CASE` is supported as arguments:
+All parameters supported by the `TEST_CASE` are supported as arguments:
 - Numbers incl type specifiers e.g. `<1>`, `<1u>`, `<1l>`, `<2.3>`, or `<2.3f>`
-- Strings incl string concatianion e.g. `<"string">`, or `<"partial" "string">`
+- Strings incl string concatenation e.g. `<"string">`, or `<"partial" "string">`
 - Chars e.g. `<'c'>`
 - Enums e.g. `<ENUM_NAME>`
 - Elements of arrays e.g. `<data[0]>`
 
-Let's use our `test_demoParamFunction` test for checking, what ranges
-will be generated for our single `TEST_RANGE` row:
+Let's use our `test_demoParamFunction` test for checking what ranges
+will be generated for our single `TEST_MATRIX` row:
 
 ```C
 TEST_MATRIX([3, 4, 7], [10, 8, 2, 1],[30u, 20.0f])
@@ -450,11 +450,11 @@ As we can see:
 
 | Parameter | Format | Count of values |
 |---|---|---|
-| `a` | `[3, 4, 7]` | 2 |
+| `a` | `[3, 4, 7]` | 3 |
 | `b` | `[10, 8, 2, 1]` | 4 |
 | `c` | `[30u, 20.0f]` | 2 |
 
-We totally have 2 * 4 * 2 = 16 equal test cases, that can be written as following:
+We totally have 3 * 4 * 2 = 24 equal test cases, that can be written as following:
 
 ```C
 TEST_CASE(3, 10, 30u)
@@ -516,7 +516,7 @@ ruby unity_test_summary.rb build/test/ ~/projects/myproject/
 Or, if you're more of a Windows sort of person:
 
 ```Shell
-ruby unity_test_summary.rb build\teat\ C:\projects\myproject\
+ruby unity_test_summary.rb build\test\ C:\projects\myproject\
 ```
 
 When configured correctly, you'll see a final summary, like so:

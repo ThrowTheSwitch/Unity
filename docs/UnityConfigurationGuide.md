@@ -33,7 +33,7 @@ In either case, you've got a couple choices for configuring these options:
 
 Unfortunately, it doesn't usually work well to just #define these things in the test itself.
 These defines need to take effect where ever unity.h is included.
-This would be test test, the test runner (if you're generating one), and from unity.c when it's compiled.
+This would be the test, the test runner (if you're generating one), and from unity.c when it's compiled.
 
 ## The Options
 
