@@ -87,6 +87,13 @@
       /* Since C23, the keyword _Noreturn has been replaced by the attribute noreturn, based on: */
       /* https://en.cppreference.com/w/c/language/attributes/noreturn */
       #define UNITY_NORETURN [[ noreturn ]]
+    #elif defined(__IAR_SYSTEMS_ICC__) && (__IAR_SYSTEMS_ICC__ >= 8)
+      /* For IAR compilers supporting at least C99 use the IAR specific '__noreturn' keyword */
+      /* Based on tests and: */
+      /* https://wwwfiles.iar.com/arm/webic/doc/EWARM_DevelopmentGuide.ENU.pdf */
+      /* https://wwwfiles.iar.com/AVR/webic/doc/EWAVR_CompilerGuide.pdf */
+      /* https://wwwfiles.iar.com/msp430/webic/doc/EW430_CompilerReference.pdf */
+      #define UNITY_NORETURN __noreturn
     #endif
   #endif
   #ifndef UNITY_NORETURN
