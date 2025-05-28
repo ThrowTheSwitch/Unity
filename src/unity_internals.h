@@ -487,14 +487,12 @@ typedef enum
 
 typedef enum
 {
-    UNITY_WITHIN           = 0x0,
     UNITY_EQUAL_TO         = 0x1,
     UNITY_GREATER_THAN     = 0x2,
     UNITY_GREATER_OR_EQUAL = 0x2 + UNITY_EQUAL_TO,
     UNITY_SMALLER_THAN     = 0x4,
     UNITY_SMALLER_OR_EQUAL = 0x4 + UNITY_EQUAL_TO,
-    UNITY_NOT_EQUAL        = 0x0,
-    UNITY_UNKNOWN
+    UNITY_NOT_EQUAL        = 0x6
 } UNITY_COMPARISON_T;
 
 #ifndef UNITY_EXCLUDE_FLOAT
