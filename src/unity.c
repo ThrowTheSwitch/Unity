@@ -223,15 +223,19 @@ void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T
             UnityPrintNumber(number);
         }
     }
-    else if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
-    {
-        UnityPrintNumberUnsigned((UNITY_UINT)number);
-    }
     else
     {
         UNITY_OUTPUT_CHAR('0');
         UNITY_OUTPUT_CHAR('x');
         UnityPrintNumberHex((UNITY_UINT)number, (char)((style & 0xF) * 2));
+    }
+}
+
+void UnityPrintUintNumberByStyle(const UNITY_UINT number, const UNITY_DISPLAY_STYLE_T style)
+{
+    if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
+    {
+        UnityPrintNumberUnsigned(number);
     }
 }
 
@@ -709,11 +713,11 @@ void UnityAssertBits(const UNITY_INT mask,
 }
 
 /*-----------------------------------------------*/
-void UnityAssertEqualNumber(const UNITY_INT expected,
-                            const UNITY_INT actual,
-                            const char* msg,
-                            const UNITY_LINE_TYPE lineNumber,
-                            const UNITY_DISPLAY_STYLE_T style)
+void UnityAssertEqualIntNumber(const UNITY_INT expected,
+                               const UNITY_INT actual,
+                               const char* msg,
+                               const UNITY_LINE_TYPE lineNumber,
+                               const UNITY_DISPLAY_STYLE_T style)
 {
     RETURN_IF_FAIL_OR_IGNORE;
 
@@ -729,6 +733,25 @@ void UnityAssertEqualNumber(const UNITY_INT expected,
     }
 }
 
+void UnityAssertEqualUintNumber(const UNITY_UINT expected,
+                                const UNITY_UINT actual,
+                                const char* msg,
+                                const UNITY_LINE_TYPE lineNumber,
+                                const UNITY_DISPLAY_STYLE_T style)
+{
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (expected != actual)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+        UnityPrintUintNumberByStyle(expected, style);
+        UnityPrint(UnityStrWas);
+        UnityPrintUintNumberByStyle(actual, style);
+        UnityAddMsgIfSpecified(msg);
+        UNITY_FAIL_AND_BAIL;
+    }
+}
 /*-----------------------------------------------*/
 void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,
                                            const UNITY_INT actual,
