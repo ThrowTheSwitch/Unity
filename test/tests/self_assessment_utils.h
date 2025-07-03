@@ -72,6 +72,11 @@ static char putcharSpyBuffer[SPY_BUFFER_MAX];
 static UNITY_COUNTER_TYPE indexSpyBuffer;
 static UNITY_COUNTER_TYPE putcharSpyEnabled;
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+#endif
+
 void startPutcharSpy(void)
 {
     indexSpyBuffer = 0;
@@ -133,6 +138,10 @@ void flushSpy(void)
     if (flushSpyEnabled){ flushSpyCalls++; }
 }
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
 #define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) do {          \
         startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
@@ -148,4 +157,11 @@ void flushSpy(void)
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
         } while (0)
 
+#endif
+
+// The reason this isn't folded into the above diagnostic is to semi-isolate
+// the header contents from the user content it is included into.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
