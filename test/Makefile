@@ -11,7 +11,6 @@ endif
 ifeq ($(findstring clang, $(CC)), clang)
 E = -Weverything
 CFLAGS += $E -Wno-unknown-warning-option -Wno-missing-prototypes
-CFLAGS += -Wno-unused-macros -Wno-padded
 CFLAGS += -Wno-unsafe-buffer-usage
 endif
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
