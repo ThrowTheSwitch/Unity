@@ -12,7 +12,7 @@ ifeq ($(findstring clang, $(CC)), clang)
 E = -Weverything
 CFLAGS += $E -Wno-unknown-warning-option -Wno-missing-prototypes
 CFLAGS += -Wno-unused-macros -Wno-padded -Wno-missing-noreturn
-CFLAGS += -Wno-unsafe-buffer-usage -Wno-reserved-identifier
+CFLAGS += -Wno-unsafe-buffer-usage
 endif
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 #CFLAGS += -Wconversion #disabled because if falsely complains about the isinf and isnan macros

@@ -61,7 +61,7 @@ void testUnitySizeInitializationReminder(void)
 #ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
 #endif
-    } _Expected_Unity;
+    } Expected_Unity;
 #else
     struct {
         const char* TestFile;
@@ -81,7 +81,7 @@ void testUnitySizeInitializationReminder(void)
 #ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
 #endif
-    } _Expected_Unity;
+    } Expected_Unity;
 #endif
 
     /* Compare our fake structure's size to the actual structure's size. They
@@ -89,7 +89,7 @@ void testUnitySizeInitializationReminder(void)
      *
      * This accounts for alignment, padding, and packing issues that might come
      * up between different architectures. */
-    TEST_ASSERT_EQUAL_MESSAGE(sizeof(_Expected_Unity), sizeof(Unity), message);
+    TEST_ASSERT_EQUAL_MESSAGE(sizeof(Expected_Unity), sizeof(Unity), message);
 }
 
 void testPassShouldEndImmediatelyWithPass(void)
