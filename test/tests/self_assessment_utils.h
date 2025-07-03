@@ -133,19 +133,19 @@ void flushSpy(void)
     if (flushSpyEnabled){ flushSpyCalls++; }
 }
 
-#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
+#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) do {          \
         startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
-        }
+        } while (0)
 
-#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) {            \
+#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) do {         \
         startPutcharSpy(); UnityPrintNumberUnsigned((actual)); endPutcharSpy(); \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());            \
-        }
+        } while (0)
 
-#define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) {            \
+#define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) do {         \
         startPutcharSpy(); UnityPrintFloat((actual)); endPutcharSpy();  \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
-        }
+        } while (0)
 
 #endif
