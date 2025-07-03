@@ -1208,6 +1208,9 @@ void testNotEqualFloatEachEqualLengthZero(void)
 #endif
 }
 
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+UNITY_FUNCTION_ATTR(noreturn)
+#endif
 void testFloatPrinting(void)
 {
 #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
@@ -1257,6 +1260,9 @@ void testFloatPrinting(void)
 #endif
 }
 
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+UNITY_FUNCTION_ATTR(noreturn)
+#endif
 void testFloatPrintingRoundTiesToEven(void)
 {
 #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_INCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
@@ -1368,6 +1374,9 @@ static void printFloatValue(float f)
 #endif
 #endif
 
+#if !defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) || !defined(USING_OUTPUT_SPY)
+UNITY_FUNCTION_ATTR(noreturn)
+#endif
 void testFloatPrintingRandomSamples(void)
 {
 #if !defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) || !defined(USING_OUTPUT_SPY)
