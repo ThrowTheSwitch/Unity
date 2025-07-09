@@ -61,7 +61,7 @@ void testUnitySizeInitializationReminder(void)
 #ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
 #endif
-    } _Expected_Unity;
+    } Expected_Unity;
 #else
     struct {
         const char* TestFile;
@@ -81,7 +81,7 @@ void testUnitySizeInitializationReminder(void)
 #ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
 #endif
-    } _Expected_Unity;
+    } Expected_Unity;
 #endif
 
     /* Compare our fake structure's size to the actual structure's size. They
@@ -89,22 +89,22 @@ void testUnitySizeInitializationReminder(void)
      *
      * This accounts for alignment, padding, and packing issues that might come
      * up between different architectures. */
-    TEST_ASSERT_EQUAL_MESSAGE(sizeof(_Expected_Unity), sizeof(Unity), message);
+    TEST_ASSERT_EQUAL_MESSAGE(sizeof(Expected_Unity), sizeof(Unity), message);
 }
 
-void testPassShouldEndImmediatelyWithPass(void)
+UNITY_FUNCTION_ATTR(noreturn) void testPassShouldEndImmediatelyWithPass(void)
 {
     TEST_PASS();
     TEST_FAIL_MESSAGE("We should have passed already and finished this test");
 }
 
-void testPassShouldEndImmediatelyWithPassAndMessage(void)
+UNITY_FUNCTION_ATTR(noreturn) void testPassShouldEndImmediatelyWithPassAndMessage(void)
 {
     TEST_PASS_MESSAGE("Woohoo! This Automatically Passes!");
     TEST_FAIL_MESSAGE("We should have passed already and finished this test");
 }
 
-void testMessageShouldDisplayMessageWithoutEndingAndGoOnToPass(void)
+UNITY_FUNCTION_ATTR(noreturn) void testMessageShouldDisplayMessageWithoutEndingAndGoOnToPass(void)
 {
     TEST_MESSAGE("This is just a message");
     TEST_MESSAGE("This is another message");
@@ -282,7 +282,7 @@ void testProtection(void)
     TEST_ASSERT_EQUAL(3, mask);
 }
 
-void testIgnoredAndThenFailInTearDown(void)
+UNITY_FUNCTION_ATTR(noreturn) void testIgnoredAndThenFailInTearDown(void)
 {
     SetToOneToFailInTearDown = 1;
     TEST_IGNORE();

@@ -72,6 +72,11 @@ static char putcharSpyBuffer[SPY_BUFFER_MAX];
 static UNITY_COUNTER_TYPE indexSpyBuffer;
 static UNITY_COUNTER_TYPE putcharSpyEnabled;
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+#endif
+
 void startPutcharSpy(void)
 {
     indexSpyBuffer = 0;
@@ -133,19 +138,30 @@ void flushSpy(void)
     if (flushSpyEnabled){ flushSpyCalls++; }
 }
 
-#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+#define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) do {          \
         startPutcharSpy(); UnityPrintNumber((actual)); endPutcharSpy(); \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
-        }
+        } while (0)
 
-#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) {            \
+#define TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS(expected, actual) do {         \
         startPutcharSpy(); UnityPrintNumberUnsigned((actual)); endPutcharSpy(); \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());            \
-        }
+        } while (0)
 
-#define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) {            \
+#define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) do {         \
         startPutcharSpy(); UnityPrintFloat((actual)); endPutcharSpy();  \
         TEST_ASSERT_EQUAL_STRING((expected), getBufferPutcharSpy());    \
-        }
+        } while (0)
 
+#endif
+
+// The reason this isn't folded into the above diagnostic is to semi-isolate
+// the header contents from the user content it is included into.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
