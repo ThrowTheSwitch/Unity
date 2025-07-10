@@ -1,4 +1,4 @@
-#! python3
+#!/usr/bin/env python3
 # =========================================================================
 #   Unity - A Test Framework for C
 #   ThrowTheSwitch.org
