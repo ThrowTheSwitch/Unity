@@ -601,7 +601,11 @@ static void UnityAddMsgIfSpecified(const char* msg)
             if ((label[0] == '#') && (label[1] != 0)) {
                 UnityPrint(label + 2);
                 UNITY_OUTPUT_CHAR(' ');
-                UnityPrintNumberByStyle(Unity.CurrentDetailStackValues[c], label[1]);
+                if ((label[1] & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT) {
+                    UnityPrintIntNumberByStyle((UNITY_INT)Unity.CurrentDetailStackValues[c], label[1]);
+                } else {
+                    UnityPrintUintNumberByStyle((UNITY_UINT)Unity.CurrentDetailStackValues[c], label[1]);
+                }
             } else if (Unity.CurrentDetailStackValues[c] != 0){
                 UnityPrint(label);
                 UNITY_OUTPUT_CHAR(' ');
