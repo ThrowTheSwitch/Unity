@@ -33,7 +33,7 @@ void test_BitExtractor(void)
 {
   const test_vector_t test_vectors[] = {
     {__LINE__, 7, BIT_DIRECTION_UP, {1,1,1,0,0,0,0,0}},
-    {__LINE__, 7, BIT_DIRECTION_DOWN, {0,0,0,0,0,1,0,1}},
+    {__LINE__, 7, BIT_DIRECTION_DOWN, {0,0,0,0,0,1,0,1}},  /* intentionally wrong to demonstrate detail output */
     {0}
   };
   const test_vector_t* tv;
