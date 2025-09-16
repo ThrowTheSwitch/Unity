@@ -631,6 +631,7 @@ static void UnityAddMsgIfSpecified(const char* msg)
     {
         UnityPrint(UnityStrSpacer);
         UnityPrint(msg);
+        UNITY_PRINT_EOL();
     }
 }
 
