@@ -2037,7 +2037,7 @@ static enum UnityLengthModifier UnityLengthModifierGet(const char *pch, int *len
             }
         case 'h':
             {
-                // short and char are converted to int
+                /* short and char are converted to int */
                 length_mod = UNITY_LENGTH_MODIFIER_NONE;
                 if (pch[1] == 'h')
                 {
@@ -2054,7 +2054,7 @@ static enum UnityLengthModifier UnityLengthModifierGet(const char *pch, int *len
         case 't':
         case 'L':
             {
-                // Not supported, but should gobble up the length specifier anyway
+                /* Not supported, but should gobble up the length specifier anyway */
                 length_mod = UNITY_LENGTH_MODIFIER_NONE;
                 *length = 1;
                 break;
@@ -2515,7 +2515,7 @@ static int IsStringInBiggerString(const char* longstring, const char* shortstrin
             }
         }
 
-        // If we didn't match and we're on strict matching, we already know we failed
+        /* If we didn't match and we're on strict matching, we already know we failed */
         if (UnityStrictMatch)
         {
             return 0;
