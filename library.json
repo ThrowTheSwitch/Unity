@@ -7,7 +7,7 @@
 
 {
   "name": "Unity",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "keywords": "unit-testing, testing, tdd, testing-framework",
   "description": "Simple Unit Testing for C",
   "homepage": "http://www.throwtheswitch.org/unity",
