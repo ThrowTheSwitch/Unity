@@ -1850,6 +1850,179 @@ void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,
 }
 
 /*-----------------------------------------------*/
+void UnityAssertNotEqualString(const char* expected,
+                               const char* actual,
+                               const char* msg,
+                               const UNITY_LINE_TYPE lineNumber)
+{
+    UNITY_UINT32 i;
+    
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    /* If both pointers are null or same pointer, they are equal (FAIL) */
+    if (expected == actual)
+    {
+        Unity.CurrentTestFailed = 1;
+    }
+    /* If only one is null, they are not equal (PASS) */
+    else if ((expected == NULL) || (actual == NULL))
+    {
+        return;
+    }
+    else
+    {
+        for (i = 0; expected[i] || actual[i]; i++)
+        {
+            if (expected[i] != actual[i])
+            {
+                return; /* Strings are different (PASS) */
+            }
+        }
+
+        /* Strings are equal (FAIL) */
+        Unity.CurrentTestFailed = 1;
+    }
+
+    if (Unity.CurrentTestFailed)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrExpected);
+
+        if (msg)
+        {
+            UnityAddMsgIfSpecified(msg);
+        }
+        else
+        {
+            UnityPrint(" Expected strings to be different");
+        }
+
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
+void UnityAssertNotEqualStringLen(const char* expected,
+                                  const char* actual,
+                                  const UNITY_UINT32 length,
+                                  const char* msg,
+                                  const UNITY_LINE_TYPE lineNumber)
+{
+    UNITY_UINT32 i;
+
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (length == 0)
+    {
+        UnityPrintPointlessAndBail();
+    }
+
+    /* If both pointers are same (including both NULL), they are equal (FAIL) */
+    if (expected == actual)
+    {
+        Unity.CurrentTestFailed = 1;
+    }
+    /* If only one is null, they are not equal (PASS) */
+    else if ((expected == NULL) || (actual == NULL))
+    {
+        return;
+    }
+    else
+    {
+        for (i = 0; (i < length) && (expected[i] || actual[i]); i++)
+        {
+            if (expected[i] != actual[i])
+            {
+                return; /* Strings are different (PASS) */
+            }
+        }
+
+        /* Strings are equal within length (FAIL) */
+        Unity.CurrentTestFailed = 1;
+    }
+
+    if (Unity.CurrentTestFailed)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrintExpectedAndActualStringsLen(expected, actual, length);
+
+        if (msg)
+        {
+            UnityAddMsgIfSpecified(msg);
+        }
+        else
+        {
+            UnityPrint(" Expected strings to be different");
+        }
+        
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
+void UnityAssertNotEqualMemory(UNITY_INTERNAL_PTR expected,
+                               UNITY_INTERNAL_PTR actual,
+                               const UNITY_UINT32 length,
+                               const char* msg,
+                               const UNITY_LINE_TYPE lineNumber)
+{
+    UNITY_PTR_ATTRIBUTE const unsigned char* ptr_exp = (UNITY_PTR_ATTRIBUTE const unsigned char*)expected;
+    UNITY_PTR_ATTRIBUTE const unsigned char* ptr_act = (UNITY_PTR_ATTRIBUTE const unsigned char*)actual;
+    UNITY_UINT32 bytes;
+
+    RETURN_IF_FAIL_OR_IGNORE;
+
+    if (length == 0)
+    {
+        UnityPrintPointlessAndBail();
+    }
+
+    if (expected == actual)
+    {
+        /* Both are NULL or same pointer (FAIL) */
+        Unity.CurrentTestFailed = 1;
+    }
+    else if (expected == NULL || actual == NULL)
+    {
+        /* One is NULL and other is not (PASS) */
+        return;
+    }
+    else
+    {
+        bytes = length;
+        while (bytes--)
+        {
+            if (*ptr_exp != *ptr_act)
+            {
+                return; /* Memory is different (PASS) */
+            }
+            ptr_exp++;
+            ptr_act++;
+        }
+
+        /* Memory is equal (PASS) */
+        Unity.CurrentTestFailed = 1;
+    }
+
+    if (Unity.CurrentTestFailed)
+    {
+        UnityTestResultsFailBegin(lineNumber);
+        UnityPrint(UnityStrMemory);
+
+        if (msg)
+        {
+            UnityAddMsgIfSpecified(msg);
+        }
+        else
+        {
+            UnityPrint(" Expected memory to be different");
+        }
+
+        UNITY_FAIL_AND_BAIL;
+    }
+}
+
+/*-----------------------------------------------*/
 void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,
                             UNITY_INTERNAL_PTR actual,
                             const UNITY_UINT32 length,
