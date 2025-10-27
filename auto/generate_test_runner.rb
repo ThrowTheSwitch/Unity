@@ -469,7 +469,7 @@ class UnityTestRunnerGenerator
           output.puts('      UNITY_PRINT_EOL();')
         else
           test[:args].each do |args|
-            output.puts("      UnityPrint(\"  #{test[:test]}(#{args})\");")
+            output.puts("      UnityPrint(\"  #{test[:test]}(#{args.gsub('"','').gsub("\n",'')})\");")
             output.puts('      UNITY_PRINT_EOL();')
           end
         end
