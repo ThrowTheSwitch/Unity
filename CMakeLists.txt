@@ -44,6 +44,7 @@ project(unity
 # Options to Build With Extras -------------------------------------------------
 option(UNITY_EXTENSION_FIXTURE "Compiles Unity with the \"fixture\" extension." OFF)
 option(UNITY_EXTENSION_MEMORY "Compiles Unity with the \"memory\" extension." OFF)
+option(UNITY_SUPPORT_DOUBLE   "Enable double precision support in Unity." OFF)
 
 set(UNITY_EXTENSION_FIXTURE_ENABLED $<BOOL:${UNITY_EXTENSION_FIXTURE}>)
 set(UNITY_EXTENSION_MEMORY_ENABLED $<OR:${UNITY_EXTENSION_FIXTURE_ENABLED},$<BOOL:${UNITY_EXTENSION_MEMORY}>>)
@@ -54,6 +55,10 @@ endif()
 
 if(${UNITY_EXTENSION_MEMORY})
     message(STATUS "Unity: Building with the memory extension.")
+endif()
+
+if(${UNITY_SUPPORT_DOUBLE})
+    message(STATUS "Unity: Building with double precision support.")
 endif()
 
 # Main target ------------------------------------------------------------------
@@ -69,6 +74,11 @@ target_sources(${PROJECT_NAME}
         src/unity.c
         $<$<BOOL:${UNITY_EXTENSION_FIXTURE_ENABLED}>:extras/fixture/src/unity_fixture.c>
         $<$<BOOL:${UNITY_EXTENSION_MEMORY_ENABLED}>:extras/memory/src/unity_memory.c>
+)
+
+target_compile_definitions(${PROJECT_NAME}
+    PUBLIC
+        $<$<BOOL:${UNITY_SUPPORT_DOUBLE}>:UNITY_SUPPORT_DOUBLE>
 )
 
 target_include_directories(${PROJECT_NAME}
