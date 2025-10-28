@@ -502,7 +502,7 @@ class UnityTestRunnerGenerator
       end
     end
     output.puts
-    output.puts("  int number_of_tests = #{count_tests(tests)};")
+    output.puts("  #define number_of_tests #{count_tests(tests)}")
     output.puts('  struct UnityRunTestParameters run_test_params_arr[number_of_tests];')
     output.puts
     idx = 0
