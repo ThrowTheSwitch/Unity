@@ -79,5 +79,5 @@ endif
 gen_test_runner = generator(
   find_program('auto/generate_test_runner.rb'),
   output: '@BASENAME@_Runner.c',
-  arguments: ['@INPUT@', '@OUTPUT@']
+  arguments: ['@EXTRA_ARGS@', '@INPUT@', '@OUTPUT@']
 )
