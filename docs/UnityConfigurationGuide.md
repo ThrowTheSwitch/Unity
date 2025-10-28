@@ -363,7 +363,7 @@ Feel free to override this and to make it whatever you wish.
 _Example:_
 
 ```C
-#define UNITY_PRINT_EOL { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n'); }
+#define UNITY_PRINT_EOL() { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n'); }
 ```
 
 #### `UNITY_EXCLUDE_DETAILS`
