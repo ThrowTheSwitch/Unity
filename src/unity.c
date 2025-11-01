@@ -559,25 +559,33 @@ static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 /*-----------------------------------------------*/
 void UnityConcludeTest(void)
 {
+    bool printed_a_line = true;
     if (Unity.CurrentTestIgnored)
     {
         Unity.TestIgnores++;
     }
-    else if (!Unity.CurrentTestFailed)
+    else if (Unity.CurrentTestFailed)
     {
-        UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
-        UnityPrint(UnityStrPass);
+        Unity.TestFailures++;
     }
     else
     {
-        Unity.TestFailures++;
+#ifdef UNITY_SUPPRESS_RESULT_SUCCESS
+        printed_a_line = false;
+#else
+        UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
+        UnityPrint(UnityStrPass);
+#endif
     }
 
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
-    UNITY_PRINT_EXEC_TIME();
-    UNITY_PRINT_EOL();
-    UNITY_FLUSH_CALL();
+
+    if (printed_a_line) {
+        UNITY_PRINT_EXEC_TIME();
+        UNITY_PRINT_EOL();
+        UNITY_FLUSH_CALL();
+    }
 }
 
 /*-----------------------------------------------*/
