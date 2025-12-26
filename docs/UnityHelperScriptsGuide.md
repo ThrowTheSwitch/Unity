@@ -233,8 +233,6 @@ These are the available options:
 
 Unity also supports the `TESTBRIDGE_TEST_ONLY` environment variable (used by
 Bazel's `--test_filter`) when `UNITY_USE_COMMAND_LINE_ARGS` is enabled.
-If you prefer to avoid including `<stdlib.h>`, define `UNITY_GETENV` to your
-own `getenv`-compatible function (for example, via `unity_config.h`).
 
 ##### `:setup_name`
 
@@ -382,11 +380,11 @@ tests/test_unity_parameterizedDemo.c:14:test_demoParamFunction(4, 6, 30):PASS
 
 As we can see:
 
-| Parameter | Format | Possible values | Total of values | Format number |
-|---|---|---|---|---|
-| `a` | `[3, 4, 1]` | `3`, `4` | 2 | Format 1 |
-| `b` | `[10, 5, -2]` | `10`, `8`, `6` | 3 | Format 1, negative step, end number is not included |
-| `c` | `<30, 31, 1>` | `30` | 1 | Format 2 |
+| Parameter | Format        | Possible values | Total of values | Format number                                       |
+| --------- | ------------- | --------------- | --------------- | --------------------------------------------------- |
+| `a`       | `[3, 4, 1]`   | `3`, `4`        | 2               | Format 1                                            |
+| `b`       | `[10, 5, -2]` | `10`, `8`, `6`  | 3               | Format 1, negative step, end number is not included |
+| `c`       | `<30, 31, 1>` | `30`            | 1               | Format 2                                            |
 
 _Note_, that format 2 also supports negative step.
 
@@ -453,11 +451,11 @@ tests/test_unity_parameterizedDemo.c:18:test_demoParamFunction(7, 1, 20.0f):PASS
 
 As we can see:
 
-| Parameter | Format | Count of values |
-|---|---|---|
-| `a` | `[3, 4, 7]` | 3 |
-| `b` | `[10, 8, 2, 1]` | 4 |
-| `c` | `[30u, 20.0f]` | 2 |
+| Parameter | Format          | Count of values |
+| --------- | --------------- | --------------- |
+| `a`       | `[3, 4, 7]`     | 3               |
+| `b`       | `[10, 8, 2, 1]` | 4               |
+| `c`       | `[30u, 20.0f]`  | 2               |
 
 We totally have 3 * 4 * 2 = 24 equal test cases, that can be written as following:
 
