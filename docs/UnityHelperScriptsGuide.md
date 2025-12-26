@@ -231,6 +231,11 @@ These are the available options:
 | `-v`      | increase Verbosity                                |
 | `-x NAME` | eXclude tests whose name includes NAME            |
 
+Unity also supports the `TESTBRIDGE_TEST_ONLY` environment variable (used by
+Bazel's `--test_filter`) when `UNITY_USE_COMMAND_LINE_ARGS` is enabled.
+If you prefer to avoid including `<stdlib.h>`, define `UNITY_GETENV` to your
+own `getenv`-compatible function (for example, via `unity_config.h`).
+
 ##### `:setup_name`
 
 Override the default test `setUp` function name.
