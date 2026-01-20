@@ -44,6 +44,7 @@ project(unity
 # Options to Build With Extras -------------------------------------------------
 option(UNITY_EXTENSION_FIXTURE "Compiles Unity with the \"fixture\" extension." OFF)
 option(UNITY_EXTENSION_MEMORY "Compiles Unity with the \"memory\" extension." OFF)
+option(UNITY_SUPPORT_INT64 "Enable 64bit integer support. OFF means autodetect." OFF)
 
 set(UNITY_EXTENSION_FIXTURE_ENABLED $<BOOL:${UNITY_EXTENSION_FIXTURE}>)
 set(UNITY_EXTENSION_MEMORY_ENABLED $<OR:${UNITY_EXTENSION_FIXTURE_ENABLED},$<BOOL:${UNITY_EXTENSION_MEMORY}>>)
@@ -54,6 +55,10 @@ endif()
 
 if(${UNITY_EXTENSION_MEMORY})
     message(STATUS "Unity: Building with the memory extension.")
+endif()
+
+if(${UNITY_SUPPORT_INT64})
+    message(STATUS "Unity: Building with 64bit integer support.")
 endif()
 
 # Main target ------------------------------------------------------------------
@@ -87,6 +92,11 @@ set(${PROJECT_NAME}_PUBLIC_HEADERS
         $<$<BOOL:${UNITY_EXTENSION_FIXTURE_ENABLED}>:${CMAKE_CURRENT_SOURCE_DIR}/extras/fixture/src/unity_fixture.h>
         $<$<BOOL:${UNITY_EXTENSION_FIXTURE_ENABLED}>:${CMAKE_CURRENT_SOURCE_DIR}/extras/fixture/src/unity_fixture_internals.h>
         $<$<BOOL:${UNITY_EXTENSION_MEMORY_ENABLED}>:${CMAKE_CURRENT_SOURCE_DIR}/extras/memory/src/unity_memory.h>
+)
+
+target_compile_definitions(${PROJECT_NAME}
+    PUBLIC
+        $<$<BOOL:${UNITY_SUPPORT_INT64}>:UNITY_SUPPORT_64>
 )
 
 set_target_properties(${PROJECT_NAME}
