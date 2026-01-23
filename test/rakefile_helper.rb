@@ -317,6 +317,7 @@ module RakefileHelpers
         end
         output.sub!(/OK$/,"FAILED")
         report output
+        raise "Command failed. (#{failures.to_s} Output Formatting Issues)"
       end
 
       # Generate results file
