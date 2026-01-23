@@ -293,8 +293,33 @@ module RakefileHelpers
       # Link the test executable
       link_it(test_base, obj_list)
 
-      # Execute unit test and generate results file
+      # Execute unit test
       output = runtest(test_base)
+
+      # Verify outputs seem to have happened
+      failures = 0
+      output = output.each_line.map do |line|
+        if line =~ /Element.*Expected.*Was/ && !(line =~ /Element \d+ Expected \S+ Was \S+/)
+          failures += 1
+          line + " [[[[ OUTPUT FAILED TO PRINT CORRECTLY ]]]]"
+        else
+          line
+        end
+      end.join
+
+      # Update the final test summary
+      if failures > 0
+        output.sub!(/^(\d+) Tests (\d+) Failures (\d+) Ignored/) do
+          tests = $1
+          failures = $2.to_i + failures
+          ignored = $3
+          "#{tests} Tests #{failures} Failures #{ignored} Ignored"
+        end
+        output.sub!(/OK$/,"FAILED")
+        report output
+      end
+
+      # Generate results file
       save_test_results(test_base, output)
     end
   end
