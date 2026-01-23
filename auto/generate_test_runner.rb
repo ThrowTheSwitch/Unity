@@ -239,17 +239,15 @@ class UnityTestRunnerGenerator
     if @options[:use_param_tests]
       idx = 0
       tests.each do |test|
-        if (test[:args].nil? || test[:args].empty?)
+        if test[:args].nil? || test[:args].empty?
           idx += 1
         else
-          test[:args].each do |args|
-            idx += 1
-          end
+          test[:args].each { idx += 1 }
         end
       end
-      return idx
+      idx
     else
-      return tests.size
+      tests.size
     end
   end
 
