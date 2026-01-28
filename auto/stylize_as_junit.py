@@ -8,6 +8,7 @@
 
 import sys
 import os
+import re
 from glob import glob
 import argparse
 
@@ -110,7 +111,7 @@ class UnityTestSummary:
                     self.test_suites[k] = [v]
         ts = []
         for suite_name in self.test_suites:
-            ts.append(TestSuite(suite_name, self.test_suites[suite_name]))
+            ts.append(TestSuite(re.sub(r'\.(testfail|testpass|testResults)$', '', suite_name), self.test_suites[suite_name]))
 
         with open(self.output, 'w') as f:
             TestSuite.to_file(f, ts, prettyprint='True', encoding='utf-8')
