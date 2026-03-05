@@ -528,6 +528,10 @@ typedef enum
 #endif
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpadded"
+#endif
 struct UNITY_STORAGE_T
 {
     const char* TestFile;
@@ -556,6 +560,9 @@ struct UNITY_STORAGE_T
     jmp_buf AbortFrame;
 #endif
 };
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 extern struct UNITY_STORAGE_T Unity;
 
@@ -857,6 +864,7 @@ extern const char UnityStrErrFloat[];
 extern const char UnityStrErrDouble[];
 extern const char UnityStrErr64[];
 extern const char UnityStrErrShorthand[];
+extern const char UnityStrErrDetailStack[];
 
 /*-------------------------------------------------------
  * Test Running Macros

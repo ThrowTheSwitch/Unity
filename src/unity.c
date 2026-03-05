@@ -868,6 +868,8 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                               const UNITY_DISPLAY_STYLE_T style,
                               const UNITY_FLAGS_T flags)
 {
+    UNITY_INT expect_val   = 0;
+    UNITY_INT actual_val   = 0;
     UNITY_UINT32 elements  = num_elements;
     unsigned int length    = style & 0xF;
     unsigned int increment = 0;
@@ -895,9 +897,6 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
 
     while ((elements > 0) && (elements--))
     {
-        UNITY_INT expect_val;
-        UNITY_INT actual_val;
-
         switch (length)
         {
             case 1:
