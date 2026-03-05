@@ -718,6 +718,17 @@ void UnityAssertEqualStringLen(const char* expected,
                             const char* msg,
                             const UNITY_LINE_TYPE lineNumber);
 
+void UnityAssertNotEqualString(const char* expected,
+                               const char* actual,
+                               const char* msg,
+                               const UNITY_LINE_TYPE lineNumber);
+
+void UnityAssertNotEqualStringLen(const char* expected,
+                                  const char* actual,
+                                  const UNITY_UINT32 length,
+                                  const char* msg,
+                                  const UNITY_LINE_TYPE lineNumber);
+
 void UnityAssertEqualStringArray( UNITY_INTERNAL_PTR expected,
                                   const char** actual,
                                   const UNITY_UINT32 num_elements,
@@ -732,6 +743,12 @@ void UnityAssertEqualMemory( UNITY_INTERNAL_PTR expected,
                              const char* msg,
                              const UNITY_LINE_TYPE lineNumber,
                              const UNITY_FLAGS_T flags);
+
+void UnityAssertNotEqualMemory(UNITY_INTERNAL_PTR expected,
+                               UNITY_INTERNAL_PTR actual,
+                               const UNITY_UINT32 length,
+                               const char* msg,
+                               const UNITY_LINE_TYPE lineNumber);
 
 void UnityAssertIntNumbersWithin(const UNITY_UINT delta,
                                  const UNITY_INT expected,
@@ -1084,6 +1101,11 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_EQUAL_STRING(expected, actual, line, message)                          UnityAssertEqualString((const char*)(expected), (const char*)(actual), (message), (UNITY_LINE_TYPE)(line))
 #define UNITY_TEST_ASSERT_EQUAL_STRING_LEN(expected, actual, len, line, message)                 UnityAssertEqualStringLen((const char*)(expected), (const char*)(actual), (UNITY_UINT32)(len), (message), (UNITY_LINE_TYPE)(line))
 #define UNITY_TEST_ASSERT_EQUAL_MEMORY(expected, actual, len, line, message)                     UnityAssertEqualMemory((UNITY_INTERNAL_PTR)(expected), (UNITY_INTERNAL_PTR)(actual), (UNITY_UINT32)(len), 1, (message), (UNITY_LINE_TYPE)(line), UNITY_ARRAY_TO_ARRAY)
+
+#define UNITY_TEST_ASSERT_NOT_EQUAL_PTR(expected, actual, line, message)                         UnityAssertIntGreaterOrLessOrEqualNumber((UNITY_PTR_TO_INT)(expected), (UNITY_PTR_TO_INT)(actual), UNITY_NOT_EQUAL, (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_POINTER)
+#define UNITY_TEST_ASSERT_NOT_EQUAL_STRING(expected, actual, line, message)                      UnityAssertNotEqualString((const char*)(expected), (const char*)(actual), (message), (UNITY_LINE_TYPE)(line))
+#define UNITY_TEST_ASSERT_NOT_EQUAL_STRING_LEN(expected, actual, len, line, message)             UnityAssertNotEqualStringLen((const char*)(expected), (const char*)(actual), (UNITY_UINT32)(len), (message), (UNITY_LINE_TYPE)(line))
+#define UNITY_TEST_ASSERT_NOT_EQUAL_MEMORY(expected, actual, len, line, message)                 UnityAssertNotEqualMemory((UNITY_INTERNAL_PTR)(expected), (UNITY_INTERNAL_PTR)(actual), (UNITY_UINT32)(len), (message), (UNITY_LINE_TYPE)(line))
 
 #define UNITY_TEST_ASSERT_EQUAL_INT_ARRAY(expected, actual, num_elements, line, message)         UnityAssertEqualIntArray((UNITY_INTERNAL_PTR)(expected), (UNITY_INTERNAL_PTR)(actual), (UNITY_UINT32)(num_elements), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT,     UNITY_ARRAY_TO_ARRAY)
 #define UNITY_TEST_ASSERT_EQUAL_INT8_ARRAY(expected, actual, num_elements, line, message)        UnityAssertEqualIntArray((UNITY_INTERNAL_PTR)(expected), (UNITY_INTERNAL_PTR)(actual), (UNITY_UINT32)(num_elements), (message), (UNITY_LINE_TYPE)(line), UNITY_DISPLAY_STYLE_INT8,    UNITY_ARRAY_TO_ARRAY)
