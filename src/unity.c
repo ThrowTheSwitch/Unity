@@ -197,41 +197,48 @@ void UnityPrintLen(const char* string, const UNITY_UINT32 length)
 /*-----------------------------------------------*/
 void UnityPrintIntNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T style)
 {
-    if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+    if (style == UNITY_DISPLAY_STYLE_CHAR)
     {
-        if (style == UNITY_DISPLAY_STYLE_CHAR)
+        /* printable characters plus CR & LF are printed */
+        UNITY_OUTPUT_CHAR('\'');
+        if ((number <= 126) && (number >= 32))
         {
-            /* printable characters plus CR & LF are printed */
-            UNITY_OUTPUT_CHAR('\'');
-            if ((number <= 126) && (number >= 32))
-            {
-                UNITY_OUTPUT_CHAR((int)number);
-            }
-            /* write escaped carriage returns */
-            else if (number == 13)
-            {
-                UNITY_OUTPUT_CHAR('\\');
-                UNITY_OUTPUT_CHAR('r');
-            }
-            /* write escaped line feeds */
-            else if (number == 10)
-            {
-                UNITY_OUTPUT_CHAR('\\');
-                UNITY_OUTPUT_CHAR('n');
-            }
-            /* unprintable characters are shown as codes */
-            else
-            {
-                UNITY_OUTPUT_CHAR('\\');
-                UNITY_OUTPUT_CHAR('x');
-                UnityPrintNumberHex((UNITY_UINT)number, 2);
-            }
-            UNITY_OUTPUT_CHAR('\'');
+            UNITY_OUTPUT_CHAR((int)number);
         }
+        /* write escaped carriage returns */
+        else if (number == 13)
+        {
+            UNITY_OUTPUT_CHAR('\\');
+            UNITY_OUTPUT_CHAR('r');
+        }
+        /* write escaped line feeds */
+        else if (number == 10)
+        {
+            UNITY_OUTPUT_CHAR('\\');
+            UNITY_OUTPUT_CHAR('n');
+        }
+        /* unprintable characters are shown as codes */
         else
         {
-            UnityPrintNumber(number);
+            UNITY_OUTPUT_CHAR('\\');
+            UNITY_OUTPUT_CHAR('x');
+            UnityPrintNumberHex((UNITY_UINT)number, 2);
         }
+        UNITY_OUTPUT_CHAR('\'');
+    }
+    else if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
+    {
+        UnityPrintNumber(number);
+    }
+    else if ((style & UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)
+    {
+        UnityPrintNumberUnsigned((UNITY_UINT)number);
+    }
+    else
+    {
+        UNITY_OUTPUT_CHAR('0');
+        UNITY_OUTPUT_CHAR('x');
+        UnityPrintNumberHex((UNITY_UINT)number, (char)((style & 0xF) * 2));
     }
 }
 
@@ -359,13 +366,6 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 
     UNITY_DOUBLE number = input_number;
 
-    /* print minus sign (does not handle negative zero) */
-    if (number < 0.0f)
-    {
-        UNITY_OUTPUT_CHAR('-');
-        number = -number;
-    }
-
     /* handle zero, NaN, and +/- infinity */
     if (number == 0.0f)
     {
@@ -373,11 +373,18 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
     }
     else if (UNITY_IS_NAN(number))
     {
-        UnityPrint("nan");
+        UnityPrint(UnityStrNaN);
     }
     else if (UNITY_IS_INF(number))
     {
-        UnityPrint("inf");
+        if (number < 0.0f) 
+        {
+            UnityPrint(UnityStrNegInf);
+        }
+        else
+        {
+            UnityPrint(UnityStrInf);
+        }
     }
     else
     {
@@ -388,6 +395,11 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         int         digits;
         char        buf[16] = {0};
 
+        if (number < 0.0f)
+        {
+            UNITY_OUTPUT_CHAR('-');
+            number = -number;
+        }
         /*
          * Scale up or down by powers of 10.  To minimize rounding error,
          * start with a factor/divisor of 10^10, which is the largest
