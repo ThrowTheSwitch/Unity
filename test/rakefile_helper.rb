@@ -293,8 +293,68 @@ module RakefileHelpers
       # Link the test executable
       link_it(test_base, obj_list)
 
-      # Execute unit test and generate results file
+      # Execute unit test
       output = runtest(test_base)
+      
+      # This is a list of all non-string valid outputs
+      # (in order) this is the following options:
+      #     valid binary representations
+      #     valid hexadecimal representation
+      #     valid integer (signed or unsigned) or float values of any precision
+      #     valid floating point special-case verbage
+      #     valid boolean verbage
+      #     valid pointer verbage
+      #     string representations
+      #     character representations
+      valid_vals_regexes = [
+        /[01X]+/,
+        /0x[0-9A-Fa-f]+/,
+        /-?\d+(?:\.\d+)?/,
+        /(?:Not )?(?:Negative )?(?:Infinity|NaN|Determinate|Invalid Float Trait)/,
+        /TRUE|FALSE/,
+        /NULL/,
+        /"[^"]*"/,
+        /'[^']*'/
+      ]
+      valid_vals = "(?:#{valid_vals_regexes.map(&:source).join('|')})"
+
+      # Verify outputs seem to have happened
+      failures = 0
+      output = output.each_line.map do |line|
+        if (line =~ /(?:Delta.*)?(?:Element.*)?Expected.*Was/)
+          if !(line =~ /(?:Delta \d+ )?(?:Element \d+ )?Expected #{valid_vals} Was #{valid_vals}/)
+            failures += 1
+            "[FAIL] " + line.sub(/:PASS$/,":FAIL:Output Format Failure")
+          else
+            "[p   ] " + line
+          end
+        elsif (line =~ /:PASS$/)
+          "[p   ] " + line
+        elsif (line =~ /:FAIL(?:[^:])$/) || (line =~ /^FAILED$/)
+          #failure has already been counted therefore do not add
+          "[FAIL] " + line
+        elsif (line =~ /:IGNORE$/)
+          #ignore has already been counted therefore do not add
+          "[i---] " + line
+        else
+          "[    ] " + line
+        end
+      end.join
+
+      # Update the final test summary
+      if failures > 0
+        output.sub!(/^(?:\[    \] )?(\d+) Tests (\d+) Failures (\d+) Ignored/) do
+          tests = $1
+          failures = $2.to_i + failures
+          ignored = $3
+          "[    ] #{tests} Tests #{failures} Failures #{ignored} Ignored"
+        end
+        output.sub!(/\[    \] OK$/,"[FAIL] FAILED")
+        report output
+        raise "Command failed. (#{failures.to_s} Output Formatting Issues)"
+      end
+
+      # Generate results file
       save_test_results(test_base, output)
     end
   end
