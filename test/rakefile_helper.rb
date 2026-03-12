@@ -299,11 +299,30 @@ module RakefileHelpers
       # Verify outputs seem to have happened
       failures = 0
       output = output.each_line.map do |line|
-        if line =~ /Element.*Expected.*Was/ && !(line =~ /Element \d+ Expected \S+ Was \S+/)
-          failures += 1
-          line + " [[[[ OUTPUT FAILED TO PRINT CORRECTLY ]]]]"
+        if (line =~ /Element.*Expected.*Was/)
+          if !(line =~ /Element \d+ Expected \S+ Was \S+/) &&
+             !(line =~ /Element \d+ Expected "[^"]+" Was "[^"]+"/)
+            failures += 1
+            "[FAIL] " + line
+          else
+            "[p   ] " + line
+          end
+        elsif (line =~ /Expected.*Was/) 
+          if !(line =~ /Expected \S+ Was \S+/) &&
+             !(line =~ /Expected "[^"]+" Was "[^"]+"/)
+            failures += 1
+            "[FAIL] " + line
+          else
+            "[p   ] " + line
+          end
+        elsif (line =~ /:PASS$/)
+          "[p   ] " + line
+        elsif (line =~ /:FAIL$/) 
+          "[FAIL] " + line
+        elsif (line =~ /:IGNORE$/)
+          "[i---] " + line
         else
-          line
+          "[    ] " + line
         end
       end.join
 

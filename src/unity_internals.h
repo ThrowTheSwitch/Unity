@@ -445,7 +445,7 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #endif
 
 /*-------------------------------------------------------
- * Internal Structs Needed
+ * Internal Types Needed
  *-------------------------------------------------------*/
 
 typedef void (*UnityTestFunction)(void);
