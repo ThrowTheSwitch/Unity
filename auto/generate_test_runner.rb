@@ -11,7 +11,7 @@ class UnityTestRunnerGenerator
     @options = UnityTestRunnerGenerator.default_options
     case options
     when NilClass
-      @options
+      nil # leave @options unchanged
     when String
       @options.merge!(UnityTestRunnerGenerator.grab_config(options))
     when Hash
@@ -72,7 +72,7 @@ class UnityTestRunnerGenerator
     source = source.force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
     tests = find_tests(source)
     headers = find_includes(source)
-    testfile_includes = @options[:use_system_files] ? (headers[:local] + headers[:system]) : (headers[:local])
+    testfile_includes = @options[:use_system_files] ? (headers[:local] + headers[:system]) : headers[:local]
     used_mocks = find_mocks(testfile_includes)
     testfile_includes = (testfile_includes - used_mocks)
     testfile_includes.delete_if { |inc| inc =~ /(unity|cmock)/ }
@@ -446,7 +446,7 @@ class UnityTestRunnerGenerator
 
   def create_main(output, filename, tests, used_mocks)
     output.puts("\n/*=======MAIN=====*/")
-    main_name = @options[:main_name].to_sym == :auto ? "main_#{filename.gsub('.c', '')}" : (@options[:main_name]).to_s
+    main_name = @options[:main_name].to_sym == :auto ? "main_#{filename.gsub('.c', '')}" : @options[:main_name].to_s
     if @options[:cmdline_args]
       if main_name != 'main'
         output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv);")
@@ -462,12 +462,12 @@ class UnityTestRunnerGenerator
       output.puts("      UnityPrint(\"#{filename.gsub('.c', '').gsub(/\\/, '\\\\\\')}.\");")
       output.puts('      UNITY_PRINT_EOL();')
       tests.each do |test|
-        if (!@options[:use_param_tests]) || test[:args].nil? || test[:args].empty?
+        if !@options[:use_param_tests] || test[:args].nil? || test[:args].empty?
           output.puts("      UnityPrint(\"  #{test[:test]}\");")
           output.puts('      UNITY_PRINT_EOL();')
         else
           test[:args].each do |args|
-            output.puts("      UnityPrint(\"  #{test[:test]}(#{args.gsub('"','').gsub("\n",'')})\");")
+            output.puts("      UnityPrint(\"  #{test[:test]}(#{args.gsub('"', '').gsub("\n", '')})\");")
             output.puts('      UNITY_PRINT_EOL();')
           end
         end
@@ -505,7 +505,7 @@ class UnityTestRunnerGenerator
     output.puts
     idx = 0
     tests.each do |test|
-      if (!@options[:use_param_tests]) || test[:args].nil? || test[:args].empty?
+      if !@options[:use_param_tests] || test[:args].nil? || test[:args].empty?
         output.puts("  run_test_params_arr[#{idx}].func = #{test[:test]};")
         output.puts("  run_test_params_arr[#{idx}].name = \"#{test[:test]}\";")
         output.puts("  run_test_params_arr[#{idx}].line_num = #{test[:line_number]};")

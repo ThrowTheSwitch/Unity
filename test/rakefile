@@ -157,7 +157,7 @@ namespace :style do
   end
 
   task :clean do
-    File.delete(".rubocop_todo.yml") if File.exists?(".rubocop_todo.yml")
+    File.delete(".rubocop_todo.yml") if File.exist?(".rubocop_todo.yml")
   end
 end
 

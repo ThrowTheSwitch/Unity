@@ -35,7 +35,7 @@ const char UNITY_PROGMEM UnityStrFail[]                          = "FAIL";
 const char UNITY_PROGMEM UnityStrIgnore[]                        = "IGNORE";
 #endif
 static const char UNITY_PROGMEM UnityStrNull[]                   = "NULL";
-static const char UNITY_PROGMEM UnityStrSpacer[]                 = ". ";
+static const char UNITY_PROGMEM UnityStrSpacer[]                 = UNITY_FAILURE_DETAIL_SEPARATOR;
 static const char UNITY_PROGMEM UnityStrExpected[]               = " Expected ";
 static const char UNITY_PROGMEM UnityStrWas[]                    = " Was ";
 static const char UNITY_PROGMEM UnityStrGt[]                     = " to be greater than ";

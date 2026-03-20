@@ -432,6 +432,10 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 #define UNITY_PRINT_EXEC_TIME() do { /* nothing*/ } while (0)
 #endif
 
+#ifndef UNITY_FAILURE_DETAIL_SEPARATOR
+#define UNITY_FAILURE_DETAIL_SEPARATOR ":"
+#endif
+
 /*-------------------------------------------------------
  * Footprint
  *-------------------------------------------------------*/

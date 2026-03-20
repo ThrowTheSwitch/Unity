@@ -113,7 +113,7 @@ end
 def link_it(exe_name, obj_list)
   linker = build_linker_fields
   cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]}"
-  cmd_str += " #{(obj_list.map { |obj| "#{$cfg['linker']['object_files']['path']}#{obj}" }).join(' ')}"
+  cmd_str += " #{obj_list.map { |obj| "#{$cfg['linker']['object_files']['path']}#{obj}" }.join(' ')}"
   cmd_str += " #{$cfg['linker']['bin_files']['prefix']} "
   cmd_str += $cfg['linker']['bin_files']['destination']
   cmd_str += exe_name + $cfg['linker']['bin_files']['extension']
