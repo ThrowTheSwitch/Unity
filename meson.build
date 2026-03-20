@@ -26,6 +26,7 @@ project('unity', 'c',
 build_fixture = get_option('extension_fixture')
 build_memory = get_option('extension_memory')
 support_double = get_option('support_double')
+support_int64 = get_option('support_int64')
 fixture_help_message = get_option('fixture_help_message')
 
 unity_args = []
@@ -49,6 +50,10 @@ endif
 
 if support_double
   unity_args += '-DUNITY_INCLUDE_DOUBLE'
+endif
+
+if support_int64
+  unity_args += '-DUNITY_SUPPORT_64'
 endif
 
 unity_lib = static_library(meson.project_name(),
