@@ -1,5 +1,5 @@
 option('extension_fixture', type: 'boolean', value: false, description: 'Whether to enable the fixture extension.')
-option('extension_memory', type: 'feature', value: 'auto', description: 'Whether to enable the memory extension. By default this is automatically enabled when extension_fixture is enabled.')
+option('extension_memory', type: 'boolean', value: false, description: 'Whether to enable the memory extension.')
 option('support_double', type: 'boolean', value: false, description: 'Whether to enable double precision floating point assertions.')
 option('support_int64', type: 'boolean', value: false, description: 'Whether to enable support for 64bit integers. false means autodetect.')
 option('fixture_help_message', type: 'string', description: 'If the fixture extension is enabled, this allows a custom help message to be defined.')
