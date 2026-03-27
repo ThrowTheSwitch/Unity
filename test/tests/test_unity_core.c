@@ -6,6 +6,10 @@
 ========================================================================= */
 
 #include "unity.h"
+#ifdef UNITY_USE_COMMAND_LINE_ARGS
+#include "unity_internals.h"
+#include <stdlib.h>
+#endif
 #define TEST_INSTANCES
 #include "self_assessment_utils.h"
 
@@ -193,6 +197,67 @@ void testFail(void)
     TEST_FAIL_MESSAGE("Expected for testing");
     VERIFY_FAILS_END
 }
+
+#ifdef UNITY_USE_COMMAND_LINE_ARGS
+static void UnitySetTestbridgeFilter(const char* value)
+{
+#if defined(_WIN32) || defined(_MSC_VER)
+    if (value)
+    {
+        _putenv_s("TESTBRIDGE_TEST_ONLY", value);
+    }
+    else
+    {
+        _putenv_s("TESTBRIDGE_TEST_ONLY", "");
+    }
+#else
+    if (value)
+    {
+        setenv("TESTBRIDGE_TEST_ONLY", value, 1);
+    }
+    else
+    {
+        unsetenv("TESTBRIDGE_TEST_ONLY");
+    }
+#endif
+}
+
+static void UnitySetTestContext(const char* testfile, const char* testname)
+{
+    Unity.TestFile = testfile;
+    Unity.CurrentTestName = testname;
+}
+
+void testUnityParseOptionsUsesTestbridgeFilter(void)
+{
+    char* argv[] = { (char*)"prog", NULL };
+
+    UnitySetTestbridgeFilter("test_my_function");
+    UnityParseOptions(1, argv);
+
+    UnitySetTestContext("file.c", "test_my_function");
+    TEST_ASSERT_TRUE(UnityTestMatches());
+    UnitySetTestContext("file.c", "other");
+    TEST_ASSERT_FALSE(UnityTestMatches());
+
+    UnitySetTestbridgeFilter(NULL);
+}
+
+void testUnityParseOptionsArgsOverrideTestbridgeFilter(void)
+{
+    char* argv[] = { (char*)"prog", (char*)"-n", (char*)"other", NULL };
+
+    UnitySetTestbridgeFilter("test_my_function");
+    UnityParseOptions(3, argv);
+
+    UnitySetTestContext("file.c", "other");
+    TEST_ASSERT_TRUE(UnityTestMatches());
+    UnitySetTestContext("file.c", "test_my_function");
+    TEST_ASSERT_FALSE(UnityTestMatches());
+
+    UnitySetTestbridgeFilter(NULL);
+}
+#endif
 
 void testIsNull(void)
 {
