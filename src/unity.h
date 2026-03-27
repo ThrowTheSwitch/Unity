@@ -1,7 +1,7 @@
 /* =========================================================================
     Unity - A Test Framework for C
     ThrowTheSwitch.org
-    Copyright (c) 2007-25 Mike Karlesky, Mark VanderVoord, & Greg Williams
+    Copyright (c) 2007-26 Mike Karlesky, Mark VanderVoord, & Greg Williams
     SPDX-License-Identifier: MIT
 ========================================================================= */
 
@@ -11,7 +11,7 @@
 
 #define UNITY_VERSION_MAJOR    2
 #define UNITY_VERSION_MINOR    6
-#define UNITY_VERSION_BUILD    1
+#define UNITY_VERSION_BUILD    3
 #define UNITY_VERSION          ((UNITY_VERSION_MAJOR << 16) | (UNITY_VERSION_MINOR << 8) | UNITY_VERSION_BUILD)
 
 #ifdef __cplusplus
@@ -45,7 +45,7 @@ int suiteTearDown(int num_failures);
  * Test Reset and Verify
  *-------------------------------------------------------*/
 
-/* These functions are intended to be called before during tests in order
+/* These functions are intended to be called before or during tests in order
  * to support complex test loops, etc. Both are NOT built into Unity. Instead
  * the test runner generator will create them. resetTest will run teardown and
  * setup again, verifying any end-of-test needs between. verifyTest will only

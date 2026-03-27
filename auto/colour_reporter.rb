@@ -1,7 +1,7 @@
 # =========================================================================
 #   Unity - A Test Framework for C
 #   ThrowTheSwitch.org
-#   Copyright (c) 2007-25 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   Copyright (c) 2007-26 Mike Karlesky, Mark VanderVoord, & Greg Williams
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
@@ -19,6 +19,12 @@ def report(message)
       colour = case line
                when /(?:total\s+)?tests:?\s+(\d+)\s+(?:total\s+)?failures:?\s+\d+\s+Ignored:?/i
                  Regexp.last_match(1).to_i.zero? ? :green : :red
+               when /^\[FAIL\]/
+                 :red
+               when /^\[p   \]/
+                 :green
+               when /^\[i---\]/
+                 :green
                when /PASS/
                  :green
                when /^OK$/

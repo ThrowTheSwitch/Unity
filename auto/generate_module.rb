@@ -1,7 +1,7 @@
 # =========================================================================
 #   Unity - A Test Framework for C
 #   ThrowTheSwitch.org
-#   Copyright (c) 2007-25 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   Copyright (c) 2007-26 Mike Karlesky, Mark VanderVoord, & Greg Williams
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
@@ -53,7 +53,7 @@ class UnityModuleGenerator
   def initialize(options = nil)
     @options = UnityModuleGenerator.default_options
     case options
-    when NilClass then @options
+    when NilClass then nil # leave @options unchanged
     when String   then @options.merge!(UnityModuleGenerator.grab_config(options))
     when Hash     then @options.merge!(options)
     else raise 'If you specify arguments, it should be a filename or a hash of options'
@@ -158,10 +158,10 @@ class UnityModuleGenerator
           template: cfg[:template],
           test_define: cfg[:test_define],
           boilerplate: cfg[:boilerplate],
-          includes: case (cfg[:inc])
-                    when :src then (@options[:includes][:src] || []) | (pattern_traits[:inc].map { |f| format(f, module_name) })
+          includes: case cfg[:inc]
+                    when :src then (@options[:includes][:src] || []) | pattern_traits[:inc].map { |f| format(f, module_name) }
                     when :inc then  @options[:includes][:inc] || []
-                    when :tst then (@options[:includes][:tst] || []) | (pattern_traits[:inc].map { |f| format("#{@options[:mock_prefix]}#{f}", module_name) })
+                    when :tst then (@options[:includes][:tst] || []) | pattern_traits[:inc].map { |f| format("#{@options[:mock_prefix]}#{f}", module_name) }
                     end
         }
       end
@@ -182,7 +182,7 @@ class UnityModuleGenerator
   ############################
   def create_filename(part1, part2 = '')
     name = part2.empty? ? part1 : "#{part1}_#{part2}"
-    case (@options[:naming])
+    case @options[:naming]
     when 'bumpy' then neutralize_filename(name, start_cap: false).delete('_')
     when 'camel' then neutralize_filename(name).delete('_')
     when 'snake' then neutralize_filename(name).downcase

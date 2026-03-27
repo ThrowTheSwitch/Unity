@@ -1,6 +1,6 @@
 # Unity Test ![CI][]
 
-__Copyright (c) 2007 - 2024 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
+__Copyright (c) 2007 - 2026 Unity Project by Mike Karlesky, Mark VanderVoord, and Greg Williams__
 
 Welcome to the Unity Test Project, one of the main projects of ThrowTheSwitch.org.
 Unity Test is a unit testing framework built for C, with a focus on working with embedded toolchains.
@@ -75,7 +75,7 @@ Like INT, there are variants for different sizes also.
 
 Compares two integers for equality and display errors as hexadecimal.
 Like the other integer comparisons, you can specify the size... 
-here the size will also effect how many nibbles are shown (for example, `HEX16` will show 4 nibbles).
+here the size will also affect how many nibbles are shown (for example, `HEX16` will show 4 nibbles).
 
     TEST_ASSERT_EQUAL(expected, actual)
 

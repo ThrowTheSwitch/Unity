@@ -26,6 +26,8 @@ project('unity', 'c',
 build_fixture = get_option('extension_fixture')
 build_memory = get_option('extension_memory')
 support_double = get_option('support_double')
+support_int64 = get_option('support_int64')
+fixture_help_message = get_option('fixture_help_message')
 
 unity_args = []
 unity_src = []
@@ -34,18 +36,24 @@ unity_inc = []
 subdir('src')
 
 if build_fixture
-  # Building the fixture extension implies building the memory
-  # extension.
-  build_memory = true
   subdir('extras/fixture/src')
+  if fixture_help_message != ''
+    unity_args += '-DUNITY_CUSTOM_HELP_MSG=' + fixture_help_message
+  endif
 endif
 
-if build_memory
+if build_memory.enabled() or (build_memory.auto() and build_fixture)
   subdir('extras/memory/src')
+else
+  unity_args += '-DUNITY_FIXTURE_NO_EXTRAS'
 endif
 
 if support_double
   unity_args += '-DUNITY_INCLUDE_DOUBLE'
+endif
+
+if support_int64
+  unity_args += '-DUNITY_SUPPORT_64'
 endif
 
 unity_lib = static_library(meson.project_name(),
@@ -64,10 +72,10 @@ unity_dep = declare_dependency(
 if not meson.is_subproject()
   pkg = import('pkgconfig')
   pkg.generate(
-    name: meson.project_name(),
+    unity_lib,
     version: meson.project_version(),
-    libraries: [ unity_lib ],
-    description: 'C Unit testing framework.'
+    subdirs: 'unity',
+    extra_cflags: unity_args,
   )
 endif
 
@@ -76,5 +84,5 @@ endif
 gen_test_runner = generator(
   find_program('auto/generate_test_runner.rb'),
   output: '@BASENAME@_Runner.c',
-  arguments: ['@INPUT@', '@OUTPUT@']
+  arguments: ['@EXTRA_ARGS@', '@INPUT@', '@OUTPUT@']
 )

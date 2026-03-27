@@ -90,7 +90,7 @@ Take a look through the file names in Ceedling and you'll get a good idea of wha
 Why use preprocess when you can use preprocessinator?
 Or what better describes a module in charge of invoking tasks during releases than release_invoker?
 Don't get carried away.
-The names are still descriptive and fulfil the above requirements, but they don't feel stale.
+The names are still descriptive and fulfill the above requirements, but they don't feel stale.
 
 ## C and C++ Details
 
