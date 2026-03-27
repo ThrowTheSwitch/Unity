@@ -405,13 +405,13 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
       #define UNITY_GET_TIME(t) clock_gettime(CLOCK_MONOTONIC, &t)
       #define UNITY_EXEC_TIME_START() UNITY_GET_TIME(Unity.CurrentTestStartTime)
       #define UNITY_EXEC_TIME_STOP() UNITY_GET_TIME(Unity.CurrentTestStopTime)
-      #define UNITY_PRINT_EXEC_TIME() { \
-        UNITY_UINT execTimeMs = ((Unity.CurrentTestStopTime.tv_sec - Unity.CurrentTestStartTime.tv_sec) * 1000L); \
-        execTimeMs += ((Unity.CurrentTestStopTime.tv_nsec - Unity.CurrentTestStartTime.tv_nsec) / 1000000L); \
+      #define UNITY_PRINT_EXEC_TIME() do { \
+        UNITY_UINT execTimeMs = (UNITY_UINT)((Unity.CurrentTestStopTime.tv_sec - Unity.CurrentTestStartTime.tv_sec) * 1000L); \
+        execTimeMs += (UNITY_UINT)((Unity.CurrentTestStopTime.tv_nsec - Unity.CurrentTestStartTime.tv_nsec) / 1000000L); \
         UnityPrint(" ("); \
         UnityPrintNumberUnsigned(execTimeMs); \
         UnityPrint(" ms)"); \
-        }
+        } while(0)
     #endif
   #endif
 #endif
