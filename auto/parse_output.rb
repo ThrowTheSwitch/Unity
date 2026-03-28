@@ -138,10 +138,11 @@ class ParseOutput
   def test_passed_unity_fixture(array)
     class_name = array[0]
     test_name  = array[1]
+    test_time = get_test_time(array[array.length - 1])
     test_suite_verify(class_name)
-    printf "%-40s PASS\n", test_name
+    printf "%-40s PASS %10d ms\n", test_name, test_time
 
-    push_xml_output_passed(test_name) if @xml_out
+    push_xml_output_passed(test_name, test_time) if @xml_out
   end
 
   # Test was flagged as having failed so format the output.
@@ -149,13 +150,14 @@ class ParseOutput
   def test_failed_unity_fixture(array)
     class_name = array[0]
     test_name  = array[1]
+    test_time = get_test_time(array[array.length - 1])
     test_suite_verify(class_name)
     reason_array = array[2].split(':')
     reason = "#{reason_array[-1].lstrip.chomp} at line: #{reason_array[-4]}"
 
-    printf "%-40s FAILED\n", test_name
+    printf "%-40s FAILED %10d ms\n", test_name, test_time
 
-    push_xml_output_failed(test_name, reason) if @xml_out
+    push_xml_output_failed(test_name, reason, test_time) if @xml_out
   end
 
   # Test was flagged as being ignored so format the output.
@@ -163,6 +165,7 @@ class ParseOutput
   def test_ignored_unity_fixture(array)
     class_name = array[0]
     test_name  = array[1]
+    test_time = get_test_time(array[array.length - 1])
     reason = 'No reason given'
     if array.size > 2
       reason_array = array[2].split(':')
@@ -170,9 +173,9 @@ class ParseOutput
       reason = tmp_reason == 'IGNORE' ? 'No reason given' : tmp_reason
     end
     test_suite_verify(class_name)
-    printf "%-40s IGNORED\n", test_name
+    printf "%-40s IGNORED %10d ms\n", test_name, test_time
 
-    push_xml_output_ignored(test_name, reason) if @xml_out
+    push_xml_output_ignored(test_name, reason, test_time) if @xml_out
   end
 
   # Test was flagged as having passed so format the output
