@@ -6,20 +6,13 @@
 # =========================================================================
 
 ---
-tools_root: C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-colour: true
-:unity:
-  :plugins: []
 :tools:
   :test_compiler:
     :name: compiler
-    :executable:
-    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-    - arm\bin\iccarm.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\bin\iccarm.exe
     :arguments:
     - "--dlib_config"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - arm\lib\dl4tptinl8n.h
+    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\lib\dl4tptinl8n.h
     - "-z3"
     - "--no_cse"
     - "--no_unroll"
@@ -46,14 +39,11 @@ colour: true
     - "-o ${2}"
   :test_linker:
     :name: linker
-    :executable:
-    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-    - common\bin\xlink.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\common\bin\xlink.exe
     :arguments:
     - "${1}"
     - "-rt"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - arm\lib\dl4tptinl8n.r79
+    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\lib\dl4tptinl8n.r79
     - "-D_L_EXTMEM_START=0"
     - "-D_L_EXTMEM_SIZE=0"
     - "-D_L_HEAP_SIZE=120"
@@ -62,29 +52,22 @@ colour: true
     - "-s"
     - __program_start
     - "-f"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - "\\arm\\config\\lnkarm.xcl"
+    - "C:\\Program Files\\IAR Systems\\Embedded Workbench 4.0 Kickstart\\arm\\config\\lnkarm.xcl"
     - "-o ${2}"
   :test_fixture:
     :name: simulator
-    :executable:
-    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-    - common\bin\CSpyBat.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\common\bin\CSpyBat.exe
     :arguments:
     - "--silent"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - arm\bin\armproc.dll
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - arm\bin\armsim.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\bin\armproc.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\bin\armsim.dll
     - "${1}"
     - "--plugin"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - arm\bin\armbat.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\bin\armbat.dll
     - "--backend"
     - "-B"
     - "-p"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - arm\config\ioat91sam7X256.ddf
+    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\config\ioat91sam7X256.ddf
     - "-d"
     - sim
 :extension:
@@ -92,8 +75,7 @@ colour: true
   :executable: ".d79"
 :paths:
   :test:
-    - - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\
-      - arm\inc\
+    - C:\Program Files\IAR Systems\Embedded Workbench 4.0 Kickstart\arm\inc\
     - src\
     - "..\\src\\"
     - testdata/

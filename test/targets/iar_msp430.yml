@@ -6,35 +6,13 @@
 # =========================================================================
 
 ---
-tools_root: C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\
-core_root: &1
-- C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\
-- 430\
-core_bin: &2
-- *1
-- bin\
-core_config: &4
-- *1
-- config\
-core_lib: &3
-- *1
-- lib\
-core_inc: &5
-- *1
-- inc\
-colour: true
-:unity:
-  :plugins: []
 :tools:
   :test_compiler:
     :name: compiler
-    :executable:
-    - *2
-    - icc430.exe
+    :executable:  C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\bin\icc430.exe
     :arguments:
     - "--dlib_config"
-    - - *3
-      - dlib\dl430fn.h
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\lib\dlib\dl430fn.h
     - "--no_cse"
     - "--no_unroll"
     - "--no_inline"
@@ -54,14 +32,11 @@ colour: true
     - "-o ${2}"
   :test_linker:
     :name: linker
-    :executable:
-    - *2
-    - xlink.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\bin\xlink.exe
     :arguments:
     - "${1}"
     - "-rt"
-    - - *3
-      - dlib\dl430fn.r43
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\lib\dlib\dl430fn.r43
     - "-e_PrintfTiny=_Printf"
     - "-e_ScanfSmall=_Scanf"
     - "-s __program_start"
@@ -69,43 +44,33 @@ colour: true
     - "-D_DATA16_HEAP_SIZE=50"
     - "-D_DATA20_HEAP_SIZE=50"
     - "-f"
-    - - *4
-      - lnk430f5438.xcl
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\config\lnk430f5438.xcl
     - "-f"
-    - - *4
-      - multiplier.xcl
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\config\multiplier.xcl
     - "-o ${2}"
   :test_fixture:
     :name: simulator
-    :executable:
-    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\
-    - common\bin\CSpyBat.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\common\bin\CSpyBat.exe
     :arguments:
     - "--silent"
-    - - *2
-      - 430proc.dll
-    - - *2
-      - 430sim.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\bin\430proc.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\bin\430sim.dll
     - "${1}"
     - "--plugin"
-    - - *2
-      - 430bat.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\bin\430bat.dll
     - "--backend -B"
     - "--cpu MSP430F5438"
     - "-p"
-    - - *4
-      - MSP430F5438.ddf
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\config\MSP430F5438.ddf
     - "-d sim"
 :extension:
   :object: ".r43"
   :executable: ".d79"
 :paths:
   :test:
-    - *5
-    - - *5
-      - dlib
-    - - *3
-      - dlib
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\inc\
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\inc\dlib
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.3 MSP430\430\lib\dlib
     - src\
     - "../src/"
     - testdata/

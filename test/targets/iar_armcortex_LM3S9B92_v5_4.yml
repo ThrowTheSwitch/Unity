@@ -6,16 +6,10 @@
 # =========================================================================
 
 ---
-tools_root: C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-colour: true
-:unity:
-  :plugins: []
 :tools:
   :test_compiler:
     :name: compiler
-    :executable:
-    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-    - arm\bin\iccarm.exe
+    :executable: C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\bin\iccarm.exe
     :arguments:
     - "--diag_suppress=Pa050"
     - "--debug"
@@ -25,8 +19,7 @@ colour: true
     - "-e"
     - "--fpu=None"
     - "--dlib_config"
-    - - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-      - arm\inc\DLib_Config_Normal.h
+    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\inc\DLib_Config_Normal.h
     - "--interwork"
     - "--warnings_are_errors"
     - "-Oh"
@@ -37,9 +30,7 @@ colour: true
     - "-o ${2}"
   :test_linker:
     :name: linker
-    :executable:
-    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-    - arm\bin\ilinkarm.exe
+    :executable: C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\bin\ilinkarm.exe
     :arguments:
     - "${1}"
     - "--redirect _Printf=_PrintfLarge"
@@ -47,31 +38,24 @@ colour: true
     - "--semihosting"
     - "--entry __iar_program_start"
     - "--config"
-    - - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-      - arm\config\generic.icf
+    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\config\generic.icf
     - "-o ${2}"
   :test_fixture:
     :name: simulator
-    :executable:
-    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-    - common\bin\CSpyBat.exe
+    :executable: C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\common\bin\CSpyBat.exe
     :arguments:
-    - - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-      - arm\bin\armproc.dll
-    - - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-      - arm\bin\armsim2.dll
+    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\bin\armproc.dll
+    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\bin\armsim2.dll
     - "${1}"
     - "--plugin"
-    - - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-      - arm\bin\armbat.dll
+    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\bin\armbat.dll
     - "--backend"
     - "-B"
     - "--endian=little"
     - "--cpu=Cortex-M3"
     - "--fpu=None"
     - "-p"
-    - - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-      - arm\config\debugger\TexasInstruments\iolm3sxxxx.ddf
+    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\config\debugger\TexasInstruments\iolm3sxxxx.ddf
     - "--semihosting"
     - "--device=LM3SxBxx"
 :extension:
@@ -79,8 +63,7 @@ colour: true
   :executable: ".out"
 :paths:
   :test:
-    - - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\
-      - arm\inc\
+    - C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.4 Kickstart\arm\inc\
     - src\
     - "..\\src\\"
     - testdata/

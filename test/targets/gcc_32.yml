@@ -6,9 +6,6 @@
 # =========================================================================
 
 ---
-colour: true
-:unity:
-  :plugins: []
 :tools:
   :test_compiler:
     :name: compiler

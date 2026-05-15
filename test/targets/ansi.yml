@@ -6,9 +6,6 @@
 # =========================================================================
 
 ---
-colour: true
-:unity:
-  :plugins: []
 :skip_tests:
 - :parameterized
 :tools:

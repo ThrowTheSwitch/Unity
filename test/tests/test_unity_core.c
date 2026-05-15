@@ -44,44 +44,39 @@ void testUnitySizeInitializationReminder(void)
                      "still correct.";
 
     /* Define a structure with all the same fields as `struct UNITY_STORAGE_T`. */
-#ifdef UNITY_EXCLUDE_DETAILS
-    struct {
-        const char* TestFile;
-        const char* CurrentTestName;
-        UNITY_LINE_TYPE CurrentTestLineNumber;
-        UNITY_COUNTER_TYPE NumberOfTests;
-        UNITY_COUNTER_TYPE TestFailures;
-        UNITY_COUNTER_TYPE TestIgnores;
-        UNITY_COUNTER_TYPE CurrentTestFailed;
-        UNITY_COUNTER_TYPE CurrentTestIgnored;
-#ifdef UNITY_INCLUDE_EXEC_TIME
-        UNITY_TIME_TYPE CurrentTestStartTime;
-        UNITY_TIME_TYPE CurrentTestStopTime;
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpadded"
 #endif
-#ifndef UNITY_EXCLUDE_SETJMP_H
-        jmp_buf AbortFrame;
-#endif
-    } Expected_Unity;
+struct {
+    const char* TestFile;
+    const char* CurrentTestName;
+#ifndef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_DETAIL_STACK_SIZE
+    UNITY_DETAIL_LABEL_TYPE CurrentDetailStackLabels[UNITY_DETAIL_STACK_SIZE];
+    UNITY_DETAIL_VALUE_TYPE CurrentDetailStackValues[UNITY_DETAIL_STACK_SIZE];
+    UNITY_COUNTER_TYPE CurrentDetailStackSize;
 #else
-    struct {
-        const char* TestFile;
-        const char* CurrentTestName;
-        const char* CurrentDetails1;
-        const char* CurrentDetails2;
-        UNITY_LINE_TYPE CurrentTestLineNumber;
-        UNITY_COUNTER_TYPE NumberOfTests;
-        UNITY_COUNTER_TYPE TestFailures;
-        UNITY_COUNTER_TYPE TestIgnores;
-        UNITY_COUNTER_TYPE CurrentTestFailed;
-        UNITY_COUNTER_TYPE CurrentTestIgnored;
+    const char* CurrentDetail1;
+    const char* CurrentDetail2;
+#endif
+#endif
+    UNITY_LINE_TYPE CurrentTestLineNumber;
+    UNITY_COUNTER_TYPE NumberOfTests;
+    UNITY_COUNTER_TYPE TestFailures;
+    UNITY_COUNTER_TYPE TestIgnores;
+    UNITY_COUNTER_TYPE CurrentTestFailed;
+    UNITY_COUNTER_TYPE CurrentTestIgnored;
 #ifdef UNITY_INCLUDE_EXEC_TIME
-        UNITY_COUNTER_TYPE CurrentTestStartTime;
-        UNITY_COUNTER_TYPE CurrentTestStopTime;
+    UNITY_TIME_TYPE CurrentTestStartTime;
+    UNITY_TIME_TYPE CurrentTestStopTime;
 #endif
 #ifndef UNITY_EXCLUDE_SETJMP_H
-        jmp_buf AbortFrame;
+    jmp_buf AbortFrame;
 #endif
-    } Expected_Unity;
+} Expected_Unity;
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
 #endif
 
     /* Compare our fake structure's size to the actual structure's size. They

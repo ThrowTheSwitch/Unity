@@ -282,7 +282,7 @@ module RakefileHelpers
       runner_name = test_base + '_Runner.c'
       runner_path = File.join('build',runner_name)
 
-      options = $cfg[:unity]
+      options = $cfg[:unity] || {}
       options[:use_param_tests] = test =~ /parameterized/ ? true : false
       UnityTestRunnerGenerator.new(options).run(test, runner_path)
       obj_list << compile(runner_path, test_defines)
@@ -360,6 +360,7 @@ module RakefileHelpers
   end
 
   def run_make_tests()
+    report "\nRunning Unity Examples with Make"
     [ "make -s",                               # test with all defaults
       #"make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
       #"make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types

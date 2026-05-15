@@ -16,7 +16,6 @@
     else
       _PASSED_TESTS();
     return 0;
-colour: true
 :tools:
   :test_compiler:
     :name: compiler
@@ -72,8 +71,7 @@ colour: true
     :name: simulator
     :executable: 'java -client -jar '
     :arguments:
-    - - C:\Program Files\HI-TECH Software\HI-TIDE\3.15\lib\
-      - simpic18.jar
+    - \C:\Program Files\HI-TECH Software\HI-TIDE\3.15\lib\simpic18.jar
     - 18F87J10
     - "${1}"
 :extension:

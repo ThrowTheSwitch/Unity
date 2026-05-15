@@ -6,20 +6,13 @@
 # =========================================================================
 
 ---
-tools_root: C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-colour: true
-:unity:
-  :plugins: []
 :tools:
   :test_compiler:
     :name: compiler
-    :executable:
-    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-    - arm\bin\iccarm.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\bin\iccarm.exe
     :arguments:
     - "--dlib_config"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-      - arm\inc\DLib_Config_Normal.h
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\inc\DLib_Config_Normal.h
     - "--no_cse"
     - "--no_unroll"
     - "--no_inline"
@@ -45,9 +38,7 @@ colour: true
     - "-o ${2}"
   :test_linker:
     :name: linker
-    :executable:
-    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-    - arm\bin\ilinkarm.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\bin\ilinkarm.exe
     :arguments:
     - "${1}"
     - "--redirect _Printf=_PrintfLarge"
@@ -55,29 +46,22 @@ colour: true
     - "--semihosting"
     - "--entry __iar_program_start"
     - "--config"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-      - arm\config\generic_cortex.icf
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\config\generic_cortex.icf
     - "-o ${2}"
   :test_fixture:
     :name: simulator
-    :executable:
-    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-    - common\bin\CSpyBat.exe
+    :executable: C:\Program Files\IAR Systems\Embedded Workbench 5.4\common\bin\CSpyBat.exe
     :arguments:
     - "--silent"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-      - arm\bin\armproc.dll
-    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-      - arm\bin\armsim.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\bin\armproc.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\bin\armsim.dll
     - "${1}"
     - "--plugin"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-      - arm\bin\armbat.dll
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\bin\armbat.dll
     - "--backend"
     - "-B"
     - "-p"
-    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-      - arm\config\debugger\ST\iostm32f107xx.ddf
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\config\debugger\ST\iostm32f107xx.ddf
     - "--cpu=Cortex-M3"
     - "-d"
     - sim
@@ -86,8 +70,7 @@ colour: true
   :executable: ".out"
 :paths:
   :test:
-    - - C:\Program Files\IAR Systems\Embedded Workbench 5.4\
-      - arm\inc\
+    - C:\Program Files\IAR Systems\Embedded Workbench 5.4\arm\inc\
     - src\
     - "..\\src\\"
     - testdata/
