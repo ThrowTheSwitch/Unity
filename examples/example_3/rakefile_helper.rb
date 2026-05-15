@@ -10,15 +10,36 @@ require_relative '../../auto/unity_test_summary'
 require_relative '../../auto/generate_test_runner'
 require_relative '../../auto/colour_reporter'
 require_relative '../../auto/yaml_helper'
-C_EXTENSION = '.c'.freeze
+
+C_EXTENSION  = '.c'.freeze
+TARGETS_PATH = File.join(__dir__, '..', '..', 'test', 'targets').freeze
+PROJECT_FILE = File.join(__dir__, 'project.yml').freeze
 
 def load_configuration(config_file)
-  $cfg_file = config_file
-  $cfg = YamlHelper.load_file($cfg_file)
+  $cfg_file = config_file =~ /[\\\/]/ ? config_file : File.join(TARGETS_PATH, config_file)
+  project = YamlHelper.load_file(PROJECT_FILE)
+  target  = YamlHelper.load_file($cfg_file)
+
+  # Toolchain settings (tools, extensions) come from the target YML.
+  # Path and project settings come from project.yml and take precedence.
+  $cfg = target.dup
+  $cfg[:project] = project[:project]
+  $cfg[:paths]   = project[:paths]
+  $cfg[:unity]   = project[:unity]  if project[:unity]
+  $cfg[:colour]  = project[:colour] if project.key?(:colour)
+
+  # Merge defines: combine target defines with any project-specific defines
+  project_defines = project.dig(:defines, :test) || []
+  unless project_defines.empty?
+    $cfg[:defines] ||= {}
+    $cfg[:defines][:test] = (($cfg.dig(:defines, :test) || []) + project_defines).uniq
+  end
+
+  $colour_output = $cfg[:colour] ? true : false
 end
 
 def configure_clean
-  CLEAN.include("#{$cfg['compiler']['build_path']}*.*") unless $cfg['compiler']['build_path'].nil?
+  CLEAN.include(File.join($cfg[:project][:build_root], '*.*'))
 end
 
 def configure_toolchain(config_file = DEFAULT_CONFIG_FILE)
@@ -28,21 +49,22 @@ def configure_toolchain(config_file = DEFAULT_CONFIG_FILE)
 end
 
 def unit_test_files
-  path = "#{$cfg['compiler']['unit_tests_path']}Test*#{C_EXTENSION}"
-  path.tr!('\\', '/')
-  FileList.new(path)
+  files = FileList.new
+  ($cfg[:paths][:test] || []).each do |path|
+    files.include(File.join(path, "Test*#{C_EXTENSION}"))
+  end
+  files
 end
 
 def local_include_dirs
-  include_dirs = $cfg['compiler']['includes']['items'].dup
+  include_dirs = ($cfg[:paths][:source] || []) + ($cfg[:paths][:test] || []) + ($cfg[:paths][:support] || [])
   include_dirs.delete_if { |dir| dir.is_a?(Array) }
   include_dirs
 end
 
 def extract_headers(filename)
   includes = []
-  lines = File.readlines(filename)
-  lines.each do |line|
+  File.readlines(filename).each do |line|
     m = line.match(/^\s*#include\s+"\s*(.+\.[hH])\s*"/)
     includes << m[1] unless m.nil?
   end
@@ -58,98 +80,68 @@ def find_source_file(header, paths)
 end
 
 def tackit(strings)
-  if strings.is_a?(Array)
-    "\"#{strings.join}\""
-  else
-    strings
-  end
+  strings.is_a?(Array) ? "\"#{strings.join}\"" : strings
 end
 
 def squash(prefix, items)
-  result = ''
-  items.each { |item| result += " #{prefix}#{tackit(item)}" }
-  result
+  items.reduce('') { |result, item| result + " #{prefix}#{tackit(item)}" }
 end
 
-def build_compiler_fields
-  command = tackit($cfg['compiler']['path'])
-  defines = if $cfg['compiler']['defines']['items'].nil?
-              ''
-            else
-              squash($cfg['compiler']['defines']['prefix'], $cfg['compiler']['defines']['items'])
-            end
-  options = squash('', $cfg['compiler']['options'])
-  includes = squash($cfg['compiler']['includes']['prefix'], $cfg['compiler']['includes']['items'])
-  includes = includes.gsub(/\\ /, ' ').gsub(/\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
+def build_command_string(tool_hash, values, defines = nil)
+  args = []
+  tool_hash[:arguments].each do |arg|
+    if arg.include?('$')
+      if arg.include?(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE')
+        pattern = arg.gsub(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE', '')
+        ($cfg[:paths][:support] || []).each { |f| args << pattern.gsub(/\$/, f) }
 
-  { command: command, defines: defines, options: options, includes: includes }
+      elsif arg.include?(': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR')
+        pattern = arg.gsub(': COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR', '')
+        (($cfg[:paths][:source] || []) + ($cfg[:paths][:test] || [])).uniq.each { |f| args << pattern.gsub(/\$/, f) }
+
+      elsif arg.include?(': COLLECTION_DEFINES_TEST_AND_VENDOR')
+        pattern = arg.gsub(': COLLECTION_DEFINES_TEST_AND_VENDOR', '')
+        (($cfg.dig(:defines, :test) || []) + Array(defines)).uniq.compact.each { |f| args << pattern.gsub(/\$/, f) }
+
+      elsif arg =~ /\$\{(\d+)\}/
+        i = Regexp.last_match(1).to_i - 1
+        if values[i].is_a?(Array)
+          values[i].each { |v| args << arg.gsub(/\$\{\d+\}/, v) }
+        else
+          args << arg.gsub(/\$\{\d+\}/, values[i] || '')
+        end
+
+      else
+        args << arg
+      end
+    else
+      args << arg
+    end
+  end
+  tackit(tool_hash[:executable]) + squash('', args)
 end
 
-def compile(file, _defines = [])
-  compiler = build_compiler_fields
-  cmd_str  = "#{compiler[:command]}#{compiler[:defines]}#{compiler[:options]}#{compiler[:includes]} #{file} " \
-             "#{$cfg['compiler']['object_files']['prefix']}#{$cfg['compiler']['object_files']['destination']}"
-  obj_file = "#{File.basename(file, C_EXTENSION)}#{$cfg['compiler']['object_files']['extension']}"
-  execute(cmd_str + obj_file)
-  obj_file
-end
-
-def build_linker_fields
-  command = tackit($cfg['linker']['path'])
-  options = if $cfg['linker']['options'].nil?
-              ''
-            else
-              squash('', $cfg['linker']['options'])
-            end
-  includes = if $cfg['linker']['includes'].nil? || $cfg['linker']['includes']['items'].nil?
-               ''
-             else
-               squash($cfg['linker']['includes']['prefix'], $cfg['linker']['includes']['items'])
-             end.gsub(/\\ /, ' ').gsub(/\\"/, '"').gsub(/\\$/, '') # Remove trailing slashes (for IAR)
-
-  { command: command, options: options, includes: includes }
+def compile(file, defines = [])
+  build_path = $cfg[:project][:build_root]
+  out_file   = File.join(build_path, File.basename(file, C_EXTENSION)) + $cfg[:extension][:object]
+  cmd_str    = build_command_string($cfg[:tools][:test_compiler], [file, out_file], defines)
+  execute(cmd_str)
+  out_file
 end
 
 def link_it(exe_name, obj_list)
-  linker = build_linker_fields
-  cmd_str = "#{linker[:command]}#{linker[:options]}#{linker[:includes]}"
-  cmd_str += " #{obj_list.map { |obj| "#{$cfg['linker']['object_files']['path']}#{obj}" }.join(' ')}"
-  cmd_str += " #{$cfg['linker']['bin_files']['prefix']} "
-  cmd_str += $cfg['linker']['bin_files']['destination']
-  cmd_str += exe_name + $cfg['linker']['bin_files']['extension']
+  build_path = $cfg[:project][:build_root]
+  exe_file   = File.join(build_path, File.basename(exe_name, '.*')) + $cfg[:extension][:executable]
+  cmd_str    = build_command_string($cfg[:tools][:test_linker], [obj_list, exe_file])
   execute(cmd_str)
-end
-
-def build_simulator_fields
-  return nil if $cfg['simulator'].nil?
-
-  command = if $cfg['simulator']['path'].nil?
-              ''
-            else
-              "#{tackit($cfg['simulator']['path'])} "
-            end
-  pre_support = if $cfg['simulator']['pre_support'].nil?
-                  ''
-                else
-                  squash('', $cfg['simulator']['pre_support'])
-                end
-  post_support = if $cfg['simulator']['post_support'].nil?
-                   ''
-                 else
-                   squash('', $cfg['simulator']['post_support'])
-                 end
-
-  { command: command, pre_support: pre_support, post_support: post_support }
+  exe_file
 end
 
 def execute(command_string, verbose = true, raise_on_fail = true)
   report command_string
   output = `#{command_string}`.chomp
   report(output) if verbose && !output.nil? && !output.empty?
-
-  if !$?.nil? && !$?.exitstatus.zero? && raise_on_fail
-    raise "Command failed. (Returned #{$?.exitstatus})"
-  end
+  raise "Command failed. (Returned #{$?.exitstatus})" if !$?.nil? && !$?.exitstatus.zero? && raise_on_fail
 
   output
 end
@@ -157,10 +149,8 @@ end
 def report_summary
   summary = UnityTestSummary.new
   summary.root = __dir__
-  results_glob = "#{$cfg['compiler']['build_path']}*.test*"
-  results_glob.tr!('\\', '/')
-  results = Dir[results_glob]
-  summary.targets = results
+  results_glob = File.join($cfg[:project][:build_root], '*.test*').tr('\\', '/')
+  summary.targets = Dir[results_glob]
   summary.run
   fail_out 'FAIL: There were failures' if summary.failures > 0
 end
@@ -168,83 +158,37 @@ end
 def run_tests(test_files)
   report 'Running system tests...'
 
-  # Tack on TEST define for compiling unit tests
-  load_configuration($cfg_file)
-  test_defines = ['TEST']
-  $cfg['compiler']['defines']['items'] = [] if $cfg['compiler']['defines']['items'].nil?
-  $cfg['compiler']['defines']['items'] << 'TEST'
-
   include_dirs = local_include_dirs
+  build_path   = $cfg[:project][:build_root]
 
-  # Build and execute each unit test
   test_files.each do |test|
     obj_list = []
 
-    # Detect dependencies and build required required modules
     extract_headers(test).each do |header|
-      # Compile corresponding source file if it exists
       src_file = find_source_file(header, include_dirs)
-      obj_list << compile(src_file, test_defines) unless src_file.nil?
+      obj_list << compile(src_file) unless src_file.nil?
     end
 
-    # Build the test runner (generate if configured to do so)
-    test_base = File.basename(test, C_EXTENSION)
-    runner_name = "#{test_base}_Runner.c"
-    if $cfg['compiler']['runner_path'].nil?
-      runner_path = $cfg['compiler']['build_path'] + runner_name
-      test_gen = UnityTestRunnerGenerator.new($cfg_file)
-      test_gen.run(test, runner_path)
-    else
-      runner_path = $cfg['compiler']['runner_path'] + runner_name
-    end
+    test_base   = File.basename(test, C_EXTENSION)
+    runner_path = File.join(build_path, "#{test_base}_Runner.c")
+    UnityTestRunnerGenerator.new($cfg[:unity] || {}).run(test, runner_path)
+    obj_list << compile(runner_path)
 
-    obj_list << compile(runner_path, test_defines)
+    obj_list << compile(test)
 
-    # Build the test module
-    obj_list << compile(test, test_defines)
+    exe_file = link_it(test_base, obj_list)
 
-    # Link the test executable
-    link_it(test_base, obj_list)
-
-    # Execute unit test and generate results file
-    simulator = build_simulator_fields
-    executable = $cfg['linker']['bin_files']['destination'] + test_base + $cfg['linker']['bin_files']['extension']
-    cmd_str = if simulator.nil?
-                executable
+    cmd_str = if $cfg[:tools] && $cfg[:tools][:test_fixture]
+                build_command_string($cfg[:tools][:test_fixture], [exe_file, ''])
               else
-                "#{simulator[:command]} #{simulator[:pre_support]} #{executable} #{simulator[:post_support]}"
+                exe_file
               end
     output = execute(cmd_str, true, false)
-    test_results = $cfg['compiler']['build_path'] + test_base
-    test_results += if output.match(/OK$/m).nil?
-                      '.testfail'
-                    else
-                      '.testpass'
-                    end
+
+    test_results  = File.join(build_path, test_base)
+    test_results += output.match(/OK$/m).nil? ? '.testfail' : '.testpass'
     File.open(test_results, 'w') { |f| f.print output }
   end
-end
-
-def build_application(main)
-  report 'Building application...'
-
-  obj_list = []
-  load_configuration($cfg_file)
-  main_path = $cfg['compiler']['source_path'] + main + C_EXTENSION
-
-  # Detect dependencies and build required required modules
-  include_dirs = get_local_include_dirs
-  extract_headers(main_path).each do |header|
-    src_file = find_source_file(header, include_dirs)
-    obj_list << compile(src_file) unless src_file.nil?
-  end
-
-  # Build the main source file
-  main_base = File.basename(main_path, C_EXTENSION)
-  obj_list << compile(main_path)
-
-  # Create the executable
-  link_it(main_base, obj_list)
 end
 
 def fail_out(msg)

@@ -75,9 +75,11 @@ namespace :test do
 
   desc "Test unity examples"
   task :examples => [:prepare_for_tests] do
-    execute("cd ../examples/example_1 && make -s ci", false)
-    execute("cd ../examples/example_2 && make -s ci", false)
-    execute("cd ../examples/example_3 && rake", false)
+    [
+      "cd ../examples/example_1 && make -s ci",
+      "cd ../examples/example_2 && make -s ci",
+      "cd ../examples/example_3 && rake config[#{$cfg_file_base || 'gcc_64'}] default"
+    ].each { |cmd| execute(cmd, false) }
   end
 
   desc "Run all rspecs"

@@ -1,0 +1,24 @@
+# =========================================================================
+#   Unity - A Test Framework for C
+#   ThrowTheSwitch.org
+#   Copyright (c) 2007-26 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   SPDX-License-Identifier: MIT
+# =========================================================================
+
+---
+:project:
+  :build_root: build/
+
+:paths:
+  :source:
+    - src/
+    - helper/
+  :test:
+    - test/
+  :support:
+    - ../../src/
+
+:colour: true
+
+:unity:
+  :plugins: []

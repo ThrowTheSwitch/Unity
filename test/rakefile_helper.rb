@@ -16,7 +16,10 @@ module RakefileHelpers
   def load_configuration(config_file)
     return if $configured
 
-    $cfg_file = "targets/#{config_file}" unless config_file =~ /[\\|\/]/
+    unless config_file =~ /[\\|\/]/
+      $cfg_file_base = config_file
+      $cfg_file = "targets/#{config_file}" 
+    end
     $cfg = YamlHelper.load_file($cfg_file)
     $colour_output = false unless $cfg['colour']
     $configured = true if config_file != DEFAULT_CONFIG_FILE
