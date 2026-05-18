@@ -11,7 +11,6 @@ $extra_paths = []
 require 'rake'
 require 'rake/clean'
 require_relative 'rakefile_helper'
-require 'rspec/core/rake_task'
 
 TEMP_DIRS = [
 	File.join(__dir__, 'build'),
@@ -53,8 +52,16 @@ namespace :test do
 
   desc "Test unity's helper scripts"
   task :scripts => [:prepare_for_tests] do
-    Dir['tests/test_*.rb'].each do |scriptfile|
-      require "./"+scriptfile
+    begin
+      Dir['tests/test_*.rb'].each do |scriptfile|
+        require "./"+scriptfile
+      end
+    ensure
+      total    = $generate_test_runner_tests    || 0
+      failures = $generate_test_runner_failures || 0
+      result   = "#{total} Tests #{failures} Failures 0 Ignored\n"
+      result  += failures > 0 ? "FAILED\n" : "OK\n"
+      save_test_results('scripts', result)
     end
   end
 
@@ -75,16 +82,24 @@ namespace :test do
 
   desc "Test unity examples"
   task :examples => [:prepare_for_tests] do
-    [
-      "cd ../examples/example_1 && make -s ci",
-      "cd ../examples/example_2 && make -s ci",
-      "cd ../examples/example_3 && rake config[#{$cfg_file_base || 'gcc_64'}] default"
-    ].each { |cmd| execute(cmd, false) }
+    run_examples
   end
 
   desc "Run all rspecs"
-  RSpec::Core::RakeTask.new(:spec) do |t|
-    t.pattern = 'spec/**/*_spec.rb'
+  task :spec => [:prepare_for_tests] do
+    output = execute("rspec spec/**/*_spec.rb", true)
+    rspec_ok = $?.exitstatus.zero?
+    report output
+    total = failures = pending = 0
+    if output =~ /(\d+) examples?, (\d+) failures?(?:, (\d+) pending)?/
+      total    = Regexp.last_match(1).to_i
+      failures = Regexp.last_match(2).to_i
+      pending  = (Regexp.last_match(3) || 0).to_i
+    end
+    result   = "#{total} Tests #{failures} Failures #{pending} Ignored\n"
+    result  += rspec_ok ? "OK\n" : "FAILED\n"
+    save_test_results('spec', result)
+    raise "Command failed." unless rspec_ok
   end
 
   desc "Generate test summary"

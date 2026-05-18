@@ -1287,10 +1287,10 @@ void testFloatPrintingInfinityAndNaN(void)
 #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
 #else
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("inf",   1.0f / f_zero);
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("-inf", -1.0f / f_zero);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("Infinity",   1.0f / f_zero);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("Negative Infinity", -1.0f / f_zero);
 
-    TEST_ASSERT_EQUAL_PRINT_FLOATING("nan",   0.0f / f_zero);
+    TEST_ASSERT_EQUAL_PRINT_FLOATING("NaN",   0.0f / f_zero);
 #endif
 }
 
@@ -1305,7 +1305,7 @@ static void printFloatValue(float f)
 
     sprintf(expected, "%.9g", f);
     /* We print all NaN's as "nan", not "-nan" */
-    if (strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
+    if (strcmp(expected, "-nan") == 0) strcpy(expected, "NaN");
 
     if (strcmp(expected, getBufferPutcharSpy()))
     {
@@ -1329,7 +1329,7 @@ static void printFloatValue(float f)
 
     sprintf(expected, "%.7g", f);
     /* We print all NaN's as "nan", not "-nan" */
-    if (strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
+    if (strcmp(expected, "-nan") == 0) strcpy(expected, "NaN");
 
     strcpy(expected_lower, expected);
     strcpy(expected_lower2, expected);

@@ -42,7 +42,7 @@ TARGET = build/testunity-cov.exe
 
 # To generate coverage, call 'make -s', the default target runs.
 # For verbose output of all the tests, run 'make test'.
-default: coverage
+default: test
 .PHONY: default coverage test clean
 coverage: $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(SRC5) $(SRC6) $(SRC7) $(SRC8)
 	cd $(BUILD_DIR) && \

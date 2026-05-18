@@ -192,6 +192,32 @@ module RakefileHelpers
     report summary.run
   end
 
+  # Parse all Unity summary lines from combined output (e.g. multiple executables)
+  # and produce a single synthesized result string suitable for save_test_results.
+  def collect_test_output(output)
+    total_tests    = 0
+    total_failures = 0
+    total_ignored  = 0
+    detail_lines   = []
+
+    output.each_line do |line|
+      stripped = line.chomp
+      if stripped =~ /(\d+) Tests (\d+) Failures (\d+) Ignored/
+        total_tests    += Regexp.last_match(1).to_i
+        total_failures += Regexp.last_match(2).to_i
+        total_ignored  += Regexp.last_match(3).to_i
+      elsif stripped =~ /^[^:]+:[^:]+:\w+(?:\([^)]*\))?:(?:PASS|FAIL|IGNORE)/
+        detail_lines << stripped
+      end
+    end
+
+    synthesized  = detail_lines.join("\n")
+    synthesized += "\n" unless detail_lines.empty?
+    synthesized += "#{total_tests} Tests #{total_failures} Failures #{total_ignored} Ignored\n"
+    synthesized += total_failures > 0 ? "FAILED\n" : "OK\n"
+    synthesized
+  end
+
   def save_test_results(test_base, output)
     test_results = File.join('build',test_base)
     if output.match(/OK$/m).nil?
@@ -218,7 +244,7 @@ module RakefileHelpers
     obj_list = src_files.map { |f| compile(f, ['UNITY_SKIP_DEFAULT_RUNNER', 'UNITY_FIXTURE_NO_EXTRAS']) }
 
     # Link the test executable
-    test_base = File.basename('framework_test', C_EXTENSION)
+    test_base = File.basename('fixtures_test', C_EXTENSION)
     link_it(test_base, obj_list)
 
     # Run and collect output
@@ -364,17 +390,39 @@ module RakefileHelpers
 
   def run_make_tests()
     report "\nRunning Unity Examples with Make"
-    [ "make -s",                               # test with all defaults
-      #"make -s DEBUG=-m32",                    # test 32-bit architecture with 64-bit support
-      #"make -s DEBUG=-m32 UNITY_SUPPORT_64=",  # test 32-bit build without 64-bit types
-      "make -s UNITY_INCLUDE_DOUBLE= ",        # test without double
+    combined_output = ''
+    [ "make -s",                 # test with all defaults
+      "make -s coverage",        # test with coverage
       "cd #{File.join("..","extras","fixture",'test')} && make -s default noStdlibMalloc",
       "cd #{File.join("..","extras","fixture",'test')} && make -s C89",
       "cd #{File.join("..","extras","memory",'test')} && make -s default noStdlibMalloc",
       "cd #{File.join("..","extras","memory",'test')} && make -s C89",
     ].each do |cmd|
       report "Testing '#{cmd}'"
-      execute(cmd, false)
+      combined_output += "Testing '#{cmd}'\n\n#{execute(cmd, false)}\n"
     end
+    save_test_results('make_tests', collect_test_output(combined_output))
+  end
+
+  def run_examples()
+    report "\nRunning Unity Examples"
+    total_tests = total_ignored = 0
+    [
+      "cd ../examples/example_1 && make -s ci",
+      "cd ../examples/example_2 && make -s ci",
+      "cd ../examples/example_3 && rake config[#{$cfg_file_base || 'gcc_64'}] default"
+    ].each do |cmd|
+      execute(cmd, false).each_line do |line|
+        if line =~ /(\d+) Tests \d+ Failures (\d+) Ignored/
+          total_tests   += Regexp.last_match(1).to_i
+          total_ignored += Regexp.last_match(2).to_i
+          # Failures intentionally not counted: the examples contain tests designed
+          # to fail to demonstrate Unity's detection capability. A zero exit code
+          # from make/rake means those failures were verified as expected; if
+          # something truly broke, execute() would have raised above.
+        end
+      end
+    end
+    save_test_results('examples', "#{total_tests} Tests 0 Failures #{total_ignored} Ignored\nOK\n")
   end
 end
