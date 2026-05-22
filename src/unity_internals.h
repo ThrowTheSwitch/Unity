@@ -363,10 +363,20 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 
 #ifndef UNITY_OUTPUT_START
 #define UNITY_OUTPUT_START()
+#else
+  /* If defined as something else, make sure we declare it here so it's ready for use */
+  #ifdef UNITY_OUTPUT_START_HEADER_DECLARATION
+    extern void UNITY_OUTPUT_START_HEADER_DECLARATION;
+  #endif
 #endif
 
 #ifndef UNITY_OUTPUT_COMPLETE
 #define UNITY_OUTPUT_COMPLETE()
+#else
+  /* If defined as something else, make sure we declare it here so it's ready for use */
+  #ifdef UNITY_OUTPUT_COMPLETE_HEADER_DECLARATION
+    extern void UNITY_OUTPUT_COMPLETE_HEADER_DECLARATION;
+  #endif
 #endif
 
 #ifdef UNITY_INCLUDE_EXEC_TIME
