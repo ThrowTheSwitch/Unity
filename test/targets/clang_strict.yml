@@ -62,12 +62,6 @@
 :extension:
   :object: ".o"
   :executable: ".exe"
-:paths:
-  :test:
-    - src/
-    - "../src/"
-    - testdata/
-    - tests/
 :defines:
   :test:
   - UNITY_INCLUDE_DOUBLE

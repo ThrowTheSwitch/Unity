@@ -21,6 +21,8 @@ module RakefileHelpers
       $cfg_file = "targets/#{config_file}" 
     end
     $cfg = YamlHelper.load_file($cfg_file)
+    $cfg[:paths] ||= {}
+    $cfg[:paths][:test] ||= ['src/', '../src/', 'testdata/', 'tests/']
     $colour_output = false unless $cfg['colour']
     $configured = true if config_file != DEFAULT_CONFIG_FILE
   end

@@ -33,12 +33,6 @@
 :extension:
   :object: ".o"
   :executable: ".exe"
-:paths:
-  :test:
-    - src/
-    - "../src/"
-    - testdata/
-    - tests/
 :defines:
   :test:
   - UNITY_EXCLUDE_STDINT_H
