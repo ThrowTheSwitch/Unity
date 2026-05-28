@@ -91,7 +91,14 @@ def build_command_string(tool_hash, values, defines = nil)
   args = []
   tool_hash[:arguments].each do |arg|
     if arg.include?('$')
-      if arg.include?(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE')
+      if arg.include?('${5}')
+        all_paths = (($cfg[:paths][:support] || []) + ($cfg[:paths][:source] || []) + ($cfg[:paths][:test] || [])).uniq
+        all_paths.each { |f| args << arg.gsub('${5}', f) }
+
+      elsif arg.include?('${6}')
+        (($cfg.dig(:defines, :test) || []) + Array(defines)).uniq.compact.each { |f| args << arg.gsub('${6}', f) }
+
+      elsif arg.include?(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE')
         pattern = arg.gsub(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE', '')
         ($cfg[:paths][:support] || []).each { |f| args << pattern.gsub(/\$/, f) }
 

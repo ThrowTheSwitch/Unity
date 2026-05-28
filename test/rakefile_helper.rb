@@ -16,13 +16,15 @@ module RakefileHelpers
   def load_configuration(config_file)
     return if $configured
 
-    unless config_file =~ /[\\|\/]/
+    if config_file =~ /[\\|\/]/
+      $cfg_file = config_file
+    else
       $cfg_file_base = config_file
-      $cfg_file = "targets/#{config_file}" 
+      $cfg_file = "targets/#{config_file}"
     end
     $cfg = YamlHelper.load_file($cfg_file)
     $cfg[:paths] ||= {}
-    $cfg[:paths][:test] ||= ['src/', '../src/', 'testdata/', 'tests/']
+    $cfg[:paths][:test] = (Array($cfg[:paths][:test]) + ['src/', '../src/', 'testdata/', 'tests/']).uniq
     $colour_output = false unless $cfg['colour']
     $configured = true if config_file != DEFAULT_CONFIG_FILE
   end
@@ -101,7 +103,14 @@ module RakefileHelpers
     args = []
     hash[:arguments].each do |arg|
       if arg.include? '$'
-        if arg.include? ': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE'
+        if arg.include? '${5}'
+          all_paths = [ File.join('..','src'), $extra_paths, 'src', File.join('tests'), File.join('testdata'), $cfg[:paths][:support] ].flatten.uniq.compact
+          all_paths.each { |f| args << arg.gsub('${5}', f) }
+
+        elsif arg.include? '${6}'
+          [ $cfg[:defines][:test], $cfg.dig(:unity, :defines), defines ].flatten.uniq.compact.each { |f| args << arg.gsub('${6}', f) }
+
+        elsif arg.include? ': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE'
           pattern = arg.gsub(': COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE','')
           [ File.join('..','src') ].each do |f|
             args << pattern.gsub(/\$/,f)
@@ -115,7 +124,7 @@ module RakefileHelpers
 
         elsif arg.include? ': COLLECTION_DEFINES_TEST_AND_VENDOR'
           pattern = arg.gsub(': COLLECTION_DEFINES_TEST_AND_VENDOR','')
-          [ $cfg[:defines][:test], defines ].flatten.uniq.compact.each do |f|
+          [ $cfg[:defines][:test], $cfg.dig(:unity, :defines), defines ].flatten.uniq.compact.each do |f|
             args << pattern.gsub(/\$/,f)
           end
 
@@ -141,7 +150,7 @@ module RakefileHelpers
   end
 
   def compile(file, defines = [])
-    out_file = File.join('build', File.basename(file, C_EXTENSION)) + $cfg[:extension][:object]
+    out_file = File.join('build', File.basename(file, C_EXTENSION)) + ($cfg[:extension][:object] || '.o')
     cmd_str = build_command_string( $cfg[:tools][:test_compiler], [ file, out_file ], defines )
     execute(cmd_str)
     out_file
@@ -170,7 +179,7 @@ module RakefileHelpers
               "--style=allman --indent=spaces=4 --indent-switches --indent-preproc-define --indent-preproc-block " \
               "--pad-oper --pad-comma --unpad-paren --pad-header " \
               "--align-pointer=type --align-reference=name " \
-              "--add-brackets --mode=c --suffix=none " \
+              "--mode=c --suffix=none " \
               "#{style_what}"
     execute(command, false)
     report "Styling C:PASS"

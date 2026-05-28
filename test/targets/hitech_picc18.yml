@@ -38,9 +38,8 @@
     - "--opt=none"
     - "-c"
     - "-M"
-    - '-I"$": COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE'
-    - '-I"$": COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR'
-    - "-D$: COLLECTION_DEFINES_TEST_AND_VENDOR"
+    - '-I"${5}"'
+    - "-D${6}"
     - "${1}"
     - " ${2}"
   :test_linker:

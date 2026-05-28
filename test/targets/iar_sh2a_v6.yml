@@ -33,9 +33,8 @@
     - "--mfc"
     - "--use_unix_directory_separators"
     - "--diag_suppress=Pe161"
-    - '-I"$": COLLECTION_PATHS_TEST_TOOLCHAIN_INCLUDE'
-    - '-I"$": COLLECTION_PATHS_TEST_SUPPORT_SOURCE_INCLUDE_VENDOR'
-    - "-D$: COLLECTION_DEFINES_TEST_AND_VENDOR"
+    - '-I"${5}"'
+    - "-D${6}"
     - "${1}"
     - "-o ${2}"
   :test_linker:
