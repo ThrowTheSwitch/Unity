@@ -419,24 +419,26 @@ module RakefileHelpers
   end
 
   def run_examples()
-    report "\nRunning Unity Examples"
     total_tests = total_ignored = 0
     
     # If we're set up to use gcc, the makefiles should work too. otherwise, just run example 3
     examples = if $cfg_file_base.nil? || ($cfg_file_base =~ /gcc/)
-      [
-        "cd ../examples/example_1 && make -s ci",
-        "cd ../examples/example_2 && make -s ci"
-      ]
+      {
+        :example_1 => "cd ../examples/example_1 && make -s ci",
+        :example_2 => "cd ../examples/example_2 && make -s ci"
+      }
     else
-      []
-    end + if $unity_test_config_file_in_targets
-      ["cd ../examples/example_3 && rake config[#{$cfg_file_base}] default"]
-    else
-      ["cd ../examples/example_3 && rake config[\"../#{$unity_test_config_file}\"] default"]
+      {}
     end
 
-    examples.each do |cmd|
+    if $unity_test_config_file_in_targets
+      examples[:example_3] = "cd ../examples/example_3 && rake config[#{$cfg_file_base}] default"
+    else
+      examples[:example_3] = "cd ../examples/example_3 && rake config[\"../#{$unity_test_config_file}\"] default"
+    end
+
+    examples.each_pair do |key, cmd|
+      report "\nRunning Unity Example: #{key.to_s}"
       execute(cmd, false).each_line do |line|
         if line =~ /(\d+) Tests \d+ Failures (\d+) Ignored/
           total_tests   += Regexp.last_match(1).to_i

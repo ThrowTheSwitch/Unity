@@ -43,7 +43,6 @@ CLFAGS += -Wno-misleading-indentation
 CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wundef
 CFLAGS += -Wold-style-definition
-#CFLAGS += -Wno-misleading-indentation
 
 TARGET_BASE1=test1
 TARGET_BASE2=test2
