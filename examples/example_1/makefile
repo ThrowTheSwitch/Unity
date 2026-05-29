@@ -39,6 +39,7 @@ CFLAGS += -Wunreachable-code
 CFLAGS += -Winit-self
 CFLAGS += -Wmissing-field-initializers
 CFLAGS += -Wno-unknown-pragmas
+CLFAGS += -Wno-misleading-indentation
 CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wundef
 CFLAGS += -Wold-style-definition
