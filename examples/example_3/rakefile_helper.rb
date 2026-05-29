@@ -131,6 +131,9 @@ end
 def compile(file, defines = [])
   build_path = $cfg[:project][:build_root]
   out_file   = File.join(build_path, File.basename(file, C_EXTENSION)) + ($cfg[:extension][:object] || '.o')
+  if $cfg[:tools][:test_compiler][:executable] =~ /gcc/
+    $cfg[:tools][:test_compiler][:arguments] |= ['-Wno-misleading-indentation']
+  end
   cmd_str    = build_command_string($cfg[:tools][:test_compiler], [file, out_file], defines)
   execute(cmd_str)
   out_file
