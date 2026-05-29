@@ -1241,9 +1241,6 @@ RUNNER_TESTS = [
 ]
 
 def runner_test(test, runner, expected, test_defines, cmdline_args, features)
-  # Tack on TEST define for compiling unit tests
-  load_configuration($cfg_file)
-
   # Drop Out if we're skipping this type of test
   if $cfg[:skip_tests] && features
     if $cfg[:skip_tests].include?(:parameterized) && features.include?(:parameterized)

@@ -16,9 +16,9 @@ TARGETS_PATH = File.join(__dir__, '..', '..', 'test', 'targets').freeze
 PROJECT_FILE = File.join(__dir__, 'project.yml').freeze
 
 def load_configuration(config_file)
-  $cfg_file = config_file =~ /[\\\/]/ ? config_file : File.join(TARGETS_PATH, config_file)
+  $unity_example_config_file = config_file =~ /[\\\/]/ ? config_file : File.join(TARGETS_PATH, config_file)
   project = YamlHelper.load_file(PROJECT_FILE)
-  target  = YamlHelper.load_file($cfg_file)
+  target  = YamlHelper.load_file($unity_example_config_file)
 
   # Toolchain settings (tools, extensions) come from the target YML.
   # Path and project settings come from project.yml and take precedence.
@@ -130,7 +130,7 @@ end
 
 def compile(file, defines = [])
   build_path = $cfg[:project][:build_root]
-  out_file   = File.join(build_path, File.basename(file, C_EXTENSION)) + $cfg[:extension][:object]
+  out_file   = File.join(build_path, File.basename(file, C_EXTENSION)) + ($cfg[:extension][:object] || '.o')
   cmd_str    = build_command_string($cfg[:tools][:test_compiler], [file, out_file], defines)
   execute(cmd_str)
   out_file
@@ -138,7 +138,7 @@ end
 
 def link_it(exe_name, obj_list)
   build_path = $cfg[:project][:build_root]
-  exe_file   = File.join(build_path, File.basename(exe_name, '.*')) + $cfg[:extension][:executable]
+  exe_file   = File.join(build_path, File.basename(exe_name, '.*')) + ($cfg[:extension][:executable] || '')
   cmd_str    = build_command_string($cfg[:tools][:test_linker], [obj_list, exe_file])
   execute(cmd_str)
   exe_file

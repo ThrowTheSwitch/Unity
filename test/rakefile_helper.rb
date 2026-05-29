@@ -13,16 +13,19 @@ require_relative '../auto/yaml_helper'
 
 module RakefileHelpers
   C_EXTENSION = '.c'.freeze
+
   def load_configuration(config_file)
     return if $configured
 
-    if config_file =~ /[\\|\/]/
-      $cfg_file = config_file
+    $cfg_file_base = config_file
+    cfg_file = if config_file =~ /[\\|\/]/
+      $unity_test_config_file_in_targets = false
+      config_file
     else
-      $cfg_file_base = config_file
-      $cfg_file = "targets/#{config_file}"
+      $unity_test_config_file_in_targets = true
+      "targets/#{config_file}"
     end
-    $cfg = YamlHelper.load_file($cfg_file)
+    $cfg = YamlHelper.load_file(cfg_file)
     $cfg[:paths] ||= {}
     $cfg[:paths][:test] = (Array($cfg[:paths][:test]) + ['src/', '../src/', 'testdata/', 'tests/']).uniq
     $colour_output = false unless $cfg['colour']
@@ -418,11 +421,22 @@ module RakefileHelpers
   def run_examples()
     report "\nRunning Unity Examples"
     total_tests = total_ignored = 0
-    [
-      "cd ../examples/example_1 && make -s ci",
-      "cd ../examples/example_2 && make -s ci",
-      "cd ../examples/example_3 && rake config[#{$cfg_file_base || 'gcc_64'}] default"
-    ].each do |cmd|
+    
+    # If we're set up to use gcc, the makefiles should work too. otherwise, just run example 3
+    examples = if $cfg_file_base.nil? || ($cfg_file_base =~ /gcc/)
+      [
+        "cd ../examples/example_1 && make -s ci",
+        "cd ../examples/example_2 && make -s ci"
+      ]
+    else
+      []
+    end + if $unity_test_config_file_in_targets
+      ["cd ../examples/example_3 && rake config[#{$cfg_file_base}] default"]
+    else
+      ["cd ../examples/example_3 && rake config[\"../#{$unity_test_config_file}\"] default"]
+    end
+
+    examples.each do |cmd|
       execute(cmd, false).each_line do |line|
         if line =~ /(\d+) Tests \d+ Failures (\d+) Ignored/
           total_tests   += Regexp.last_match(1).to_i
