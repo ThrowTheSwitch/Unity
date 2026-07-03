@@ -657,9 +657,9 @@ static void UnityPrintFirstStringDifference(const char *expected, const char *ac
         UnityPrint(UnityStrCharacter);
         UnityPrintNumberUnsigned(i_diff);
         UnityPrint(UnityStrExpected);
-        UnityPrintNumberByStyle(expected[i_diff], UNITY_DISPLAY_STYLE_CHAR);
+        UnityPrintIntNumberByStyle(expected[i_diff], UNITY_DISPLAY_STYLE_CHAR);
         UnityPrint(UnityStrWas);
-        UnityPrintNumberByStyle(actual[i_diff], UNITY_DISPLAY_STYLE_CHAR);
+        UnityPrintIntNumberByStyle(actual[i_diff], UNITY_DISPLAY_STYLE_CHAR);
     }
 }
 
@@ -1985,7 +1985,7 @@ void UnityAssertNotEqualStringLen(const char* expected,
     if (Unity.CurrentTestFailed)
     {
         UnityTestResultsFailBegin(lineNumber);
-        UnityPrintExpectedAndActualStringsLen(expected, actual, length);
+        UnityPrintExpectedAndActualStringsLen(expected, actual, length, length);
 
         if (msg)
         {
