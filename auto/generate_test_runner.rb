@@ -500,8 +500,7 @@ class UnityTestRunnerGenerator
       end
     end
     output.puts
-    output.puts("  int number_of_tests = #{count_tests(tests)};")
-    output.puts('  struct UnityRunTestParameters run_test_params_arr[number_of_tests];')
+    output.puts("  struct UnityRunTestParameters run_test_params_arr[#{count_tests(tests)}];")
     output.puts
     idx = 0
     tests.each do |test|
@@ -523,10 +522,10 @@ class UnityTestRunnerGenerator
     end
     output.puts
     if @options[:shuffle_tests]
-      output.puts('  shuffleTests(run_test_params_arr, number_of_tests);')
+      output.puts("  shuffleTests(run_test_params_arr, #{count_tests(tests)});")
       output.puts
     end
-    output.puts('  for (int i = 0; i < number_of_tests; i++)')
+    output.puts("  for (int i = 0; i < #{count_tests(tests)}; i++)")
     output.puts('  {')
     output.puts('    run_test(run_test_params_arr[i].func, run_test_params_arr[i].name, run_test_params_arr[i].line_num);')
     output.puts('  }')
