@@ -6,6 +6,7 @@
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
+require 'cgi'
 require 'fileutils'
 require 'optparse'
 require 'ostruct'
@@ -143,6 +144,7 @@ class UnityToJUnit
     lines.each do |line|
       line = line.tr('\\', '/')
       _src_file, src_line, test_name, status, msg = line.split(/:/)
+      test_name = CGI.escapeHTML(test_name.to_s)
       case status
       when 'IGNORE' then results[:ignores] << { test: test_name, line: src_line, message: msg }
       when 'FAIL'   then results[:failures] << { test: test_name, line: src_line, message: msg }
