@@ -80,3 +80,32 @@ void testNotEqualMemoryLengthZero(void)
     TEST_ASSERT_EQUAL_MEMORY(NULL, NULL, 0);
     VERIFY_FAILS_END
 }
+
+void testNotEqualMemory(void)
+{
+    TEST_ASSERT_NOT_EQUAL_MEMORY("foo", "bar", 3);
+    TEST_ASSERT_NOT_EQUAL_MEMORY_MESSAGE("fool", "food", 4, "fool should not equal food");
+    TEST_ASSERT_NOT_EQUAL_MEMORY(NULL, "food", 4);
+    TEST_ASSERT_NOT_EQUAL_MEMORY("fool", NULL, 4);
+}
+
+void testNotNotEqualMemory1(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_MEMORY("foo", "foo", 3);
+    VERIFY_FAILS_END
+}
+
+void testNotNotEqualMemory2(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_MEMORY(NULL, NULL, 1);
+    VERIFY_FAILS_END
+}
+
+void testNotNotEqualMemoryLengthZero(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_MEMORY("foo", "bar", 0);
+    VERIFY_FAILS_END
+}
