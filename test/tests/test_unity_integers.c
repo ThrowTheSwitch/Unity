@@ -700,6 +700,40 @@ void testNotEqualPointers(void)
     VERIFY_FAILS_END
 }
 
+void testNotEqualPtr(void)
+{
+    int v0, v1;
+    int *p0, *p1;
+
+    v0 = 19467;
+    v1 = 18271;
+    p0 = &v0;
+    p1 = &v1;
+
+    TEST_ASSERT_NOT_EQUAL_PTR(p0, p1);
+    TEST_ASSERT_NOT_EQUAL_PTR(&v0, &v1);
+    TEST_ASSERT_NOT_EQUAL_PTR(p0, &v1);
+    TEST_ASSERT_NOT_EQUAL_PTR(NULL, &v0);
+    TEST_ASSERT_NOT_EQUAL_PTR(&v0, NULL);
+}
+
+void testNotNotEqualPointers(void)
+{
+    int v0;
+    int *p0 = &v0;
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_PTR(p0, p0);
+    VERIFY_FAILS_END
+}
+
+void testNotNotEqualPointers_BothNull(void)
+{
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_NOT_EQUAL_PTR(NULL, NULL);
+    VERIFY_FAILS_END
+}
+
 void testIntsWithinDelta(void)
 {
     TEST_ASSERT_INT_WITHIN(1, 5000, 5001);
