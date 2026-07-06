@@ -109,3 +109,42 @@ void testNotNotEqualMemoryLengthZero(void)
     TEST_ASSERT_NOT_EQUAL_MEMORY("foo", "bar", 0);
     VERIFY_FAILS_END
 }
+
+void testEachEqualMemory(void)
+{
+    unsigned char p0[] = {0xAB, 0xAB, 0xAB, 0xAB};
+    unsigned char p1[] = {0x12, 0x12, 0x12, 0xFF};
+    unsigned char p2[] = {0x00, 0x00, 0xFF, 0xFF};
+    unsigned char p3[] = {0x5A, 0x01, 0x02, 0x03};
+
+    TEST_ASSERT_EACH_EQUAL_MEMORY(0xAB, p0, 1, 1);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(0xAB, p0, 1, 4);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(0x12, p1, 1, 3);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(0x00, p2, 1, 2);
+    TEST_ASSERT_EACH_EQUAL_MEMORY(0x5A, p3, 1, 1);
+}
+
+void testNotEachEqualMemory(void)
+{
+    unsigned char p0[] = {0xAB, 0xAB, 0x00, 0xAB};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY(0xAB, p0, 1, 4);
+    VERIFY_FAILS_END
+}
+
+void testEachEqualMemoryWithMessage(void)
+{
+    unsigned char p0[] = {0x42, 0x42, 0x42};
+
+    TEST_ASSERT_EACH_EQUAL_MEMORY_MESSAGE(0x42, p0, 1, 3, "all bytes should be 0x42");
+}
+
+void testNotEachEqualMemoryWithMessage(void)
+{
+    unsigned char p0[] = {0x42, 0x42, 0x01};
+
+    EXPECT_ABORT_BEGIN
+    TEST_ASSERT_EACH_EQUAL_MEMORY_MESSAGE(0x42, p0, 1, 3, "mismatch expected");
+    VERIFY_FAILS_END
+}
