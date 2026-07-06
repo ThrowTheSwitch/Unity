@@ -131,6 +131,9 @@ void UnityIgnoreTest(const char* printableName, const char* group, const char* n
         if (UnityFixture.Verbose)
         {
             UnityPrint(printableName);
+            UNITY_EXEC_TIME_START();
+            UNITY_EXEC_TIME_STOP();
+            UNITY_PRINT_EXEC_TIME();
             UNITY_PRINT_EOL();
         }
         else if (UnityFixture.Silent)
@@ -323,6 +326,8 @@ void UnityConcludeFixtureTest(void)
     if (Unity.CurrentTestIgnored)
     {
         Unity.TestIgnores++;
+        UNITY_EXEC_TIME_STOP();
+        UNITY_PRINT_EXEC_TIME();
         UNITY_PRINT_EOL();
     }
     else if (!Unity.CurrentTestFailed)
@@ -339,6 +344,8 @@ void UnityConcludeFixtureTest(void)
     else /* Unity.CurrentTestFailed */
     {
         Unity.TestFailures++;
+        UNITY_EXEC_TIME_STOP();
+        UNITY_PRINT_EXEC_TIME();
         UNITY_PRINT_EOL();
     }
 
