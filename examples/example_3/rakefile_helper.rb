@@ -134,7 +134,7 @@ def compile(file, defines = [])
   if $cfg[:tools][:test_compiler][:executable] =~ /gcc/
     $cfg[:tools][:test_compiler][:arguments] |= ['-Wno-misleading-indentation']
   end
-  cmd_str    = build_command_string($cfg[:tools][:test_compiler], [file, out_file], defines)
+  cmd_str = build_command_string($cfg[:tools][:test_compiler], [file, out_file], defines)
   execute(cmd_str)
   out_file
 end

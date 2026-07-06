@@ -445,13 +445,17 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
         }
 
         /* round to nearest integer */
-        n = ((UNITY_INT32)(number + number) + 1) / 2;
+        {
+            UNITY_DOUBLE two_number = number + number;
+            UNITY_INT32  two_n_trunc = (UNITY_INT32)two_number;
+            n = (two_n_trunc + 1) / 2;
 
 #ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO
-        /* round to even if exactly between two integers */
-        if ((n & 1) && (UNITY_ABS((UNITY_DOUBLE)n - number - 0.5f) < epsilon))
-            n--;
+            /* round to even if exactly between two integers */
+            if ((n & 1) && (two_n_trunc & 1) && !((UNITY_DOUBLE)two_n_trunc < two_number))
+                n--;
 #endif
+        }
 
         n += n_int;
 
