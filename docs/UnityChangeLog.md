@@ -13,6 +13,29 @@ Prior to 2008, the project was an internal project and not released to the publi
 
 ## Log
 
+
+### Unity 2.7.0 (July 2026)
+
+New Features:
+  
+  - Add option to test runner generator to shuffle test order
+  - Optional new detail "stack" report on failures
+
+Significant Bugfixes:
+
+  - Default gcc and clang targets can run on non-x86 without modification (#778)
+  - Backslashes handled properly in generator (#837)
+  - Floating point avoids use of == and != always (#819)
+  - Added not equal for string, memory, and pointer handling (#811)
+  - display of failures fixed on ARM processors, particularly with arrays (#807)
+  - fixed each-equal assertion for memory (#797)
+  - fix many warnings.
+
+Other:
+
+  - Clean up core targets for simpler use on host environments
+  - Documentation improvements
+
 ### Unity 2.6.1 (Jan 2025)
 
 New Features:
