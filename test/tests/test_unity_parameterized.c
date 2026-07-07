@@ -237,7 +237,7 @@ TEST_MATRIX([2, 5l, 4u+3, 4ul], [-2, 3])
 void test_TwoMatrices(unsigned first, signed second)
 {
   static unsigned idx = 0;
-  static const unsigned expected[] =
+  static const signed expected[] =
   {
   // -2   3
      -4,  6, // 2
@@ -245,7 +245,7 @@ void test_TwoMatrices(unsigned first, signed second)
     -14, 21, // 7
      -8, 12, // 4
   };
-  TEST_ASSERT_EQUAL_INT(expected[idx++], first * second);
+  TEST_ASSERT_EQUAL_INT(expected[idx++], (signed)first * second);
 }
 
 TEST_MATRIX(["String1", "String,2", "Stri" "ng3", "String[4]", "String\"5\""], [-5, 12.5f])
@@ -298,10 +298,10 @@ void test_EnumCharAndArrayMatrices(test_enum_t e, float n, char c)
   TEST_ASSERT_EQUAL_CHAR(exp_char[char_idx], c);
 
   char_idx = (char_idx + 1) % 6;
-  if (char_idx == 0.0f)
+  if ((float)char_idx == 0.0f)
   {
     float_idx = (float_idx + 1) % 3;
-    if (float_idx == 0.0f)
+    if ((float)float_idx == 0.0f)
     {
       enum_idx = (enum_idx + 1) % 3;
     }

@@ -107,7 +107,7 @@ module RakefileHelpers
     hash[:arguments].each do |arg|
       if arg.include? '$'
         if arg.include? '${5}'
-          all_paths = [ File.join('..','src'), $extra_paths, 'src', File.join('tests'), File.join('testdata'), $cfg[:paths][:support] ].flatten.uniq.compact
+          all_paths = [ File.join('..','src'), $extra_paths, File.join('tests'), File.join('testdata'), $cfg[:paths][:support] ].flatten.uniq.compact
           all_paths.each { |f| args << arg.gsub('${5}', f) }
 
         elsif arg.include? '${6}'

@@ -61,7 +61,6 @@
     :arguments:
     - "${1}"
     - "-lm"
-    - "-m64"
     - "-o ${2}"
 :extension:
   :object: ".o"
