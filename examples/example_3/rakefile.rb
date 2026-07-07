@@ -20,7 +20,7 @@ end
 
 task prepare_for_tests: TEMP_DIRS
 
-DEFAULT_CONFIG_FILE = 'gcc_64.yml'.freeze
+DEFAULT_CONFIG_FILE = 'gcc.yml'.freeze
 configure_toolchain(DEFAULT_CONFIG_FILE)
 
 task unit: [:prepare_for_tests] do

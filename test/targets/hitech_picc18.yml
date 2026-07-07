@@ -5,6 +5,11 @@
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
+# This file provides a sample configuration for working with Hitech's PICC
+# toolchain, targetting native compilation, using mostly default settings,
+# with many warnings enabled for self-validation. It can be modified or 
+# mixed to customize for your project needs.
+
 ---
 :cmock:
   :plugins: []
@@ -76,15 +81,6 @@
 :extension:
   :object: ".obj"
   :executable: ".hex"
-:paths:
-  :test:
-    - c:/Projects/NexGen/Prototypes/CMockTest/src/
-    - c:/Projects/NexGen/Prototypes/CMockTest/mocks/
-    - c:/CMock/src/
-    - c:/CMock/examples/src/
-    - c:/CMock/vendor/unity/src/
-    - c:/CMock/vendor/unity/examples/helper/
-    - tests\
 :defines:
   :test:
   - UNITY_INT_WIDTH=16

@@ -5,6 +5,11 @@
 #   SPDX-License-Identifier: MIT
 # =========================================================================
 
+# This file provides a base configuration for working with the clang (llvm)
+# toolchain, targetting native compilation, using mostly default settings,
+# with many warnings enabled for self-validation. It can be modified or 
+# mixed to customize for your project needs.
+
 ---
 :tools:
   :test_compiler:

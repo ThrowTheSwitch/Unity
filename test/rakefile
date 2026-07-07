@@ -27,7 +27,7 @@ task :prepare_for_tests => TEMP_DIRS
 include RakefileHelpers
 
 # Load proper GCC as defult configuration
-DEFAULT_CONFIG_FILE = 'gcc_64_auto_stdint.yml'
+DEFAULT_CONFIG_FILE = 'gcc.yml'
 $unity_test_config_file = DEFAULT_CONFIG_FILE
 
 ############# ALL THE SELF-TESTS WE CAN PERFORM

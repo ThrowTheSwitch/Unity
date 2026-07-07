@@ -1,0 +1,88 @@
+# =========================================================================
+#   Unity - A Test Framework for C
+#   ThrowTheSwitch.org
+#   Copyright (c) 2007-26 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   SPDX-License-Identifier: MIT
+# =========================================================================
+
+# This file provides a sample configuration for working with IAR's arm
+# toolchain, targetting native compilation, using mostly default settings,
+# with many warnings enabled for self-validation. It can be modified or 
+# mixed to customize for your project needs.
+
+# Because IAR specifies things often with absolute paths, it is very likely 
+# that this file will need to be edited. The items which vary from target to 
+# target and host to host have been broken into this top iar_config section
+# for easy editing:
+
+---
+:iar_config:
+  :iccarm: &iccarm "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\bin\\iccarm.exe"
+  :ilinkarm: &ilinkarm "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\bin\\ilinkarm.exe"
+  :cspybat: &cspybat "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\common\\bin\\CSpyBat.exe"
+  :config_file: &config_file "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\inc\\DLib_Config_Normal.h"
+  :icf_file: &icf_file "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\config\\generic.icf"
+  :armproc_file: &armproc_file "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\bin\\armproc.dll"
+  :armsim_file: &armsim_file "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\bin\\armsim2.dll"
+  :armbat_file: &armbat_file "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\bin\\armbat.dll"
+  :debug_file: &debug_file "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 5.4 Kickstart\\arm\\config\\debugger\\TexasInstruments\\iolm3sxxxx.ddf"
+  :cpu: &cpu "--cpu=Cortex-M3"
+  :device: &device "--device=LM3SxBxx"
+
+:tools:
+  :test_compiler:
+    :name: compiler
+    :executable: *iccarm
+    :arguments:
+    - "--diag_suppress=Pa050"
+    - "--debug"
+    - "--endian=little"
+    - "--cpu=Cortex-M3"
+    - "--no_path_in_file_macros"
+    - "-e"
+    - "--fpu=None"
+    - "--dlib_config"
+    - *config_file
+    - "--interwork"
+    - "--warnings_are_errors"
+    - "-Oh"
+    - '-I"${5}"'
+    - "-D${6}"
+    - "${1}"
+    - "-o ${2}"
+  :test_linker:
+    :name: linker
+    :executable: *ilinkarm
+    :arguments:
+    - "${1}"
+    - "--redirect _Printf=_PrintfLarge"
+    - "--redirect _Scanf=_ScanfSmall"
+    - "--semihosting"
+    - "--entry __iar_program_start"
+    - "--config"
+    - *icf_file
+    - "-o ${2}"
+  :test_fixture:
+    :name: simulator
+    :executable: 
+    :arguments:
+    - *armproc_file
+    - *armsim_file
+    - "${1}"
+    - "--plugin"
+    - *armbat_file
+    - "--backend"
+    - "-B"
+    - "--endian=little"
+    - *cpu
+    - "--fpu=None"
+    - "-p"
+    - *debug_file
+    - "--semihosting"
+    - *device
+:extension:
+  :object: ".r79"
+  :executable: ".out"
+:defines:
+  :test:
+  - IAR
