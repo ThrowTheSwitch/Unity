@@ -81,6 +81,8 @@ void* unity_malloc(size_t size)
     }
 
     if (size == 0) return NULL;
+    if (size > (size_t)(-1) - sizeof(Guard) - sizeof(end) - (UNITY_MALLOC_ALIGNMENT - 1))
+        return NULL;
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     if (heap_index + total_size > UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
@@ -197,7 +199,7 @@ void* unity_realloc(void* oldMem, size_t size)
 #endif
     newMem = unity_malloc(size);
     if (newMem == NULL) return NULL; /* Do not release old memory */
-    memcpy(newMem, oldMem, guard->size);
+    memcpy(newMem, oldMem, guard->size < size ? guard->size : size);
     release_memory(oldMem);
     return newMem;
 }
