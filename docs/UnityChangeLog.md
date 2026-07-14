@@ -30,6 +30,7 @@ Significant Bugfixes:
   - display of failures fixed on ARM processors, particularly with arrays (#807)
   - fixed each-equal assertion for memory (#797)
   - fix many warnings.
+  - Test runner generator calls custom suite teardown when begin/end calls are omitted. @94xhn
 
 Other:
 

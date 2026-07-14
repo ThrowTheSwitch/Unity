@@ -1303,6 +1303,26 @@ def verify_number(expected, expression, output)
   end
 end
 
+should 'GenerateSuiteTeardownWhenBeginAndEndAreOmitted' do
+  runner_name = OUT_FILE + 'SuiteTeardownWithoutBeginEnd_runner.c'
+  UnityTestRunnerGenerator.new(
+    :test_prefix => 'test',
+    :suite_teardown => '  return num_failures;',
+    :omit_begin_end => true,
+  ).run('testdata/testRunnerGenerator.c', runner_name)
+
+  runner = File.read(runner_name)
+  correct_call = runner.include?('(void) suiteTearDown(0);')
+  incorrect_call = runner.include?('(void) suite_teardown(0);')
+  if correct_call && !incorrect_call
+    report 'Runner_GenerateSuiteTeardownWhenBeginAndEndAreOmitted:PASS'
+  else
+    report 'Runner_GenerateSuiteTeardownWhenBeginAndEndAreOmitted:FAIL'
+    $generate_test_runner_failures += 1
+  end
+  $generate_test_runner_tests += 1
+end
+
 RUNNER_TESTS.each do |testset|
   basename = File.basename(testset[:testfile], C_EXTENSION)
   testset_name = "Runner_#{basename}_#{testset[:name]}"
