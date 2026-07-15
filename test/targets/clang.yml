@@ -55,6 +55,7 @@
     - "-D${6}"
     - "${1}"
     - "-o ${2}"
+    :version: --version
   :test_linker:
     :name: linker
     :executable: clang
@@ -62,6 +63,86 @@
     - "${1}"
     - "-lm"
     - "-o ${2}"
+    :version: --version
+  :test_fixture:
+    :name: test_fixture
+    :optional: true
+    :executable: '${1}'
+    :arguments: []
+    :version: --version
+  :gcov_compiler:
+    :name: gcov_compiler
+    :executable: clang
+    :arguments:
+    - "-fprofile-arcs"
+    - "-ftest-coverage"
+    - "-Wall"
+    - "-Wno-address"
+    - "-std=c99"
+    - "-pedantic"
+    - "-Wextra"
+    - "-Werror"
+    - "-Wpointer-arith"
+    - "-Wcast-align"
+    - "-Wwrite-strings"
+    - "-Wswitch-default"
+    - "-Wunreachable-code"
+    - "-Winit-self"
+    - "-Wmissing-field-initializers"
+    - "-Wno-unknown-pragmas"
+    - "-Wstrict-prototypes"
+    - "-Wundef"
+    - "-Wold-style-definition"
+    - '-I"${5}"'
+    - "-D${6}"
+    - "-DGCOV_COMPILER"
+    - "-DCODE_COVERAGE"
+    - "-c ${1}"
+    - "-o ${2}"
+    - "-MMD"
+    - "-MF \"${4}\""
+    :version: --version
+  :gcov_linker:
+    :name: gcov_linker
+    :executable: clang
+    :arguments:
+    - "-fprofile-arcs"
+    - "-ftest-coverage"
+    - "${1}"
+    - "${5}"
+    - "-lm"
+    - "-o ${2}"
+    - "${4}"
+    :version: --version
+  :gcov_fixture:
+    :name: gcov_fixture
+    :optional: true
+    :executable: '${1}'
+    :arguments: []
+    :version: --version
+  :gcov_summary:
+    :name: gcov_summary
+    :executable: llvm-cov
+    :arguments:
+     - "gcov"
+     - "-n"
+     - "-p"
+     - "-b"
+     - "-o \"${2}\""
+     - "\"${1}\""
+    :version: --version
+  :gcov_report:
+    :name: gcov_report
+    :executable: llvm-cov
+    :arguments:
+     - "gcov"
+     - "-b"
+     - "-c"
+     - "-r"
+     - "-s \"${2}\""
+     - "-x"
+     - "\"${1}\""
+    :version: --version
 :extension:
   :object: ".o"
   :executable: ".exe"

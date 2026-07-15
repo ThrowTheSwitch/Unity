@@ -13,7 +13,6 @@ Prior to 2008, the project was an internal project and not released to the publi
 
 ## Log
 
-
 ### Unity 2.7.0 (July 2026)
 
 New Features:
@@ -35,6 +34,25 @@ Other:
 
   - Clean up core targets for simpler use on host environments
   - Documentation improvements
+
+#### Major Code/Doc Contributors
+
+These individuals contributed significant features, bugfixes, and improvements.
+
+  - Mark VanderVoord
+  - Ross Smyth
+  - burakutkuc
+  - ml-physec
+  - Roland Stahn
+  - aditya
+  - Dariqq
+  - James Browning
+  - savashn
+
+#### Also, thanks for your contributions!
+
+Artem Sharipov, Christer Fletcher, Costas Akrivoulis, Dominik Loidolt, Ivan Kravets, Jacques Boivin, James Raphael Tiovalen, Joshua Stone, Lucas Saavedra Vaz, Michael Dwan, Roland Marchand, yahyayozo
+
 
 ### Unity 2.6.1 (Jan 2025)
 
