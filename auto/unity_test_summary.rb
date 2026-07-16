@@ -91,6 +91,9 @@ class UnityTestSummary
       next unless status_match
 
       status = status_match.captures[0]
+      # A line ending in :PASS is a passing expected-failure test; the FAIL
+      # earlier on the same line was the intentional (caught) assertion.
+      status = 'PASS' if line.end_with?(':PASS') && status == 'FAIL'
 
       line_out = (@root && (@root != 0) ? "#{@root}#{line}" : line).gsub(/\//, '\\')
       case status

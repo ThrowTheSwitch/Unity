@@ -48,11 +48,13 @@
     - "-o ${2}"
     :version: --version
   :test_fixture:
-    :name: test_fixture
-    :optional: true
-    :executable: '${1}'
-    :arguments: []
+    :name: gcc_fixture
+    :executable: ''
     :version: --version
+    :optional: true
+    :arguments:
+      - ${1}
+      - ${2}
   :gcov_compiler:
     :name: gcov_compiler
     :executable: gcc
