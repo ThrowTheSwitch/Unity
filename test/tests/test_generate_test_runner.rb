@@ -336,6 +336,17 @@ RUNNER_TESTS = [
   },
 
 
+  { :name => 'EmptyFileWarning',
+    :testfile => 'testdata/testRunnerGeneratorEmpty.c',
+    :testdefines => ['TEST'],
+    :options => nil, #defaults
+    :expected => {
+      :to_pass => [ ],
+      :to_fail => [ ],
+      :to_ignore => [ 'test_empty_warning' ],
+    }
+  },
+
   #### WITH MOCKS ##########################################
 
   { :name => 'DefaultsThroughOptions',

@@ -100,9 +100,10 @@ class UnityTestRunnerGenerator
       create_suite_setup(output)
       create_suite_teardown(output)
       create_reset(output)
-      create_run_test(output) unless tests.empty?
+      create_run_test(output)
       create_args_wrappers(output, tests)
       create_shuffle_tests(output) if @options[:shuffle_tests]
+      tests = create_warning_test(output, input_file, tests)
       create_main(output, input_file, tests, used_mocks)
     end
 
@@ -406,10 +407,43 @@ class UnityTestRunnerGenerator
   end
 
   def create_run_test(output)
-    require 'erb'
-    file = File.read(File.join(__dir__, 'run_test.erb'))
-    template = ERB.new(file, trim_mode: '<>')
-    output.puts("\n#{template.result(binding)}")
+    output.puts("/*=======Test Runner Used To Run Each Test=====*/")
+    output.puts("static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE line_num)")
+    output.puts("{")
+    output.puts("    Unity.CurrentTestName = name;")
+    output.puts("    Unity.CurrentTestLineNumber = (UNITY_UINT) line_num;")
+    output.puts("#ifdef UNITY_USE_COMMAND_LINE_ARGS")
+    output.puts("    if (!UnityTestMatches())")
+    output.puts("        return;")
+    output.puts("#endif")
+    output.puts("    Unity.NumberOfTests++;")
+    output.puts("    UNITY_CLR_DETAILS();")
+    output.puts("    UNITY_EXEC_TIME_START();")
+    output.puts("    CMock_Init();")
+    output.puts("    if (TEST_PROTECT())")
+    output.puts("    {")
+    if @options[:plugins].include?(:cexception)
+      output.puts("        volatile CEXCEPTION_T e;")
+      output.puts("        Try {")
+      output.puts("            #{@options[:setup_name]}();")
+      output.puts("            func();")
+      output.puts("        } Catch(e) {")
+      output.puts("            TEST_ASSERT_EQUAL_HEX32_MESSAGE(CEXCEPTION_NONE, e, \"Unhandled Exception!\");")
+      output.puts("        }")
+    else
+      output.puts("        #{@options[:setup_name]}();")
+      output.puts("        func();")
+    end
+    output.puts("    }")
+    output.puts("    if (TEST_PROTECT())")
+    output.puts("    {")
+    output.puts("        #{@options[:teardown_name]}();")
+    output.puts("        CMock_Verify();")
+    output.puts("    }")
+    output.puts("    CMock_Destroy();")
+    output.puts("    UNITY_EXEC_TIME_STOP();")
+    output.puts("    UnityConcludeTest();")
+    output.puts("}")
   end
 
   def create_args_wrappers(output, tests)
@@ -426,6 +460,22 @@ class UnityTestRunnerGenerator
         output.puts("}\n")
       end
     end
+  end
+
+  def create_warning_test(output, filename, tests)
+    if count_tests(tests) == 0
+      warning_test = {
+        :test => "test_empty_warning",
+        :line_number => 0
+      }
+      output.puts("\n/*=======Warning Test=====*/")
+      output.puts("static void #{warning_test[:test]}(void)")
+      output.puts('{')
+      output.puts("    TEST_IGNORE_MESSAGE(\"Test file '#{filename.gsub(/\\/, '\\\\\\')}' contains no tests.\");")
+      output.puts("}\n")
+      tests = [warning_test]
+    end
+    return tests
   end
 
   def create_shuffle_tests(output)
