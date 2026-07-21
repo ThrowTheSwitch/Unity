@@ -17,3 +17,4 @@ Makefile
 CMakeFiles
 CMakeCache.txt
 !unityConfig.cmake
+*~
