@@ -59,6 +59,7 @@ Artem Sharipov, Christer Fletcher, Costas Akrivoulis, Dominik Loidolt, Ivan Krav
 New Features:
   
   - Add `-n` comand line option as strict matcher again
+  - Support `TESTBRIDGE_TEST_ONLY` for Bazel `--test_filter` when `UNITY_USE_COMMAND_LINE_ARGS` is enabled
 
 Significant Bugfixes:
 
