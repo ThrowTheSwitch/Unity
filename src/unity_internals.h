@@ -1318,8 +1318,8 @@ int UnityTestMatches(void);
 #define UNITY_DETAIL_PUSH(label, value)                                                          UnityPushDetail((UNITY_DETAIL_LABEL_TYPE)(label), (UNITY_DETAIL_VALUE_TYPE)(value), __LINE__)
 #define UNITY_DETAIL_POP(label, value)                                                           UnityPopDetail((UNITY_DETAIL_LABEL_TYPE)(label), (UNITY_DETAIL_VALUE_TYPE)(value), __LINE__)
 #else
-#define UNITY_DETAIL_PUSH(label, value)                                                          UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrDetailStack)
-#define UNITY_DETAIL_POP(label, value)                                                           UNITY_TEST_FAIL((UNITY_LINE_TYPE)(line), UnityStrErrDetailStack)
+#define UNITY_DETAIL_PUSH(label, value)                                                          UNITY_TEST_FAIL((UNITY_LINE_TYPE)(__LINE__), UnityStrErrDetailStack)
+#define UNITY_DETAIL_POP(label, value)                                                           UNITY_TEST_FAIL((UNITY_LINE_TYPE)(__LINE__), UnityStrErrDetailStack)
 #endif
 
 /* End of UNITY_INTERNALS_H */
