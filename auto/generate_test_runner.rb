@@ -583,7 +583,7 @@ class UnityTestRunnerGenerator
     output.puts('  CMock_Guts_MemFreeFinal();') unless used_mocks.empty?
     if @options[:has_suite_teardown]
       if @options[:omit_begin_end]
-        output.puts('  (void) suite_teardown(0);')
+        output.puts('  (void) suiteTearDown(0);')
       else
         output.puts('  return suiteTearDown(UNITY_END());')
       end
