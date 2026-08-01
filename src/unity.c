@@ -2404,7 +2404,7 @@ void UnityPopDetail(UNITY_DETAIL_LABEL_TYPE label, UNITY_DETAIL_VALUE_TYPE value
  *-----------------------------------------------*/
 #ifdef UNITY_USE_COMMAND_LINE_ARGS
 
-char* UnityOptionIncludeNamed = NULL;
+const char* UnityOptionIncludeNamed = NULL;
 char* UnityOptionExcludeNamed = NULL;
 int UnityVerbosity            = 1;
 int UnityStrictMatch          = 0;
@@ -2426,7 +2426,7 @@ extern char* getenv(const char* name);
     testbridge_filter = UNITY_GETENV("TESTBRIDGE_TEST_ONLY");
     if (testbridge_filter && testbridge_filter[0] != 0)
     {
-        UnityOptionIncludeNamed = (char*)testbridge_filter;
+        UnityOptionIncludeNamed = testbridge_filter;
     }
 
     for (i = 1; i < argc; i++)

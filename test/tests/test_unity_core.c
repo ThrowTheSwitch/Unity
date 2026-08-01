@@ -5,6 +5,10 @@
     SPDX-License-Identifier: MIT
 ========================================================================= */
 
+#if defined(UNITY_USE_COMMAND_LINE_ARGS) && !defined(_WIN32) && !defined(_MSC_VER) && !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200112L
+#endif
+
 #include "unity.h"
 #ifdef UNITY_USE_COMMAND_LINE_ARGS
 #include "unity_internals.h"
@@ -226,6 +230,8 @@ static void UnitySetTestContext(const char* testfile, const char* testname)
 void testUnityParseOptionsUsesTestbridgeFilter(void)
 {
     char* argv[] = { (char*)"prog", NULL };
+    const char* testfile = Unity.TestFile;
+    const char* testname = Unity.CurrentTestName;
 
     UnitySetTestbridgeFilter("test_my_function");
     UnityParseOptions(1, argv);
@@ -236,11 +242,15 @@ void testUnityParseOptionsUsesTestbridgeFilter(void)
     TEST_ASSERT_FALSE(UnityTestMatches());
 
     UnitySetTestbridgeFilter(NULL);
+    UnityParseOptions(1, argv);
+    UnitySetTestContext(testfile, testname);
 }
 
 void testUnityParseOptionsArgsOverrideTestbridgeFilter(void)
 {
     char* argv[] = { (char*)"prog", (char*)"-n", (char*)"other", NULL };
+    const char* testfile = Unity.TestFile;
+    const char* testname = Unity.CurrentTestName;
 
     UnitySetTestbridgeFilter("test_my_function");
     UnityParseOptions(3, argv);
@@ -251,6 +261,8 @@ void testUnityParseOptionsArgsOverrideTestbridgeFilter(void)
     TEST_ASSERT_FALSE(UnityTestMatches());
 
     UnitySetTestbridgeFilter(NULL);
+    UnityParseOptions(1, argv);
+    UnitySetTestContext(testfile, testname);
 }
 #endif
 

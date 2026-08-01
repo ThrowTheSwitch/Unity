@@ -310,7 +310,7 @@ module RakefileHelpers
 
       report "\nRunning Tests in #{test}"
       obj_list = []
-      test_defines = []
+      test_defines = File.basename(test) == 'test_unity_core.c' ? ['UNITY_USE_COMMAND_LINE_ARGS'] : []
 
       # Detect dependencies and build required modules
       extract_headers(test).each do |header|
