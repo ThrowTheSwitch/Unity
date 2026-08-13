@@ -499,9 +499,9 @@ class UnityTestRunnerGenerator
     main_name = @options[:main_name].to_sym == :auto ? "main_#{filename.gsub('.c', '')}" : @options[:main_name].to_s
     if @options[:cmdline_args]
       if main_name != 'main'
-        output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv);")
+        output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc __attribute__((unused)), char** argv __attribute__((unused)));")
       end
-      output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv)")
+      output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc __attribute__((unused)), char** argv __attribute__((unused)))")
       output.puts('{')
       output.puts('#ifdef UNITY_USE_COMMAND_LINE_ARGS')
       output.puts('  int parse_status = UnityParseOptions(argc, argv);')
