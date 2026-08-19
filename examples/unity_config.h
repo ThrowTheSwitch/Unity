@@ -250,4 +250,12 @@
  */
 /* #define UNITY_INCLUDE_EXEC_TIME */
 
+/* Define this macro to redefine what the UnityPrintChar() function considers
+ * a printable character.
+ *
+ * Example, for printing UTF-8:
+ * #define UNITY_IS_PRINTABLE_CHAR(c) ((128 <= (c)) && ((c) <= 255))
+*/
+/* #define UNITY_IS_PRINTABLE_CHAR(c) ((32 <= (c)) && ((c) <= 126)) */
+
 #endif /* UNITY_CONFIG_H */
