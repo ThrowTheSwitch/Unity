@@ -7,6 +7,8 @@
 
 #include "unity.h"
 
+#include <stdbool.h>
+
 #ifndef UNITY_PROGMEM
 #define UNITY_PROGMEM
 #endif
@@ -88,8 +90,14 @@ static const char UNITY_PROGMEM UnityStrDetail2Name[]            = " " UNITY_DET
 /* Local helper function to print characters. */
 static void UnityPrintChar(const char* pch)
 {
+#ifdef UNITY_IS_PRINTABLE_CHAR
+    const int isPrintable = UNITY_IS_PRINTABLE_CHAR(*pch);
+#else
+    const int isPrintable = ((32 <= *pch) && (*pch <= 126));
+#endif
+
     /* printable characters plus CR & LF are printed */
-    if ((*pch <= 126) && (*pch >= 32))
+    if (isPrintable)
     {
         UNITY_OUTPUT_CHAR(*pch);
     }
