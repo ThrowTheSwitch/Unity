@@ -91,10 +91,10 @@ static const char UNITY_PROGMEM UnityStrDetail2Name[]            = " " UNITY_DET
 static void UnityPrintChar(const char* pch)
 {
 #ifdef UNITY_IS_PRINTABLE_CHAR
-    const bool isPrintable = UNITY_IS_PRINTABLE_CHAR(*pch);
+    const int isPrintable = UNITY_IS_PRINTABLE_CHAR(*pch);
 #else
-    const bool isPrintable = ((32 <= *pch) && (*pch <= 126));
-#endif  // UNITY_IS_PRINTABLE_CHAR
+    const int isPrintable = ((32 <= *pch) && (*pch <= 126));
+#endif
 
     /* printable characters plus CR & LF are printed */
     if (isPrintable)

@@ -19,6 +19,7 @@ TEMP_DIRS = [
 
 TEMP_DIRS.each do |dir|
   directory(dir)
+  CLEAN.include(File.join(dir, '*.*'))
   CLOBBER.include(dir)
 end
 
@@ -167,7 +168,7 @@ namespace :style do
 
   desc "Attempt to Autocorrect style"
   task :auto  => ['style:clean'] do
-    execute("rubocop ../auto ../examples ../extras --auto-correct --config .rubocop.yml")
+    execute("rubocop ../auto ../examples ../extras --autocorrect --config .rubocop.yml")
     report "Autocorrected What We Could."
   end
 
