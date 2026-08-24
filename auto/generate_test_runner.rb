@@ -510,6 +510,8 @@ class UnityTestRunnerGenerator
       end
       output.puts("#{@options[:main_export_decl]} int #{main_name}(int argc, char** argv)")
       output.puts('{')
+      output.puts('(void)argc;')
+      output.puts('(void)argv;')
       output.puts('#ifdef UNITY_USE_COMMAND_LINE_ARGS')
       output.puts('  int parse_status = UnityParseOptions(argc, argv);')
       output.puts('  if (parse_status != 0)')
