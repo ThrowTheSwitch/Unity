@@ -2615,7 +2615,7 @@ void UnityPopDetail(UNITY_DETAIL_LABEL_TYPE label, UNITY_DETAIL_VALUE_TYPE value
  *-----------------------------------------------*/
 #ifdef UNITY_USE_COMMAND_LINE_ARGS
 
-char* UnityOptionIncludeNamed = NULL;
+const char* UnityOptionIncludeNamed = NULL;
 char* UnityOptionExcludeNamed = NULL;
 int UnityVerbosity            = 1;
 int UnityStrictMatch          = 0;
@@ -2624,9 +2624,21 @@ int UnityStrictMatch          = 0;
 int UnityParseOptions(int argc, char** argv)
 {
     int i;
+    const char* testbridge_filter = NULL;
     UnityOptionIncludeNamed = NULL;
     UnityOptionExcludeNamed = NULL;
     UnityStrictMatch = 0;
+
+#ifndef UNITY_GETENV
+/*Allow Bazel test filtering via TESTBRIDGE_TEST_ONLY*/
+extern char* getenv(const char* name);
+#define UNITY_GETENV(name) getenv(name)
+#endif
+    testbridge_filter = UNITY_GETENV("TESTBRIDGE_TEST_ONLY");
+    if (testbridge_filter && testbridge_filter[0] != 0)
+    {
+        UnityOptionIncludeNamed = testbridge_filter;
+    }
 
     for (i = 1; i < argc; i++)
     {
