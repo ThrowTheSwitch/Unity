@@ -1,0 +1,106 @@
+---
+name: Build Unity library
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Windows: MSVC - Release Static",
+            os: windows-latest,
+            build_type: "Release",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            generators: "Visual Studio 17 2022",
+            shared_build: false
+          }
+        - {
+            name: "Ubuntu: GCC - Release Static",
+            os: ubuntu-latest,
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            generators: "Ninja",
+            shared_build: false
+          }
+        - {
+            name: "Apple OSX: Clang - Release Static",
+            os: macos-latest,
+            build_type: "Release",
+            cc: "clang",
+            cxx: "clang++",
+            generators: "Ninja",
+            shared_build: false
+          }
+        - {
+            name: "Windows: MSVC - Release Shared",
+            os: windows-latest,
+            build_type: "Release",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            generators: "Visual Studio 17 2022",
+            shared_build: true
+          }
+        - {
+            name: "Ubuntu: GCC - Release Shared",
+            os: ubuntu-latest,
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            generators: "Ninja",
+            shared_build: true
+          }
+        - {
+            name: "Apple OSX: Clang - Release Shared",
+            os: macos-latest,
+            build_type: "Release",
+            cc: "clang",
+            cxx: "clang++",
+            generators: "Ninja",
+            shared_build: true
+          }
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: pip install cmake ninja
+
+      - name: Prepare Visual Studio environment
+        if: startsWith(matrix.config.os, 'windows')
+        run: cmd "${{ matrix.config.environment_script }}"
+
+      - name: CMake configure
+        shell: bash
+        run: |
+          cmake \
+            -S . \
+            -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -G "${{ matrix.config.generators }}" \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DBUILD_SHARED_LIBS:BOOL=${{ matrix.config.shared_build }} \
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+            -DUNITY_EXTENSION_FIXTURES:BOOL=ON \
+            -DUNITY_EXTENSION_MEMORY:BOOL=ON
+
+      - name: CMake build
+        shell: bash
+        run: cmake --build build --config ${{ matrix.config.build_type }}
+
+      - name: CMake install
+        shell: bash
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target install
