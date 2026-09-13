@@ -128,6 +128,17 @@ void verifyTest(void);
 /* Customize #include search paths for a test executable's compilation. Ex: TEST_INCLUDE_PATH("src/module_a/inc") */
 #define TEST_INCLUDE_PATH(a)
 
+/* Add headers to a generated mock for this test executable. Ex:
+ * TEST_MOCK_INCLUDE("mock_driver.h", "test_driver_types.h") */
+#define TEST_MOCK_INCLUDE(mock, header)
+
+/* Location-specific generated mock include placement. */
+#define TEST_MOCK_INCLUDE_H_PRE_ORIG_HEADER(mock, header)
+#define TEST_MOCK_INCLUDE_H_POST_ORIG_HEADER(mock, header)
+#define TEST_MOCK_INCLUDE_C_PRE_HEADER(mock, header)
+#define TEST_MOCK_INCLUDE_C_POST_HEADER(mock, header)
+
+
 /*-------------------------------------------------------
  * Test Asserts (simple)
  *-------------------------------------------------------*/
