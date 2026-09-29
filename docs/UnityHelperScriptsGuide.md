@@ -231,6 +231,9 @@ These are the available options:
 | `-v`      | increase Verbosity                                |
 | `-x NAME` | eXclude tests whose name includes NAME            |
 
+Several names can be given as a comma-separated list. A comma inside parentheses is
+part of the name, so `-f "test_first(0,0)"` selects one parameterized test case.
+
 ##### `:setup_name`
 
 Override the default test `setUp` function name.

@@ -2706,6 +2706,7 @@ static int IsStringInBiggerString(const char* longstring, const char* shortstrin
     const char* lptr = longstring;
     const char* sptr = shortstring;
     const char* lnext = lptr;
+    int depth = 0; /* parenthesis nesting inside the match string; a comma only ends a match at depth 0 */
 
     if (*sptr == '*')
     {
@@ -2719,8 +2720,23 @@ static int IsStringInBiggerString(const char* longstring, const char* shortstrin
         /* If they current bytes match, go on to the next bytes */
         while (*lptr && *sptr && (*lptr == *sptr))
         {
+            if (*sptr == '(')
+            {
+                depth++;
+            }
+            else if ((*sptr == ')') && (depth > 0))
+            {
+                depth--;
+            }
+
             lptr++;
             sptr++;
+
+            /* a comma inside parentheses belongs to the name, e.g. test_foo(1,2) */
+            if ((*sptr == ',') && (depth > 0))
+            {
+                continue;
+            }
 
             switch (*sptr)
             {
@@ -2750,6 +2766,7 @@ static int IsStringInBiggerString(const char* longstring, const char* shortstrin
         /* Otherwise we start in the long pointer 1 character further and try again */
         lptr = lnext;
         sptr = shortstring;
+        depth = 0;
     }
 
     return 0;
@@ -2762,6 +2779,7 @@ static int UnityStringArgumentMatches(const char* str)
     const char* ptr1;
     const char* ptr2;
     const char* ptrf;
+    int depth; /* parenthesis nesting; commas inside parentheses do not separate filters */
 
     /* Go through the options and get the substrings for matching one at a time */
     ptr1 = str;
@@ -2775,14 +2793,23 @@ static int UnityStringArgumentMatches(const char* str)
         /* look for the start of the next partial */
         ptr2 = ptr1;
         ptrf = 0;
+        depth = (ptr1[0] == '(') ? 1 : 0;
         do
         {
             ptr2++;
+            if (ptr2[0] == '(')
+            {
+                depth++;
+            }
+            else if ((ptr2[0] == ')') && (depth > 0))
+            {
+                depth--;
+            }
             if ((ptr2[0] == ':') && (ptr2[1] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','))
             {
                 ptrf = &ptr2[1];
             }
-        } while ((ptr2[0] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && (ptr2[0] != ','));
+        } while ((ptr2[0] != 0) && (ptr2[0] != '\'') && (ptr2[0] != '"') && ((ptr2[0] != ',') || (depth > 0)));
 
         while ((ptr2[0] != 0) && ((ptr2[0] == ':') || (ptr2[0] == '\'') || (ptr2[0] == '"') || (ptr2[0] == ',')))
         {

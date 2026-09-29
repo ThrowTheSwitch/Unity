@@ -1119,6 +1119,106 @@ RUNNER_TESTS = [
     }
   },
 
+  { :name => 'ArgsIncludeParameterizedWithComma',
+    :testfile => 'testdata/testRunnerGeneratorParameterizedArgs.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :test_prefix => "paratest",
+      :use_param_tests => true,
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-f 'paratest_First(0,0)'",
+    :features => [ :parameterized ],
+    :expected => {
+      :to_pass => [
+                    'paratest_First\(0,0\)',
+                  ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsPreciseMatchParameterizedWithComma',
+    :testfile => 'testdata/testRunnerGeneratorParameterizedArgs.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :test_prefix => "paratest",
+      :use_param_tests => true,
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-n 'paratest_First(0,0)'",
+    :features => [ :parameterized ],
+    :expected => {
+      :to_pass => [
+                    'paratest_First\(0,0\)',
+                  ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsIncludeParameterizedWithCommaNoMatch',
+    :testfile => 'testdata/testRunnerGeneratorParameterizedArgs.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :test_prefix => "paratest",
+      :use_param_tests => true,
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-f 'paratest_First(0,100)'",
+    :features => [ :parameterized ],
+    :expected => {
+      :to_pass => [ ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsIncludeParameterizedWithCommaAlternatives',
+    :testfile => 'testdata/testRunnerGeneratorParameterizedArgs.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :test_prefix => "paratest",
+      :use_param_tests => true,
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-f 'paratest_First(1,1),paratest_Second(2,2),paratest_Plain'",
+    :features => [ :parameterized ],
+    :expected => {
+      :to_pass => [
+                    'paratest_First\(1,1\)',
+                    'paratest_Second\(2,2\)',
+                    'paratest_Plain',
+                  ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
+  { :name => 'ArgsExcludeParameterizedWithComma',
+    :testfile => 'testdata/testRunnerGeneratorParameterizedArgs.c',
+    :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
+    :options => {
+      :test_prefix => "paratest",
+      :use_param_tests => true,
+      :cmdline_args => true,
+    },
+    :cmdline_args => "-x 'paratest_First(0,0)'",
+    :features => [ :parameterized ],
+    :expected => {
+      :to_pass => [
+                    'paratest_First\(1,1\)',
+                    'paratest_First\(10,10\)',
+                    'paratest_Second\(0,0\)',
+                    'paratest_Second\(2,2\)',
+                    'paratest_Second\(20,20\)',
+                    'paratest_Plain',
+                  ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
   { :name => 'ArgsList',
     :testfile => 'testdata/testRunnerGenerator.c',
     :testdefines => ['TEST', 'UNITY_USE_COMMAND_LINE_ARGS'],
