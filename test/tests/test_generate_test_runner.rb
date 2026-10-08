@@ -1383,6 +1383,26 @@ should 'FindTestsLineNumbersWhenOneNameIsAPrefixOfAnother' do
   $generate_test_runner_tests += 1
 end
 
+should 'FindTestsKeepsBracesInTestCaseArguments' do
+  # Issue #752: a compound literal such as (uint8_t[]){1, 2} contains braces,
+  # which must not end the logical line before the test function is found.
+  source = "TEST_CASE((uint8_t[]){0x1, 0x2, 0x3}, 3)\n" \
+           "TEST_CASE((uint8_t[]){0x4}, 1)\n" \
+           "void test_WithArray(const uint8_t * data, unsigned len)\n" \
+           "{\n" \
+           "}\n"
+  found = UnityTestRunnerGenerator.new(use_param_tests: true).find_tests(source).map { |t| [t[:test], t[:args]] }
+  expected = [['test_WithArray', ['(uint8_t[]){0x1, 0x2, 0x3}, 3', '(uint8_t[]){0x4}, 1']]]
+  if found == expected
+    report 'Runner_FindTestsKeepsBracesInTestCaseArguments:PASS'
+  else
+    report "  FAIL: expected #{expected.inspect}, got #{found.inspect}"
+    report 'Runner_FindTestsKeepsBracesInTestCaseArguments:FAIL'
+    $generate_test_runner_failures += 1
+  end
+  $generate_test_runner_tests += 1
+end
+
 RUNNER_TESTS.each do |testset|
   basename = File.basename(testset[:testfile], C_EXTENSION)
   testset_name = "Runner_#{basename}_#{testset[:name]}"

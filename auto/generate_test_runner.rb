@@ -139,6 +139,7 @@ class UnityTestRunnerGenerator
     source_scrubbed = source_scrubbed.gsub(/\/\/(?:.+\/\*|\*(?:$|[^\/])).*$/, '')  # remove line comments that comment out the start of blocks
     source_scrubbed = source_scrubbed.gsub(/\/\*.*?\*\//m, '')                     # remove block comments
     source_scrubbed = source_scrubbed.gsub(/\/\/.*$/, '')                          # remove line comments (all that remain)
+    source_scrubbed = source_scrubbed.gsub(/TEST_(?:CASE|RANGE|MATRIX)\s*(\((?:[^()]|\g<1>)*\))/) { |s| s.gsub(substring_re, substring_subs) } # hide braces of compound literals in parameter lists
     lines = source_scrubbed.split(/(^\s*\#.*$) | (;|\{|\}) /x)                     # Treat preprocessor directives as a logical line. Match ;, {, and } as end of lines
                            .map { |line| line.gsub(substring_unre, substring_unsubs) } # unhide the problematic characters previously removed
 
