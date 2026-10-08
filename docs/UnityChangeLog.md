@@ -19,6 +19,7 @@ Significant Bugfixes:
 
   - Default `UNITY_INCLUDE_EXEC_TIME` macros compile as ISO C99, are statement-safe, and accept `-Wsign-conversion` (#838)
   - `unity_test_summary.rb` honors its own default result directory and root path again. @youdie006
+  - Test runner generator keeps `TEST_CASE` arguments that contain braces, such as compound literals (#752)
 
 ### Unity 2.7.0 (July 2026)
 
