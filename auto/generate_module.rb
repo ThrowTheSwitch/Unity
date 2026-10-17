@@ -182,9 +182,9 @@ class UnityModuleGenerator
   ############################
   def create_filename(part1, part2 = '')
     name = part2.empty? ? part1 : "#{part1}_#{part2}"
-    case @options[:naming]
-    when 'bumpy' then neutralize_filename(name, start_cap: false).delete('_')
-    when 'camel' then neutralize_filename(name).delete('_')
+    case @options[:naming]&.to_s
+    when 'bumpy' then neutralize_filename(name).delete('_')
+    when 'camel' then neutralize_filename(name, start_cap: false).delete('_')
     when 'snake' then neutralize_filename(name).downcase
     when 'caps'  then neutralize_filename(name).upcase
     else              name
@@ -221,7 +221,7 @@ class UnityModuleGenerator
       end
       if @options[:update_svn]
         `svn add \"#{file[:path]}\"`
-        if $!.exitstatus.zero?
+        if $?.exitstatus.zero?
           puts "File #{file[:path]} created and added to source control"
         else
           puts "File #{file[:path]} created but FAILED adding to source control!"
