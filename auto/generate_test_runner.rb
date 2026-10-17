@@ -36,6 +36,7 @@ class UnityTestRunnerGenerator
       test_prefix: 'test|spec|should',
       mock_prefix: 'Mock',
       mock_suffix: '',
+      mock_name_include_folder: false,
       setup_name: 'setUp',
       teardown_name: 'tearDown',
       test_reset_name: 'resetTest',
@@ -339,7 +340,10 @@ class UnityTestRunnerGenerator
       output.puts('  GlobalOrderError = NULL;')
     end
 
-    mocks = mock_headers.map { |mock| File.basename(mock, '.*') }
+    # optionally keep the folder a mock is included from to match cmock's naming
+    mocks = mock_headers.map do |mock|
+      @options[:mock_name_include_folder] ? mock.sub(/\A(?:\.[\/\\])+/, '').sub(/\.[^.\/\\]*\z/, '') : File.basename(mock, '.*')
+    end
     mocks.each do |mock|
       mock_clean = TypeSanitizer.sanitize_c_identifier(mock)
       output.puts("  #{mock_clean}_Init();")

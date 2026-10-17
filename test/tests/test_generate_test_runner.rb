@@ -71,6 +71,21 @@ RUNNER_TESTS = [
     }
   },
 
+  { :name => 'SameNamedMocksByFolder',
+    :testfile => 'testdata/testRunnerGeneratorWithSameNamedMocks.c',
+    :testdefines => ['TEST'],
+    :options => {
+      :mock_name_include_folder => true,
+    },
+    :expected => {
+      :to_pass => [ 'test_ShouldInitEachSameNamedMock',
+                    'test_ShouldVerifyAndDestroyEachSameNamedMock',
+                  ],
+      :to_fail => [ ],
+      :to_ignore => [ ],
+    }
+  },
+
   { :name => 'ShorterFilterOfJustTest',
     :testfile => 'testdata/testRunnerGenerator.c',
     :testdefines => ['TEST'],
@@ -1378,6 +1393,20 @@ should 'FindTestsLineNumbersWhenOneNameIsAPrefixOfAnother' do
   else
     report "  FAIL: expected #{expected.inspect}, got #{found.inspect}"
     report 'Runner_FindTestsLineNumbersWhenOneNameIsAPrefixOfAnother:FAIL'
+    $generate_test_runner_failures += 1
+  end
+  $generate_test_runner_tests += 1
+end
+
+should 'NameMocksByBasenameWithoutFolderOption' do
+  runner_name = OUT_FILE + 'SameNamedMocksByBasename_runner.c'
+  UnityTestRunnerGenerator.new({}).run('testdata/testRunnerGeneratorWithSameNamedMocks.c', runner_name)
+
+  runner = File.read(runner_name)
+  if runner.scan('  MockConfig_Init();').length == 2 && !runner.include?('uart_MockConfig_Init();')
+    report 'Runner_NameMocksByBasenameWithoutFolderOption:PASS'
+  else
+    report 'Runner_NameMocksByBasenameWithoutFolderOption:FAIL'
     $generate_test_runner_failures += 1
   end
   $generate_test_runner_tests += 1
