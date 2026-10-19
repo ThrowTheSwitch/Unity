@@ -946,7 +946,7 @@ extern const char UnityStrErrDetailStack[];
 #endif
 #endif
 
-/* Automatically enable variadic macros support, if it not enabled before */
+/* Automatically enable variadic macros support, if it wasn't enabled before */
 #ifndef UNITY_SUPPORT_VARIADIC_MACROS
   #ifdef __STDC_VERSION__
     #if __STDC_VERSION__ >= 199901L
