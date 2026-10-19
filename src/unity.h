@@ -26,7 +26,7 @@ extern "C"
  *-------------------------------------------------------*/
 
 /* These functions are intended to be called before and after each test.
- * If using unity directly, these will need to be provided for each test
+ * If using Unity directly, these will need to be provided for each test
  * executable built. If you are using the test runner generator and/or
  * Ceedling, these are optional. */
 void setUp(void);
@@ -119,7 +119,7 @@ void verifyTest(void);
  *-------------------------------------------------------
 
  * These macros do nothing, but they are useful for additional build context.
- * Tools (like Ceedling) can scan for these directives and make use of them for 
+ * Tools (like Ceedling) can scan for these directives and make use of them for
  * per-test-executable #include search paths and linking. */
 
 /* Add source files to a test executable's compilation and linking. Ex: TEST_SOURCE_FILE("sandwiches.c") */
