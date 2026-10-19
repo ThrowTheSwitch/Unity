@@ -117,7 +117,7 @@ class UnityTestRunnerGenerator
     return unless @options[:header_file] && !@options[:header_file].empty?
 
     File.open(@options[:header_file], 'w') do |output|
-      create_h_file(output, @options[:header_file], tests, headers, used_mocks)
+      create_h_file(output, @options[:header_file], tests, testfile_includes, used_mocks)
     end
   end
 

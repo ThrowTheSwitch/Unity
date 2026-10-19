@@ -350,6 +350,27 @@ RUNNER_TESTS = [
     }
   },
 
+  { :name => 'HeaderFile',
+    :testfile => 'testdata/testRunnerGenerator.c',
+    :testdefines => ['TEST'],
+    :options => {
+      :header_file => "build/testsample_HeaderFile_runner.h",
+    },
+    :expected => {
+      :to_pass => [ 'test_ThisTestAlwaysPasses',
+                    'spec_ThisTestPassesWhenNormalSetupRan',
+                    'spec_ThisTestPassesWhenNormalTeardownRan',
+                    'test_NotBeConfusedByLongComplicatedStrings',
+                    'test_NotDisappearJustBecauseTheTestBeforeAndAfterHaveCrazyStrings',
+                    'test_StillNotBeConfusedByLongComplicatedStrings',
+                    'should_RunTestsStartingWithShouldByDefault',
+                    'spec_ThisTestPassesWhenNormalSuiteSetupAndTeardownRan',
+                  ],
+      :to_fail => [ 'test_ThisTestAlwaysFails' ],
+      :to_ignore => [ 'test_ThisTestAlwaysIgnored' ],
+    }
+  },
+
 
   { :name => 'EmptyFileWarning',
     :testfile => 'testdata/testRunnerGeneratorEmpty.c',
