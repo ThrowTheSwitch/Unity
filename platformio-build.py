@@ -20,5 +20,7 @@ try:
         p = projenv.subst(p)
         if os.path.isfile(os.path.join(p, "unity_config.h")):
             env.Prepend(CPPPATH=[p])
+            # Stop at the first unity_config.h found to include.
+            break
 except:
     pass
