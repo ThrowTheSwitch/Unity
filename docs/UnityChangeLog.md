@@ -19,6 +19,7 @@ Significant Bugfixes:
 
   - Default `UNITY_INCLUDE_EXEC_TIME` macros compile as ISO C99, are statement-safe, and accept `-Wsign-conversion` (#838)
   - `unity_test_summary.rb` honors its own default result directory and root path again. @youdie006
+  - Test name filters (`-f`, `-n`, `-x`) no longer split at a comma inside parentheses, so parameterized tests like `test_first(0,0)` can be selected (#779) @jadhavgaurav
 
 ### Unity 2.7.0 (July 2026)
 
