@@ -19,6 +19,7 @@ Significant Bugfixes:
 
   - Default `UNITY_INCLUDE_EXEC_TIME` macros compile as ISO C99, are statement-safe, and accept `-Wsign-conversion` (#838)
   - `unity_test_summary.rb` honors its own default result directory and root path again. @youdie006
+  - Floats and doubles smaller than `UNITY_FLOAT_PRECISION` or `UNITY_DOUBLE_PRECISION` print as their value again instead of `0`. @APX403
 
 ### Unity 2.7.0 (July 2026)
 
