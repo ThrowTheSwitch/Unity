@@ -81,8 +81,9 @@ endif
 
 # Create a generator that can be used by consumers of our build system to generate
 # test runners.
+gen_test_runner_exe = find_program('auto/generate_test_runner.rb')
 gen_test_runner = generator(
-  find_program('auto/generate_test_runner.rb'),
+  gen_test_runner_exe,
   output: '@BASENAME@_Runner.c',
   arguments: ['@EXTRA_ARGS@', '@INPUT@', '@OUTPUT@']
 )
