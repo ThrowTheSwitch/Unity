@@ -16,3 +16,21 @@ Once you have the generator you need to pass it the absolute path of your test f
     test_runner = meson.source_root() / 'test/test_example.c'
 
 You can then include `test_runner` as a normal dependency to your builds. Meson will create the test runner in a private directory for each build target. It's only meant to be used as part of the build, so if you need to refer to the runner after the build, you won't be able to use the generator.
+
+For cases where the generator's fixed output name is not suitable, the runner program is also available directly:
+
+    runner_program = unity_proj.get_variable('gen_test_runner_exe')
+
+You can use it in a `custom_target()` to control the output name and pass any supported runner option:
+
+    test_runner = custom_target(
+      'test_example_runner',
+      input: 'test/test_example.c',
+      output: 'test_example_runner.c',
+      command: [
+        runner_program,
+        '--use_param_tests=1',
+        '@INPUT@',
+        '@OUTPUT@',
+      ],
+    )

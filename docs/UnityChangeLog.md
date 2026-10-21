@@ -15,6 +15,10 @@ Prior to 2008, the project was an internal project and not released to the publi
 
 ### Unity 2.7.2
 
+New Features:
+
+  - Meson subprojects can access the test runner generator program directly for custom targets (#835). @Firat17aze
+
 Significant Bugfixes:
 
   - Default `UNITY_INCLUDE_EXEC_TIME` macros compile as ISO C99, are statement-safe, and accept `-Wsign-conversion` (#838)
