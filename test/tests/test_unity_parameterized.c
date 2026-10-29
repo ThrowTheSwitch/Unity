@@ -171,6 +171,21 @@ void test_CharsArePreserved(unsigned index, char c)
     NextExpectedCharIndex++;
 }
 
+TEST_CASE((const int[]){1, 2, 3}, 3, 6)
+TEST_CASE((const int[]){4}, 1, 4)
+void test_CompoundLiteralArgsArePreserved(const int * values, unsigned count, int sum)
+{
+    int total = 0;
+    unsigned i;
+
+    for (i = 0; i < count; i++)
+    {
+        total += values[i];
+    }
+
+    TEST_ASSERT_EQUAL_INT(sum, total);
+}
+
 TEST_RANGE([0, 10, 2])
 void test_SingleRange(unsigned value)
 {
