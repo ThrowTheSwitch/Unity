@@ -40,9 +40,7 @@ class UnityTestSummary:
                 raise Exception("Empty test result file: %s" % result_file)
 
             # define an expression for your file reference
-            entry_one = Combine(
-                oneOf(list(alphas)) + ':/' +
-                Word(alphanums + '_-./'))
+            entry_one = Regex(r'[A-Za-z]:[\\/][^:\r\n]+')
 
             entry_two = Word(printables + ' ', excludeChars=':')
             entry = entry_one | entry_two
