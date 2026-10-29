@@ -22,6 +22,7 @@ CFLAGS += -Wbad-function-cast -Wcast-qual -Wold-style-definition -Wshadow -Wstri
 CFLAGS += $(DEBUG)
 UNITY_SUPPORT_64 = -D UNITY_SUPPORT_64
 UNITY_INCLUDE_DOUBLE = -D UNITY_INCLUDE_DOUBLE
+UNITY_USE_COMMAND_LINE_ARGS = -D UNITY_USE_COMMAND_LINE_ARGS
 DEFINES =  -D UNITY_OUTPUT_CHAR=putcharSpy
 DEFINES += -D UNITY_OUTPUT_CHAR_HEADER_DECLARATION=putcharSpy\(int\)
 DEFINES += -D UNITY_OUTPUT_FLUSH=flushSpy
@@ -53,7 +54,7 @@ coverage: $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(SRC5) $(SRC6) $(SRC7) $(SRC8)
 	gcov unity.c | head -3
 	grep '###' $(BUILD_DIR)/unity.c.gcov -C2 || true
 	cd $(BUILD_DIR) && \
-	$(CC) $(CFLAGS) $(DEFINES) $(foreach i,$(SRC2), ../$i) $(COV_FLAGS) -o ../$(TARGET)
+	$(CC) $(CFLAGS) $(DEFINES) $(UNITY_USE_COMMAND_LINE_ARGS) $(foreach i,$(SRC2), ../$i) $(COV_FLAGS) -o ../$(TARGET)
 	rm -f $(BUILD_DIR)/*.gcda
 	./$(TARGET) | grep 'Tests\|]]]' -A1
 	cd $(BUILD_DIR) && \
@@ -105,7 +106,7 @@ coverage: $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(SRC5) $(SRC6) $(SRC7) $(SRC8)
 test: $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(SRC5) $(SRC6) $(SRC7) $(SRC8)
 	$(CC) $(CFLAGS) $(DEFINES) $(INC_DIR) $(SRC1) -o $(TARGET)
 	./$(TARGET)
-	$(CC) $(CFLAGS) $(DEFINES) $(INC_DIR) $(SRC2) -o $(TARGET)
+	$(CC) $(CFLAGS) $(DEFINES) $(UNITY_USE_COMMAND_LINE_ARGS) $(INC_DIR) $(SRC2) -o $(TARGET)
 	./$(TARGET)
 	$(CC) $(CFLAGS) $(DEFINES) $(INC_DIR) $(SRC3) -o $(TARGET)
 	./$(TARGET)
