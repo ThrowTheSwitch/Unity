@@ -15,6 +15,10 @@ Prior to 2008, the project was an internal project and not released to the publi
 
 ### Unity 2.7.2
 
+New Features:
+
+  - Meson subprojects can access the test runner generator program directly for custom targets (#835). @Firat17aze
+
 Significant Bugfixes:
 
   - Correct Windows drive paths in the Python JUnit converter (#628) @nailongzhanshen666
